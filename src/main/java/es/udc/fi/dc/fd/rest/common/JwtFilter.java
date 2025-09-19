@@ -56,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
             request.setAttribute("serviceToken", serviceToken);
             request.setAttribute("userId", jwtInfo.getUserId());
             
-            configureSecurityContext(jwtInfo.getUserName(), jwtInfo.getRole());
+            configureSecurityContext(jwtInfo.getEmail(), jwtInfo.getRole());
             
         } catch (Exception e) {
              response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

@@ -25,9 +25,6 @@ import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 
-/**
- * The Class UserControllerTest.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,33 +32,20 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @Transactional
 public class UserControllerTest {
 	
-	/** The Constant PASSWORD. */
 	private final static String PASSWORD = "password";
 
-	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
 
-	/** The password encoder. */
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
-	/** The user dao. */
 	@Autowired
 	private UserDao userDao;
 
-	/** The user controller. */
 	@Autowired
 	private UserController userController;
 
-	/**
-	 * Creates the authenticated user.
-	 *
-	 * @param userName the user name
-	 * @param roleType the role type
-	 * @return the authenticated user dto
-	 * @throws IncorrectLoginException the incorrect login exception
-	 */
 	private AuthenticatedUserDto createAuthenticatedUser(String userName, RoleType roleType)
 			throws IncorrectLoginException {
 
@@ -73,25 +57,20 @@ public class UserControllerTest {
 		userDao.save(user);
 
 		LoginParamsDto loginParams = new LoginParamsDto();
-		loginParams.setUserName(user.getUserName());
+		loginParams.setEmail(user.getEmail());
 		loginParams.setPassword(PASSWORD);
 
 		return userController.login(loginParams);
 
 	}
 
-	/**
-	 * Test post login ok.
-	 *
-	 * @throws Exception the exception
-	 */
 	@Test
 	public void testPostLogin_Ok() throws Exception {
 
-		AuthenticatedUserDto user = createAuthenticatedUser("admin", RoleType.USER);
+		AuthenticatedUserDto user = createAuthenticatedUser("admin", RoleType.TRAINER);
 
 		LoginParamsDto loginParams = new LoginParamsDto();
-		loginParams.setUserName(user.getUserDto().getUserName());
+		loginParams.setEmail(user.getUserDto().getEmail());
 		loginParams.setPassword(PASSWORD);
 
 		ObjectMapper mapper = new ObjectMapper();
