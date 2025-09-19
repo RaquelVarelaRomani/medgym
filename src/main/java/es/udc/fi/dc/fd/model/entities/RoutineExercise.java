@@ -7,11 +7,11 @@ public class RoutineExercise {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "routine_id")
+    @JoinColumn(name = "routineId")
     private Routine routine;
 
     @ManyToOne
-    @JoinColumn(name = "exercise_id")
+    @JoinColumn(name = "exerciseId")
     private Exercise exercise;
 
     private byte repetitionsNumber;
