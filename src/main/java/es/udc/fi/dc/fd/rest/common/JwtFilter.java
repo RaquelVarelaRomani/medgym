@@ -18,25 +18,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * The Class JwtFilter.
- */
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     
-    /** The jwt generator. */
     @Autowired
     private JwtGenerator jwtGenerator;
 
-    /**
-     * Do filter internal.
-     *
-     * @param request the request
-     * @param response the response
-     * @param filterChain the filter chain
-     * @throws ServletException the servlet exception
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
@@ -66,21 +53,15 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
         
     }
-    
-    /**
-     * Configure security context.
-     *
-     * @param userName the user name
-     * @param role the role
-     */
-    private void configureSecurityContext(String userName, String role) {
+
+    private void configureSecurityContext(String email, String role) {
         
         Set<GrantedAuthority> authorities = new HashSet<>();
         
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
         
         SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken(userName, null, authorities));
+            new UsernamePasswordAuthenticationToken(email, null, authorities));
         
     }
 

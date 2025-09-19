@@ -46,10 +46,10 @@ public class UserControllerTest {
 	@Autowired
 	private UserController userController;
 
-	private AuthenticatedUserDto createAuthenticatedUser(String userName, RoleType roleType)
+	private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
 			throws IncorrectLoginException {
 
-		User user = new User(userName, PASSWORD, "newUser", "user", "user@test.com");
+		User user = new User("user", "1", email, "+34 000 000 000", "password");
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setRole(roleType);
@@ -67,7 +67,7 @@ public class UserControllerTest {
 	@Test
 	public void testPostLogin_Ok() throws Exception {
 
-		AuthenticatedUserDto user = createAuthenticatedUser("admin", RoleType.TRAINER);
+		AuthenticatedUserDto user = createAuthenticatedUser("user@email.com", RoleType.CLIENT);
 
 		LoginParamsDto loginParams = new LoginParamsDto();
 		loginParams.setEmail(user.getUserDto().getEmail());

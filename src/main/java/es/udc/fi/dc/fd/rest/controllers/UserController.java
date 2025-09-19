@@ -39,9 +39,6 @@ import es.udc.fi.dc.fd.rest.dtos.ChangePasswordParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.UserDto;
 
-/**
- * The Class UserController.
- */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {

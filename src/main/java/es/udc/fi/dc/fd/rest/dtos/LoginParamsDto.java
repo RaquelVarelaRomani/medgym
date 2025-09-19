@@ -19,7 +19,7 @@ public class LoginParamsDto {
 		return email;
 	}
 
-	public void setEmail(String userName) {
+	public void setEmail(String email) {
 		this.email = email.trim();
 	}
 
