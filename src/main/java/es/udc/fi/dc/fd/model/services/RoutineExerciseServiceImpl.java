@@ -101,6 +101,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Block<RoutineExercise> getExercisesForRoutines(Long routineId, int page, int size) {
         Slice<RoutineExercise> slice = routineExerciseDao.findByRoutineId(routineId, PageRequest.of(page, size));
         return new Block<>(slice.getContent(), slice.hasNext());
