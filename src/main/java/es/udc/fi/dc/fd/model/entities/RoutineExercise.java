@@ -16,12 +16,12 @@ public class RoutineExercise {
     private Exercise exercise;
 
     @Column(name = "repetitions_number")
-    private byte repetitionsNumber;
-    private short duration;
+    private Byte repetitionsNumber;
+    private Short duration;
 
     public RoutineExercise() {}
 
-    public RoutineExercise(Routine routine, Exercise exercise, byte repetitionsNumber, short duration) {
+    public RoutineExercise(Routine routine, Exercise exercise, Byte repetitionsNumber, Short duration) {
         this.routine = routine;
         this.exercise = exercise;
         this.repetitionsNumber = repetitionsNumber;
@@ -54,19 +54,19 @@ public class RoutineExercise {
         this.exercise = exercise;
     }
 
-    public byte getRepetitionsNumber() {
+    public Byte getRepetitionsNumber() {
         return repetitionsNumber;
     }
 
-    public void setRepetitionsNumber(byte repetitionsNumber) {
+    public void setRepetitionsNumber(Byte repetitionsNumber) {
         this.repetitionsNumber = repetitionsNumber;
     }
 
-    public short getDuration() {
+    public Short getDuration() {
         return duration;
     }
 
-    public void setDuration(short duration) {
+    public void setDuration(Short duration) {
         this.duration = duration;
     }
 }

@@ -71,4 +71,12 @@ public class Routine {
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = modificationDate;
     }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
 }
