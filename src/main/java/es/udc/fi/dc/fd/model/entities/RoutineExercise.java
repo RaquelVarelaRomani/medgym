@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "routine_exercises")
 public class RoutineExercise {
     private long id;
 

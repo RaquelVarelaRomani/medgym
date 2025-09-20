@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "routines")
 public class Routine {
     private long id;
     private String name;
