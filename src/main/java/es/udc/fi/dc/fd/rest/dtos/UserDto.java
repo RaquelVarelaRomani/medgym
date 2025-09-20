@@ -22,7 +22,7 @@ public class UserDto {
 	public UserDto(Long id, String name, String surname, String email, String phoneNumber, String role) {
 
 		this.id = id;
-		this.name = name != null ? name.trim() : null;
+		this.name = name.trim();
 		this.surname = surname.trim();
 		this.email = email.trim();
 		this.phoneNumber = phoneNumber.trim();
