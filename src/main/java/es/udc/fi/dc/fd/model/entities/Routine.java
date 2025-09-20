@@ -2,7 +2,7 @@ package es.udc.fi.dc.fd.model.entities;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "routines")
@@ -12,10 +12,10 @@ public class Routine {
     private String description;
 
     @Column(name = "creation_date")
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     @Column(name = "modification_date")
-    private Date modificationDate;
+    private LocalDateTime modificationDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -23,7 +23,7 @@ public class Routine {
 
     public Routine() {}
 
-    public Routine(String name, String description, Date creationDate, Date modificationDate) {
+    public Routine(String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate) {
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
@@ -56,19 +56,19 @@ public class Routine {
         this.description = description;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getModificationDate() {
+    public LocalDateTime getModificationDate() {
         return modificationDate;
     }
 
-    public void setModificationDate(Date modificationDate) {
+    public void setModificationDate(LocalDateTime modificationDate) {
         this.modificationDate = modificationDate;
     }
 
