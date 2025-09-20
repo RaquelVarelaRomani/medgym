@@ -2,9 +2,6 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 import jakarta.validation.constraints.NotNull;
 
-/**
- * The Class LoginParamsDto.
- */
 public class LoginParamsDto {
 
 	private String email;

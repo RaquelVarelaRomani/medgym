@@ -51,7 +51,7 @@ public class UserDto {
 	public String getSurname() {
 		return surname;
 	}
-	public void setSurname(String firstName) {
+	public void setSurname(String surname) {
 		this.surname = surname.trim();
 	}
 
@@ -60,7 +60,7 @@ public class UserDto {
 	public String getEmail() {
 		return email;
 	}
-	public void setEmail(String lastName) {
+	public void setEmail(String email) {
 		this.email = email.trim();
 	}
 
