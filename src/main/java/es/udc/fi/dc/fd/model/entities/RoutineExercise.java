@@ -7,13 +7,14 @@ public class RoutineExercise {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "routineId")
+    @JoinColumn(name = "routine_id")
     private Routine routine;
 
     @ManyToOne
-    @JoinColumn(name = "exerciseId")
+    @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
+    @Column(name = "repetitions_number")
     private byte repetitionsNumber;
     private short duration;
 

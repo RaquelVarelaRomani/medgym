@@ -9,7 +9,11 @@ public class Routine {
     private long id;
     private String name;
     private String description;
+
+    @Column(name = "creation_date")
     private Date creationDate;
+
+    @Column(name = "modification_date")
     private Date modificationDate;
 
     @ManyToOne
