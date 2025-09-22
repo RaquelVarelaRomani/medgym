@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
-import { config } from "../../../config/constants.js";
+import "../App.css";
+import { config } from "../../../../config/constants.js";
 import { Link } from "react-router-dom";
 
 function rot13(s) {

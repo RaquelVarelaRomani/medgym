@@ -3,7 +3,7 @@ import React from "react";
 
 import { Route, Routes } from "react-router-dom";
 
-import Home from "./Home";
+import Home from "./users/Home";
 import Test from "./Test";
 
 const Body = () => {
