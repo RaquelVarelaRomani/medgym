@@ -30,7 +30,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     @Override
     public void addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
             throws InstanceNotFoundException, PermissionException {
-        Users user = permissionChecker.checkUser(userId);
+        User user = permissionChecker.checkUser(userId);
 
         Optional<Routine> opRoutine = routineDao.findById(routineId);
         Optional<Exercise> opExercise = exerciseDao.findById(exerciseId);
@@ -60,7 +60,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     @Override
     public void removeExerciseFromRoutine(Long userId, Long exerciseId, Long routineId)
             throws InstanceNotFoundException, PermissionException {
-        Users user = permissionChecker.checkUser(userId);
+        User user = permissionChecker.checkUser(userId);
 
         Optional<RoutineExercise> opRoutineExercise =
                 routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
@@ -81,7 +81,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     @Override
     public void updateExerciseOnRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
             throws InstanceNotFoundException, PermissionException {
-        Users user = permissionChecker.checkUser(userId);
+        User user = permissionChecker.checkUser(userId);
 
         Optional<RoutineExercise> opRoutineExercise =
                 routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);

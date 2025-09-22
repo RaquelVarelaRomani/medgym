@@ -19,7 +19,7 @@ public class Routine {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     public Routine() {}
 
@@ -72,11 +72,11 @@ public class Routine {
         this.modificationDate = modificationDate;
     }
 
-    public Users getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(Users user) {
+    public void setUser(User user) {
         this.user = user;
     }
 }

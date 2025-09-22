@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name= "exercises")
 public class Exercise {
     /** The id. */
-    private long id;
+    private Long id;
     /** The exercise name. */
     private String name;
     /** The description. **/
@@ -14,19 +14,18 @@ public class Exercise {
 
     public Exercise() {}
 
-    public Exercise(long id, String name, String description) {
-        this.id = id;
+    public Exercise(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
