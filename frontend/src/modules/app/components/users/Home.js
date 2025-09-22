@@ -1,99 +1,128 @@
-import React, { useState, useEffect } from "react";
-//OJO! Importa estilos definidos en CSS
-import "../App.css";
-import { config } from "../../../../config/constants.js";
+import React, { useState } from "react";
+// OJO! Importa estilos definidos en CSS
+import "./Home.css";
 import { Link } from "react-router-dom";
+// import { config } from "../../../../config/constants.js"; // ⚠️ Bórralo si no lo usas
 
-//declaracion de la funcion rot13
+// Declaración de la función rot13 (comentada correctamente)
+/*
 function rot13(s) {
-  //devolverá el string con las letras reemplazadas según la regla
+  // devolverá el string con las letras reemplazadas según la regla
   return s.replace(
     /[A-Z]/gi,
     (c) =>
       "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"[
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c)
       ]
-      //en este cifrado se desplaza 13 posiciones cada letra
+    // en este cifrado se desplaza 13 posiciones cada letra
   );
 }
+*/
 
-//definicion componente funcional (el que react renderiza como pantalla)
+
+//IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
+
+
+// Definición componente funcional (el que React renderiza como pantalla)
 const Home = () => {
-  const [message, setMessage] = useState("");
-  const [someText, setSomeText] = useState("Sreenzragnf");
-  const [answer, setAnswer] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  //efecto que se ejecuta autimaticamente al entrar en la pagina
-  useEffect(() => {
-    //HTTP al backend (/medgym/api/hello)
-    fetch(config.BASE_PATH + "/hello")
-    //convierte la respuesta del backend en texto
-      .then((response) => response.text())
-      //guarda el texto en la variable message
-      .then((error) => {
-        setMessage(error);
-      });
-  }, []);
-
-  //declara una funcion (se ejecutara al enviar el formulario)
-  const onSubmit = (ev) => {
-    //evita que el formulario recargue la pagina
-    ev.preventDefault();
-    setAnswer(rot13(someText));
+  // handle = manejar, submit = evento de envío de un formulario
+  const handleSubmit = (evento) => {
+    evento.preventDefault(); // evitar que el formulario recargue la página por defecto
+    console.log("Email:", email, "Password:", password);
+    // CONECTAR CON EL BACKEND
   };
 
+  // return = lo que hay que renderizar en pantalla
   return (
-    //contenedor al que se le aplica el estilo definido en CSS bajo la clase .App
-    <div className="App">
-        <header className="App-header">
-            <img //MUESTRA EL LOGO DE LA APP
-                src={process.env.PUBLIC_URL + "/assets/logo.svg"} //mostrar logo desde la public/assets
-                className="App-logo" //clase CSS para que gire
-                alt="logo" //texto alternativo
-            />
-            {/* TÍTULO PRINCIPAL de la cabecera */}
-            <h1 className="App-title">Welcome to MG</h1> 
-            {/* BOTONES LOG IN Y SING UP */}
-            <div className="App-auth-buttons">
-                <Link to="/users/login">
-                    <button className="btn-login">Login</button>
-                </Link>
-                <Link to="/users/signUp">
-                    <button className="btn-signup">Sign Up</button>
-                </Link>
-            </div>
-        </header> {/* Cierra la cabecera */}
+    
+    // 1) Hacemos un div para agrupar todo dentro del recuadro del login
+   <div className="contenedor">
 
 
-        {/* Texto de ejemplo */}
-        <p className="App-intro">
-            To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div className="caja-login">
+        
+        {/*PONEMOS EL LOGO*/}
+        <img
+        //src = atributo que indica la ruta de la imagen
+          src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+          //texto alternativo (se muestra solo si la imagen no se puede cargar)
+          //lo usan los lectores de pantalla (ACCESIBILIDAD)
+          alt="Logo medgym"
+          //para aplicar estilo CSS
+          className="logo"
+        />
+
+        {/*TÍTULO*/}
+        <h2 className="titulo">Inicia sesión</h2>
 
 
-      {/* Enlace */}
-        <p>
-            <Link to="test">App route</Link>
-        </p>
-        <form action="" onSubmit={onSubmit}>
-            <p>
-                <label htmlFor="some-text">Input some text: </label>
-                <input
-            name="some-text"
-            id="some-text"
-            value={someText}
-            onChange={(ev) => setSomeText(ev.currentTarget.value)}
+
+        {/*FORMULARIO*/}
+        {/*Cuando user pulse guardar, se ejecuta la funcion (handleSubmit)*/}
+        <form className="form" onSubmit={handleSubmit}>
+
+          {/*CORREO:*/}
+          {/*etiqueta*/}
+          <label htmlFor="email">Correo electrónico</label>
+          {/*campo para escribir el email*/}
+          <input
+            type="email"
+            id="email"
+            value={email}
+            //cada vez que el usuario escribe se cambia el email
+            onChange={(e) => setEmail(e.target.value)}
+            required //no permite enviar el formulario si esta vacio
+            placeholder="Escriba aquí su email..."
           />
-        </p>
-        <button>Calculate</button>
-      </form>
 
-      {/* El calcula*/}
-      {answer && (
-        <p>
-          The answer is: <strong>{answer}</strong>
-        </p>
-      )}
+
+          {/*CONTRASEÑA*/}
+          <label htmlFor="password">Contraseña</label>
+          {/*Contenedor para la contraseña porque tambien queremos poner el ojo*/}
+          <div className="contenedor-password">
+
+            <input
+            //si showPassword es true...
+              type={showPassword ? "text" : "password"}
+              id="password"
+              value={password}
+              //Cada vez que el usario escribe -> SE ACTUALIZA
+              onChange={(e) => setPassword(e.target.value)}
+              //obligatorio rellenar la contraseña
+              required
+              placeholder="Escriba aquí su contraseña..."
+            />
+
+
+
+            {/*PARA APLICAR ESTILOS O EVENTOS a algo pequeño YA DENTRO DE UN BLOQUE*/}
+            {/*mirar si por ACCESIBILIDAD es mejor -> button type="button" */}
+            <span
+              className="ver-password"
+              //al hacer clic en el ojo cambia el estado de ShowPassword
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              &#128065; 
+              {/*Esto es un carácter estándar Unicode-> MIRAR DE HACERLO CON LIBRERIAS*/}
+            </span>
+
+          </div>
+
+          {/*De tipo submit -> al hacer clic se dispara el evento */}
+          <button type="submit" className="boton-entrar">
+            Entrar {/*Texto visible DENTRO del boton */}
+          </button>
+
+        </form>
+
+
+      </div>
+
+
     </div>
   );
 };
