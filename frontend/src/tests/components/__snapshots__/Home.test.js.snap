@@ -42,6 +42,7 @@ exports[`Home renders correctly 1`] = `
       </a>
     </div>
   </header>
+   
   <p
     className="App-intro"
   >
