@@ -7,15 +7,10 @@ import jakarta.persistence.*;
 public class RoutineExercise {
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "routine_id")
     private Routine routine;
 
-    @ManyToOne
-    @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
-    @Column(name = "repetitions_number")
     private Byte repetitionsNumber;
     private Short duration;
 
@@ -38,6 +33,8 @@ public class RoutineExercise {
         this.id = id;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "routine_id")
     public Routine getRoutine() {
         return routine;
     }
@@ -46,6 +43,8 @@ public class RoutineExercise {
         this.routine = routine;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "exercise_id")
     public Exercise getExercise() {
         return exercise;
     }
@@ -54,6 +53,7 @@ public class RoutineExercise {
         this.exercise = exercise;
     }
 
+    @Column(name = "repetitions_number")
     public Byte getRepetitionsNumber() {
         return repetitionsNumber;
     }

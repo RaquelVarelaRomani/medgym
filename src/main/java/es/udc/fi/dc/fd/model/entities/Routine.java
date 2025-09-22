@@ -11,15 +11,11 @@ public class Routine {
     private String name;
     private String description;
 
-    @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
-    @Column(name = "modification_date")
     private LocalDateTime modificationDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private User trainer;
 
     public Routine() {}
 
@@ -56,6 +52,7 @@ public class Routine {
         this.description = description;
     }
 
+    @Column(name = "creation_date")
     public LocalDateTime getCreationDate() {
         return creationDate;
     }
@@ -64,6 +61,7 @@ public class Routine {
         this.creationDate = creationDate;
     }
 
+    @Column(name = "modification_date")
     public LocalDateTime getModificationDate() {
         return modificationDate;
     }
@@ -72,11 +70,13 @@ public class Routine {
         this.modificationDate = modificationDate;
     }
 
-    public User getUser() {
-        return user;
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    public User getTrainer() {
+        return trainer;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setTrainer(User user) {
+        this.trainer = user;
     }
 }
