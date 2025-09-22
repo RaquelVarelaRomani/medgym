@@ -29,7 +29,8 @@ spring:
       format-sql: true
       use-sql-comments: true
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+
 server:
   servlet:
     context-path: @project.contextPath@
