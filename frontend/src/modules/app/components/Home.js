@@ -33,24 +33,32 @@ const Home = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img
-          src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-          className="App-logo"
-          alt="logo"
-        />
-        <h1 className="App-title">{message}</h1>
-      </header>
-      <p className="App-intro">
-        To get started, edit <code>src/App.js</code> and save to reload.
-      </p>
-      <p>
-        <Link to="test">App route</Link>
-      </p>
-      <form action="" onSubmit={onSubmit}>
+        <header className="App-header">
+            <img
+                src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+                className="App-logo"
+                alt="logo"
+            />
+            <h1 className="App-title">Welcome to MG</h1>
+            <div className="App-auth-buttons">
+                <Link to="/users/login">
+                    <button className="btn-login">Login</button>
+                </Link>
+                <Link to="/users/signUp">
+                    <button className="btn-signup">Sign Up</button>
+                </Link>
+            </div>
+        </header>
+        <p className="App-intro">
+            To get started, edit <code>src/App.js</code> and save to reload.
+        </p>
         <p>
-          <label htmlFor="some-text">Input some text: </label>
-          <input
+            <Link to="test">App route</Link>
+        </p>
+        <form action="" onSubmit={onSubmit}>
+            <p>
+                <label htmlFor="some-text">Input some text: </label>
+                <input
             name="some-text"
             id="some-text"
             value={someText}
