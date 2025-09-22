@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: var(--light-orange);
 }
 
 .App-logo {
@@ -8,14 +9,52 @@
 }
 
 .App-header {
-  background-color: #222;
-  height: 150px;
+  background: linear-gradient(135deg, var(--dark-orange), var(--primary-orange));
+  height: 80px;
   padding: 20px;
   color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 20px var(--shadow-orange);
 }
 
 .App-title {
-  font-size: 1.5em;
+  font-size: 2.2em;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 2px 4px var(--shadow-text);
+}
+
+.App-auth-buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.App-auth-buttons a {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.App-auth-buttons button {
+  margin-left: 10px;
+  background-color:  var(--white-20);
+  border: 2px solid var(--white-30);
+  padding: 8px 16px;
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.App-auth-buttons button:hover {
+  background-color: var(--white-30);
+  border-color: var(--white-50);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
 .App-intro {

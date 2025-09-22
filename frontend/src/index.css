@@ -3,3 +3,35 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+:root {
+  /*oranges*/
+  --primary-orange: #FF7000;
+  --secondary-orange: #FFAC4A;
+  --light-orange: #FFE9C9;
+  --accent-orange: #F9C87C;
+  --dark-orange: #E02F0F;
+
+  /*neutrals*/
+  --white: #FFFFFF;
+  --light-gray: #F5F5F5;
+  --medium-gray: #E0E0E0;
+  --dark-gray: #333333;
+  --text-dark: #1A1A1A;
+
+  /*action colors --- maybe tweak?*/
+  --success: #4CAF50;
+  --error: #F44336;
+
+  /*transparent overlay*/
+  --white-10: rgba(255, 255, 255, 0.1);
+  --white-20: rgba(255, 255, 255, 0.2);
+  --white-30: rgba(255, 255, 255, 0.3);
+  --white-50: rgba(255, 255, 255, 0.5);
+
+  /*shadows*/
+  --shadow-orange: rgba(255, 112, 0, 0.3);
+  --shadow-light: rgba(255, 112, 0, 0.1);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
+  --shadow-text: rgba(0, 0, 0, 0.1);
+}
