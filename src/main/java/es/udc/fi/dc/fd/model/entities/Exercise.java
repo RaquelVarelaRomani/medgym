@@ -3,10 +3,10 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "exercises")
+@Table(name= "exercises")
 public class Exercise {
     /** The id. */
-    private Long id;
+    private long id;
     /** The exercise name. */
     private String name;
     /** The description. **/
@@ -14,18 +14,19 @@ public class Exercise {
 
     public Exercise() {}
 
-    public Exercise(String name, String description) {
+    public Exercise(long id, String name, String description) {
+        this.id = id;
         this.name = name;
         this.description = description;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

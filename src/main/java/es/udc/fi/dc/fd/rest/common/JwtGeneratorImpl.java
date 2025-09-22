@@ -35,7 +35,7 @@ public class JwtGeneratorImpl implements JwtGenerator {
 
         Claims claims = Jwts.claims();
 
-        claims.setSubject(info.getUserName())
+        claims.setSubject(info.getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMinutes * 60 * 1000));
         claims.put("userId", info.getUserId());
         claims.put("role", info.getRole());
