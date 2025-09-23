@@ -4,7 +4,7 @@
   /*dir en la que se almacenan los hijos (row, column)*/
   flex-direction: column;
   /*alineacion hijos eje transversal*/
-  align-items: left;
+  align-items: flex-start;;
   /*alineacion hijos eje principal (vertical pq usamos column*/
   /*justify-content: center;
   /*viewport height*/
@@ -16,12 +16,13 @@
   background: linear-gradient(to right, var(--dark-orange-light),var(--primary-orange-light));
 
   padding-top: 5%; 
+  width: 100%;
 }
 
 .routines-titulo-grande {
   display: flex; /*queremos todo flexbox para que se adapte*/
   justify-content: space-between; /*distribuye los dos con el maximo espacio entre ellos*/
-  align-items: center;
+  align-items: left;
 
   margin-left: 5%; 
 }
@@ -46,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: 15px; /*añadimos espacio entre hijos para que qude mejor*/
+  width: 100%;
 }
 
 .caja-rutina {
@@ -61,9 +63,9 @@
   cursor: pointer;
 
   /*nos quedaban mal en el centro*/
-  width: 70%;/*ancho de la pantalla*/
-  margin-left: 5%; 
-  margin-right: 25%;
+  width: 90%;/*ancho de la pantalla*/
+  margin-left: 3%; 
+  margin-right: auto;
 
   padding: 16px;
   box-sizing: border-box;
