@@ -58,7 +58,7 @@ const Home = () => {
   return (
     
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
-   <div className="contenedor">
+    <div className="contenedor">
 
 
       <div className="caja-login">
@@ -124,7 +124,7 @@ const Home = () => {
               //al hacer clic en el ojo cambia el estado de ShowPassword
               onClick={() => setShowPassword(!showPassword)}
             >
-              &#128065; 
+              &#128065;
               {/*Esto es un carácter estándar Unicode-> MIRAR DE HACERLO CON LIBRERIAS*/}
             </span>
 

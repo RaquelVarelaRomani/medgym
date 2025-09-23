@@ -1,0 +1,112 @@
+.profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    background: linear-gradient(to right, var(--dark-orange),var(--primary-orange));
+    min-height: 95vh;
+    justify-content: center;
+}
+
+.profile-container {
+    background-color: rgba(255, 255, 255, 0.7);
+    box-sizing: border-box;
+    max-width: 1600px;          /* ancho máximo del bloque */
+    width: 80vw;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-left: 20px;         /* margen desde el borde */
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.return-init-button {
+    padding: 12px 18px;
+    font-size: 1rem;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.edit-profile-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.logout-button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: #c62828;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border:none;
+}
+
+.return-init-button:hover, .edit-profile-button:hover, .logout-button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+    border: none;
+}
+
+.profile-content {
+    margin-left: 30px;
+    text-align: left;
+}
+
+.profile-data {
+    width: 80%;
+    max-width: 1000px;
+    min-height: 200px;
+    border: 1px solid #000;
+    border-radius: 6px;
+    background: white;
+    padding: 10px;
+    text-align: left;
+}

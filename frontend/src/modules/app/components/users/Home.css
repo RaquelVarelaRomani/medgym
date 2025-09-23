@@ -97,10 +97,10 @@
   /*incita a hacer clic(cambia a la manito)*/
   cursor: pointer;
 
-   width: auto;  /*ocupa solo lo que mide el texto*/
-   /*SE ESTIRABA A LO LARGO -> había que indicarle que no se estirara*/
-   display: inline-block;
-   margin-top: 10px; /*separacion con lo de arriba (input de contraseña*/
+  width: auto;  /*ocupa solo lo que mide el texto*/
+  /*SE ESTIRABA A LO LARGO -> había que indicarle que no se estirara*/
+  display: inline-block;
+  margin-top: 10px; /*separacion con lo de arriba (input de contraseña*/
   transition: all 0.3s ease;
 
 }
