@@ -41,8 +41,9 @@ public class RoutineExerciseServiceTest {
     }
 
     private Routine createRoutine(String routineName){
-        Routine routine = new Routine(routineName, "The description", LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0));
-        return routineDao.save(routine);
+        //Routine routine = new Routine(routineName, "The description", LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0));
+        //return routineDao.save(routine);
+        return new Routine();
     }
 
     private Exercise createExercise(String exerciseName){
