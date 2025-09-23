@@ -44,8 +44,8 @@ CREATE TABLE routine_exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
     repetitions_number SMALLINT NOT NULL,
     duration SMALLINT NOT NULL,
-    routine_id BIGINT NOT NULL,
-    exercise_id BIGINT NOT NULL,
+    routine_id BIGINT,
+    exercise_id BIGINT,
 
     CONSTRAINT routine_exercise_id_pk PRIMARY KEY (id),
     CONSTRAINT routine_exercise_routine_id_fk FOREIGN KEY (routine_id)
