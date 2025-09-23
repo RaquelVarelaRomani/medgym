@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @Table(name= "exercises")
 public class Exercise {
     private Long id;
-    @Column(unique = true)
     private String name;
     private String description;
 
@@ -26,6 +25,7 @@ public class Exercise {
         this.id = id;
     }
 
+    @Column(unique = true)
     public String getName() {
         return name;
     }
