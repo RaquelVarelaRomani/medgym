@@ -2,6 +2,10 @@ import React, { useState } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Routines.css";
 import { Link } from "react-router-dom";
+//TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
+//useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
+//import { Link, useNavigate } from "react-router-dom";
+
 // import { config } from "../../../../config/constants.js"; // 
 
 // Declaración de la función rot13 (comentada correctamente)
@@ -25,19 +29,12 @@ function rot13(s) {
 
 // Definición componente funcional (el que React renderiza como pantalla)
 const Routines = () => {
-  const [name, setName] = useState("");
-  const [surname, setSurname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  //DUDA: deberiamos dejar repetir la contraseña teniendo el ojo?
-
-  // handle = manejar, submit = evento de envío de un formulario
-  const handleSubmit = (evento) => {
-    evento.preventDefault(); // evitar que el formulario recargue la página por defecto
-    console.log("Name:", name,"Surname:", surname,"Email:", email, "Password:", password);
-    // CONECTAR CON EL BACKEND
-  };
+    //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
+    const routines = [
+    { id: 1, titulo: "Ejemplo entrenamiento nº 1", entrenador: "Entrenador2" },
+    { id: 2, titulo: "Ejemplo entrenamiento nº 2", entrenador: "Entrenador1" },
+    { id: 3, titulo: "Ejemplo entrenamiento nº 3", entrenador: "Entrenador1" },
+  ];
 
   // return = lo que hay que renderizar en pantalla
   return (
@@ -45,123 +42,41 @@ const Routines = () => {
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
    <div className="contenedor">
 
-
-      <div className="caja-login">
-        
-        {/*PONEMOS EL LOGO*/}
         <img
-        //src = atributo que indica la ruta de la imagen
-          src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-          //texto alternativo (se muestra solo si la imagen no se puede cargar)
-          //lo usan los lectores de pantalla (ACCESIBILIDAD)
-          alt="Logo medgym"
-          //para aplicar estilo CSS
-          className="logo"
+            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+            alt="Foto de perfil"
+            className="foto-perfil"
+            // onClick={() => navigate("/profile")}  // cuando actives la navegación
         />
 
-        {/*TÍTULO*/}
-        <h2 className="titulo">Regístrate</h2>
+        <div className="routines-titulo-grande">
+            <h2>Entrenamientos:</h2>
+        </div>
 
-
-
-        {/*FORMULARIO*/}
-        {/*Cuando user pulse guardar, se ejecuta la funcion (handleSubmit)*/}
-        <form className="form" onSubmit={handleSubmit}>
-          {/*NOMBRE:*/}
-          {/*etiqueta*/}
-          <label htmlFor="name">Nombre</label>
-          {/*campo para escribir el nombre*/}
-          <input
-            type="name"
-            id="name"
-            value={name}
-            //cada vez que el usuario escribe se cambia el nombre
-            onChange={(e) => setName(e.target.value)}
-            required //no permite enviar el formulario si esta vacio
-            placeholder="Escriba aquí su nombre..."
-          />
-
-          {/*APELLIDOS:*/}
-          {/*etiqueta*/}
-          <label htmlFor="surname">Apellidos</label>
-          {/*campo para escribir los apellidos*/}
-          <input
-            type="surname"
-            id="surname"
-            value={surname}
-            //cada vez que el usuario escribe se cambian los apellidos
-            onChange={(e) => setSurname(e.target.value)}
-            required //no permite enviar el formulario si esta vacio
-            placeholder="Escriba aquí sus apellidos..."
-          />
-
-          {/*CORREO:*/}
-          {/*etiqueta*/}
-          <label htmlFor="email">Correo electrónico</label>
-          {/*campo para escribir el email*/}
-          <input
-            type="email"
-            id="email"
-            value={email}
-            //cada vez que el usuario escribe se cambia el email
-            onChange={(e) => setEmail(e.target.value)}
-            required //no permite enviar el formulario si esta vacio
-            placeholder="Escriba aquí su email..."
-          />
-
-
-          {/*CONTRASEÑA*/}
-          <label htmlFor="password">Contraseña</label>
-          {/*Contenedor para la contraseña porque tambien queremos poner el ojo*/}
-          <div className="contenedor-password">
-
-            <input
-            //si showPassword es true...
-              type={showPassword ? "text" : "password"}
-              id="password"
-              value={password}
-              //Cada vez que el usario escribe -> SE ACTUALIZA
-              onChange={(e) => setPassword(e.target.value)}
-              //obligatorio rellenar la contraseña
-              required
-              placeholder="Escriba aquí su contraseña..."
-            />
-
-
-
-            {/*PARA APLICAR ESTILOS O EVENTOS a algo pequeño YA DENTRO DE UN BLOQUE*/}
-            {/*mirar si por ACCESIBILIDAD es mejor -> button type="button" */}
-            <span
-              className="ver-password"
-              //al hacer clic en el ojo cambia el estado de ShowPassword
-              onClick={() => setShowPassword(!showPassword)}
+        {/*<div className="routines-titulo-grande">
+            <h2>Entrenamientos:</h2>
+                <img
+                //CAMBIAR: aqui tendria que ir la foto de perfil
+                src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+                alt="Foto de perfil"
+                className="foto-perfil"
+                //CAMBIAR: que al hacer clic en la foto te mande al perfil
+                //onClick={() => navigate("/profile")}
+                />
+        </div> */}
+        <div className="lista-rutinas">
+            {routines.map((routine) => ( //recorre el array de rutinas
+            //CAMBIAR: puede que esto no pueda ser asi
+            <Link
+                to={`/routines/${routine.id}`}
+                key={routine.id}
+                className="caja-rutina"
             >
-              &#128065; 
-              {/*Esto es un carácter estándar Unicode-> MIRAR DE HACERLO CON LIBRERIAS*/}
-            </span>
-
-          </div>
-
-          <p className="ir-a-login">
-            {/*Podriamos poner texto aquí para que apareciera antes pero no queremos */}
-            <Link to="/" className="link-login">
-            Inicia sesión si ya tienes una cuenta.
+                <h3>{routine.titulo}</h3> {/*Ya usamos h2 en el titulo grande*/}
+                <p>Generado por {routine.entrenador}</p> {/*CAMBIAR: tiene que funcionar con el backend */}
             </Link>
-
-          </p>
-
-
-          {/*De tipo submit -> al hacer clic se dispara el evento */}
-          <button type="submit" className="boton-guardar">
-            Guardar {/*Texto visible DENTRO del boton */}
-          </button>
-
-        </form>
-
-
-      </div>
-
-
+            ))}
+        </div>
     </div>
   );
 };
