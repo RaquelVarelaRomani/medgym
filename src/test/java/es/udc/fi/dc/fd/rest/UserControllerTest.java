@@ -31,7 +31,6 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@Ignore
 public class UserControllerTest {
 	
 	private final static String PASSWORD = "password";
