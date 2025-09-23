@@ -19,11 +19,12 @@ public class Routine {
 
     public Routine() {}
 
-    public Routine(String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate) {
+    public Routine(String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, User trainer) {
         this.name = name;
         this.description = description;
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
+        this.trainer = trainer;
     }
 
     @Id
