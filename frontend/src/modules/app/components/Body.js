@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 
 import Home from "./users/Home";
 import Profile from "./users/profile";
+import EditProfile from "./users/EditProfile";
 import Register from "./users/Register";
 import Test from "./Test";
 
@@ -15,6 +16,7 @@ const Body = () => {
         <Route index exact element={<Home />} />
         <Route path="/test" element={<Test />} />
         <Route path="users/profile" element={<Profile />} />
+        <Route path="users/profile/edit-profile" element={<EditProfile />} />
         <Route path="users/register" element={<Register />} /> {/*Añadi para la pantalla de registrarse */}
       </Route>
     </Routes>

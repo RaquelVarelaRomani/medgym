@@ -4,9 +4,14 @@ import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const navigate = useNavigate();
+
     const handleLogOut = () => {
         // Aquí iría la lógica para cerrar sesión, como limpiar tokens, etc.
         navigate("/"); // Redirige al inicio de sesión o página principal
+    }
+
+    const handleEditProfile = () => {
+        navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
     }
 
     return (
@@ -20,7 +25,7 @@ const Profile = () => {
                 
                     <div className="profile-actions">
                         <button className="return-init-button"> Volver al inicio </button>
-                        <button className="edit-profile-button"> Editar perfil </button>
+                        <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
                         <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
                     </div>
                 
