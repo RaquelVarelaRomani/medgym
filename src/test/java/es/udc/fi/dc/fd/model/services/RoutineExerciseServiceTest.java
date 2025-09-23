@@ -4,20 +4,16 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Optional;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -93,6 +89,17 @@ public class RoutineExerciseServiceTest {
         Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
         RoutineExercise re = block.getItems().get(0);
         assertNull(re.getRepetitionsNumber());
+    }
+
+    @Test
+    public void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException {
+        User trainer = createUser("Pepe", User.RoleType.TRAINER);
+        Exercise exercise = createExercise("Ejercicio");
+        Routine routine = createRoutine("Rutina", trainer);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
+        routineExerciseService.removeExerciseFromRoutine(trainer.getId(), exercise.getId(), routine.getId());
+        assertThrows(InstanceNotFoundException.class, () ->
+                routineExerciseService.removeExerciseFromRoutine(trainer.getId(), exercise.getId(), routine.getId()));
     }
 
 }
