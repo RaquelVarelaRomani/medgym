@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { login } from "../../../../backend/userService";
 // OJO! Importa estilos definidos en CSS
 import "./Home.css";
 import { Link } from "react-router-dom";
+
 import { useNavigate } from "react-router-dom";
 
 // import { config } from "../../../../config/constants.js"; // 
 
 import { appFetch, fetchConfig, setServiceToken } from "../../../../backend/appFetch";
+
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -16,11 +19,13 @@ const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
   // handle = manejar, submit = evento de envío de un formulario
   const handleSubmit = (evento) => {
     evento.preventDefault(); // evitar que el formulario recargue la página por defecto
+
     
     //LLAMO AL BACKEND
     appFetch(
@@ -46,6 +51,7 @@ const Home = () => {
         alert(error.globalError || "Usuario o contraseña incorrectos");
       }
     )
+
   };
 
   // return = lo que hay que renderizar en pantalla
@@ -139,7 +145,8 @@ const Home = () => {
           </button>
 
         </form>
-
+        {/* mostrar errores */}
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
       </div>
 

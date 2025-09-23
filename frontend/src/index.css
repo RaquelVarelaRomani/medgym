@@ -23,6 +23,7 @@ body {
   /*action colors --- maybe tweak?*/
   --success: #4CAF50;
   --error: #F44336;
+  --accent-blue: #1D5191;
 
   /*transparent overlay*/
   --white-10: rgba(255, 255, 255, 0.1);
