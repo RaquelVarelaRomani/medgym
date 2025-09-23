@@ -21,7 +21,6 @@ import java.util.Date;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@Ignore
 public class RoutineExerciseServiceTest {
     @Autowired
     private RoutineExerciseService routineExerciseService;
@@ -35,27 +34,20 @@ public class RoutineExerciseServiceTest {
     @Autowired
     private UserDao userDao;
 
-    private User createUser(String userName){
-        User user = new User(userName, "12345678", "Pepe", "Domingo", "pepe@email.com");
-        return userDao.save(user);
-    }
-
-    private Routine createRoutine(String routineName){
-        Routine routine = new Routine(routineName, "The description", LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0));
-        return routineDao.save(routine);
-    }
-
-    private Exercise createExercise(String exerciseName){
-        Exercise exercise = new Exercise(exerciseName, "The description");
-        return exerciseDao.save(exercise);
-    }
-
     @Test
     public void testAddExerciseToRoutine() throws PermissionException, InstanceNotFoundException {
-        User user = createUser("user");
-        Routine routine = createRoutine("routine");
-        Exercise exercise = createExercise("exercise");
+        User trainer = new User("Pepe", "Domingo", "pepe@domingo.com",
+                "666555444", "password");
+        trainer.setRole(User.RoleType.TRAINER);
+        userDao.save(trainer);
 
-        routineExerciseService.addExerciseToRoutine(user.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
+        Exercise exercise = new Exercise("Ejercicio", "Ejercicio.");
+        exerciseDao.save(exercise);
+
+        Routine routine = new Routine("Rutina", "Rutina",
+                LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0), trainer);
+        routineDao.save(routine);
+
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
     }
 }
