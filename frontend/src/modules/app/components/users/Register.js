@@ -2,23 +2,8 @@ import React, { useState } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Register.css";
 import { Link } from "react-router-dom";
-// import { config } from "../../../../config/constants.js"; // ⚠️ Bórralo si no lo usas
-
-// Declaración de la función rot13 (comentada correctamente)
-/*
-function rot13(s) {
-  // devolverá el string con las letras reemplazadas según la regla
-  return s.replace(
-    /[A-Z]/gi,
-    (c) =>
-      "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"[
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c)
-      ]
-    // en este cifrado se desplaza 13 posiciones cada letra
-  );
-}
-*/
-
+// import { config } from "../../../../config/constants.js"; // 
+// import { config } from "../../../../config/constants.js"; // 
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
