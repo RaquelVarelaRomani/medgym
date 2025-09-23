@@ -57,7 +57,7 @@
 
 .form input {
   padding: 10px;
-  border: 2px solid black;
+  border: 2px solid var(--dark-gray);;
   margin-bottom: 10px;
   font-size: 14px;
 
@@ -85,15 +85,15 @@
 }
 
 .boton-guardar {
-  background-color: var(--primary-orange);
+  background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));;
   /*color texto*/
-  color: black;
+  color: var(--text-dark);
   /*texto en negrita*/
   font-weight: bold;
 
-  padding: 4px 12px; 
+  padding: 8px 16px;
   border: none;
-
+  border-radius: 10px;
   /*incita a hacer clic(cambia a la manito)*/
   cursor: pointer;
 
@@ -101,11 +101,13 @@
    /*SE ESTIRABA A LO LARGO -> había que indicarle que no se estirara*/
    display: inline-block;
    margin-top: 10px; /*separacion con lo de arriba (input de contraseña*/
-
+  transition: all 0.3s ease;
 }
 
 .boton-guardar:hover {
-    transform: scale(1.25);
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--boton-over-orange), var(--primary-orange));
+  box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
 /*keyframes = para definir una animacion en css*/
@@ -120,19 +122,19 @@
   }
 }*/
 
-.ir-a-registrarse {
+.ir-a-login {
   margin-top: 10px;
   font-size: 12px;
   text-align: right; /*Mejor alineado a la derecha*/
 }
 
-.link-registrarse {
+.link-login {
   color: black;
   text-decoration: underline;
   cursor: pointer;
 }
-.link-registrarse:hover{
-  color: blue;
+.link-login:hover{
+  color: var(--accent-blue);
   transform: scale(1.05);
 }
 
