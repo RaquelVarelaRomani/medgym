@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 @Entity
 @Table(name= "exercises")
 public class Exercise {
-    /** The id. */
     private Long id;
-    /** The exercise name. */
+    @Column(unique = true)
     private String name;
-    /** The description. **/
     private String description;
 
     public Exercise() {}
@@ -24,7 +22,6 @@ public class Exercise {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -32,7 +29,6 @@ public class Exercise {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -40,7 +36,6 @@ public class Exercise {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
