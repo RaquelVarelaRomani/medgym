@@ -2,9 +2,11 @@ import React, { useState } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Home.css";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 // import { config } from "../../../../config/constants.js"; // 
 
-
+import { appFetch, fetchConfig, setServiceToken } from "../../../../backend/appFetch";
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -15,11 +17,35 @@ const Home = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const navigate = useNavigate();
   // handle = manejar, submit = evento de envío de un formulario
   const handleSubmit = (evento) => {
     evento.preventDefault(); // evitar que el formulario recargue la página por defecto
-    console.log("Email:", email, "Password:", password);
-    // CONECTAR CON EL BACKEND
+    
+    //LLAMO AL BACKEND
+    appFetch(
+      //primer argumento
+      "/users/login", /*endpoint (BASE_PATH añade el resto) */
+      //segundo (las opciones de la peticion)
+      fetchConfig("POST", { email, password }),
+      //tercero (peticion que se ejecuta si la respuesta es correcta)
+      (data) => { 
+        //MUESTRA POR CONSOLA LO QUE DEVUELVE EL BACKEND -> CAMBIAR
+        console.log("Login correcto:", data);
+
+        if (data.token) {
+          //Si el backend dio un token se guarda
+          setServiceToken(data.token);
+        }
+
+        
+        navigate("/routines");
+      },
+      (error) => { 
+        console.error("Error en login:", error);
+        alert(error.globalError || "Usuario o contraseña incorrectos");
+      }
+    )
   };
 
   // return = lo que hay que renderizar en pantalla

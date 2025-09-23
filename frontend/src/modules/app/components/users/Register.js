@@ -1,27 +1,50 @@
 import React, { useState } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Register.css";
-import { Link } from "react-router-dom";
-// import { config } from "../../../../config/constants.js"; // 
-// import { config } from "../../../../config/constants.js"; // 
+import { Link, useNavigate } from "react-router-dom";
+import { appFetch, fetchConfig } from "../../../../backend/appFetch";
+//import { config } from "../../../../config/constants.js"; // 
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
 
-// Definición componente funcional (el que React renderiza como pantalla)
+//Definición componente funcional (el que React renderiza como pantalla)
 const Register = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
+  const[phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   //DUDA: deberiamos dejar repetir la contraseña teniendo el ojo?
 
-  // handle = manejar, submit = evento de envío de un formulario
+  const navigate = useNavigate();
+  //handle = manejar, submit = evento de envío de un formulario
   const handleSubmit = (evento) => {
-    evento.preventDefault(); // evitar que el formulario recargue la página por defecto
-    console.log("Name:", name,"Surname:", surname,"Email:", email, "Password:", password);
-    // CONECTAR CON EL BACKEND
+    evento.preventDefault(); //evitar que el formulario recargue la página por defecto
+
+    //CONECTAR CON BACKEND
+    //trim elimina los espaciones en blanco (al inicio y al final)
+    const user = {
+      name: name.trim(),
+      surname: surname.trim(),
+      email: email.trim(),
+      phoneNumber: phoneNumber.trim(),
+      password, //ya viene tal cual
+    };
+
+    appFetch(
+      "/users/signUp",
+      fetchConfig("POST", user),
+      (data) => {
+        console.log("Registro correcto:", data);
+        navigate("/", { replace: true, state: { registered: true, email } });
+      },
+      (error) => {
+        console.error("Error en el registro!", error);
+        alert(error?.globalError ?? "No se pudo realizar el registro");
+      }
+  );
   };
 
   // return = lo que hay que renderizar en pantalla
@@ -94,6 +117,17 @@ const Register = () => {
             placeholder="Escriba aquí su email..."
           />
 
+          {/*TELEFONO:*/}
+          {/*etiqueta*/}
+          <label htmlFor="phoneNumber">Teléfono</label>
+          <input
+            type="text"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+            placeholder="Escriba aquí su número de teléfono..."
+          />
 
           {/*CONTRASEÑA*/}
           <label htmlFor="password">Contraseña</label>
