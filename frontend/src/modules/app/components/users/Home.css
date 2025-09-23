@@ -120,6 +120,22 @@
   }
 }*/
 
+.ir-a-registrarse {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: right; /*Mejor alineado a la derecha*/
+}
+
+.link-registrarse {
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-registrarse:hover{
+  color: blue;
+  transform: scale(1.05);
+}
+
 @keyframes logo-crece {
   0% {
     transform: scale(1);

@@ -4,22 +4,6 @@ import { login } from "../../../../backend/userService";
 import "./Home.css";
 import { Link } from "react-router-dom";
 
-// Declaración de la función rot13 (comentada correctamente)
-/*
-function rot13(s) {
-  // devolverá el string con las letras reemplazadas según la regla
-  return s.replace(
-    /[A-Z]/gi,
-    (c) =>
-      "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"[
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c)
-      ]
-    // en este cifrado se desplaza 13 posiciones cada letra
-  );
-}
-*/
-
-
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
 
@@ -80,7 +64,7 @@ const Home = () => {
 
 
         {/*FORMULARIO*/}
-        {/*Cuando user pulse guardar, se ejecuta la funcion (handleSubmit)*/}
+        {/*Cuando user pulse entrar, se ejecuta la funcion (handleSubmit)*/}
         <form className="form" onSubmit={handleSubmit}>
 
           {/*CORREO:*/}
@@ -129,6 +113,15 @@ const Home = () => {
             </span>
 
           </div>
+
+          <p className="ir-a-registrarse">
+            {/*Podriamos poner texto aquí para que apareciera antes pero no queremos */}
+            <Link to="/users/register" className="link-registrarse">
+            Regístrate si todavía no tienes una cuenta.
+            </Link>
+
+          </p>
+
 
           {/*De tipo submit -> al hacer clic se dispara el evento */}
           <button type="submit" className="boton-entrar">
