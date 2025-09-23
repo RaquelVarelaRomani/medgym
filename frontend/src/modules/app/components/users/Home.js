@@ -62,7 +62,7 @@ const Home = () => {
 
 
         {/*FORMULARIO*/}
-        {/*Cuando user pulse guardar, se ejecuta la funcion (handleSubmit)*/}
+        {/*Cuando user pulse entrar, se ejecuta la funcion (handleSubmit)*/}
         <form className="form" onSubmit={handleSubmit}>
 
           {/*CORREO:*/}
@@ -111,6 +111,15 @@ const Home = () => {
             </span>
 
           </div>
+
+          <p className="ir-a-registrarse">
+            {/*Podriamos poner texto aquí para que apareciera antes pero no queremos */}
+            <Link to="/users/register" className="link-registrarse">
+            Regístrate si todavía no tienes una cuenta.
+            </Link>
+
+          </p>
+
 
           {/*De tipo submit -> al hacer clic se dispara el evento */}
           <button type="submit" className="boton-entrar">
