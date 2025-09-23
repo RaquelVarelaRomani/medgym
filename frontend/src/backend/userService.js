@@ -10,11 +10,10 @@ import {
 const processLoginSignUp = (authenticatedUser, reauthenticationCallback) => {
   setServiceToken(authenticatedUser.serviceToken);
   setReauthenticationCallback(reauthenticationCallback);
-  onSuccess(authenticatedUser);
 }
 
 export const login = (
-  userName,
+  email,
   password,
   onSuccess,
   onErrors,
@@ -22,9 +21,10 @@ export const login = (
 ) =>
   appFetch(
     "/users/login",
-    fetchConfig("POST", { userName, password }),
+    fetchConfig("POST", { email, password }),
     (authenticatedUser) => {
       processLoginSignUp(authenticatedUser, reauthenticationCallback);
+      onSuccess(authenticatedUser);
     },
     onErrors
   );
@@ -56,6 +56,7 @@ export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => {
     fetchConfig("POST", user),
     (authenticatedUser) => {
       processLoginSignUp(authenticatedUser, reauthenticationCallback);
+      onSuccess(authenticatedUser);
     },
     onErrors
   );
