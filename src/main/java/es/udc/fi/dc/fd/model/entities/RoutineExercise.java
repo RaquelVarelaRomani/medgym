@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "routine_exercises")
 public class RoutineExercise {
-    private long id;
+    private Long id;
 
     private Routine routine;
 
@@ -25,11 +25,11 @@ public class RoutineExercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
