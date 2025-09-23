@@ -3,15 +3,17 @@ import React from "react";
 
 import { Route, Routes } from "react-router-dom";
 
-import Home from "./Home";
+import Home from "./users/Home";
+import Register from "./users/Register";
 import Test from "./Test";
 
 const Body = () => {
   return (
     <Routes>
-      <Route path="/">
+      <Route path="/"> {/*Todo lo que está dentro es relativo a la raíz*/}
         <Route index exact element={<Home />} />
         <Route path="/test" element={<Test />} />
+        <Route path="users/register" element={<Register />} /> {/*Añadi para la pantalla de registrarse */}
       </Route>
     </Routes>
   );

@@ -1,0 +1,152 @@
+.contenedor {
+  /*flexbox -> los hijos se organizan en cajas flexibles*/
+  display: flex;
+  /*dir en la que se almacenan los hijos (row, column)*/
+  flex-direction: column;
+  /*alineacion hijos eje transversal*/
+  align-items: center;
+  /*alineacion hijos eje principal (vertical pq usamos column*/
+  justify-content: center;
+  /*viewport height*/
+  /*MIN height -> ocupa como minimo toda la pantalla*/
+  min-height: 100vh;
+
+  /*DEGRADADO*/
+  /*to bottom, to right, X deg(diagonal) siendo x los grados (270 para la diagonal) */
+  background: linear-gradient(to right, var(--dark-orange),var(--primary-orange));
+}
+.caja-login {
+    /*añado ahi el valor de opacidad porque opacity se aplica tmb al texto*/
+  background-color: rgba(255, 255, 255, 0.7);
+  /*espacio entre el borde de la caja y el contenido*/
+  padding: 2rem;    
+  /*MAS MODERNO: redondeo bordes (en el prototipo aparecian cuadrados)*/          
+  border-radius: 10px;        
+  /*sombra detrás de la caja*/
+  /*desplaz. h  ver difum color*/
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+  text-align: center;     
+
+  box-sizing: border-box; /*NO CONTENT box, incluye padding y borde en vez de sumarlos despues*/
+}
+.logo {
+    animation: logo-crece 1s linear 2;
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.titulo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+}
+
+.form label {
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.form input {
+  padding: 10px;
+  border: 2px solid var(--dark-gray);;
+  margin-bottom: 10px;
+  font-size: 14px;
+
+  /*Decidimos + moderno*/
+  border-radius: 10px;  
+  /*se nos quedaban pequeños los inputs*/
+  width: 300px;
+}
+
+.contenedor-password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.contenedor-password input {
+  flex: 1;
+}
+
+.ver-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.boton-guardar {
+  background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));;
+  /*color texto*/
+  color: var(--text-dark);
+  /*texto en negrita*/
+  font-weight: bold;
+
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  /*incita a hacer clic(cambia a la manito)*/
+  cursor: pointer;
+
+   width: auto;  /*ocupa solo lo que mide el texto*/
+   /*SE ESTIRABA A LO LARGO -> había que indicarle que no se estirara*/
+   display: inline-block;
+   margin-top: 10px; /*separacion con lo de arriba (input de contraseña*/
+  transition: all 0.3s ease;
+}
+
+.boton-guardar:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--boton-over-orange), var(--primary-orange));
+  box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+/*keyframes = para definir una animacion en css*/
+/*@keyframes logo-spin {
+    estado inicial de la animacion
+  from { PONER PORCENTAJES EN VEZ DE FROM Y TO PARA MAS VECES
+    transform: rotate(0deg);
+  }
+  estado final
+  to {
+    transform: rotate(360deg);
+  }
+}*/
+
+.ir-a-login {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: right; /*Mejor alineado a la derecha*/
+}
+
+.link-login {
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-login:hover{
+  color: var(--accent-blue);
+  transform: scale(1.05);
+}
+
+@keyframes logo-crece {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100%{
+    transform: scale(1);
+  }
+}
+

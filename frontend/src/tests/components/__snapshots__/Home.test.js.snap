@@ -2,82 +2,61 @@
 
 exports[`Home renders correctly 1`] = `
 <div
-  className="App"
+  className="contenedor"
 >
-  <header
-    className="App-header"
+  <img
+    alt="Logo medgym"
+    className="logo"
+    src="/assets/logo.svg"
+  />
+  <h2
+    className="titulo"
   >
-    <img
-      alt="logo"
-      className="App-logo"
-      src="/assets/logo.svg"
-    />
-    <h1
-      className="App-title"
-    >
-      Welcome to MG
-    </h1>
-    <div
-      className="App-auth-buttons"
-    >
-      <a
-        href="/users/login"
-        onClick={[Function]}
-      >
-        <button
-          className="btn-login"
-        >
-          Login
-        </button>
-      </a>
-      <a
-        href="/users/signUp"
-        onClick={[Function]}
-      >
-        <button
-          className="btn-signup"
-        >
-          Sign Up
-        </button>
-      </a>
-    </div>
-  </header>
-  <p
-    className="App-intro"
-  >
-    To get started, edit 
-    <code>
-      src/App.js
-    </code>
-     and save to reload.
-  </p>
-  <p>
-    <a
-      href="/test"
-      onClick={[Function]}
-    >
-      App route
-    </a>
-  </p>
+    Inicia sesión
+  </h2>
   <form
-    action=""
+    className="form"
     onSubmit={[Function]}
   >
-    <p>
-      <label
-        htmlFor="some-text"
-      >
-        Input some text: 
-      </label>
+    <label
+      htmlFor="email"
+    >
+      Correo electrónico
+    </label>
+    <input
+      id="email"
+      onChange={[Function]}
+      required={true}
+      type="email"
+      value=""
+    />
+    <label
+      htmlFor="password"
+    >
+      Contraseña
+    </label>
+    <div
+      className="contenedor-password"
+    >
       <input
-        id="some-text"
-        name="some-text"
+        id="password"
         onChange={[Function]}
-        value="Sreenzragnf"
+        required={true}
+        type="password"
+        value=""
       />
-    </p>
-    <button>
-      Calculate
+      <span
+        className="ver-password"
+        onClick={[Function]}
+      >
+        👁
+      </span>
+    </div>
+    <button
+      className="boton-entrar"
+      type="submit"
+    >
+      Entrar 
     </button>
   </form>
 </div>
