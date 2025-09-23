@@ -15,7 +15,7 @@
   /*to bottom, to right, X deg(diagonal) siendo x los grados (270 para la diagonal) */
   background: linear-gradient(to right, var(--dark-orange-light),var(--primary-orange-light));
 
-  padding-top: 5%; 
+  padding-top: 2%; 
   width: 100%;
 }
 
