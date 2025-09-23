@@ -6,11 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "routine_exercises")
 public class RoutineExercise {
     private Long id;
-
     private Routine routine;
-
     private Exercise exercise;
-
     private Byte repetitionsNumber;
     private Short duration;
 
