@@ -10,20 +10,10 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 
-/**
- * The Class PermissionCheckerImpl.
- */
 @Service
 @Transactional(readOnly=true)
 public class PermissionCheckerImpl implements PermissionChecker {
 	
-	/**
-	 *  The user dao.
-	 *
-	 * @param userId the user id
-	 * @return the user
-	 * @throws InstanceNotFoundException the instance not found exception
-	 */
 	@Autowired
 	private UserDao userDao;
 	
