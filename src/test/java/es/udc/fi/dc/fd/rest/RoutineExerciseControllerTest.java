@@ -70,8 +70,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Routine createRoutine(String name, User user){
-        Routine routine = new Routine(name, "Rutina",
-                LocalDateTime.now().withNano(0), LocalDateTime.now().withNano(0), user);
+        Routine routine = new Routine(name, "Rutina", user);
         return routineDao.save(routine);
     }
 
