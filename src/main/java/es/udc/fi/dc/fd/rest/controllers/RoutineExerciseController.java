@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import static es.udc.fi.dc.fd.rest.dtos.RoutineExerciseConversor.toRoutineExerciseDto;
 
 @RestController
-@RequestMapping("/api/routine/{routineId}/exercise")
+@RequestMapping("/api/routines/{routineId}/exercises")
 public class RoutineExerciseController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class RoutineExerciseController {
     @Autowired
     private RoutineExerciseService routineExerciseService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId,
                                                  @PathVariable Long routineId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
@@ -50,7 +50,7 @@ public class RoutineExerciseController {
         routineExerciseService.removeExerciseFromRoutine(userId, id);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Page<RoutineExerciseDto> getExercisesForRoutines(
             @PathVariable Long routineId,
             @RequestParam(defaultValue = "0") int page,

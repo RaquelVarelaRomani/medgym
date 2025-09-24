@@ -44,7 +44,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         Routine routine = opRoutine.get();
         Exercise exercise = opExercise.get();
 
-        if (!user.equals(routine.getTrainer()) || (user.getRole() != User.RoleType.TRAINER)) {
+        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
             throw new PermissionException();
         }
 
@@ -65,7 +65,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         RoutineExercise routineExercise = opRoutineExercise.get();
 
-        if (!user.equals(routineExercise.getRoutine().getTrainer()) || (user.getRole() != User.RoleType.TRAINER)) {
+        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
             throw new PermissionException();
         }
 
@@ -86,8 +86,11 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         RoutineExercise routineExercise = opRoutineExercise.get();
 
-        routineExercise.setDescription(description);
+        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
+            throw new PermissionException();
+        }
 
+        routineExercise.setDescription(description);
         return routineExerciseDao.save(routineExercise);
     }
 
