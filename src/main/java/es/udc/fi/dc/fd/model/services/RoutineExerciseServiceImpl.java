@@ -46,7 +46,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         Routine routine = opRoutine.get();
         Exercise exercise = opExercise.get();
 
-        if (!user.equals(routine.getTrainer())) {
+        if (!user.equals(routine.getTrainer()) || (user.getRole() != User.RoleType.TRAINER)) {
             throw new PermissionException();
         }
 
@@ -71,7 +71,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         RoutineExercise routineExercise = opRoutineExercise.get();
 
-        if (!user.equals(routineExercise.getRoutine().getTrainer())) {
+        if (!user.equals(routineExercise.getRoutine().getTrainer()) || (user.getRole() != User.RoleType.TRAINER)) {
             throw new PermissionException();
         }
 
@@ -96,7 +96,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         RoutineExercise routineExercise = opRoutineExercise.get();
 
-        if (!user.equals(routineExercise.getRoutine().getTrainer())) {
+        if (!user.equals(routineExercise.getRoutine().getTrainer()) || (user.getRole() != User.RoleType.TRAINER)) {
             throw new PermissionException();
         }
 
