@@ -29,12 +29,39 @@ function rot13(s) {
 
 // Definición componente funcional (el que React renderiza como pantalla)
 const Routines = () => {
+    //CAMBIAR: usuario de prueba para vista de entrenador
+    const testUser = {
+        id: 1,
+        nombre: "Entrenador1",
+        role: 1 //trainer
+    };
+
     //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
     const routines = [
     { id: 1, titulo: "Ejemplo entrenamiento nº 1", entrenador: "Entrenador2" },
     { id: 2, titulo: "Ejemplo entrenamiento nº 2", entrenador: "Entrenador1" },
     { id: 3, titulo: "Ejemplo entrenamiento nº 3", entrenador: "Entrenador1" },
   ];
+
+    //CAMBIAR: hacer funcion auxiliar para mapear int a role
+    const isClient = () => testUser.role === 0;
+    const isTrainer = () => testUser.role === 1;
+    const isAdmin = () => testUser.role === 2;
+
+    const isRoutineCreator = (routine) => {
+        return testUser.nombre === routine.entrenador;
+    }
+    const handleEdit = (e, routineId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Edit routine:", routineId);
+    };
+
+    const handleDelete = (e, routineId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Delete routine", routineId);
+    };
 
   // return = lo que hay que renderizar en pantalla
   return (
@@ -74,6 +101,20 @@ const Routines = () => {
             >
                 <h3>{routine.titulo}</h3> {/*Ya usamos h2 en el titulo grande*/}
                 <p>Generado por {routine.entrenador}</p> {/*CAMBIAR: tiene que funcionar con el backend */}
+
+                {/*boton editar y borrar para admins y creador de las rutinas*/}
+                {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
+                    <div>
+                        <button className="boton-editar"
+                            onClick={(e) => handleEdit(e, routine.id)}>
+                            Editar
+                        </button>
+                        <button className="boton-eliminar"
+                                onClick={(e) => handleDelete(e, routine.id)}>
+                            Eliminar
+                        </button>
+                    </div>
+                )}
             </Link>
             ))}
         </div>

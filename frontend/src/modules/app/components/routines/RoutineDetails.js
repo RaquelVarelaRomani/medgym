@@ -20,17 +20,11 @@ const RoutineDetails = () => {
         id: 1,
         title: "Título ejercicio1",
         description: "Ejemplo de descripción del ejercicio n°1.",
-        sets: 3,
-        reps: 12,
-        weight: "20kg"
       },
       {
         id: 2,
         title: "Título ejercicio2",
         description: "Ejemplo de descripción del ejercicio n°2.",
-        sets: 4,
-        reps: 10,
-        weight: "25kg"
       },
     ]
   };
@@ -77,12 +71,6 @@ const RoutineDetails = () => {
                   {expandedExercises[exercise.id] && (
                       <div className="ejercicio-contenido">
                         <p className="descripcion-ejercicio">{exercise.description}</p>
-                        <div className="detalles-ejercicio">
-                          {/*IMPORTANTE: preguntar si esto va en el ejercicio o en la descripcion de cada rutina*/}
-                          <span>Series: {exercise.sets}</span>
-                          <span>Repeticiones: {exercise.reps}</span>
-                          <span>Peso: {exercise.weight}</span>
-                        </div>
                       </div>
                   )}
                 </div>
