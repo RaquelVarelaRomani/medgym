@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Routines.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 //import { Link, useNavigate } from "react-router-dom";
@@ -29,6 +30,7 @@ function rot13(s) {
 
 // Definición componente funcional (el que React renderiza como pantalla)
 const Routines = () => {
+    const navigate = useNavigate();
     //CAMBIAR: usuario de prueba para vista de entrenador
     const testUser = {
         id: 1,
@@ -62,6 +64,11 @@ const Routines = () => {
         e.stopPropagation();
         console.log("Delete routine", routineId);
     };
+
+    const handleAddRoutine = () => {
+    //pag de crear rutinas CAMBIAR 
+    navigate("/routines/new");
+  };
 
   // return = lo que hay que renderizar en pantalla
   return (
@@ -118,8 +125,16 @@ const Routines = () => {
             </Link>
             ))}
         </div>
+
+        {/*Boton CREAR*/}
+      {(isTrainer() || isAdmin()) && (
+        <button className="boton-crear" onClick={handleAddRoutine}>
+          +
+        </button>
+      )}
         
     </div>
+    
   );
 };
 

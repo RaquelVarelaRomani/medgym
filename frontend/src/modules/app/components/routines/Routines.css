@@ -111,4 +111,24 @@
   box-shadow: 0 4px 10px var(--shadow-orange);
 }
 
-/*CAMBIAR: poner esto cuando lo demas este bien .caja-rutina:hover*/
+
+.boton-crear {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.boton-crear:hover {
+  transform: scale(1.1);
+}
