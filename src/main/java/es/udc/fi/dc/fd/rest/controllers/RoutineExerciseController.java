@@ -19,13 +19,6 @@ import static es.udc.fi.dc.fd.rest.dtos.RoutineExerciseConversor.toRoutineExerci
 @RestController
 @RequestMapping("/api/routines/{routineId}/exercises")
 public class RoutineExerciseController {
-
-    @Autowired
-    private MessageSource messageSource;
-
-    @Autowired
-    private JwtGenerator jwtGenerator;
-
     @Autowired
     private RoutineExerciseService routineExerciseService;
 
@@ -34,7 +27,7 @@ public class RoutineExerciseController {
                                                  @PathVariable Long routineId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
         return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, params.getExerciseId(),
-                params.getRoutineId(), params.getDescription()));
+                routineId, params.getDescription()));
     }
 
     @PutMapping("/{routineExerciseId}")
