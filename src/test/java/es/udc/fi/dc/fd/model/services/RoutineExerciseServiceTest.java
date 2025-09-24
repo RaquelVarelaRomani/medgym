@@ -70,10 +70,11 @@ public class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
+                exercise.getId(), routine.getId(), (byte) 5, null);
         Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
         assertEquals(1, block.getItems().size());
-        routineExerciseService.removeExerciseFromRoutine(trainer.getId(), exercise.getId(), routine.getId());
+        routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId());
         Block<RoutineExercise> block2 = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
         assertEquals(0, block2.getItems().size());
     }
@@ -84,8 +85,10 @@ public class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
-        routineExerciseService.updateExerciseOnRoutine(trainer.getId(), exercise.getId(), routine.getId(), null, (short) 60);
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(),
+                routine.getId(), (byte) 5, null);
+        routineExerciseService.updateExerciseOnRoutine(trainer.getId(), routineExercise.getId(), exercise.getId(),
+                routine.getId(), null, (short) 60);
         Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
         RoutineExercise re = block.getItems().get(0);
         assertNull(re.getRepetitionsNumber());
@@ -96,10 +99,11 @@ public class RoutineExerciseServiceTest {
         User trainer = createUser("Pepe", User.RoleType.TRAINER);
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", trainer);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
-        routineExerciseService.removeExerciseFromRoutine(trainer.getId(), exercise.getId(), routine.getId());
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
+                exercise.getId(), routine.getId(), (byte) 5, null);
+        routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId());
         assertThrows(InstanceNotFoundException.class, () ->
-                routineExerciseService.removeExerciseFromRoutine(trainer.getId(), exercise.getId(), routine.getId()));
+                routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId()));
     }
 
 }

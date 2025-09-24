@@ -5,11 +5,15 @@ import es.udc.fi.dc.fd.model.entities.RoutineExercise;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
 public interface RoutineExerciseService {
-    void addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
+    RoutineExercise addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
             throws InstanceNotFoundException, PermissionException;
-    void removeExerciseFromRoutine(Long userId,Long exerciseId, Long routineId)
+
+    void removeExerciseFromRoutine(Long userId, Long id)
             throws InstanceNotFoundException, PermissionException;
-    void updateExerciseOnRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
+
+    RoutineExercise updateExerciseOnRoutine(Long userId, Long id, Long exerciseId,
+                                            Long routineId, Byte repetitionsNumber, Short duration)
             throws InstanceNotFoundException, PermissionException;
+
     Block<RoutineExercise> getExercisesForRoutines(Long routineId, int page, int size);
 }
