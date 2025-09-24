@@ -98,7 +98,7 @@ public class RoutineExerciseServiceTest {
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         RoutineExercise re = page.getContent().get(0);
         assertEquals(exercise.getId(), re.getExercise().getId());
-        assertEquals(routineExercise.getDescription(), re.getExercise().getDescription());
+        assertEquals(routineExercise.getExercise().getDescription(), re.getExercise().getDescription());
     }
 
     @Test

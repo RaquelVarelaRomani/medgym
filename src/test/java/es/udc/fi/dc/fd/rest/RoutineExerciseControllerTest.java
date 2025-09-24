@@ -117,7 +117,7 @@ public class RoutineExerciseControllerTest {
         routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), "Description 2");
         routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), "Description 3");
 
-        mockMvc.perform(get("/api/routine/" + routine.getId() + "exercise/")
+        mockMvc.perform(get("/api/routine/" + routine.getId() + "/exercise/")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .param("page", "0")
                         .param("size", "2"))
@@ -126,7 +126,7 @@ public class RoutineExerciseControllerTest {
                 .andExpect(jsonPath("$.totalElements").value(3))
                 .andExpect(jsonPath("$.totalPages").value(2));
 
-        mockMvc.perform(get("/api/routine/" + routine.getId() + "exercise/")
+        mockMvc.perform(get("/api/routine/" + routine.getId() + "/exercise/")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .param("page", "1")
                         .param("size", "2"))
