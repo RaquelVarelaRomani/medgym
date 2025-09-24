@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import static es.udc.fi.dc.fd.rest.dtos.RoutineExerciseConversor.toRoutineExerciseDto;
 
 @RestController
-@RequestMapping("/api/routineexercise")
+@RequestMapping("/api/routines/{routineId}/exercises")
 public class RoutineExerciseController {
 
     @Autowired
@@ -28,28 +28,29 @@ public class RoutineExerciseController {
     @Autowired
     private RoutineExerciseService routineExerciseService;
 
-    @PostMapping("/add")
-    public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
+    @PostMapping("")
+    public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId,
+                                                 @PathVariable Long routineId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
         return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, params.getExerciseId(),
-                params.getRoutineId(), params.getRepetitionsNumber(), params.getDuration()));
+                routineId, params.getDescription()));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public RoutineExerciseDto updateRoutineExercise(
-            @PathVariable Long id, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
+            @PathVariable Long routineId, @RequestAttribute Long userId, @PathVariable Long id, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
         return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, id, params.getExerciseId(),
-                params.getRoutineId(), params.getRepetitionsNumber(), params.getDuration()));
+                routineId, params.getDescription()));
     }
 
-    @DeleteMapping("/remove/{id}")
+    @DeleteMapping("/{id}")
     public void removeExerciseForRoutine(@PathVariable Long id, @RequestAttribute Long userId)
             throws PermissionException, InstanceNotFoundException {
         routineExerciseService.removeExerciseFromRoutine(userId, id);
     }
 
-    @GetMapping("/exercises")
+    @GetMapping("")
     public Page<RoutineExerciseDto> getExercisesForRoutines(
             @RequestParam(required = false) Long routineId, @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "4") int size) {

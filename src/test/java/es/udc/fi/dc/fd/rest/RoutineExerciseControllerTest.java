@@ -3,13 +3,12 @@ package es.udc.fi.dc.fd.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
-import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
-import es.udc.fi.dc.fd.rest.controllers.RoutineExerciseController;
-import es.udc.fi.dc.fd.rest.controllers.UserController;
+
+
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineExerciseDto;
-import org.junit.Ignore;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.ContentResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,8 +51,7 @@ public class RoutineExerciseControllerTest {
     @Autowired
     private RoutineDao routineDao;
 
-    @Autowired
-    private UserController userController;
+
 
     @Autowired
     private RoutineExerciseDao routineExerciseDao;
@@ -73,8 +72,8 @@ public class RoutineExerciseControllerTest {
         return routineDao.save(routine);
     }
 
-    private User createUser(String email, User.RoleType roleType){
-        User user = new User("user", "1", email, "+34 000 000 000", "password");
+    private User createUser(String userName, String password, User.RoleType roleType){
+        User user = new User(userName, password, userName + "@test.com", "firstName", "lastName");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleType);
@@ -82,52 +81,53 @@ public class RoutineExerciseControllerTest {
         return userDao.save(user);
     }
 
-    private AuthenticatedUserDto loginUser(User user)
-            throws IncorrectLoginException {
+    private AuthenticatedUserDto loginUser(User user, String password) {
         LoginParamsDto loginParams = new LoginParamsDto();
         loginParams.setEmail(user.getEmail());
-        loginParams.setPassword("password");
+        loginParams.setPassword(password);
 
-        return userController.login(loginParams);
+        try {
+            return userController.login(loginParams);
+        } catch (IncorrectLoginException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     @Test
-    public void testAddAndDeleteExerciseToRoutine() throws Exception {
-        User trainer = createUser("trainer", User.RoleType.TRAINER);
-        AuthenticatedUserDto authUser = loginUser(trainer);
+    public void testAddAndGetExerciseToRoutine() throws Exception {
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
         Exercise exercise = createExercise("Ejercicio.");
         Routine routine = createRoutine("Rutina", trainer);
 
-        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), (byte) 5, null);
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "Description", (byte) 5, 10);
 
-        mockMvc.perform(post("/api/routineexercise/add")
+        mockMvc.perform(post("/api/routines/" + routine.getId()+ "/exercises")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsBytes(dto)))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(delete("/api/routineexercise/delete/{id}", dto.getId())
-                    .header("Authorization", "Bearer " + authUser.getServiceToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exerciseId").value(exercise.getId()))
+                .andExpect(jsonPath("$.routineId").value(routine.getId()))
+                .andExpect(jsonPath("$.description").value("Description"));
     }
 
     @Test
     public void testGetExercisesForRoutinesPaging() throws Exception {
-        User trainer = createUser("trainer", User.RoleType.TRAINER);
-        AuthenticatedUserDto authUser = loginUser(trainer);
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
         Routine routine = createRoutine("Rutina", trainer);
         Exercise exercise1 = createExercise("Ejercicio 1");
         Exercise exercise2 = createExercise("Ejercicio 2");
         Exercise exercise3 = createExercise("Ejercicio 3");
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), (byte) 5, null);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), (byte) 10, null);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), (byte) 15, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), "Description 1", (byte) 5, 10);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), "Description 2", (byte) 10, 15);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), "Description 3", (byte) 15, 20);
 
-        mockMvc.perform(get("/api/routineexercise/exercises")
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
-                        .param("routineId", routine.getId().toString())
                         .param("page", "0")
                         .param("size", "2"))
                 .andExpect(status().isOk())
@@ -135,9 +135,8 @@ public class RoutineExerciseControllerTest {
                 .andExpect(jsonPath("$.totalElements").value(3))
                 .andExpect(jsonPath("$.totalPages").value(2));
 
-        mockMvc.perform(get("/api/routineexercise/exercises")
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
-                        .param("routineId", routine.getId().toString())
                         .param("page", "1")
                         .param("size", "2"))
                 .andExpect(status().isOk())
@@ -147,15 +146,46 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
+    public void testUpdateExerciseToRoutine() throws Exception {
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
+        Exercise exercise = createExercise("Ejercicio");
+        Routine routine = createRoutine("Rutina", trainer);
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), "Description", (byte) 5, 10);
+
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "New Description", (byte) 10, 15);
+
+        mockMvc.perform(put("/api/routines/" + routine.getId()+ "/exercises/" + routineExercise.getId())
+                        .header("Authorization", "Bearer " + authUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsBytes(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.description").value("New Description"));
+    }
+
+    @Test
+    public void testDeleteExerciseToRoutine() throws Exception {
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
+        Exercise exercise = createExercise("Ejercicio");
+        Routine routine = createRoutine("Rutina", trainer);
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), "Description", (byte) 5, 10);
+
+        mockMvc.perform(delete("/api/routines/" + routine.getId()+ "/exercises/" + routineExercise.getId())
+                        .header("Authorization", "Bearer " + authUser.getServiceToken()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     public void testAddExerciseToRoutinePermissionDenied() throws Exception {
-        User user = createUser("user", User.RoleType.CLIENT);
-        AuthenticatedUserDto authUser = loginUser(user);
+        User user = createUser("user", "password", User.RoleType.USER);
+        AuthenticatedUserDto authUser = loginUser(user, "password");
         Exercise exercise = createExercise("Ejercicio.");
         Routine routine = createRoutine("Rutina", user);
 
-        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), (byte) 5, null);
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "Description", (byte) 5, 10);
 
-        mockMvc.perform(post("/api/routineexercise/add")
+        mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsBytes(dto)))
@@ -163,39 +193,20 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseToRoutine() throws Exception {
-        User trainer = createUser("trainer", User.RoleType.TRAINER);
-        AuthenticatedUserDto authUser = loginUser(trainer);
+    public void testUpdateExerciseToRoutinePermissionDenied() throws Exception {
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
         Routine routine = createRoutine("Rutina", trainer);
         Exercise exercise1 = createExercise("Ejercicio 1");
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
-                exercise1.getId(), routine.getId(), (byte) 5, null);
-        RoutineExerciseDto dto = new RoutineExerciseDto(routineExercise.getId(), routine.getId(), exercise1.getId(),
-                (byte) 7, null);
-
-        mockMvc.perform(put("/api/routineexercise/update/{id}", routineExercise.getId())
-                        .header("Authorization", "Bearer " + authUser.getServiceToken())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsBytes(dto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testUpdateExercisePermissionDenied() throws Exception {
-        User trainer = createUser("trainer", User.RoleType.TRAINER);
-        AuthenticatedUserDto authUser = loginUser(trainer);
-        Routine routine = createRoutine("Rutina", trainer);
-        Exercise exercise1 = createExercise("Ejercicio 1");
-
-        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
-                exercise1.getId(), routine.getId(), (byte) 5, null);
-        trainer.setRole(User.RoleType.CLIENT);
+                exercise1.getId(), routine.getId(), "Description", (byte) 5, 10);
+        trainer.setRole(User.RoleType.USER);
         userDao.save(trainer);
         RoutineExerciseDto dto = new RoutineExerciseDto(routineExercise.getId(), routine.getId(), exercise1.getId(),
-                (byte) 7, null);
+                "New Description", (byte) 7, 12);
 
-        mockMvc.perform(put("/api/routineexercise/update/{id}", routineExercise.getId())
+        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
                         .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsBytes(dto)))
@@ -203,20 +214,18 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExercisePermissionDenied() throws Exception {
-        User trainer = createUser("trainer", User.RoleType.TRAINER);
-        AuthenticatedUserDto authUser = loginUser(trainer);
+    public void testDeleteExerciseToRoutinePermissionDenied() throws Exception {
+        User trainer = createUser("trainer", "password", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer, "password");
         Routine routine = createRoutine("Rutina", trainer);
         Exercise exercise1 = createExercise("Ejercicio 1");
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
-                exercise1.getId(), routine.getId(), (byte) 5, null);
-        trainer.setRole(User.RoleType.CLIENT);
+                exercise1.getId(), routine.getId(), "Description", (byte) 5, 10);
+        trainer.setRole(User.RoleType.USER);
         userDao.save(trainer);
-        RoutineExerciseDto dto = new RoutineExerciseDto(routineExercise.getId(), routine.getId(), exercise1.getId(),
-                (byte) 7, null);
 
-        mockMvc.perform(delete("/api/routineexercise/delete/{id}", dto.getId())
+        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
                         .header("Authorization", "Bearer " + authUser.getServiceToken()))
                 .andExpect(status().isForbidden());
     }
