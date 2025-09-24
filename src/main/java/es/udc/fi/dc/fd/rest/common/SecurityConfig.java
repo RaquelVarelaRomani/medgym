@@ -5,6 +5,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,6 +49,12 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/api/users/login")).permitAll()
                 .requestMatchers(antMatcher("/api/users/loginFromServiceToken")).permitAll()
                 .requestMatchers(antMatcher("/api/routineexercise/exercises")).permitAll()
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/exercises/*")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/routines")).hasAnyRole("ADMIN", "TRAINER")
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

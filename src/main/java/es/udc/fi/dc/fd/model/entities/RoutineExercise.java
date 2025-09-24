@@ -25,7 +25,6 @@ public class RoutineExercise {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -35,7 +34,6 @@ public class RoutineExercise {
     public Routine getRoutine() {
         return routine;
     }
-
     public void setRoutine(Routine routine) {
         this.routine = routine;
     }
@@ -45,7 +43,6 @@ public class RoutineExercise {
     public Exercise getExercise() {
         return exercise;
     }
-
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
     }
@@ -54,7 +51,6 @@ public class RoutineExercise {
     public Byte getRepetitionsNumber() {
         return repetitionsNumber;
     }
-
     public void setRepetitionsNumber(Byte repetitionsNumber) {
         this.repetitionsNumber = repetitionsNumber;
     }
@@ -62,7 +58,6 @@ public class RoutineExercise {
     public Short getDuration() {
         return duration;
     }
-
     public void setDuration(Short duration) {
         this.duration = duration;
     }
