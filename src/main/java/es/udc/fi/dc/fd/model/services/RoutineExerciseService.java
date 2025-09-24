@@ -10,10 +10,10 @@ public interface RoutineExerciseService {
     RoutineExercise addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, String description)
             throws InstanceNotFoundException, PermissionException;
 
-    void removeExerciseFromRoutine(Long userId, Long id)
+    void removeExerciseFromRoutine(Long userId, Long routineExerciseId)
             throws InstanceNotFoundException, PermissionException;
 
-    RoutineExercise updateExerciseOnRoutine(Long userId, Long id, Long exerciseId,
+    RoutineExercise updateExerciseOnRoutine(Long userId, Long routineExerciseId, Long exerciseId,
                                             Long routineId, String description)
             throws InstanceNotFoundException, PermissionException;
 

@@ -53,14 +53,14 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public void removeExerciseFromRoutine(Long userId, Long id)
+    public void removeExerciseFromRoutine(Long userId, Long routineExerciseId)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
-        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(id);
+        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(routineExerciseId);
 
         if(opRoutineExercise.isEmpty()) {
-            throw new InstanceNotFoundException("routineExercise", id);
+            throw new InstanceNotFoundException("routineExercise", routineExerciseId);
         }
 
         RoutineExercise routineExercise = opRoutineExercise.get();
@@ -73,15 +73,15 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise updateExerciseOnRoutine(Long userId, Long id, Long exerciseId,
+    public RoutineExercise updateExerciseOnRoutine(Long userId, Long routineExerciseId, Long exerciseId,
                                                    Long routineId, String description)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
-        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(id);
+        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(routineExerciseId);
 
         if(opRoutineExercise.isEmpty()) {
-            throw new InstanceNotFoundException("routineExercise", id);
+            throw new InstanceNotFoundException("routineExercise", routineExerciseId);
         }
 
         RoutineExercise routineExercise = opRoutineExercise.get();

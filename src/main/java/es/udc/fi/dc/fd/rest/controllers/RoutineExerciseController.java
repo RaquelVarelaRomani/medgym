@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import static es.udc.fi.dc.fd.rest.dtos.RoutineExerciseConversor.toRoutineExerciseDto;
@@ -36,18 +37,19 @@ public class RoutineExerciseController {
                 params.getRoutineId(), params.getDescription()));
     }
 
-    @PutMapping("/")
+    @PutMapping("/{routineExerciseId}")
     public RoutineExerciseDto updateRoutineExercise(
-            @PathVariable Long routineId, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
+            @PathVariable Long routineExerciseId, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
-        return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, routineId, params.getExerciseId(),
+        return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, routineExerciseId, params.getExerciseId(),
                 params.getRoutineId(), params.getDescription()));
     }
 
-    @DeleteMapping("/")
-    public void removeExerciseForRoutine(@PathVariable Long id, @RequestAttribute Long userId, @PathVariable String routineId)
+    @DeleteMapping("/{routineExerciseId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeExerciseForRoutine(@RequestAttribute Long userId, @PathVariable Long routineExerciseId)
             throws PermissionException, InstanceNotFoundException {
-        routineExerciseService.removeExerciseFromRoutine(userId, id);
+        routineExerciseService.removeExerciseFromRoutine(userId, routineExerciseId);
     }
 
     @GetMapping("")
