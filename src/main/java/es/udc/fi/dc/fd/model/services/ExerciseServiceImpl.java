@@ -53,4 +53,10 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<Exercise> findAllExercises() {
         return exerciseDao.findAll();
     }
+
+    @Override
+    public void deleteExercise(Long exerciseId) throws InstanceNotFoundException {
+        Exercise exercise = findExerciseById(exerciseId);
+        exerciseDao.delete(exercise);
+    }
 }

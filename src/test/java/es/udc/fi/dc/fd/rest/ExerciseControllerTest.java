@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.rest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -61,7 +62,6 @@ public class ExerciseControllerTest {
 
     @Before
     public void setUp() throws IncorrectLoginException {
-        // Create one user for each role with unique data
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", RoleType.CLIENT);
         trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", RoleType.TRAINER);
@@ -70,15 +70,12 @@ public class ExerciseControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
                                                          RoleType roleType) throws IncorrectLoginException {
 
-        // 1. Use the correct constructor with all required fields
         User user = new User(name, surname, email, phoneNumber, PASSWORD);
 
-        // 2. Encode the password before saving
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
         userDao.save(user);
 
-        // Login logic remains the same
         LoginParamsDto loginParams = new LoginParamsDto();
         loginParams.setEmail(user.getEmail());
         loginParams.setPassword(PASSWORD);
@@ -91,25 +88,19 @@ public class ExerciseControllerTest {
                 .header("Authorization", "Bearer " + user.getServiceToken())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(exerciseDto))
-                // The requestAttr might be necessary depending on your security implementation
                 .requestAttr("userId", user.getUserDto().getId()));
     }
 
-    //
-    // ADMIN Role Tests (Should have full permissions)
-    //
     @Test
     public void testCreateAndGetExerciseAsAdmin() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up");
 
-        // Create the exercise
         String createdExerciseJson = createExercise(adminUser, exerciseDto)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
 
-        // Retrieve the created exercise to verify
         mockMvc.perform(get("/api/exercises/" + createdExercise.getId())
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk())
@@ -118,14 +109,12 @@ public class ExerciseControllerTest {
 
     @Test
     public void testUpdateExerciseAsAdmin() throws Exception {
-        // First, create an exercise to update
         ExerciseDto originalDto = new ExerciseDto(null, "Squat", "A basic squat");
         String createdExerciseJson = createExercise(adminUser, originalDto)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
 
-        // Now, update it
         ExerciseDto updatedDto = new ExerciseDto(createdExercise.getId(), "Jump Squat", "An advanced squat");
         mockMvc.perform(put("/api/exercises/" + createdExercise.getId())
                         .header("Authorization", "Bearer " + adminUser.getServiceToken())
@@ -137,15 +126,29 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    public void testDeleteExerciseAsAdmin() throws Exception {
+        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge");
+        String createdExerciseJson = createExercise(adminUser, originalDto)
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+
+        mockMvc.perform(delete("/api/exercises/" + createdExercise.getId())
+                        .header("Authorization", "Bearer " + adminUser.getServiceToken()))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/exercises/" + createdExercise.getId())
+                        .header("Authorization", "Bearer " + adminUser.getServiceToken()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void testFindAllExercisesAsAdmin() throws Exception {
         mockMvc.perform(get("/api/exercises")
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
-    //
-    // CLIENT Role Tests (Read-only permissions)
-    //
     @Test
     public void testCreateExerciseAsClientFails() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up");
@@ -154,7 +157,6 @@ public class ExerciseControllerTest {
 
     @Test
     public void testUpdateExerciseAsClientFails() throws Exception {
-        // An exercise must exist to attempt an update
         ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise");
         String createdExerciseJson = createExercise(adminUser, originalDto).andReturn().getResponse().getContentAsString();
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
@@ -164,23 +166,41 @@ public class ExerciseControllerTest {
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(updatedDto)))
+                .andExpect(status().isForbidden());    }
+
+    @Test
+    public void testDeleteExerciseAsClientFails() throws Exception {
+        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge");
+        String createdExerciseJson = createExercise(adminUser, originalDto)
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+        mockMvc.perform(delete("/api/exercises/" + createdExercise.getId())
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isForbidden());
     }
 
-    @Test
-    public void testFindAllExercisesAsClient() throws Exception {
+    @Test    public void testFindAllExercisesAsClient() throws Exception {
         mockMvc.perform(get("/api/exercises")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
-    //
-    // TRAINER Role Tests (Read-only permissions)
-    //
     @Test
     public void testCreateExerciseAsTrainerFails() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise");
         createExercise(trainerUser, exerciseDto).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testDeleteExerciseAsTrainerFails() throws Exception {
+        ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise");
+        String createdExerciseJson = createExercise(adminUser, originalDto).andReturn().getResponse().getContentAsString();
+        ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+
+        mockMvc.perform(delete("/api/exercises/" + createdExercise.getId())
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -190,15 +210,12 @@ public class ExerciseControllerTest {
                 .andExpect(status().isOk());
     }
 
-    //
-    // Unauthenticated Tests
-    //
     @Test
     public void testCreateExerciseUnauthenticatedFails() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Burpees", "Full body exercise");
         mockMvc.perform(post("/api/exercises")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(exerciseDto)))
-                .andExpect(status().isForbidden()); // Or isUnauthorized(), depending on security config
+                .andExpect(status().isForbidden());
     }
 }

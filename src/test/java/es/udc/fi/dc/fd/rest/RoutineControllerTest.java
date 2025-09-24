@@ -63,7 +63,6 @@ public class RoutineControllerTest {
 
     @Before
     public void setUp() throws IncorrectLoginException {
-        // Create one user for each role with unique data
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003",
@@ -100,9 +99,6 @@ public class RoutineControllerTest {
         return objectMapper.readValue(content, RoutineDto.class);
     }
 
-    //
-    // ADMIN Role Tests (Full Permissions)
-    //
     @Test
     public void testCreateRoutineAsAdmin() throws Exception {
         createRoutine(adminUser, "Admin Routine").andExpect(status().isCreated());
@@ -110,11 +106,9 @@ public class RoutineControllerTest {
 
     @Test
     public void testUpdateAnotherUsersRoutineAsAdmin() throws Exception {
-        // Trainer creates a routine
         ResultActions createActions = createRoutine(trainerUser, "Trainer's Routine").andExpect(status().isCreated());
         RoutineDto routineToUpdate = getRoutineFromResponse(createActions);
 
-        // Admin updates it
         routineToUpdate.setName("Updated by Admin");
         mockMvc.perform(put("/api/routines/" + routineToUpdate.getId())
                         .header("Authorization", "Bearer " + adminUser.getServiceToken())
@@ -126,19 +120,14 @@ public class RoutineControllerTest {
 
     @Test
     public void testDeleteAnotherUsersRoutineAsAdmin() throws Exception {
-        // Trainer creates a routine
         ResultActions createActions = createRoutine(trainerUser, "Routine to Delete").andExpect(status().isCreated());
         RoutineDto routineToDelete = getRoutineFromResponse(createActions);
 
-        // Admin deletes it
         mockMvc.perform(delete("/api/routines/" + routineToDelete.getId())
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
-                .andExpect(status().isNoContent()); // 204 No Content is standard for successful DELETE
+                .andExpect(status().isNoContent());
     }
 
-    //
-    // TRAINER Role Tests (Ownership Rules Apply)
-    //
     @Test
     public void testCreateAndUpdateOwnRoutineAsTrainer() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "My Trainer Routine").andExpect(status().isCreated());
@@ -187,9 +176,6 @@ public class RoutineControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    //
-    // CLIENT Role Tests (Read-Only)
-    //
     @Test
     public void testFindAllRoutinesAsClient() throws Exception {
         mockMvc.perform(get("/api/routines")
@@ -214,9 +200,6 @@ public class RoutineControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    //
-    // Unauthenticated Tests (No Permissions)
-    //
     @Test
     public void testCreateRoutineUnauthenticatedFails() throws Exception {
         RoutineDto routineDto = new RoutineDto();
@@ -225,6 +208,6 @@ public class RoutineControllerTest {
         mockMvc.perform(post("/api/routines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(routineDto)))
-                .andExpect(status().isForbidden()); // Or isUnauthorized(), depends on security config
+                .andExpect(status().isForbidden());
     }
 }

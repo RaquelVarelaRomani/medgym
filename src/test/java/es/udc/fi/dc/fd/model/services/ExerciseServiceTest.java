@@ -74,4 +74,16 @@ public class ExerciseServiceTest {
             exerciseService.updateExercise(exercise2.getId(), "exercise1", "new description");
         });
     }
+
+    @Test
+    public void testDeleteExercise() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user");
+        Exercise exercise = exerciseService.createExercise("exercise", "description", user);
+
+        exerciseService.deleteExercise(exercise.getId());
+
+        assertThrows(InstanceNotFoundException.class, () -> {
+            exerciseService.findExerciseById(exercise.getId());
+        });
+    }
 }

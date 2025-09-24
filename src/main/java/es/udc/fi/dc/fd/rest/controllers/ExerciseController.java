@@ -10,6 +10,7 @@ import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.rest.dtos.ExerciseConversor;
 import es.udc.fi.dc.fd.rest.dtos.ExerciseDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,12 @@ public class ExerciseController {
     @GetMapping
     public List<ExerciseDto> findAllExercises() {
         return ExerciseConversor.toExerciseDtos(exerciseService.findAllExercises());
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteExercise(@PathVariable Long id) throws InstanceNotFoundException {
+        exerciseService.deleteExercise(id);
     }
 
 }
