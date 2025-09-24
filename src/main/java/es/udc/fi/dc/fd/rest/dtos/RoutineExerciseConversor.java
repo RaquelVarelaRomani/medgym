@@ -14,7 +14,7 @@ public class RoutineExerciseConversor {
                 routineExercise.getDuration());
     }
 
-    public static final List<RoutineExerciseDto> toRoutineExercisesDto(List<RoutineExercise> routineExercises) {
+    public static final List<RoutineExerciseDto> toRoutineExercisesDtos(List<RoutineExercise> routineExercises) {
         return routineExercises.stream().map(RoutineExerciseConversor::toRoutineExerciseDto)
                 .collect(Collectors.toList());
     }
