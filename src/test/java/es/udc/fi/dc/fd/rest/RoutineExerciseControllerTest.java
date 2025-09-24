@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.RoutineExerciseController;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
@@ -22,10 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.ContentResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -57,6 +60,9 @@ public class RoutineExerciseControllerTest {
 
     @Autowired
     private RoutineExerciseController routineExerciseController;
+
+    @Autowired
+    private RoutineExerciseService routineExerciseService;
 
     private Exercise createExercise(String name){
         Exercise exercise = new Exercise(name, "Ejercicio.");
@@ -104,4 +110,53 @@ public class RoutineExerciseControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testGetExercisesForRoutinesPaging() throws Exception {
+        User trainer = createUser("trainer", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer);
+        Routine routine = createRoutine("Rutina", trainer);
+        Exercise exercise1 = createExercise("Ejercicio 1");
+        Exercise exercise2 = createExercise("Ejercicio 2");
+        Exercise exercise3 = createExercise("Ejercicio 3");
+
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), (byte) 5, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), (byte) 10, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), (byte) 15, null);
+
+        mockMvc.perform(get("/api/routineexercise/exercises")
+                        .header("Authorization", "Bearer " + authUser.getServiceToken())
+                        .param("routineId", routine.getId().toString())
+                        .param("page", "0")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2));
+
+        mockMvc.perform(get("/api/routineexercise/exercises")
+                        .header("Authorization", "Bearer " + authUser.getServiceToken())
+                        .param("routineId", routine.getId().toString())
+                        .param("page", "1")
+                        .param("size", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.totalElements").value(3))
+                .andExpect(jsonPath("$.totalPages").value(2));
+    }
+
+    @Test
+    public void testAddExerciseToRoutinePermissionDenied() throws Exception {
+        User user = createUser("user", User.RoleType.CLIENT);
+        AuthenticatedUserDto authUser = loginUser(user);
+        Exercise exercise = createExercise("Ejercicio.");
+        Routine routine = createRoutine("Rutina", user);
+
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), (byte) 5, null);
+
+        mockMvc.perform(post("/api/routineexercise/add")
+                        .header("Authorization", "Bearer " + authUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsBytes(dto)))
+                .andExpect(status().isForbidden());
+    }
 }

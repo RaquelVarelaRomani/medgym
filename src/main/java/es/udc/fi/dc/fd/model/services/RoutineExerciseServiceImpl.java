@@ -6,7 +6,8 @@ import es.udc.fi.dc.fd.model.services.exceptions.IncorrectRoutineExerciseValuesE
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,9 +107,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public Block<RoutineExercise> getExercisesForRoutines(Long routineId, int page, int size) {
-        Slice<RoutineExercise> slice = routineExerciseDao.findByRoutineId(routineId, PageRequest.of(page, size));
-        return new Block<>(slice.getContent(), slice.hasNext());
+    public Page<RoutineExercise> getExercisesForRoutines(Long routineId, Pageable pageable) {
+        return routineExerciseDao.findByRoutineId(routineId, pageable);
     }
 
     /**

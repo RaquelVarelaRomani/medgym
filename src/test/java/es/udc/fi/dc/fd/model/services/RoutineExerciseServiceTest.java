@@ -3,6 +3,8 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import jakarta.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,9 +59,9 @@ public class RoutineExerciseServiceTest {
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
-        Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
-        assertEquals(1, block.getItems().size());
-        RoutineExercise re = block.getItems().get(0);
+        Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        assertEquals(1, page.getContent().size());
+        RoutineExercise re = page.getContent().get(0);
         assertEquals(exercise.getId(), re.getExercise().getId());
         assertNull(re.getDuration());
     }
@@ -72,11 +74,11 @@ public class RoutineExerciseServiceTest {
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
                 exercise.getId(), routine.getId(), (byte) 5, null);
-        Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
-        assertEquals(1, block.getItems().size());
+        Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        assertEquals(1, page.getContent().size());
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId());
-        Block<RoutineExercise> block2 = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
-        assertEquals(0, block2.getItems().size());
+        Page<RoutineExercise> page2 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        assertEquals(0, page2.getContent().size());
     }
 
     @Test
@@ -89,8 +91,8 @@ public class RoutineExerciseServiceTest {
                 routine.getId(), (byte) 5, null);
         routineExerciseService.updateExerciseOnRoutine(trainer.getId(), routineExercise.getId(), exercise.getId(),
                 routine.getId(), null, (short) 60);
-        Block<RoutineExercise> block = routineExerciseService.getExercisesForRoutines(routine.getId(), 0, 2);
-        RoutineExercise re = block.getItems().get(0);
+        Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        RoutineExercise re = page.getContent().get(0);
         assertNull(re.getRepetitionsNumber());
     }
 
@@ -106,4 +108,28 @@ public class RoutineExerciseServiceTest {
                 routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId()));
     }
 
+    @Test
+    public void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException {
+        User trainer = createUser("Pepe", User.RoleType.TRAINER);
+        Exercise exercise1 = createExercise("Ejercicio 1");
+        Exercise exercise2 = createExercise("Ejercicio 2");
+        Exercise exercise3 = createExercise("Ejercicio 3");
+        Routine routine = createRoutine("Rutina", trainer);
+
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), (byte) 5, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), (byte) 10, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), (byte) 15, null);
+
+        Page<RoutineExercise> page1 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        assertEquals(2, page1.getContent().size());
+        assertEquals(3, page1.getTotalElements());
+        assertTrue(page1.hasNext());
+        assertFalse(page1.isLast());
+
+        Page<RoutineExercise> page2 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(1, 2));
+        assertEquals(1, page2.getContent().size());
+        assertEquals(3, page2.getTotalElements());
+        assertFalse(page2.hasNext());
+        assertTrue(page2.isLast());
+    }
 }
