@@ -75,4 +75,40 @@
     text-decoration: underline;
 }
 
+.boton-editar{
+  background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+  color: var(--text-dark);
+  padding: 6px 14px;
+  border: none;
+  border-radius: 10px;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 10px;
+  box-shadow: 0 2px 5px var(--shadow-orange);
+  transition: all 0.3s ease;
+
+}
+
+.boton-editar:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow-orange);
+}
+
+.boton-eliminar{
+  background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
+  color: var(--text-dark);
+  padding: 6px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px var(--shadow-orange);
+  transition: all 0.3s ease;
+}
+
+.boton-eliminar:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow-orange);
+}
+
 /*CAMBIAR: poner esto cuando lo demas este bien .caja-rutina:hover*/
