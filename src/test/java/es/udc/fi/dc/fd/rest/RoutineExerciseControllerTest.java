@@ -2,7 +2,9 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.RoutineExerciseController;
+import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineExerciseDto;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@Ignore
 public class RoutineExerciseControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -42,20 +44,19 @@ public class RoutineExerciseControllerTest {
     private ExerciseDao exerciseDao;
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
     private RoutineDao routineDao;
+
+    @Autowired
+    private UserController userController;
 
     @Autowired
     private RoutineExerciseDao routineExerciseDao;
 
     @Autowired
     private RoutineExerciseController routineExerciseController;
-
-    private User createTrainer(){
-        User user = new User("Pepe", "Domingo", "pepe@domingo.com",
-                "666777222", "contraseñasegura");
-        user.setRole(User.RoleType.TRAINER);
-        return userDao.save(user);
-    }
 
     private Exercise createExercise(String name){
         Exercise exercise = new Exercise(name, "Ejercicio.");
@@ -68,37 +69,36 @@ public class RoutineExerciseControllerTest {
         return routineDao.save(routine);
     }
 
-    private String loginAndGetToken(String email, String password) throws Exception {
+    private User createUser(String email, User.RoleType roleType){
+        User user = new User("user", "1", email, "+34 000 000 000", "password");
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(roleType);
+
+        return userDao.save(user);
+    }
+
+    private AuthenticatedUserDto loginUser(User user)
+            throws IncorrectLoginException {
         LoginParamsDto loginParams = new LoginParamsDto();
-        loginParams.setEmail(email);
-        loginParams.setPassword(password);
+        loginParams.setEmail(user.getEmail());
+        loginParams.setPassword("password");
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        MvcResult loginResult = mockMvc.perform(post("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(loginParams)))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String body = loginResult.getResponse().getContentAsString();
-        AuthenticatedUserDto authUser = mapper.readValue(body, AuthenticatedUserDto.class);
-        return authUser.getServiceToken();
+        return userController.login(loginParams);
     }
 
 
     @Test
-    public void testAddExerciseToRoutine() throws Exception {
-        User user = createTrainer();
+    public void testAddAndDeleteExerciseToRoutine() throws Exception {
+        User trainer = createUser("trainer", User.RoleType.TRAINER);
+        AuthenticatedUserDto authUser = loginUser(trainer);
         Exercise exercise = createExercise("Ejercicio.");
-        Routine routine = createRoutine("Rutina", user);
-
-        String token = loginAndGetToken(user.getEmail(), user.getPassword());
+        Routine routine = createRoutine("Rutina", trainer);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), (byte) 5, null);
 
         mockMvc.perform(post("/api/routineexercise/add")
-                        .header("Authorization", "Bearer " + token)
+                        .header("Authorization", "Bearer " + authUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsBytes(dto)))
                 .andExpect(status().isOk());
