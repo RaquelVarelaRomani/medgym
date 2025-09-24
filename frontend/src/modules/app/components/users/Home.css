@@ -29,6 +29,7 @@
   text-align: center;     
 
   box-sizing: border-box; /*NO CONTENT box, incluye padding y borde en vez de sumarlos despues*/
+  margin: auto;
 }
 .logo {
     animation: logo-crece 1s linear 2;
