@@ -28,9 +28,9 @@ const Home = () => {
 
     
     //LLAMO AL BACKEND
-    appFetch(
+    /*appFetch(
       //primer argumento
-      "/users/login", /*endpoint (BASE_PATH añade el resto) */
+      "/users/login", /*endpoint (BASE_PATH añade el resto) 
       //segundo (las opciones de la peticion)
       fetchConfig("POST", { email, password }),
       //tercero (peticion que se ejecuta si la respuesta es correcta)
@@ -50,8 +50,23 @@ const Home = () => {
         console.error("Error en login:", error);
         alert(error.globalError || "Usuario o contraseña incorrectos");
       }
-    )
+    )*/
+   login(
+      email,
+      password,
+      (authenticatedUser) => {
+        console.log("Login correcto:", authenticatedUser);
 
+        //guarda usuario en localStorage
+        localStorage.setItem("user", JSON.stringify(authenticatedUser));
+
+        navigate("/routines");
+      },
+      (error) => {
+        console.error("Error en login:", error);
+        setError(error.globalError || "Usuario o contraseña incorrectos");
+      }
+    );
   };
 
   // return = lo que hay que renderizar en pantalla
