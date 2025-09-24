@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./EditProfile.css";
-
 import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
@@ -13,68 +12,70 @@ const EditProfile = () => {
 
     const handleSave = (e) => {
         e.preventDefault();
-        navigate("/users/profile"); // Redirige de vuelta al perfil después de guardar
+        navigate("/users/profile"); // Redirige al perfil tras guardar
     };
 
     const handleCancel = () => {
-        navigate("/users/profile"); // Redirige de vuelta al perfil sin guardar
+        navigate("/users/profile"); // Redirige al perfil sin guardar
     };
 
     return (
-        <div className="edit-profile">
-        <h2>Editar perfil</h2>
+        <div className="contenedor">
+        <div className="caja-edit">
+            {/* TÍTULO */}
+            <h2 className="titulo">Editar perfil</h2>
 
-        <div className="edit-profile-photo"> Foto de perfil </div>
+            {/* FOTO DE PERFIL */}
+            <div className="edit-profile-photo"> Foto de perfil </div>
 
-        <form onSubmit={handleSave} className="edit-profile-form">
-            <label>
-            Nombre de usuario
+            {/* FORMULARIO */}
+            <form className="form" onSubmit={handleSave}>
+            <label htmlFor="username">Nombre de usuario</label>
             <input
                 type="text"
-                placeholder="Nombre de usuario"
+                id="username"
                 value={username}
+                placeholder="Escribe tu nombre de usuario..."
                 onChange={(e) => setUsername(e.target.value)}
             />
-            </label>
 
-            <label>
-            Correo electrónico
+            <label htmlFor="email">Correo electrónico</label>
             <input
                 type="email"
-                placeholder="Correo electrónico"
+                id="email"
                 value={email}
+                placeholder="Escribe tu correo..."
                 onChange={(e) => setEmail(e.target.value)}
             />
-            </label>
 
-            <label className="password-field">
-            Contraseña
-            <div className="password-input">
+            <label htmlFor="password">Contraseña</label>
+            <div className="contenedor-password">
                 <input
                 type={showPassword ? "text" : "password"}
-                placeholder="********"
+                id="password"
                 value={password}
+                placeholder="********"
                 onChange={(e) => setPassword(e.target.value)}
                 />
-                <button
-                type="button"
-                className="toggle-password"
+                <span
+                className="ver-password"
                 onClick={() => setShowPassword(!showPassword)}
                 >
                 {showPassword ? "🙈" : "👁️"}
+                </span>
+            </div>
+
+            {/* BOTONES */}
+            <div className="form-actions">
+                <button type="submit" className="save-btn">
+                Guardar
+                </button>
+                <button type="button" className="cancel-btn" onClick={handleCancel}>
+                Cancelar
                 </button>
             </div>
-            </label>
-
-            <div className="form-actions">
-            <button type="submit" className="save-btn">
-                Guardar
-            </button>
-            <button type="button" className="cancel-btn" onClick={handleCancel}>
-                Cancelar
-            </button>
-            </div>
-        </form>
+            </form>
+        </div>
         </div>
     );
 };

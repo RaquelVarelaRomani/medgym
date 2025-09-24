@@ -1,21 +1,36 @@
-    .edit-profile {
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 20px;
-    background: #f8f8f8;
+/* Fondo principal */
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+}
+
+/* Caja central */
+.caja-edit {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    box-sizing: border-box;
+}
 
-    .edit-profile h2 {
+/* Título */
+.titulo {
+    font-size: 24px;
+    font-weight: bold;
     margin-bottom: 20px;
-    }
+}
 
-    .edit-profile-photo {
+/* Foto perfil */
+.edit-profile-photo {
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: #ddd;
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,64 +39,80 @@
     color: #333;
     }
 
-    .edit-profile-form label {
-    display: block;
-    margin-bottom: 15px;
-    font-weight: bold;
-    }
-
-    .edit-profile-form input {
-    display: block;
+/* Formulario */
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #333;
-    border-radius: 4px;
-    }
+}
 
-    .password-field .password-input {
+.form label {
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.form input {
+    padding: 10px;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+/* Contraseña + icono */
+.contenedor-password {
+    position: relative;
     display: flex;
     align-items: center;
-    }
+}
 
-    .password-field input {
-    flex: 1;
-    }
-
-    .toggle-password {
-    background: none;
-    border: none;
+.ver-password {
+    position: absolute;
+    right: 15px;
     cursor: pointer;
-    margin-left: -30px;
-    }
+    font-size: 18px;
+}
 
-    .form-actions {
+/* Botones */
+.form-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 10px;
     margin-top: 20px;
-    }
+    width: 100%;
+}
 
-    .save-btn {
-    background: green;
-    color: white;
+.save-btn {
+    background: white;
+    color: black;
     border: none;
-    padding: 10px 16px;
-    border-radius: 4px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
-    }
+    transition: all 0.3s ease;
+}
 
-    .cancel-btn {
-    background: red;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    }
-
-    .save-btn:hover, .cancel-btn:hover {
+.save-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.cancel-btn {
+    background: darkred;
+    color: white;
     border: none;
-    }
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--shadow-dark);
+}
