@@ -63,12 +63,11 @@ public class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), (byte) 5, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(), routine.getId(), "Description");
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         assertEquals(1, page.getContent().size());
         RoutineExercise re = page.getContent().get(0);
         assertEquals(exercise.getId(), re.getExercise().getId());
-        assertNull(re.getDuration());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class RoutineExerciseServiceTest {
         Routine routine = createRoutine("Rutina", trainer);
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
-                exercise.getId(), routine.getId(), (byte) 5, null);
+                exercise.getId(), routine.getId(),"Description");
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         assertEquals(1, page.getContent().size());
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId());
@@ -93,12 +92,13 @@ public class RoutineExerciseServiceTest {
         Routine routine = createRoutine("Rutina", trainer);
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise.getId(),
-                routine.getId(), (byte) 5, null);
+                routine.getId(), "Description");
         routineExerciseService.updateExerciseOnRoutine(trainer.getId(), routineExercise.getId(), exercise.getId(),
-                routine.getId(), null, (short) 60);
+                routine.getId(), "Description 2");
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         RoutineExercise re = page.getContent().get(0);
-        assertNull(re.getRepetitionsNumber());
+        assertEquals(exercise.getId(), re.getExercise().getId());
+        assertEquals(routineExercise.getDescription(), re.getExercise().getDescription());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", trainer);
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainer.getId(),
-                exercise.getId(), routine.getId(), (byte) 5, null);
+                exercise.getId(), routine.getId(), "Description");
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId());
         assertThrows(InstanceNotFoundException.class, () ->
                 routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routineExercise.getId()));
@@ -121,9 +121,9 @@ public class RoutineExerciseServiceTest {
         Exercise exercise3 = createExercise("Ejercicio 3");
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), (byte) 5, null);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), (byte) 10, null);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), (byte) 15, null);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise1.getId(), routine.getId(), "Description");
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise2.getId(), routine.getId(), "Description 2");
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), exercise3.getId(), routine.getId(), "Description 3");
 
         Page<RoutineExercise> page1 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         assertEquals(2, page1.getContent().size());

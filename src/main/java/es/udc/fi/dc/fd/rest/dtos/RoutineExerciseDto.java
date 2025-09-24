@@ -4,17 +4,15 @@ public class RoutineExerciseDto {
     private Long id;
     private Long routineId;
     private Long exerciseId;
-    private Byte repetitionsNumber;
-    private Short duration;
+    private String description;
 
     public RoutineExerciseDto() {}
 
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, Byte repetitionsNumber, Short duration) {
+    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String description) {
         this.id = id;
         this.routineId = routineId;
         this.exerciseId = exerciseId;
-        this.repetitionsNumber = repetitionsNumber;
-        this.duration = duration;
+        this.description = description;
     }
 
     public Long getId() {
@@ -41,19 +39,11 @@ public class RoutineExerciseDto {
         this.exerciseId = exerciseId;
     }
 
-    public Byte getRepetitionsNumber() {
-        return repetitionsNumber;
+    public String getDescription() {
+        return description;
     }
 
-    public void setRepetitionsNumber(Byte repetitionsNumber) {
-        this.repetitionsNumber = repetitionsNumber;
-    }
-
-    public Short getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Short duration) {
-        this.duration = duration;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -2,10 +2,8 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.services.exceptions.IncorrectRoutineExerciseValuesException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private ExerciseDao exerciseDao;
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, Byte repetitionsNumber, Short duration)
+    public RoutineExercise addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, String description)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
@@ -50,11 +48,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new PermissionException();
         }
 
-        if (!isValidRepetitionsAndDuration(repetitionsNumber, duration)) {
-            throw new IncorrectRoutineExerciseValuesException();
-        }
-
-        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, repetitionsNumber, duration);
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, description);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -80,7 +74,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
     @Override
     public RoutineExercise updateExerciseOnRoutine(Long userId, Long id, Long exerciseId,
-                                                   Long routineId, Byte repetitionsNumber, Short duration)
+                                                   Long routineId, String description)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
@@ -90,18 +84,10 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new InstanceNotFoundException("routineExercise", id);
         }
 
-        if (!isValidRepetitionsAndDuration(repetitionsNumber, duration)) {
-            throw new IncorrectRoutineExerciseValuesException();
-        }
-
         RoutineExercise routineExercise = opRoutineExercise.get();
 
-        if (!user.equals(routineExercise.getRoutine().getTrainer())) {
-            throw new PermissionException();
-        }
+        routineExercise.setDescription(description);
 
-        routineExercise.setRepetitionsNumber(repetitionsNumber);
-        routineExercise.setDuration(duration);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -111,22 +97,4 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         return routineExerciseDao.findByRoutineId(routineId, pageable);
     }
 
-    /**
-     * Check if they have valid values.
-     *
-     * @param repetitionsNumber the repetition number
-     * @param duration the duration on seconds
-     * @return true if they have valid values, false in other case
-     */
-    private boolean isValidRepetitionsAndDuration(Byte repetitionsNumber, Short duration){
-        if (repetitionsNumber == null) {
-            return duration != null && duration >= 0;
-        }
-
-        if (duration == null) {
-            return repetitionsNumber >= 0;
-        }
-
-        return false;
-    }
 }
