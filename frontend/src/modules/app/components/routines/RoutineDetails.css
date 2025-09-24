@@ -141,29 +141,6 @@
     border-radius: 8px;
 }
 
-.detalles-ejercicio {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.detalles-ejercicio span {
-    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
-    color: var(--text-dark);
-    font-weight: bold;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    box-shadow: 0 2px 5px var(--shadow-orange);
-    transition: all 0.3s ease;
-}
-
-.detalles-ejercicio span:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px var(--shadow-orange);
-}
-
 /* animacion al expandir ejercicios */
 @keyframes slideDown {
     from {

@@ -8,7 +8,6 @@ import Home from "./users/Home";
 import Routines from "./routines/Routines";
 import RoutineDetails from "./routines/RoutineDetails";
 import Test from "./Test";
-import Register from "./users/Register";
 
 const Body = () => {
   return (
