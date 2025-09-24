@@ -1,0 +1,116 @@
+.contenedor {
+  /*flexbox -> los hijos se organizan en cajas flexibles*/
+  display: flex;
+  /*dir en la que se almacenan los hijos (row, column)*/
+  flex-direction: column;
+  /*alineacion hijos eje transversal*/
+  align-items: flex-start;;
+  /*alineacion hijos eje principal (vertical pq usamos column*/
+  /*justify-content: center;
+  /*viewport height*/
+  /*MIN height -> ocupa como minimo toda la pantalla*/
+  min-height: 100vh;
+
+  /*DEGRADADO*/
+  /*to bottom, to right, X deg(diagonal) siendo x los grados (270 para la diagonal) */
+  background: linear-gradient(to right, var(--dark-orange-light),var(--primary-orange-light));
+
+  padding-top: 2%; 
+  width: 100%;
+}
+
+.exercises-titulo-grande {
+  display: flex; /*queremos todo flexbox para que se adapte*/
+  justify-content: space-between; /*distribuye los dos con el maximo espacio entre ellos*/
+  align-items: left;
+
+  margin-left: 5%; 
+}
+
+.foto-perfil {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /*para que sea un circulo*/
+  /*PORQUE LUEGO SE TIENE QUE HACER CLIC*/
+  cursor: pointer;
+/*para que no se pegue a la izq (la sacamos del flujo normal)*/
+  position: absolute;
+  /*distancias en la esquinita*/
+  top: 20px;         
+  right: 20px;  
+}
+
+/*CAMBIAR-> cuando se pueda hacer clic que al pasar por encima se agrande la foto*/
+/*.foto-perfil:hover*/
+.lista-ejercicios {
+  margin-top: 20px; /*margen superior para separar de lo de arriba*/
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /*añadimos espacio entre hijos para que qude mejor*/
+  width: 100%;
+}
+
+.caja-ejercicio {
+    /*CAMBIAR: le puse la opacidad de memoria -> mirar exactamente cual llevaba en el login*/
+  background: rgba(255, 255, 255, 0.7);
+  /*border: 2px solid black;
+  padding: 12px; Queda menos moderno y decidimos que fuera mas*/
+  text-decoration: none;
+  color: black;
+
+  /*CAMBIAR: ltambién redondee las esquinas de memoria (esta en la otra rama)*/
+  border-radius: 12px;
+  cursor: pointer;
+
+  /*nos quedaban mal en el centro*/
+  width: 90%;/*ancho de la pantalla*/
+  margin-left: 3%; 
+  margin-right: auto;
+
+  padding: 16px;
+  box-sizing: border-box;
+}
+.caja-ejercicio:hover{
+    transform: scale(1.005);
+    text-decoration: underline;
+}
+
+
+.boton-eliminar{
+  background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
+  color: var(--text-dark);
+  padding: 6px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px var(--shadow-orange);
+  transition: all 0.3s ease;
+}
+
+.boton-eliminar:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow-orange);
+}
+
+
+.boton-crear {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease-in-out;
+}
+
+.boton-crear:hover {
+  transform: scale(1.1);
+}

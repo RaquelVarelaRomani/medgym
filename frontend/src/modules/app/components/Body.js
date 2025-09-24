@@ -7,6 +7,7 @@ import Register from "./users/Register";
 import Home from "./users/Home";
 import Routines from "./routines/Routines";
 import RoutineDetails from "./routines/RoutineDetails";
+import Exercises from "./routines/Exercises";
 import Test from "./Test";
 
 const Body = () => {
@@ -16,6 +17,7 @@ const Body = () => {
         <Route index exact element={<Home />} />
         <Route path="/routines" element={<Routines />} /> 
         <Route path="routines/:id" element={<RoutineDetails />} />
+        <Route path="exercises" element={<Exercises />} />
         <Route path="/test" element={<Test />} />
         <Route path="users/register" element={<Register />} /> {/*Añadi para la pantalla de registrarse */}
       </Route>
