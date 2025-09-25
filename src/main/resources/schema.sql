@@ -20,7 +20,7 @@ CREATE TABLE users (
 CREATE TABLE routines (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
     creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modification_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     trainer_id BIGINT NOT NULL,
@@ -35,15 +35,14 @@ CREATE TABLE routines (
 CREATE TABLE exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
 
     CONSTRAINT exercise_id_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE routine_exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    repetitions_number SMALLINT NOT NULL,
-    duration SMALLINT NOT NULL,
+    description TEXT,
     routine_id BIGINT NOT NULL,
     exercise_id BIGINT NOT NULL,
 

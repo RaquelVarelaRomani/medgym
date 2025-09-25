@@ -10,26 +10,15 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-/**
- * The Class JwtGeneratorImpl.
- */
 @Component
 public class JwtGeneratorImpl implements JwtGenerator {
 
-    /** The sign key. */
     @Value("${project.jwt.signKey}")
     private String signKey;
 
-    /** The expiration minutes. */
     @Value("${project.jwt.expirationMinutes}")
     private long expirationMinutes;
 
-    /**
-     * Generate.
-     *
-     * @param info the info
-     * @return the string
-     */
     @Override
     public String generate(JwtInfo info) {
 
@@ -44,12 +33,6 @@ public class JwtGeneratorImpl implements JwtGenerator {
 
     }
 
-    /**
-     * Gets the info.
-     *
-     * @param token the token
-     * @return the info
-     */
     @Override
     public JwtInfo getInfo(String token) {
         

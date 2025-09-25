@@ -43,13 +43,13 @@
   margin-bottom: 20px;
 }
 
-.mensaje-error{
+
+.mensaje-error {
   color: var(--error);
   font-size: 14px;
   font-weight: bold;
   margin: 10px 0;
   text-align: center;
-
 }
 
 .form {

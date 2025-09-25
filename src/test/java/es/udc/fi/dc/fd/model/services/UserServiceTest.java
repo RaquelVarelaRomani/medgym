@@ -15,9 +15,6 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 
-/**
- * The Class UserServiceTest.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")

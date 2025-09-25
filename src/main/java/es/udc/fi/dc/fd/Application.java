@@ -8,36 +8,18 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-/**
- * The Class Application.
- */
 @SpringBootApplication
 public class Application {
 
-	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
-	
-	/**
-	 * Password encoder.
-	 *
-	 * @return the b crypt password encoder
-	 */
+
 	@Bean
     public BCryptPasswordEncoder passwordEncoder() {
     	return new BCryptPasswordEncoder();
     }
     
-    /**
-     * Message source.
-     *
-     * @return the message source
-     */
     @Bean
     public MessageSource messageSource() {
     	
@@ -49,11 +31,6 @@ public class Application {
         return bean;
     }
     
-    /**
-     * Validator.
-     *
-     * @return the local validator factory bean
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
     	
