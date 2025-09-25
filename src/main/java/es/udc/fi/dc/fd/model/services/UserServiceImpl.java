@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,4 +94,23 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Override
+	public User findUserById(Long id) throws InstanceNotFoundException {
+		Optional<User> user = userDao.findById(id);
+		if (user.isEmpty()) {
+			throw new InstanceNotFoundException("project.entities.user", id);
+		}
+
+		return user.get();
+	}
+
+	@Override
+	public List<User> findAllUsers() {
+		return userDao.findAll();
+	}
+
+	@Override
+	public void deleteUser(Long id) {
+		userDao.deleteById(id);
+	}
 }
