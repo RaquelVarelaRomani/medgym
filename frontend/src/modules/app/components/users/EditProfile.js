@@ -37,6 +37,7 @@ const EditProfile = () => {
                 value={username}
                 placeholder="Escribe tu nombre de usuario..."
                 onChange={(e) => setUsername(e.target.value)}
+                required
             />
 
             <label htmlFor="email">Correo electrónico</label>
@@ -46,6 +47,7 @@ const EditProfile = () => {
                 value={email}
                 placeholder="Escribe tu correo..."
                 onChange={(e) => setEmail(e.target.value)}
+                required
             />
 
             <label htmlFor="password">Contraseña</label>
@@ -60,9 +62,11 @@ const EditProfile = () => {
                 <span
                 className="ver-password"
                 onClick={() => setShowPassword(!showPassword)}
+                required
                 >
                 {showPassword ? "🙈" : "👁️"}
                 </span>
+                
             </div>
 
             {/* BOTONES */}
