@@ -4,7 +4,11 @@ logging:
       hibernate:
         SQL: debug
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: @dataSource.url@
     username: @dataSource.user@
     password: @dataSource.password@

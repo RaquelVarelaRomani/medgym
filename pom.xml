@@ -87,25 +87,20 @@
 		<!-- ============= DATABASE PROFILES ============== -->
 		<!-- ============================================== -->
 		<profile>
-			<!-- H2 database profile -->
-			<!-- Prepares the project to make use of an H2 in-memory database -->
-			<id>h2</id>
+			<id>mysql</id>
 			<activation>
-				<!-- Active by default so it can be installed by CI -->
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<!--  Data source properties -->
-				<dataSource.url>jdbc:h2:mem:medgym</dataSource.url>
-				<testDataSource.url>jdbc:h2:mem:medgymTest</testDataSource.url>
-				<dataSource.user>sa</dataSource.user>
-				<dataSource.password></dataSource.password>
+				<dataSource.url>jdbc:mysql://localhost:3306/medgym</dataSource.url>
+				<dataSource.user>root</dataSource.user>
+				<dataSource.password>root</dataSource.password>
 			</properties>
 			<dependencies>
 				<dependency>
-					<!-- H2 database -->
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>8.0.33</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -164,12 +159,6 @@
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-jackson</artifactId>
 			<version>${jjwt.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

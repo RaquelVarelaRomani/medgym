@@ -124,9 +124,9 @@ public class RoutineExerciseControllerTest {
         Exercise exercise2 = createExercise("Ejercicio 2");
         Exercise exercise3 = createExercise("Ejercicio 3");
 
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), exercise1.getId(), routine.getId(), "Description 1");
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), exercise2.getId(), routine.getId(), "Description 2");
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), exercise3.getId(), routine.getId(), "Description 3");
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), "Description 1");
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise2.getId(), "Description 2");
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise3.getId(), "Description 3");
 
         mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
@@ -151,11 +151,11 @@ public class RoutineExerciseControllerTest {
     public void testUpdateExerciseToRoutine() throws Exception {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), exercise.getId(), routine.getId(), "Description");
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), "Description");
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "New Description");
 
-        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
+        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(dto)))
@@ -167,9 +167,9 @@ public class RoutineExerciseControllerTest {
     public void testDeleteExerciseToRoutine() throws Exception {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), exercise.getId(), routine.getId(), "Description");
+        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), "Description");
 
-        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
+        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
                 .andExpect(status().isNoContent());
     }
@@ -193,12 +193,12 @@ public class RoutineExerciseControllerTest {
         Exercise exercise1 = createExercise("Ejercicio 1");
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(),
-                exercise1.getId(), routine.getId(), "Description");
+                routine.getId(), exercise1.getId(), "Description");
 
         RoutineExerciseDto dto = new RoutineExerciseDto(routineExercise.getId(), routine.getId(), exercise1.getId(),
                 "New Description");
 
-        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
+        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + exercise1.getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(dto)))
@@ -211,9 +211,9 @@ public class RoutineExerciseControllerTest {
         Exercise exercise1 = createExercise("Ejercicio 1");
 
         RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(),
-                exercise1.getId(), routine.getId(), "Description");
+                routine.getId(), exercise1.getId(), "Description");
 
-        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + routineExercise.getId())
+        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise1.getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isForbidden());
     }

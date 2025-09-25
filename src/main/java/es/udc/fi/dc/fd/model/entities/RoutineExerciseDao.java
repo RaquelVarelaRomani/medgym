@@ -11,4 +11,5 @@ public interface RoutineExerciseDao extends JpaRepository<RoutineExercise, Long>
 
     Optional<RoutineExercise> findByRoutineIdAndExerciseId(long routineId, long exerciseId);
     Page<RoutineExercise> findByRoutineId(long routineId, Pageable pageable);
+
 }

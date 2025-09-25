@@ -27,7 +27,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private ExerciseDao exerciseDao;
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long exerciseId, Long routineId, String description)
+    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, String description)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
@@ -53,16 +53,14 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public void removeExerciseFromRoutine(Long userId, Long routineExerciseId)
+    public void removeExerciseFromRoutine(Long userId, Long routineId, Long exerciseId)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
-        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(routineExerciseId);
-
+        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
         if(opRoutineExercise.isEmpty()) {
-            throw new InstanceNotFoundException("routineExercise", routineExerciseId);
+            throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
         }
-
         RoutineExercise routineExercise = opRoutineExercise.get();
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
@@ -73,17 +71,15 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise updateExerciseOnRoutine(Long userId, Long routineExerciseId, Long exerciseId,
-                                                   Long routineId, String description)
+    public RoutineExercise updateExerciseOnRoutine(Long userId, Long routineId, Long exerciseId,
+                                                   String description)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
-        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findById(routineExerciseId);
-
+        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
         if(opRoutineExercise.isEmpty()) {
-            throw new InstanceNotFoundException("routineExercise", routineExerciseId);
+            throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
         }
-
         RoutineExercise routineExercise = opRoutineExercise.get();
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
