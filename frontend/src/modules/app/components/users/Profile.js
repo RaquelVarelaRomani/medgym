@@ -23,6 +23,11 @@ const Profile = () => {
         );
     }, []);
 
+    const handleReturnInit = () => {
+        localStorage.removeItem("userId");
+        navigate("/routines"); // Redirige al inicio de sesión o página principal
+    }
+
     const handleLogOut = () => {
         localStorage.removeItem("userId");
         navigate("/"); // Redirige al inicio de sesión o página principal
@@ -44,7 +49,7 @@ const Profile = () => {
                     </div>
                 
                     <div className="profile-actions">
-                        <button className="return-init-button"> Volver al inicio </button>
+                        <button className="return-init-button" onClick={handleReturnInit}> Volver al inicio </button>
                         <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
                         <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
                     </div>

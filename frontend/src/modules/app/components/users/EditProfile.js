@@ -49,6 +49,8 @@ const EditProfile = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
             />
+            
+            
 
             <label htmlFor="password">Contraseña</label>
             <div className="contenedor-password">
@@ -60,11 +62,12 @@ const EditProfile = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 />
                 <span
-                className="ver-password"
-                onClick={() => setShowPassword(!showPassword)}
-                required
-                >
-                {showPassword ? "🙈" : "👁️"}
+                    className="ver-password"
+                    //al hacer clic en el ojo cambia el estado de ShowPassword
+                    onClick={() => setShowPassword(!showPassword)}
+                    >
+                    &#128065;
+                    {/*Esto es un carácter estándar Unicode*/}
                 </span>
                 
             </div>
