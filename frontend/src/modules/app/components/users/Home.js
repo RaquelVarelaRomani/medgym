@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
 
-// import { config } from "../../../../config/constants.js"; // 
+// import { config } from "../../../../config/constants.js"; //
 
 import { appFetch, fetchConfig, setServiceToken } from "../../../../backend/appFetch";
 

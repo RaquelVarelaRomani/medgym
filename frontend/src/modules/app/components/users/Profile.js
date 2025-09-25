@@ -1,12 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
+import {appFetch, fetchConfig} from "../../../../backend/appFetch";
 
 const Profile = () => {
     const navigate = useNavigate();
+    const [profile, setProfile] = useState(null);
+
+    useEffect(() => {
+        const userId = localStorage.getItem("userId");
+
+        appFetch(
+            `/users/${userId}`,
+            fetchConfig("GET"),
+            (data) => {
+                setProfile(data);
+            },
+            (error) => {
+                console.error("Error al cargar el perfil:", error);
+                alert("No se pudo cargar el perfil");
+            }
+        );
+    }, []);
 
     const handleLogOut = () => {
-        // Aquí iría la lógica para cerrar sesión, como limpiar tokens, etc.
+        localStorage.removeItem("userId");
         navigate("/"); // Redirige al inicio de sesión o página principal
     }
 
@@ -20,7 +38,9 @@ const Profile = () => {
                 <div className="profile-header">
                     <div className="profile-info">
                         <div className="profile-photo"> Foto de perfil </div>
-                        <h2 className="profile-name"> Nombre Usuario </h2>
+                        <h2 className="profile-name">  
+                            {profile ? `${profile.name} ${profile.surname}` : "Cargando..."} 
+                        </h2>
                     </div>
                 
                     <div className="profile-actions">
@@ -31,11 +51,18 @@ const Profile = () => {
                 
                 </div>
 
-                <div className="profile-content">
-                    <h3> Mi perfil </h3>
-                    <div className="profile-data"> Datos personales </div>
+                <div className="profile-data">
+                    {profile ? (
+                        <>
+                            <p><strong>Email:</strong> {profile.email}</p>
+                            <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
+                            <p><strong>Rol:</strong> {profile.role}</p>
+                        </>
+                    ) : (
+                        <p>Cargando datos...</p>
+                    )}
                 </div>
-
+                
             </div>
         </div>
     );
