@@ -29,6 +29,7 @@ public class User {
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.password = password;
+		this.role = RoleType.CLIENT;
 	}
 
 	@Id

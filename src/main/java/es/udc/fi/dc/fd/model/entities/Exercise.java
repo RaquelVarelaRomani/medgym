@@ -5,35 +5,30 @@ import jakarta.persistence.*;
 @Entity
 @Table(name= "exercises")
 public class Exercise {
-    /** The id. */
-    private long id;
-    /** The exercise name. */
+    private Long id;
     private String name;
-    /** The description. **/
     private String description;
 
     public Exercise() {}
 
-    public Exercise(long id, String name, String description) {
-        this.id = id;
+    public Exercise(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public Long getId() {
         return id;
     }
-
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
+    @Column(unique = true)
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -41,7 +36,6 @@ public class Exercise {
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }

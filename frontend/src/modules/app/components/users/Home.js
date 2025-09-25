@@ -48,7 +48,7 @@ const Home = () => {
       },
       (error) => { 
         console.error("Error en login:", error);
-        alert(error.globalError || "Usuario o contraseña incorrectos");
+        setError("Usuario o contraseña incorrectos");
       }
     )
 
@@ -77,6 +77,8 @@ const Home = () => {
         {/*TÍTULO*/}
         <h2 className="titulo">Inicia sesión</h2>
 
+        {/* MENSAJE DE ERROR */}
+        {error && <p className="mensaje-error">{error}</p>}
 
 
         {/*FORMULARIO*/}
@@ -145,8 +147,6 @@ const Home = () => {
           </button>
 
         </form>
-        {/* mostrar errores */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
 
       </div>
 

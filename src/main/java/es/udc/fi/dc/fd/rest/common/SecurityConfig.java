@@ -5,6 +5,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,9 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/**
- * The Class SecurityConfig.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -26,13 +24,6 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
-    /**
-     * Configure.
-     *
-     * @param http the http
-     * @return the security filter chain
-     * @throws Exception the exception
-     */
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -43,10 +34,15 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/*")).permitAll()
                 .requestMatchers(antMatcher("/static/**")).permitAll()
                 .requestMatchers(antMatcher("/assets/**")).permitAll()
-                .requestMatchers(antMatcher("/api/hello")).permitAll()
                 .requestMatchers(antMatcher("/api/users/signUp")).permitAll()
                 .requestMatchers(antMatcher("/api/users/login")).permitAll()
                 .requestMatchers(antMatcher("/api/users/loginFromServiceToken")).permitAll()
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/exercises/*")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/routines")).hasAnyRole("ADMIN", "TRAINER")
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -55,24 +51,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Authentication manager.
-     *
-     * @param authenticationConfiguration the authentication configuration
-     * @return the authentication manager
-     * @throws Exception the exception
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
     
-    /**
-     * Cors configuration source.
-     *
-     * @return the cors configuration source
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
