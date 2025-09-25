@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
-import {appFetch, fetchConfig} from "../../../../backend/appFetch";
+import { getProfile, logout } from "../../../../backend/userService";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -10,9 +10,8 @@ const Profile = () => {
     useEffect(() => {
         const userId = localStorage.getItem("userId");
 
-        appFetch(
-            `/users/${userId}`,
-            fetchConfig("GET"),
+        getProfile(
+            userId,
             (data) => {
                 setProfile(data);
             },
@@ -25,12 +24,13 @@ const Profile = () => {
 
     const handleReturnInit = () => {
         localStorage.removeItem("userId");
-        navigate("/routines"); // Redirige al inicio de sesión o página principal
+        navigate("/routines"); // Redirige a la página principal
     }
 
     const handleLogOut = () => {
+        logout();
         localStorage.removeItem("userId");
-        navigate("/"); // Redirige al inicio de sesión o página principal
+        navigate("/"); // Redirige al inicio de sesión
     }
 
     const handleEditProfile = () => {
@@ -43,8 +43,8 @@ const Profile = () => {
                 <div className="profile-header">
                     <div className="profile-info">
                         <div className="profile-photo"> Foto de perfil </div>
-                        <h2 className="profile-name">  
-                            {profile ? `${profile.name} ${profile.surname}` : "Cargando..."} 
+                        <h2 className="profile-name">
+                            {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                         </h2>
                     </div>
                 
@@ -53,7 +53,6 @@ const Profile = () => {
                         <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
                         <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
                     </div>
-                
                 </div>
 
                 <div className="profile-data">

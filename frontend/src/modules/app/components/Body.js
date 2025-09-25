@@ -4,7 +4,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Home from "./users/Home";
-import Profile from "./users/profile";
+import Profile from "./users/Profile";
 import EditProfile from "./users/EditProfile";
 import Register from "./users/Register";
 import Test from "./Test";
