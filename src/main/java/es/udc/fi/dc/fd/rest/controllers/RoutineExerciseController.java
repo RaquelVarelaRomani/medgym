@@ -26,23 +26,22 @@ public class RoutineExerciseController {
     public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId,
                                                  @PathVariable Long routineId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
-        return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, params.getExerciseId(),
-                routineId, params.getDescription()));
+        return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, routineId, params.getExerciseId(),
+                params.getDescription()));
     }
 
-    @PutMapping("/{routineExerciseId}")
+    @PutMapping("/{exerciseId}")
     public RoutineExerciseDto updateRoutineExercise(
-            @PathVariable Long routineExerciseId, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
+            @PathVariable Long routineId, @PathVariable Long exerciseId, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
-        return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, routineExerciseId, params.getExerciseId(),
-                params.getRoutineId(), params.getDescription()));
+        return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, routineId, exerciseId, params.getDescription()));
     }
 
-    @DeleteMapping("/{routineExerciseId}")
+    @DeleteMapping("/{exerciseId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeExerciseForRoutine(@RequestAttribute Long userId, @PathVariable Long routineExerciseId)
+    public void removeExerciseForRoutine(@PathVariable Long routineId, @PathVariable Long exerciseId, @RequestAttribute Long userId)
             throws PermissionException, InstanceNotFoundException {
-        routineExerciseService.removeExerciseFromRoutine(userId, routineExerciseId);
+        routineExerciseService.removeExerciseFromRoutine(userId, routineId, exerciseId);
     }
 
     @GetMapping("")
