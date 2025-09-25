@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
 
-// import { config } from "../../../../config/constants.js"; // 
+// import { config } from "../../../../config/constants.js"; //
 
 import { appFetch, fetchConfig, setServiceToken } from "../../../../backend/appFetch";
 
@@ -28,9 +28,9 @@ const Home = () => {
 
     
     //LLAMO AL BACKEND
-    /*appFetch(
+    appFetch(
       //primer argumento
-      "/users/login", /*endpoint (BASE_PATH añade el resto) 
+      "/users/login", /*endpoint (BASE_PATH añade el resto) */
       //segundo (las opciones de la peticion)
       fetchConfig("POST", { email, password }),
       //tercero (peticion que se ejecuta si la respuesta es correcta)
@@ -48,32 +48,17 @@ const Home = () => {
       },
       (error) => { 
         console.error("Error en login:", error);
-        alert(error.globalError || "Usuario o contraseña incorrectos");
+        setError("Usuario o contraseña incorrectos");
       }
-    )*/
-   login(
-      email,
-      password,
-      (authenticatedUser) => {
-        console.log("Login correcto:", authenticatedUser);
+    )
 
-        //guarda usuario en localStorage
-        localStorage.setItem("user", JSON.stringify(authenticatedUser));
-
-        navigate("/routines");
-      },
-      (error) => {
-        console.error("Error en login:", error);
-        setError(error.globalError || "Usuario o contraseña incorrectos");
-      }
-    );
   };
 
   // return = lo que hay que renderizar en pantalla
   return (
     
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
-   <div className="contenedor">
+    <div className="contenedor">
 
 
       <div className="caja-login">
@@ -92,6 +77,8 @@ const Home = () => {
         {/*TÍTULO*/}
         <h2 className="titulo">Inicia sesión</h2>
 
+        {/* MENSAJE DE ERROR */}
+        {error && <p className="mensaje-error">{error}</p>}
 
 
         {/*FORMULARIO*/}
@@ -139,7 +126,7 @@ const Home = () => {
               //al hacer clic en el ojo cambia el estado de ShowPassword
               onClick={() => setShowPassword(!showPassword)}
             >
-              &#128065; 
+              &#128065;
               {/*Esto es un carácter estándar Unicode-> MIRAR DE HACERLO CON LIBRERIAS*/}
             </span>
 
@@ -160,8 +147,6 @@ const Home = () => {
           </button>
 
         </form>
-        {/* mostrar errores */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
 
       </div>
 
