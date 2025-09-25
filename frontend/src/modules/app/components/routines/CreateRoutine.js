@@ -3,6 +3,7 @@ import "./CreateRoutine.css";
 import { useNavigate } from "react-router-dom";
 import RoutineDetails from "./RoutineDetails";
 
+
 const CreateRoutine = () => {
     const navigate = useNavigate();
 
@@ -61,6 +62,11 @@ const CreateRoutine = () => {
         setExercises([...exercises, { id: newId, nombre: "", descripcion: "" }]);
     };
 
+    const handleRemoveExercise = (id) => {
+    setExercises(exercises.filter(exercise => exercise.id !== id));
+    };
+
+
     const handleSelectExercise = (exerciseIndex, exerciseName) => {
         handleExerciseChange(exerciseIndex, "nombre", exerciseName);
         setShowExerciseSearch(null);
@@ -116,6 +122,19 @@ const CreateRoutine = () => {
                 {exercises.map((exercise, index) => (
                     <div key={exercise.id} className="ejercicio-item">
                         <label>Ejercicio {index + 1}:</label>
+                        {/*ELIMINAR (papelera)*/}
+                            <button
+                                type="button"
+                                className="boton-eliminar-ejercicio"
+                                onClick={() => handleRemoveExercise(exercise.id)}
+                                title="Eliminar ejercicio"
+                            >
+                                <img
+                                src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
+                                alt="Eliminar"
+                                className="icono-papelera"
+                                />
+                            </button>
                         <div className="ejercicio-input-container">
                             <input
                                 type="text"
@@ -131,7 +150,7 @@ const CreateRoutine = () => {
                                     setSearchTerm(exercise.nombre);
                                 }}
                             />
-
+                            
                             {showExerciseSearch === index && searchTerm && (
                                 <div className="ejercicio-dropdown">
                                     {filteredExercises.map((ex, i) => (
@@ -146,6 +165,7 @@ const CreateRoutine = () => {
                                 </div>
                             )}
                         </div>
+
                     </div>
                 ))}
 
