@@ -5,28 +5,28 @@ import {
 
 export const createRoutineExercise = (routineId, exerciseId, description, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises`,
-    fetchConfig("POST", { routineId, exerciseId, description }),
+    fetchConfig("POST", { exerciseId, description }),
     onSuccess,
     onErrors
 )
 
 // ROUTINEEXERCISEID ES RELATIVO A ROUTINEID, NO GENERAL
-export const getRoutineExercise = (routineId, routineExerciseId, onSuccess, onErrors) => appFetch(
-    `/routines/${routineId}/exercises/${routineExerciseId}`,
+export const getRoutineExercise = (routineId, exerciseId, onSuccess, onErrors) => appFetch(
+    `/routines/${routineId}/exercises/${exerciseId}`,
     fetchConfig("GET"),
     onSuccess,
     onErrors
 )
 
-export const updateRoutineExercise = (routineId, routineExerciseId, description, onSuccess, onErrors) => appFetch(
-    `/routines/${routineId}/exercises/${routineExerciseId}`,
+export const updateRoutineExercise = (routineId, exerciseId, description, onSuccess, onErrors) => appFetch(
+    `/routines/${routineId}/exercises/${exerciseId}`,
     fetchConfig("PUT", { description }),
     onSuccess,
     onErrors
 )
 
-export const deleteRoutineExercise = (routineId, routineExerciseId, onSuccess, onErrors) => appFetch(
-    `/routines/${routineId}/exercises/${routineExerciseId}`,
+export const deleteRoutineExercise = (routineId, exerciseId, onSuccess, onErrors) => appFetch(
+    `/routines/${routineId}/exercises/${exerciseId}`,
     fetchConfig("DELETE"),
     onSuccess,
     onErrors
