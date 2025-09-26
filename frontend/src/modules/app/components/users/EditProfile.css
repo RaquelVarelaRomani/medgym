@@ -62,7 +62,7 @@
     width: 300px;
 }
 
-/* Contraseña + icono */
+/* Contraseña + icono (para ambos campos) */
 .contenedor-password {
     position: relative;
     display: flex;
@@ -74,6 +74,16 @@
     right: 15px;
     cursor: pointer;
     font-size: 18px;
+}
+
+/* Campos de contraseña simples (actual) */
+.input-password {
+    padding: 10px;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    width: 300px;
 }
 
 /* Botones */

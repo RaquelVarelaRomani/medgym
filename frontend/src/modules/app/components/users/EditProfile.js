@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
 import { useNavigate } from "react-router-dom";
-import { updateProfile } from "../../../../backend/userService";
+import { changePassword, updateProfile } from "../../../../backend/userService";
 import { getServiceToken } from "../../../../backend/appFetch";
 
 const EditProfile = () => {
@@ -10,7 +10,8 @@ const EditProfile = () => {
     const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [password, setPassword] = useState("");
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const EditProfile = () => {
             return;
         }
         const storedUser = sessionStorage.getItem("authenticatedUser");
-        if(storedUser) {
+        if (storedUser) {
             const user = JSON.parse(storedUser);
             setProfile(user);
             setName(user.name);
@@ -37,33 +38,46 @@ const EditProfile = () => {
 
     const handleSave = (e) => {
         e.preventDefault();
-        const updatedUser = {
-            id: profile.id,
-            name,
-            surname,
-            email,
-            phoneNumber,
-        }
-        
-        updateProfile(
-            updatedUser,
-            () => {
-                const newUser = { ...profile, name, surname, email, phoneNumber};
-                sessionStorage.setItem("authenticatedUser", JSON.stringify(newUser));
-                setProfile(newUser);
+        const updatedUser = { id: profile.id, name, surname, email, phoneNumber };
 
-                alert("Perfil actualizado con éxito");
-                navigate("/users/profile"); // Redirige al perfil tras guardar
-            },
-            (error) => {
-                console.error("Error al actualizar el perfil:", error);
-                alert("No se pudo actualizar el perfil");
-            }
-        );
+        const updateProfileData = () => {
+            updateProfile(
+                updatedUser,
+                () => {
+                    const newUser = { ...profile, name, surname, email, phoneNumber };
+                    sessionStorage.setItem("authenticatedUser", JSON.stringify(newUser));
+                    setProfile(newUser);
+                    alert("Perfil actualizado con éxito");
+                    navigate("/users/profile");
+                },
+                (error) => {
+                    console.error("Error al actualizar el perfil:", error);
+                    alert("No se pudo actualizar el perfil");
+                }
+            );
+        };
+
+        if (newPassword.trim() !== "") {
+            changePassword(
+                profile.id,
+                oldPassword,
+                newPassword,
+                () => {
+                    console.log("Contraseña cambiada con éxito");
+                    updateProfileData();
+                },
+                (err) => {
+                    console.error("Error al cambiar la contraseña:", err);
+                    alert("No se pudo actualizar la contraseña");
+                }
+            );
+        } else {
+            updateProfileData();
+        }
     };
 
     const handleCancel = () => {
-        navigate("/users/profile"); // Redirige al perfil sin guardar
+        navigate("/users/profile");
     };
 
     return (
@@ -113,14 +127,23 @@ const EditProfile = () => {
                         onChange={(e) => setPhoneNumber(e.target.value)}
                     />
 
-                    <label htmlFor="password">Contraseña</label>
+                    <label htmlFor="oldPassword">Contraseña actual</label>
+                    <input
+                        type="password"
+                        id="oldPassword"
+                        value={oldPassword}
+                        placeholder="Escribe tu contraseña actual..."
+                        onChange={(e) => setOldPassword(e.target.value)}
+                    />
+
+                    <label htmlFor="newPassword">Nueva contraseña</label>
                     <div className="contenedor-password">
                         <input
                             type={showPassword ? "text" : "password"}
-                            id="password"
-                            value={password}
-                            placeholder="********"
-                            onChange={(e) => setPassword(e.target.value)}
+                            id="newPassword"
+                            value={newPassword}
+                            placeholder="Escribe tu nueva contraseña..."
+                            onChange={(e) => setNewPassword(e.target.value)}
                         />
                         <span
                             className="ver-password"
@@ -129,8 +152,8 @@ const EditProfile = () => {
                     </div>
 
                     <div className="form-actions">
-                        <button type="submit" className="save-btn"> Guardar </button>
-                        <button type="button" className="cancel-btn" onClick={handleCancel}> Cancelar </button>
+                        <button type="submit" className="save-btn">Guardar</button>
+                        <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
                     </div>
                 </form>
             </div>
