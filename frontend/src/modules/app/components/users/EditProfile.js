@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { changePassword, updateProfile } from "../../../../backend/userService";
 import { getServiceToken } from "../../../../backend/appFetch";
 
-const EditProfile = () => {
+const EditProfile = ({changePassword = false}) => {
     const [profile, setProfile] = useState(null);
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
@@ -83,12 +83,13 @@ const EditProfile = () => {
     return (
         <div className="contenedor">
             <div className="caja-edit">
-                <h2 className="titulo">Editar perfil</h2>
+                {!changePassword && <h2 className="titulo">Editar perfil</h2>}
+                {changePassword && <h2 className="titulo">Cambiar contraseña</h2>}
 
-                <div className="edit-profile-photo"> Foto de perfil </div>
+                {!changePassword && <div className="edit-profile-photo"> Foto de perfil </div>}
 
-                <form className="form" onSubmit={handleSave}>
-                    <label htmlFor="name">Nombre</label>
+                {!changePassword && <form className="form" onSubmit={handleSave}>
+                    {<label htmlFor="name">Nombre</label>}
                     <input
                         type="text"
                         id="name"
@@ -127,6 +128,13 @@ const EditProfile = () => {
                         onChange={(e) => setPhoneNumber(e.target.value)}
                     />
 
+                    <div className="form-actions">
+                        <button type="submit" className="save-btn">Guardar</button>
+                        <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
+                    </div>
+                </form>}
+
+                {changePassword && <form className="form" onSubmit={handleSave}>
                     <label htmlFor="oldPassword">Contraseña actual</label>
                     <input
                         type="password"
@@ -155,7 +163,7 @@ const EditProfile = () => {
                         <button type="submit" className="save-btn">Guardar</button>
                         <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
                     </div>
-                </form>
+                </form>}
             </div>
         </div>
     );

@@ -2,14 +2,14 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import renderer from "react-test-renderer";
-import Home from "../../modules/app/components/users/Home";
+import Login from "../../modules/app/components/users/Login";
 
 describe.skip("Home", () => {
   it("renders correctly", () => {
     const tree = renderer
       .create(
         <MemoryRouter>
-          <Home />
+          <Login />
         </MemoryRouter>
       )
       .toJSON();
@@ -19,7 +19,7 @@ describe.skip("Home", () => {
   it("calculates the value as expected", async () => {
     render(
       <MemoryRouter>
-        <Home />
+        <Login />
       </MemoryRouter>
     );
 

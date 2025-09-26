@@ -40,6 +40,10 @@ const Profile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
     }
 
+    const handleChangePassword = () => {
+        navigate("/users/profile/change-password");
+    }
+
     return (
         <div className="profile">
             <div className="profile-container">
@@ -54,6 +58,7 @@ const Profile = () => {
                     <div className="profile-actions">
                         <button className="return-init-button" onClick={handleReturnInit}> Volver al inicio </button>
                         <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
+                        <button className="edit-profile-button" onClick={handleChangePassword}> Cambiar contraseña </button>
                         <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
                     </div>
                 </div>

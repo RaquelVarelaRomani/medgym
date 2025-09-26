@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { login } from "../../../../backend/userService";
 // OJO! Importa estilos definidos en CSS
-import "./Home.css";
+import "./Login.css";
 import { Link } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ import { appFetch, fetchConfig, setServiceToken } from "../../../../backend/appF
 
 
 // Definición componente funcional (el que React renderiza como pantalla)
-const Home = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -168,4 +168,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;
