@@ -90,7 +90,7 @@ const Routines = () => {
 
     const isRoutineCreator = (routine) => {
         if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.id;
+        return currentUser.id === routine.trainerId;
     }
     const handleEdit = (e, routineId) => {
         e.preventDefault();
