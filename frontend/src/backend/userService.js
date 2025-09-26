@@ -10,10 +10,6 @@ import {
 const processLoginSignUp = (authenticatedUser, reauthenticationCallback) => {
   setServiceToken(authenticatedUser.serviceToken);
   setReauthenticationCallback(reauthenticationCallback);
-
-  //Guardamos el usuario en el localStorage
-  localStorage.setItem("user", JSON.stringify(authenticatedUser));
-  localStorage.setItem("userId", authenticatedUser.id); 
 }
 
 export const login = (
@@ -49,10 +45,7 @@ export const tryLoginFromServiceToken = (
   appFetch(
     "/users/loginFromServiceToken",
     fetchConfig("POST"),
-    (authenticatedUser) => {
-      processLoginSignUp(authenticatedUser, reauthenticationCallback);
-      onSuccess(authenticatedUser);
-    },
+    (authenticatedUser) => onSuccess(authenticatedUser),
     () => removeServiceToken()
   );
 };
@@ -68,19 +61,14 @@ export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) =>
     onErrors
   );
 
-export const logout = () => {
-  removeServiceToken();
-  localStorage.removeItem("user");
-  localStorage.removeItem("userId");
-}
+export const logout = () => removeServiceToken();
 
-/*
-export const getProfile = (id, onSuccess, onErrors) =>
-  appFetch(`/users/${id}`, fetchConfig("GET"), onSuccess, onErrors);
-*/
-
-export const updateProfile = (user, onSuccess, onErrors) =>
-  appFetch(`/users/${user.id}`, fetchConfig("PUT", user), onSuccess, onErrors);
+export const updateProfile = (user, onSuccess, onErrors) => appFetch(
+  `/users/${user.id}`,
+  fetchConfig("PUT", user),
+  onSuccess,
+  onErrors
+);
 
 export const changePassword = (
   id,
