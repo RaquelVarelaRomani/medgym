@@ -8,14 +8,12 @@ public class RoutineExercise {
     private Long id;
     private Routine routine;
     private Exercise exercise;
-    private String description;
 
     public RoutineExercise() {}
 
-    public RoutineExercise(Routine routine, Exercise exercise, String description) {
+    public RoutineExercise(Routine routine, Exercise exercise) {
         this.routine = routine;
         this.exercise = exercise;
-        this.description = description;
     }
 
     @Id
@@ -45,11 +43,4 @@ public class RoutineExercise {
         this.exercise = exercise;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

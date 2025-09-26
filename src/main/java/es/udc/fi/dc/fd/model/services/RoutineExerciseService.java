@@ -7,14 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RoutineExerciseService {
-    RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, String description)
+    RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId)
             throws InstanceNotFoundException, PermissionException;
 
     void removeExerciseFromRoutine(Long userId, Long routineId, Long exerciseId)
-            throws InstanceNotFoundException, PermissionException;
-
-    RoutineExercise updateExerciseOnRoutine(Long userId, Long routineId, Long exerciseId,
-                                            String description)
             throws InstanceNotFoundException, PermissionException;
 
     Page<RoutineExercise> getExercisesForRoutines(Long routineId, Pageable pageable);

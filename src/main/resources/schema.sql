@@ -42,7 +42,6 @@ CREATE TABLE exercises (
 
 CREATE TABLE routine_exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    description TEXT,
     routine_id BIGINT NOT NULL,
     exercise_id BIGINT NOT NULL,
 

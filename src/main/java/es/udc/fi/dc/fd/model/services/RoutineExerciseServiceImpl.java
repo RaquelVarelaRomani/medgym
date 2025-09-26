@@ -27,7 +27,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private ExerciseDao exerciseDao;
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, String description)
+    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId)
             throws InstanceNotFoundException, PermissionException {
         User user = permissionChecker.checkUser(userId);
 
@@ -48,7 +48,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new PermissionException();
         }
 
-        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, description);
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -68,26 +68,6 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         }
 
         routineExerciseDao.delete(routineExercise);
-    }
-
-    @Override
-    public RoutineExercise updateExerciseOnRoutine(Long userId, Long routineId, Long exerciseId,
-                                                   String description)
-            throws InstanceNotFoundException, PermissionException {
-        User user = permissionChecker.checkUser(userId);
-
-        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
-        if(opRoutineExercise.isEmpty()) {
-            throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
-        }
-        RoutineExercise routineExercise = opRoutineExercise.get();
-
-        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
-            throw new PermissionException();
-        }
-
-        routineExercise.setDescription(description);
-        return routineExerciseDao.save(routineExercise);
     }
 
     @Override

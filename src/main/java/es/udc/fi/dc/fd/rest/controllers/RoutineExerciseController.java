@@ -26,15 +26,7 @@ public class RoutineExerciseController {
     public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId,
                                                  @PathVariable Long routineId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException {
-        return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, routineId, params.getExerciseId(),
-                params.getDescription()));
-    }
-
-    @PutMapping("/{exerciseId}")
-    public RoutineExerciseDto updateRoutineExercise(
-            @PathVariable Long routineId, @PathVariable Long exerciseId, @RequestAttribute Long userId, @RequestBody RoutineExerciseDto params)
-            throws PermissionException, InstanceNotFoundException {
-        return toRoutineExerciseDto(routineExerciseService.updateExerciseOnRoutine(userId, routineId, exerciseId, params.getDescription()));
+        return toRoutineExerciseDto(routineExerciseService.addExerciseToRoutine(userId, routineId, params.getExerciseId()));
     }
 
     @DeleteMapping("/{exerciseId}")
