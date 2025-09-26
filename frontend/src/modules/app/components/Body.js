@@ -10,6 +10,7 @@ import RoutineDetails from "./routines/RoutineDetails";
 import CreateRoutine from "./routines/CreateRoutine"
 import Exercises from "./routines/Exercises";
 import Test from "./Test";
+import EditRoutine from "./routines/EditRoutine";
 
 const Body = () => {
   return (
@@ -18,6 +19,7 @@ const Body = () => {
         <Route index exact element={<Home />} />
         <Route path="/routines" element={<Routines />} />
         <Route path="routines/new" element={<CreateRoutine />} />
+        <Route path="routines/edit/:id" element={<EditRoutine />} />
         <Route path="routines/:id" element={<RoutineDetails />} />
         <Route path="exercises" element={<Exercises />} />
         <Route path="/test" element={<Test />} />
