@@ -1,38 +1,47 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./CreateRoutine.css";
 import { useNavigate } from "react-router-dom";
 import RoutineDetails from "./RoutineDetails";
+import * as exerciseService from "../../../../backend/exerciseService";
+import * as routineService from "../../../../backend/routineService";
+import * as routineExerciseService from "../../../../backend/routineExerciseService";
 
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
-
-    const [routineData, setRoutineData] = useState({
-        titulo: "",
-        descripcion: ""
-    });
-
-    const [exercises, setExercises] = useState([{
-        id: 1,
-        nombre: "",
-        descripcion: ""
-    }]);
-
+    const [routineData, setRoutineData] = useState({titulo: "", descripcion: ""});
+    const [exercises, setExercises] = useState([{id: null, nombre: "", descripcion: ""}]);
+    const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [titleError, setTitleError] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // CAMBIAR: Ejercicios de ejemplo - conectar con backend
-    const availableExercises = [
-        "curl biceps",
-        "curl femoral sentado",
-        "press banca",
-        "sentadilla",
-        "peso muerto"
-    ];
+    const loadExercises = () => {
+        setLoading(true);
+        setError(null);
+
+        exerciseService.getAllExercises(
+            (data) => {
+                const exercisesArray = data.content ? data.content : data;
+                setAvailableExercises(exercisesArray);
+                setLoading(false);
+            },
+            (err) => {
+                console.error("Error loading exercises:", err);
+                setError("Error al cargar los ejercicios disponibles");
+                setLoading(false);
+            }
+        );
+    };
+
+    useEffect(() => {
+        loadExercises();
+    }, []);
 
     const filteredExercises = availableExercises.filter(exercise =>
-        exercise.toLowerCase().includes(searchTerm.toLowerCase())
+        exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleInputChange = (e) => {
@@ -67,8 +76,9 @@ const CreateRoutine = () => {
     };
 
 
-    const handleSelectExercise = (exerciseIndex, exerciseName) => {
-        handleExerciseChange(exerciseIndex, "nombre", exerciseName);
+    const handleSelectExercise = (exerciseIndex, selectedExercise) => {
+        handleExerciseChange(exerciseIndex, "id", selectedExercise.id);
+        handleExerciseChange(exerciseIndex, "nombre", selectedExercise.name);
         setShowExerciseSearch(null);
         setSearchTerm("");
     };
@@ -78,10 +88,57 @@ const CreateRoutine = () => {
     };
 
     const handleSave = () => {
-        // CAMBIAR: conectar con añadir rutina en backend para guardar datos
-        console.log("Añadiendo rutina:", { ...routineData, exercises });
-        navigate("/routines");
+        if (!routineData.titulo.trim()) {
+            setTitleError("El título es obligatorio");
+            return;
+        }
+
+        const storedUser = sessionStorage.getItem("authenticatedUser");
+        let trainerId = null;
+
+        if (storedUser) {
+            const authUser = JSON.parse(storedUser);
+            trainerId = authUser.id;
+        }
+
+        routineService.createRoutine(
+            routineData.titulo,
+            routineData.descripcion,
+            trainerId,
+            (createdRoutine) => {
+                console.log("Routine created:", createdRoutine);
+                const routineId = createdRoutine.id;
+
+                //crear ejercicios
+                const exercisesToSave = exercises.map(ex =>
+                    routineExerciseService.createRoutineExercise(
+                        routineId,
+                        ex.id,
+                        ex.descripcion,
+                        () => {},
+                        (err) => console.error("Error adding exercise:", err)
+                    )
+                );
+
+                Promise.all(exercisesToSave).finally(() => {
+                    navigate("/routines");
+                });
+            },
+            (error) => {
+                console.error("Error creating routine:", error);
+                alert("No se pudo crear la rutina. Intenta de nuevo.");
+            },
+        );
     };
+
+    if (loading) return <div>Cargando ejercicios...</div>;
+    if (error)
+        return (
+            <div>
+                <p>{error}</p>
+                <button onClick={loadExercises}>Reintentar</button>
+            </div>
+        );
 
     return (
         <div className="contenedor-create-routine">
@@ -153,13 +210,13 @@ const CreateRoutine = () => {
                             
                             {showExerciseSearch === index && searchTerm && (
                                 <div className="ejercicio-dropdown">
-                                    {filteredExercises.map((ex, i) => (
+                                    {filteredExercises.map((exercise, i) => (
                                         <div
                                             key={i}
                                             className="ejercicio-option"
-                                            onClick={() => handleSelectExercise(index, ex)}
+                                            onClick={() => handleSelectExercise(index, exercise)}
                                         >
-                                            {ex}
+                                            {exercise.name}
                                         </div>
                                     ))}
                                 </div>
