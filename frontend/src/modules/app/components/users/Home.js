@@ -26,7 +26,7 @@ const Home = () => {
   const handleSubmit = (evento) => {
     evento.preventDefault(); // evitar que el formulario recargue la página por defecto
 
-    
+
     //LLAMO AL BACKEND
     appFetch(
       //primer argumento
@@ -34,7 +34,7 @@ const Home = () => {
       //segundo (las opciones de la peticion)
       fetchConfig("POST", { email, password }),
       //tercero (peticion que se ejecuta si la respuesta es correcta)
-      (data) => { 
+      (data) => {
         //MUESTRA POR CONSOLA LO QUE DEVUELVE EL BACKEND -> CAMBIAR
         console.log("Login correcto:", data);
 
@@ -43,10 +43,22 @@ const Home = () => {
           setServiceToken(data.token);
         }
 
-        
+        //guardar datos para usar en otros componentes
+        if (data.user || data){
+          const userData = data.user || data;
+          sessionStorage.setItem('authenticatedUser', JSON.stringify({
+            id: userData.id,
+            name: userData.name,
+            surname: userData.surname,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber,
+            role: userData.role
+          }));
+        }
+
         navigate("/routines");
       },
-      (error) => { 
+      (error) => {
         console.error("Error en login:", error);
         setError("Usuario o contraseña incorrectos");
       }

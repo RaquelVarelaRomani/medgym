@@ -45,6 +45,10 @@ const Routines = () => {
     { id: 3, titulo: "Ejemplo entrenamiento nº 3", entrenador: "Entrenador1" },
   ];
 
+    //const [routines, setRoutines] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     //CAMBIAR: hacer funcion auxiliar para mapear int a role
     const isClient = () => testUser.role === 0;
     const isTrainer = () => testUser.role === 1;
