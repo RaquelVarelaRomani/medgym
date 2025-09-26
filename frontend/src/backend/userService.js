@@ -12,14 +12,7 @@ const processLoginSignUp = (authenticatedUser, reauthenticationCallback) => {
   setReauthenticationCallback(reauthenticationCallback);
 }
 
-export const login = (
-  email,
-  password,
-  onSuccess,
-  onErrors,
-  reauthenticationCallback
-) =>
-  appFetch(
+export const login = (email, password, onSuccess, onErrors, reauthenticationCallback) => appFetch(
     "/users/login",
     fetchConfig("POST", { email, password }),
     (authenticatedUser) => {
@@ -29,10 +22,7 @@ export const login = (
     onErrors
   );
 
-export const tryLoginFromServiceToken = (
-  onSuccess,
-  reauthenticationCallback
-) => {
+export const tryLoginFromServiceToken = (onSuccess, reauthenticationCallback) => {
   const serviceToken = getServiceToken();
 
   if (!serviceToken) {
@@ -50,8 +40,7 @@ export const tryLoginFromServiceToken = (
   );
 };
 
-export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => 
-  appFetch(
+export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => appFetch(
     "/users/signUp",
     fetchConfig("POST", user),
     (authenticatedUser) => {
@@ -59,43 +48,38 @@ export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) =>
       onSuccess(authenticatedUser);
     },
     onErrors
-  );
+);
 
 export const logout = () => removeServiceToken();
 
 export const updateProfile = (user, onSuccess, onErrors) => appFetch(
-  `/users/${user.id}`,
-  fetchConfig("PUT", user),
-  onSuccess,
-  onErrors
+    `/users/${user.id}`,
+    fetchConfig("PUT", user),
+    onSuccess,
+    onErrors
 );
 
-export const changePassword = (
-  id,
-  oldPassword,
-  newPassword,
-  onSuccess,
-  onErrors
-) =>
-  appFetch(
+export const changePassword = (id, oldPassword, newPassword, onSuccess, onErrors) => appFetch(
     `/users/${id}/changePassword`,
     fetchConfig("POST", { oldPassword, newPassword }),
     onSuccess,
     onErrors
-  );
+);
 
-  export const getUser = (id, onSuccess, onErrors) => appFetch(
+export const getUser = (id, onSuccess, onErrors) => appFetch(
     `/users/${id}`,
     fetchConfig("GET"),
     onSuccess,
     onErrors
 );
+
 export const getAllUsers = (onSuccess, onErrors) => appFetch(
     `/users`,
     fetchConfig("GET"),
     onSuccess,
     onErrors
 );
+
 export const deleteUser = (id, onSuccess, onErrors) => appFetch(
     `/users/${id}`,
     fetchConfig("DELETE"),
