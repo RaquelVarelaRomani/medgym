@@ -173,9 +173,8 @@ const Routines = () => {
                 <h3>{routine.name}</h3> {/*Ya usamos h2 en el titulo grande*/}
                 <p>
                     Generado por{" "}
-                    {routine.trainerName || routine.trainerSurname
-                        ? `${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim()
-                        : "Entrenador desconocido"}
+                    {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
+                        "Entrenador desconocido"}
                 </p> {/*CAMBIAR: tiene que funcionar con el backend */}
 
                 {/*boton editar y borrar para admins y creador de las rutinas*/}

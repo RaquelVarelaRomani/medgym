@@ -18,8 +18,14 @@ export const getRoutineExercise = (routineId, exerciseId, onSuccess, onErrors) =
     onErrors
 )
 
-// update ya no tiene sentido ya que no tiene atributos propios
+export const getRoutineExercises = (routineId, onSuccess, onErrors) => appFetch(
+    `/routines/${routineId}/exercises`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
 
+// update ya no tiene sentido ya que no tiene atributos propios
 export const deleteRoutineExercise = (routineId, exerciseId, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises/${exerciseId}`,
     fetchConfig("DELETE"),

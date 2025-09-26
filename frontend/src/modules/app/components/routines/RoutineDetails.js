@@ -1,33 +1,21 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 // OJO! Importa estilos definidos en CSS
 import "./RoutineDetails.css";
 import { Link } from "react-router-dom";
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 import { useParams, useNavigate } from "react-router-dom";
+import * as routineService from "../../../../backend/routineService";
+import * as routineExerciseService from "../../../../backend/routineExerciseService";
 
 const RoutineDetails = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [routine, setRoutine] = useState(null);
+  const [exercises, setExercises] = useState([]);
   const [expandedExercises, setExpandedExercises] = useState({});
-
-  //datos de ejemplo mientras no se conecta al backend. BORRAR LUEGO!
-  const routine = {
-    id: 3,
-    name: "Entrenamiento n° 3",
-    description: "Ejemplo de descripción del entrenamiento n°3.",
-    exercises: [
-      {
-        id: 1,
-        title: "Título ejercicio1",
-        description: "Ejemplo de descripción del ejercicio n°1.",
-      },
-      {
-        id: 2,
-        title: "Título ejercicio2",
-        description: "Ejemplo de descripción del ejercicio n°2.",
-      },
-    ]
-  };
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {
@@ -38,8 +26,66 @@ const RoutineDetails = () => {
   };
 
   const handleBack = () => {
-    navigate("/routines"); //comprobar ruta
+    navigate("/routines");
   };
+
+    const loadRoutine = () => {
+        setLoading(true);
+        setError(null);
+
+        routineService.getRoutine(
+            id,
+            (routineData) => {
+                console.log("Routine info:", routineData);
+
+                const routineObj = routineData.content
+                    ? routineData.content[0]
+                    : routineData;
+
+                setRoutine(routineObj);
+
+                routineExerciseService.getRoutineExercises(
+                    id,
+                    (routineExercisesPage) => {
+                        console.log("Routine exercises:", routineExercisesPage);
+
+                        const exercisesArray = routineExercisesPage.content
+                            ? routineExercisesPage.content
+                            : routineExercisesPage;
+
+                        setExercises(exercisesArray);
+                        setLoading(false);
+                    },
+                    (exerciseErrors) => {
+                        console.error("Error loading exercises:", exerciseErrors);
+                        setError("Error al cargar los ejercicios");
+                        setLoading(false);
+                    }
+                );
+            },
+            (routineErrors) => {
+                console.error("Error loading routine:", routineErrors);
+                setError("Error al cargar la rutina");
+                setLoading(false);
+            }
+        );
+    };
+
+
+    useEffect(() => {
+        loadRoutine();
+    }, [id]);
+
+    if (loading) return <div className="contenedor-routine-details">Cargando rutina…</div>;
+    if (error)
+        return (
+            <div className="contenedor-routine-details">
+                <p>{error}</p>
+                <button onClick={() => window.location.reload()}>Reintentar</button>
+            </div>
+        );
+
+    if (!routine) return null;
 
   return (
       <div className="contenedor-routine-details">
@@ -56,13 +102,13 @@ const RoutineDetails = () => {
         </div>
 
           <div className="lista-ejercicios">
-            {routine.exercises.map((exercise) => (
+            {exercises.map((exercise) => (
                 <div key={exercise.id} className="ejercicio">
                   <div
                       className="header-ejercicio"
                       onClick={() => toggleExercise(exercise.id)}
                   >
-                    <h3>{exercise.title}</h3>
+                    <h3>{exercise.exerciseName}</h3>
                     <span className={`flecha ${expandedExercises[exercise.id] ? 'expandida' : ''}`}>
                   &#9660; {/* flecha para desplegar */}
                 </span>
@@ -70,7 +116,7 @@ const RoutineDetails = () => {
 
                   {expandedExercises[exercise.id] && (
                       <div className="ejercicio-contenido">
-                        <p className="descripcion-ejercicio">{exercise.description}</p>
+                        <p className="descripcion-ejercicio">{exercise.exerciseDescription}</p>
                       </div>
                   )}
                 </div>
