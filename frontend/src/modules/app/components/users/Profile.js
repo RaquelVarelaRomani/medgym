@@ -1,35 +1,38 @@
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
-import { getProfile, logout } from "../../../../backend/userService";
+import { logout } from "../../../../backend/userService";
+import {getServiceToken} from "../../../../backend/appFetch";
 
 const Profile = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
 
+    //cargar datos de usuario
     useEffect(() => {
-        const userId = localStorage.getItem("userId");
+        const token = getServiceToken();
+        if (!token) {
+            navigate("/");
+            return;
+        }
 
-        getProfile(
-            userId,
-            (data) => {
-                setProfile(data);
-            },
-            (error) => {
-                console.error("Error al cargar el perfil:", error);
-                alert("No se pudo cargar el perfil");
-            }
-        );
-    }, []);
+        const storedUser = sessionStorage.getItem('authenticatedUser');
+        if (storedUser) {
+            setProfile(JSON.parse(storedUser));
+        } else {
+            console.error("No hay usuario guardado");
+            alert("No se pudo cargar el perfil");
+        }
+
+    }, [navigate]);
 
     const handleReturnInit = () => {
-        localStorage.removeItem("userId");
         navigate("/routines"); // Redirige a la página principal
     }
 
     const handleLogOut = () => {
         logout();
-        localStorage.removeItem("userId");
+        sessionStorage.removeItem("authenticatedUser");
         navigate("/"); // Redirige al inicio de sesión
     }
 

@@ -1,44 +1,57 @@
 import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
 import { useNavigate } from "react-router-dom";
-import { getProfile, updateProfile } from "../../../../backend/userService";
+import { updateProfile } from "../../../../backend/userService";
+import { getServiceToken } from "../../../../backend/appFetch";
 
 const EditProfile = () => {
     const [profile, setProfile] = useState(null);
-    const [username, setUsername] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const userId = localStorage.getItem("userId");
-        getProfile(
-            userId,
-            (data) => {
-                setProfile(data);
-                setUsername(data.name);
-                setEmail(data.email);
-            },
-            (error) => {
-                console.error("Error al cargar el perfil:", error);
-                alert("No se pudo cargar el perfil");
-            }
-        );
-    }, []);
+        const token = getServiceToken();
+        if (!token) {
+            navigate("/");
+            return;
+        }
+        const storedUser = sessionStorage.getItem("authenticatedUser");
+        if(storedUser) {
+            const user = JSON.parse(storedUser);
+            setProfile(user);
+            setName(user.name);
+            setSurname(user.surname);
+            setEmail(user.email);
+            setPhoneNumber(user.phoneNumber);
+        } else {
+            console.error("No hay usuario guardado");
+            alert("No se pudo cargar el perfil");
+        }
+    }, [navigate]);
 
     const handleSave = (e) => {
         e.preventDefault();
         const updatedUser = {
             id: profile.id,
-            name: username,
-            email: email,
+            name,
+            surname,
+            email,
+            phoneNumber,
         }
         
         updateProfile(
             updatedUser,
             () => {
+                const newUser = { ...profile, name, surname, email, phoneNumber};
+                sessionStorage.setItem("authenticatedUser", JSON.stringify(newUser));
+                setProfile(newUser);
+
                 alert("Perfil actualizado con éxito");
                 navigate("/users/profile"); // Redirige al perfil tras guardar
             },
@@ -56,21 +69,28 @@ const EditProfile = () => {
     return (
         <div className="contenedor">
             <div className="caja-edit">
-                {/* TÍTULO */}
                 <h2 className="titulo">Editar perfil</h2>
 
-                {/* FOTO DE PERFIL */}
                 <div className="edit-profile-photo"> Foto de perfil </div>
 
-                {/* FORMULARIO */}
                 <form className="form" onSubmit={handleSave}>
-                    <label htmlFor="username">Nombre de usuario</label>
+                    <label htmlFor="name">Nombre</label>
                     <input
                         type="text"
-                        id="username"
-                        value={username}
-                        placeholder="Escribe tu nombre de usuario..."
-                        onChange={(e) => setUsername(e.target.value)}
+                        id="name"
+                        value={name}
+                        placeholder="Escribe tu nombre..."
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+
+                    <label htmlFor="surname">Apellidos</label>
+                    <input
+                        type="text"
+                        id="surname"
+                        value={surname}
+                        placeholder="Escribe tus apellidos..."
+                        onChange={(e) => setSurname(e.target.value)}
                         required
                     />
 
@@ -83,7 +103,15 @@ const EditProfile = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                    
+
+                    <label htmlFor="phoneNumber">Teléfono</label>
+                    <input
+                        type="text"
+                        id="phoneNumber"
+                        value={phoneNumber}
+                        placeholder="Escribe tu teléfono..."
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
 
                     <label htmlFor="password">Contraseña</label>
                     <div className="contenedor-password">
@@ -96,13 +124,10 @@ const EditProfile = () => {
                         />
                         <span
                             className="ver-password"
-                            //al hacer clic en el ojo cambia el estado de ShowPassword
                             onClick={() => setShowPassword(!showPassword)}
                         > &#128065; </span>
-                        
                     </div>
 
-                    {/* BOTONES */}
                     <div className="form-actions">
                         <button type="submit" className="save-btn"> Guardar </button>
                         <button type="button" className="cancel-btn" onClick={handleCancel}> Cancelar </button>

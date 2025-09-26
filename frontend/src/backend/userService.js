@@ -10,6 +10,10 @@ import {
 const processLoginSignUp = (authenticatedUser, reauthenticationCallback) => {
   setServiceToken(authenticatedUser.serviceToken);
   setReauthenticationCallback(reauthenticationCallback);
+
+  //Guardamos el usuario en el localStorage
+  localStorage.setItem("user", JSON.stringify(authenticatedUser));
+  localStorage.setItem("userId", authenticatedUser.id); 
 }
 
 export const login = (
@@ -45,12 +49,15 @@ export const tryLoginFromServiceToken = (
   appFetch(
     "/users/loginFromServiceToken",
     fetchConfig("POST"),
-    (authenticatedUser) => onSuccess(authenticatedUser),
+    (authenticatedUser) => {
+      processLoginSignUp(authenticatedUser, reauthenticationCallback);
+      onSuccess(authenticatedUser);
+    },
     () => removeServiceToken()
   );
 };
 
-export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => {
+export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => 
   appFetch(
     "/users/signUp",
     fetchConfig("POST", user),
@@ -60,12 +67,17 @@ export const signUp = (user, onSuccess, onErrors, reauthenticationCallback) => {
     },
     onErrors
   );
-};
 
-export const logout = () => removeServiceToken();
+export const logout = () => {
+  removeServiceToken();
+  localStorage.removeItem("user");
+  localStorage.removeItem("userId");
+}
 
+/*
 export const getProfile = (id, onSuccess, onErrors) =>
   appFetch(`/users/${id}`, fetchConfig("GET"), onSuccess, onErrors);
+*/
 
 export const updateProfile = (user, onSuccess, onErrors) =>
   appFetch(`/users/${user.id}`, fetchConfig("PUT", user), onSuccess, onErrors);
@@ -83,3 +95,22 @@ export const changePassword = (
     onSuccess,
     onErrors
   );
+
+  export const getUser = (id, onSuccess, onErrors) => appFetch(
+    `/users/${id}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);
+export const getAllUsers = (onSuccess, onErrors) => appFetch(
+    `/users`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);
+export const deleteUser = (id, onSuccess, onErrors) => appFetch(
+    `/users/${id}`,
+    fetchConfig("DELETE"),
+    onSuccess,
+    onErrors
+);
