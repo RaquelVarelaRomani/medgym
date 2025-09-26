@@ -33,19 +33,6 @@ function rot13(s) {
 // Definición componente funcional (el que React renderiza como pantalla)
 const Routines = () => {
     const navigate = useNavigate();
-    //CAMBIAR: usuario de prueba para vista de entrenador
-    {/*const testUser = {
-        id: 1,
-        nombre: "Entrenador1",
-        role: 1 //trainer
-    };
-
-    //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
-    const routines = [
-    { id: 1, titulo: "Ejemplo entrenamiento nº 1", entrenador: "Entrenador2" },
-    { id: 2, titulo: "Ejemplo entrenamiento nº 2", entrenador: "Entrenador1" },
-    { id: 3, titulo: "Ejemplo entrenamiento nº 3", entrenador: "Entrenador1" },
-  ];*/}
 
     const [routines, setRoutines] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -184,11 +171,12 @@ const Routines = () => {
                 className="caja-rutina"
             >
                 <h3>{routine.name}</h3> {/*Ya usamos h2 en el titulo grande*/}
-                <p>Generado por {
-                    routine.trainer ?
-                        `${routine.trainer.name} ${routine.trainer.surname}` :
-                        'Entrenador desconocido'
-                }</p> {/*CAMBIAR: tiene que funcionar con el backend */}
+                <p>
+                    Generado por{" "}
+                    {routine.trainerName || routine.trainerSurname
+                        ? `${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim()
+                        : "Entrenador desconocido"}
+                </p> {/*CAMBIAR: tiene que funcionar con el backend */}
 
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
                 {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
