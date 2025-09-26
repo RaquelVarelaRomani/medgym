@@ -101,7 +101,19 @@ const Routines = () => {
     const handleDelete = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Delete routine", routineId);
+
+        if (!window.confirm("¿Seguro que quieres eliminar esta rutina?")) return;
+
+        routineService.deleteRoutine(
+            routineId,
+            () => {
+                setRoutines(prev => prev.filter(r => r.id !== routineId));
+            },
+            (error) => {
+                console.error("Error deleting routine:", error);
+                alert("No se pudo eliminar la rutina. Intenta de nuevo.");
+            }
+        );
     };
 
     const handleAddRoutine = () => {
