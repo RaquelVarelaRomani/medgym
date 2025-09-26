@@ -16,16 +16,20 @@ public class RoutineDto {
     private LocalDateTime creationDate;
     private LocalDateTime modificationDate;
     private Long trainerId;
+    private String trainerName;
+    private String trainerSurame;
 
     public RoutineDto() {}
 
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId) {
+    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurame) {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
         this.trainerId = trainerId;
+        this.trainerName = trainerName;
+        this.trainerSurame = trainerSurame;
     }
 
     public Long getId() {
@@ -78,5 +82,21 @@ public class RoutineDto {
 
     public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
+    }
+
+    public String getTrainerName() {
+        return trainerName;
+    }
+
+    public void setTrainerName(String trainerName) {
+        this.trainerName = trainerName;
+    }
+
+    public String getTrainerSurame() {
+        return trainerSurame;
+    }
+
+    public void setTrainerSurame(String trainerSurame) {
+        this.trainerSurame = trainerSurame;
     }
 }
