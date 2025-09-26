@@ -38,9 +38,9 @@ const Home = () => {
         //MUESTRA POR CONSOLA LO QUE DEVUELVE EL BACKEND -> CAMBIAR
         console.log("Login correcto:", data);
 
-        if (data.token) {
+        if (data.serviceToken) {
           //Si el backend dio un token se guarda
-          setServiceToken(data.token);
+          setServiceToken(data.serviceToken);
         }
 
         //guardar datos para usar en otros componentes
