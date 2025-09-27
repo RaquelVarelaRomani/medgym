@@ -26,7 +26,7 @@ const Login = () => {
   const handleSubmit = (evento) => {
     evento.preventDefault(); // evitar que el formulario recargue la página por defecto
 
-    
+
     //LLAMO AL BACKEND
     appFetch(
       //primer argumento
@@ -34,7 +34,7 @@ const Login = () => {
       //segundo (las opciones de la peticion)
       fetchConfig("POST", { email, password }),
       //tercero (peticion que se ejecuta si la respuesta es correcta)
-      (data) => { 
+      (data) => {
         //MUESTRA POR CONSOLA LO QUE DEVUELVE EL BACKEND -> CAMBIAR
         console.log("Login correcto:", data);
 
@@ -56,10 +56,9 @@ const Login = () => {
           }));
         }
 
-        
         navigate("/routines");
       },
-      (error) => { 
+      (error) => {
         console.error("Error en login:", error);
         setError("Usuario o contraseña incorrectos");
       }

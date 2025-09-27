@@ -12,7 +12,10 @@ body {
   --light-orange: #FFE9C9;
   --accent-orange: #F9C87C;
   --dark-orange: #E02F0F;
-
+  /*oranges background*/
+  --primary-orange-light: #FFD1B3; 
+  --secondary-orange-light: #FFE0B8;
+  --dark-orange-light: #F6B5A9;
   /*neutrals*/
   --white: #FFFFFF;
   --light-gray: #F5F5F5;
@@ -30,6 +33,7 @@ body {
   --white-20: rgba(255, 255, 255, 0.2);
   --white-30: rgba(255, 255, 255, 0.3);
   --white-50: rgba(255, 255, 255, 0.5);
+  --white-70: rgba(255, 255, 255, 0.7);
 
   /*shadows*/
   --shadow-orange: rgba(255, 112, 0, 0.3);

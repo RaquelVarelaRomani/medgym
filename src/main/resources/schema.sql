@@ -42,9 +42,9 @@ CREATE TABLE exercises (
 
 CREATE TABLE routine_exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    description TEXT,
     routine_id BIGINT NOT NULL,
     exercise_id BIGINT NOT NULL,
+    position INT,
 
     CONSTRAINT routine_exercise_id_pk PRIMARY KEY (id),
     CONSTRAINT routine_exercise_routine_id_fk FOREIGN KEY (routine_id)

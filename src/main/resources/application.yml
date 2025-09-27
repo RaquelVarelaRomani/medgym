@@ -9,7 +9,7 @@ spring:
       mode: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: @dataSource.url@
+    url: jdbc:mysql://localhost:3306/medgym?useUnicode=true&characterEncoding=UTF-8
     username: @dataSource.user@
     password: @dataSource.password@
     max-active: 4
@@ -38,6 +38,10 @@ spring:
 server:
   servlet:
     context-path: @project.contextPath@
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 project:
   jwt:
     signKey: WzROun12eUiDvko3UrJ74gNeJz2TWEWPMTh6DxyE8HWXIf4hETUrkM4IUGqqHq66PuVS

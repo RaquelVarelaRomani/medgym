@@ -1,0 +1,158 @@
+.contenedor-routine-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+    padding: 0;
+}
+
+.caja-routine-details {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.boton-atras {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+    color: var(--text-dark);
+    font-weight: bold;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.boton-atras:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, var(--boton-over-orange), var(--primary-orange));
+    box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.titulo-rutina {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    margin-top: 0;
+    text-align: center;
+}
+
+.descripcion-rutina {
+    background: var(--white);
+    border: 3px solid var(--accent-blue);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    box-shadow: 0 2px 5px var(--shadow-light);
+}
+
+.descripcion-rutina p {
+    white-space: pre-wrap;
+}
+
+.lista-ejercicios {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 0 2rem 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.ejercicio {
+    background: none;
+    border: none;
+    border-radius: 10px;
+    overflow: visible;
+    width: 100%;
+    max-width: 600px;
+    transition: all 0.3s ease;
+}
+
+.ejercicio:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--shadow-dark);
+}
+
+.header-ejercicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border: 2px solid var(--dark-gray);
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+    transition: background 0.3s ease;
+}
+
+.header-ejercicio:hover {
+    box-shadow: 0 4px 10px var(--shadow-orange);
+}
+
+.header-ejercicio h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-dark);
+    font-weight: bold;
+}
+
+.flecha {
+    color: var(--text-dark);
+    transition: transform 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.flecha.expandida {
+    transform: rotate(180deg);
+}
+
+.ejercicio-contenido {
+    padding: 20px;
+    background: var(--white-70);
+    animation: slideDown 0.3s ease;
+    border-radius: 10px;
+    margin-top: 1px;
+    box-shadow: var(--shadow-light);
+}
+
+.descripcion-ejercicio {
+    margin: 0 0 15px 0;
+    color: var(--text-dark);
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 15px;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+/* animacion al expandir ejercicios */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

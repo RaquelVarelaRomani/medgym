@@ -9,7 +9,7 @@ import {getServiceToken} from "../../../../backend/appFetch";
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 //import { Link, useNavigate } from "react-router-dom";
 
-// import { config } from "../../../../config/constants.js"; //
+// import { config } from "../../../../config/constants.js"; // 
 
 // Declaración de la función rot13 (comentada correctamente)
 /*
@@ -90,7 +90,7 @@ const Routines = () => {
 
     const isRoutineCreator = (routine) => {
         if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.id;
+        return currentUser.id === routine.trainerId;
     }
     const handleEdit = (e, routineId) => {
         e.preventDefault();
@@ -101,7 +101,19 @@ const Routines = () => {
     const handleDelete = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Delete routine", routineId);
+
+        if (!window.confirm("¿Seguro que quieres eliminar esta rutina?")) return;
+
+        routineService.deleteRoutine(
+            routineId,
+            () => {
+                setRoutines(prev => prev.filter(r => r.id !== routineId));
+            },
+            (error) => {
+                console.error("Error deleting routine:", error);
+                alert("No se pudo eliminar la rutina. Intenta de nuevo.");
+            }
+        );
     };
 
     const handleAddRoutine = () => {
@@ -135,7 +147,7 @@ const Routines = () => {
     }
 
   // return = lo que hay que renderizar en pantalla
-    return (
+  return (
     
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
     <div className="contenedor">
@@ -173,9 +185,8 @@ const Routines = () => {
                 <h3>{routine.name}</h3> {/*Ya usamos h2 en el titulo grande*/}
                 <p>
                     Generado por{" "}
-                    {routine.trainerName || routine.trainerSurname
-                        ? `${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim()
-                        : "Entrenador desconocido"}
+                    {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
+                        "Entrenador desconocido"}
                 </p> {/*CAMBIAR: tiene que funcionar con el backend */}
 
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
@@ -196,15 +207,15 @@ const Routines = () => {
         </div>
 
         {/*Boton CREAR*/}
-        {(isTrainer() || isAdmin()) && (
+      {(isTrainer() || isAdmin()) && (
         <button className="boton-crear" onClick={handleAddRoutine}>
-        +
+          +
         </button>
-    )}
+      )}
         
     </div>
     
-    );
+  );
 };
 
 export default Routines;

@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,8 +29,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private ExerciseDao exerciseDao;
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, String description)
-            throws InstanceNotFoundException, PermissionException {
+    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         User user = permissionChecker.checkUser(userId);
 
         Optional<Routine> opRoutine = routineDao.findById(routineId);
@@ -48,7 +50,14 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new PermissionException();
         }
 
-        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, description);
+        if (routineExerciseDao.existsByRoutineIdAndExerciseId(routineId, exerciseId)) {
+            throw new DuplicateInstanceException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
+        }
+
+        // Note: Position duplicates are allowed in the database, so we don't validate them here
+        // The application can handle position conflicts as needed
+
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, position);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -71,9 +80,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise updateExerciseOnRoutine(Long userId, Long routineId, Long exerciseId,
-                                                   String description)
-            throws InstanceNotFoundException, PermissionException {
+    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         User user = permissionChecker.checkUser(userId);
 
         Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
@@ -86,7 +94,11 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new PermissionException();
         }
 
-        routineExercise.setDescription(description);
+        // Note: Position duplicates are allowed in the database, so we don't validate them here
+        // The application can handle position conflicts as needed
+
+        routineExercise.setPosition(position);
+
         return routineExerciseDao.save(routineExercise);
     }
 
