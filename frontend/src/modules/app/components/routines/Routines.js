@@ -43,7 +43,7 @@ const Routines = () => {
     useEffect(() => {
         const token = getServiceToken();
         if (!token) {
-            navigate("/");
+            navigate("/users/login");
             return;
         }
 

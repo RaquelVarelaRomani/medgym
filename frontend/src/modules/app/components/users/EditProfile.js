@@ -19,7 +19,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
     useEffect(() => {
         const token = getServiceToken();
         if (!token) {
-            navigate("/");
+            navigate("/users/login");
             return;
         }
         const storedUser = sessionStorage.getItem("authenticatedUser");

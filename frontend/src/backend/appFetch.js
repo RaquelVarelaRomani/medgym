@@ -84,6 +84,15 @@ export const getServiceToken = () =>
 export const removeServiceToken = () =>
   sessionStorage.removeItem(config.SERVICE_TOKEN_NAME);
 
+export const setAuthenticatedUser = (authenticatedUser) =>
+    sessionStorage.setItem(config.AUTHENTICATED_USER_NAME, JSON.stringify(authenticatedUser));
+
+export const getAuthenticatedUser = () =>
+    sessionStorage.getItem(config.AUTHENTICATED_USER_NAME);
+
+export const removeAuthenticatedUser = () =>
+    sessionStorage.removeItem(config.AUTHENTICATED_USER_NAME);
+
 export const fetchConfig = (method, body) => {
   const fConfig = {
     method: method,

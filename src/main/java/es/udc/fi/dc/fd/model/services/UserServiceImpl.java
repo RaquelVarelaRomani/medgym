@@ -32,8 +32,12 @@ public class UserServiceImpl implements UserService {
 	public void signUp(User user) throws DuplicateInstanceException {
 
 		if (userDao.existsByEmail(user.getEmail())) {
-			throw new DuplicateInstanceException("project.entities.user", user.getEmail());
+			throw new DuplicateInstanceException("email", user.getEmail());
 		}
+
+        if (userDao.existsByPhoneNumber(user.getPhoneNumber())) {
+            throw new DuplicateInstanceException("phoneNumber", user.getPhoneNumber());
+        }
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user.setRole(User.RoleType.CLIENT);

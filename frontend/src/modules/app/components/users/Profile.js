@@ -12,7 +12,7 @@ const Profile = () => {
     useEffect(() => {
         const token = getServiceToken();
         if (!token) {
-            navigate("/");
+            navigate("/users/login");
             return;
         }
 
@@ -33,7 +33,7 @@ const Profile = () => {
     const handleLogOut = () => {
         logout();
         sessionStorage.removeItem("authenticatedUser");
-        navigate("/"); // Redirige al inicio de sesión
+        navigate("/users/login"); // Redirige al inicio de sesión
     }
 
     const handleEditProfile = () => {
