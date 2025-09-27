@@ -215,7 +215,7 @@ const CreateRoutine = () => {
                                 }}
                             />
                             
-                            {showExerciseSearch === index && searchTerm && (
+                            {showExerciseSearch === index && (
                                 <div className="ejercicio-dropdown">
                                     {filteredExercises.map((exercise, i) => (
                                         <div
