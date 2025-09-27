@@ -92,7 +92,6 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<dataSource.url>jdbc:mysql://localhost:3306/medgym</dataSource.url>
 				<dataSource.user>root</dataSource.user>
 				<dataSource.password>root</dataSource.password>
 			</properties>
@@ -206,6 +205,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+				</configuration>
 			</plugin>
 
 			<!-- Kubernetes deployment config -->
