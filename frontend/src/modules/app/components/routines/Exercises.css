@@ -79,7 +79,7 @@
 .boton-eliminar{
   background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
   color: var(--text-dark);
-  padding: 6px 14px;
+  padding: 6px 0px;
   border: none;
   border-radius: 10px;
   font-size: 10px;

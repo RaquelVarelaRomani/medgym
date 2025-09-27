@@ -111,7 +111,9 @@ const CreateRoutine = () => {
                 const routineId = createdRoutine.id;
 
                 //crear ejercicios
-                const exercisesToSave = exercises.map((ex, index) =>
+                const exercisesToSave = exercises
+                    .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
+                    .map((ex, index) =>
                     routineExerciseService.createRoutineExercise(
                         routineId,
                         ex.id,
@@ -213,7 +215,7 @@ const CreateRoutine = () => {
                                 }}
                             />
                             
-                            {showExerciseSearch === index && searchTerm && (
+                            {showExerciseSearch === index && (
                                 <div className="ejercicio-dropdown">
                                     {filteredExercises.map((exercise, i) => (
                                         <div
