@@ -10,7 +10,9 @@ const EditRoutine = () => {
     const { id } = useParams(); // routine ID from URL
     console.log("Editing routine ID:", id);
     const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "" });
+    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "" });
     const [exercises, setExercises] = useState([{ id: null, nombre: "", descripcion: "" }]);
+    const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -38,6 +40,7 @@ const EditRoutine = () => {
                 console.log("Routine data:", data);
                 const routineObj = data.content ? data.content[0] : data;
                 setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
+                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
 
                 routineExerciseService.getRoutineExercises(
                     id,
@@ -51,6 +54,7 @@ const EditRoutine = () => {
                             descripcion: re.exerciseDescription || re.description || "",
                         }));
                         setExercises(mappedExercises.length ? mappedExercises : [{ id: null, nombre: "", descripcion: "" }]);
+                        setOriginalExercises(mappedExercises);
                         setLoading(false);
                     },
                     (err) => {
@@ -110,9 +114,54 @@ const EditRoutine = () => {
         navigate(`/routines`);
     };
 
-    const handleSave = () => {
-        console.log("Saving routine");
-        navigate(`/routines`);
+    const handleSave = async () => {
+        const titleChanged = routineData.titulo !== originalRoutineData.titulo;
+        const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
+
+        const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
+        const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
+
+        const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0;
+
+        if (!titleChanged && !descriptionChanged && !exercisesChanged) {
+            alert("No hay cambios para guardar.");
+            return;
+        }
+
+        try {
+            if (titleChanged || descriptionChanged) {
+                await new Promise((resolve, reject) => {
+                    routineService.updateRoutine(
+                        id,
+                        routineData.titulo,
+                        routineData.descripcion,
+                        resolve,
+                        reject
+                    );
+                });
+            }
+
+            const addPromises = addedExercises.map(ex =>
+                new Promise((resolve, reject) => {
+                    routineExerciseService.createRoutineExercise(id, ex.id, resolve, reject);
+                })
+            );
+
+            const removePromises = removedExercises.map(ex =>
+                new Promise((resolve, reject) => {
+                    routineExerciseService.deleteRoutineExercise(id, ex.id, resolve, reject);
+                })
+            );
+
+            await Promise.all([...addPromises, ...removePromises]);
+
+            alert("Rutina modificada correctamente.");
+            navigate(`/routines`);
+
+        } catch (error) {
+            console.error("Error saving routine:", error);
+            alert("Error al guardar la rutina. Por favor, inténtelo de nuevo.");
+        }
     };
 
     if (loading) return <div>Cargando rutina...</div>;
