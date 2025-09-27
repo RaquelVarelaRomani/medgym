@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
+import Popup from "../common/Popup";
 
 const EditRoutine = () => {
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ const EditRoutine = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
+    const [popupMessage, setPopupMessage] = useState(null);
 
     const loadExercises = () => {
         exerciseService.getAllExercises(
@@ -190,7 +192,7 @@ const EditRoutine = () => {
         const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
         if (!titleChanged && !descriptionChanged && !exercisesChanged) {
-            alert("No hay cambios para guardar.");
+            setPopupMessage("No hay cambios para guardar");
             return;
         }
 
@@ -258,14 +260,10 @@ const EditRoutine = () => {
         }
 
         if (errorMessage) {
-            alert("Ocurrió un error");
+            setPopupMessage("Ocurrió un error");
         }
         if (successMessage) {
-            alert("Se realizaron los cambios correctamente");
-        }
-
-        if (!errorMessage) {
-            navigate(`/routines`);
+            setPopupMessage("Se realizaron los cambios correctamente")
         }
     };
 
@@ -381,6 +379,12 @@ const EditRoutine = () => {
                     </button>
                 </div>
             </div>
+            <Popup text={popupMessage} show={popupMessage !== null} onOk={() => {
+                setPopupMessage(null);
+                if (popupMessage.startsWith("S") /*chapuza épica, lo sé*/ ) {
+                    navigate(`/routines`);
+                }
+            }} />
         </div>
     );
 };

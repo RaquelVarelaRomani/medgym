@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../../backend/userService";
-import {getServiceToken} from "../../../../backend/appFetch";
+import {getAuthenticatedUser, getServiceToken, removeAuthenticatedUser} from "../../../../backend/appFetch";
+import Popup from "../common/Popup";
 
 const Profile = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 
-    //cargar datos de usuario
     useEffect(() => {
         const token = getServiceToken();
         if (!token) {
@@ -16,12 +17,13 @@ const Profile = () => {
             return;
         }
 
-        const storedUser = sessionStorage.getItem('authenticatedUser');
+        const storedUser = getAuthenticatedUser();
         if (storedUser) {
             setProfile(JSON.parse(storedUser));
         } else {
             console.error("No hay usuario guardado");
-            alert("No se pudo cargar el perfil");
+            // alert("No se pudo cargar el perfil");
+            // Debería redirigir a login
         }
 
     }, [navigate]);
@@ -32,8 +34,8 @@ const Profile = () => {
 
     const handleLogOut = () => {
         logout();
-        sessionStorage.removeItem("authenticatedUser");
-        navigate("/users/login"); // Redirige al inicio de sesión
+        removeAuthenticatedUser();
+        setShowPopup(true);
     }
 
     const handleEditProfile = () => {
@@ -42,6 +44,13 @@ const Profile = () => {
 
     const handleChangePassword = () => {
         navigate("/users/profile/change-password");
+    }
+
+    const roleString = () => {
+        if (profile.role === "CLIENT") return "Cliente";
+        if (profile.role === "TRAINER") return "Entrenador";
+        if (profile.role === "ADMIN") return "Administrador";
+        return "Indefinido";
     }
 
     return (
@@ -68,7 +77,7 @@ const Profile = () => {
                         <>
                             <p><strong>Email:</strong> {profile.email}</p>
                             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
-                            <p><strong>Rol:</strong> {profile.role}</p>
+                            <p><strong>Rol:</strong> {roleString()}</p>
                         </>
                     ) : (
                         <p>Cargando datos...</p>
@@ -76,6 +85,11 @@ const Profile = () => {
                 </div>
                 
             </div>
+
+            <Popup text={"Sesión cerrada"} show={showPopup} onOk={() => {
+                setShowPopup(false);
+                navigate("/users/login");
+            }} />
         </div>
     );
 };

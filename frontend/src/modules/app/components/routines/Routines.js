@@ -3,7 +3,8 @@ import React, {useEffect, useState} from "react";
 import "./Routines.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
-import {getServiceToken} from "../../../../backend/appFetch";
+import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import ConfirmationPopup from "../common/ConfirmationPopup";
 
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
@@ -38,6 +39,7 @@ const Routines = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
+    const [routineToDelete, setRoutineToDelete] = useState(null);
 
     //cargar datos de usuario
     useEffect(() => {
@@ -47,8 +49,8 @@ const Routines = () => {
             return;
         }
 
-        const storedUser = sessionStorage.getItem('authenticatedUser');
-        console.log(JSON.parse(sessionStorage.getItem('authenticatedUser')));
+        const storedUser = getAuthenticatedUser();
+        console.log(JSON.parse(storedUser));
         if (storedUser) {
             setCurrentUser(JSON.parse(storedUser));
         }
@@ -98,12 +100,7 @@ const Routines = () => {
         navigate(`/routines/edit/${routineId}`); //comprobar ruta
     };
 
-    const handleDelete = (e, routineId) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!window.confirm("¿Seguro que quieres eliminar esta rutina?")) return;
-
+    const handleDelete = (routineId) => {
         routineService.deleteRoutine(
             routineId,
             () => {
@@ -196,10 +193,17 @@ const Routines = () => {
                             onClick={(e) => handleEdit(e, routine.id)}>
                             Editar
                         </button>
-                        <button className="boton-eliminar"
-                                onClick={(e) => handleDelete(e, routine.id)}>
+                        <button
+                            className="boton-eliminar"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setRoutineToDelete(routine.id);
+                            }}
+                        >
                             Eliminar
                         </button>
+
                     </div>
                 )}
             </Link>
@@ -212,7 +216,19 @@ const Routines = () => {
           +
         </button>
       )}
-        
+
+        <ConfirmationPopup
+            text="Seguro que quieres eliminar esta rutina?"
+            show={routineToDelete !== null}
+            onOk={() => {
+                if (routineToDelete) {
+                    handleDelete(routineToDelete);
+                }
+                setRoutineToDelete(null);
+            }}
+            onCancel={() => setRoutineToDelete(null)}
+        />
+
     </div>
     
   );
