@@ -59,6 +59,7 @@
 }
 
 .return-init-button {
+    width: 100%;
     padding: 12px 18px;
     font-size: 1rem;
     background: white;
@@ -69,6 +70,7 @@
 }
 
 .edit-profile-button {
+    width: 100%;
     padding: 10px 20px;
     font-size: 1rem;
     background: white;
@@ -79,6 +81,7 @@
 }
 
 .logout-button {
+    width: 100%;
     padding: 10px 20px;
     font-size: 1rem;
     background: #c62828;
