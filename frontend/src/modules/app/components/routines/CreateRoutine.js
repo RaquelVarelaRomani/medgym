@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import "./CreateRoutine.css";
 import { useNavigate } from "react-router-dom";
 import RoutineDetails from "./RoutineDetails";
@@ -17,6 +17,7 @@ const CreateRoutine = () => {
     const [titleError, setTitleError] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const inputContainerRefs = useRef([]);
 
     const loadExercises = () => {
         setLoading(true);
@@ -39,6 +40,23 @@ const CreateRoutine = () => {
     useEffect(() => {
         loadExercises();
     }, []);
+
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (showExerciseSearch !== null && inputContainerRefs.current[showExerciseSearch] && !inputContainerRefs.current[showExerciseSearch].contains(e.target)) {
+                setShowExerciseSearch(null);
+                setSearchTerm("");
+            }
+        };
+
+        if (showExerciseSearch !== null) {
+            document.addEventListener('click', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, [showExerciseSearch]);
 
     const filteredExercises = availableExercises.filter(exercise =>
         exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -195,7 +213,7 @@ const CreateRoutine = () => {
                                 className="icono-papelera"
                                 />
                             </button>
-                        <div className="ejercicio-input-container">
+                        <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 placeholder="Buscar ejercicio o escribir el nombre..."
