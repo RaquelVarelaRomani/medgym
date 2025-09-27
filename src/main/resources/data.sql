@@ -8,10 +8,10 @@ INSERT INTO users (name, surname, email, phone_number, password, role) VALUES
 
 -- Insertar rutinas (entrenadores: Carlos id=1, Sofía id=4)
 INSERT INTO routines (name, description, trainer_id) VALUES
-    ('Rutina fuerza inicial', 'Entrenamiento básico de fuerza con pesas libres.', 1),
-    ('Rutina cardio avanzado', 'Sesión intensiva de cardio de alta intensidad.', 1),
-    ('Rutina cuerpo completo', 'Ejercicios generales para trabajar todo el cuerpo.', 4),
-    ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación.', 4);
+    ('Rutina fuerza inicial', 'Entrenamiento básico de fuerza con pesas libres. Incluye: Sentadillas (3 series de 10 reps), Flexiones (3 series de 12 reps), Peso muerto (3 series de 8 reps), Press banca (3 series de 10 reps).', 1),
+    ('Rutina cardio avanzado', 'Sesión intensiva de cardio de alta intensidad. Incluye: Burpees (3 series de 30 segundos), Saltos de comba (3 series de 1 minuto), Mountain climbers (3 series de 45 segundos).', 1),
+    ('Rutina cuerpo completo', 'Ejercicios generales para trabajar todo el cuerpo. Incluye: Sentadillas (3 series de 10 reps), Flexiones (3 series de 12 reps), Zancadas (3 series de 10 reps por pierna), Dominadas (3 series de 8 reps).', 4),
+    ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye: Plancha abdominal (mantener 3 series de 30 segundos).', 4);
 
 -- Insertar ejercicios
 INSERT INTO exercises (name, description) VALUES
