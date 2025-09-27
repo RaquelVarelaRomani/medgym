@@ -6,18 +6,16 @@ public class RoutineExerciseDto {
     private Long exerciseId;
     private String exerciseName;
     private String exerciseDescription;
-    private String description;
     private Integer position;
 
     public RoutineExerciseDto() {}
 
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String description, Integer position) {
+    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, Integer position) {
         this.id = id;
         this.routineId = routineId;
         this.exerciseId = exerciseId;
         this.exerciseName = exerciseName;
         this.exerciseDescription = exerciseDescription;
-        this.description = description;
         this.position = position;
     }
 
@@ -61,13 +59,6 @@ public class RoutineExerciseDto {
         this.exerciseDescription = exerciseDescription;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public Integer getPosition() {
         return position;

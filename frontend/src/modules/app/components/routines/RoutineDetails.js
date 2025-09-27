@@ -119,7 +119,6 @@ const RoutineDetails = () => {
                   {expandedExercises[exercise.id] && (
                       <div className="ejercicio-contenido">
                         <p className="descripcion-ejercicio">{exercise.exerciseDescription}</p>
-                        <p className="descripcion-ejercicio">{exercise.description}</p>
                       </div>
                   )}
                 </div>

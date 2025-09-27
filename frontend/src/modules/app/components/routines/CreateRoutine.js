@@ -10,7 +10,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 const CreateRoutine = () => {
     const navigate = useNavigate();
     const [routineData, setRoutineData] = useState({titulo: "", descripcion: ""});
-    const [exercises, setExercises] = useState([{id: null, nombre: "", descripcion: ""}]);
+    const [exercises, setExercises] = useState([{id: null, nombre: ""}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -69,7 +69,7 @@ const CreateRoutine = () => {
 
     const handleAddExercise = () => {
         const newId = Math.max(...exercises.map(e => e.id)) + 1;
-        setExercises([...exercises, { id: newId, nombre: "", descripcion: "" }]);
+        setExercises([...exercises, { id: newId, nombre: "" }]);
     };
 
     const handleRemoveExercise = (id) => {
@@ -111,11 +111,11 @@ const CreateRoutine = () => {
                 const routineId = createdRoutine.id;
 
                 //crear ejercicios
-                const exercisesToSave = exercises.map(ex =>
+                const exercisesToSave = exercises.map((ex, index) =>
                     routineExerciseService.createRoutineExercise(
                         routineId,
                         ex.id,
-                        ex.descripcion,
+                        index + 1,
                         () => {},
                         (err) => console.error("Error adding exercise:", err)
                     )

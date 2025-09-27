@@ -8,15 +8,13 @@ public class RoutineExercise {
     private Long id;
     private Routine routine;
     private Exercise exercise;
-    private String description;
     private Integer position;
 
     public RoutineExercise() {}
 
-    public RoutineExercise(Routine routine, Exercise exercise, String description, Integer position) {
+    public RoutineExercise(Routine routine, Exercise exercise, Integer position) {
         this.routine = routine;
         this.exercise = exercise;
-        this.description = description;
         this.position = position;
     }
 
@@ -47,15 +45,6 @@ public class RoutineExercise {
         this.exercise = exercise;
     }
 
-    @Lob
-    @Column(name = "description")
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     @Column(name = "position")
     public Integer getPosition() {

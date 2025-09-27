@@ -11,7 +11,7 @@ public class RoutineExerciseConversor {
     public static final RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
         return new RoutineExerciseDto(routineExercise.getId(), routineExercise.getRoutine().getId(),
                 routineExercise.getExercise().getId(), routineExercise.getExercise().getName(), routineExercise.getExercise().getDescription(),
-                routineExercise.getDescription(), routineExercise.getPosition());
+                routineExercise.getPosition());
     }
 
     public static final List<RoutineExerciseDto> toRoutineExercisesDtos(List<RoutineExercise> routineExercises) {

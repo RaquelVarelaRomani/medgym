@@ -3,9 +3,9 @@ import {
     appFetch
 } from "./appFetch";
 
-export const createRoutineExercise = (routineId, exerciseId, description, position, onSuccess, onErrors) => appFetch(
+export const createRoutineExercise = (routineId, exerciseId, position, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises`,
-    fetchConfig("POST", { exerciseId, description, position }),
+    fetchConfig("POST", { exerciseId, position }),
     onSuccess,
     onErrors
 )
@@ -51,9 +51,9 @@ export const getRoutineExercises = (routineId, onSuccess, onErrors) => {
     fetchPage(0);
 }
 
-export const updateRoutineExercise = (routineId, exerciseId, description, position, onSuccess, onErrors) => appFetch(
+export const updateRoutineExercise = (routineId, exerciseId, position, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises/${exerciseId}`,
-    fetchConfig("PUT", { description, position }),
+    fetchConfig("PUT", { position }),
     onSuccess,
     onErrors
 )
