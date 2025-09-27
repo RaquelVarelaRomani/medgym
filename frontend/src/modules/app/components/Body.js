@@ -1,7 +1,7 @@
 //Rutas principales -> donde se decide que página mostrar según el URL
 import React from "react";
 
-import { Route, Routes } from "react-router-dom";
+import {Navigate, Route, Routes} from "react-router-dom";
 
 import Register from "./users/Register";
 import Login from "./users/Login";
@@ -17,6 +17,7 @@ const Body = () => {
   return (
     <Routes>
       <Route path="/"> {/*Todo lo que está dentro es relativo a la raíz*/}
+        <Route path="/" element={<Navigate to="/users/login" />} />
         <Route path="routines" element={<Routines />} />
         <Route path="routines/new" element={<CreateRoutine />} />
         <Route path="routines/edit/:id" element={<EditRoutine />} />
@@ -27,6 +28,7 @@ const Body = () => {
         <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
         <Route path="users/register" element={<Register />} />
         <Route path="users/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/users/login" replace />} />
       </Route>
     </Routes>
   );

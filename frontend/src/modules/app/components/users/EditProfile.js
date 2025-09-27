@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
 import { useNavigate } from "react-router-dom";
 import { changePassword, updateProfile } from "../../../../backend/userService";
-import { getServiceToken } from "../../../../backend/appFetch";
+import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import Popup from "../common/Popup";
 
 const EditProfile = ({ isPasswordMode = false }) => {
     const [profile, setProfile] = useState(null);
@@ -12,7 +13,11 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState("");
+    const [error, setError] = useState("");
 
     const navigate = useNavigate();
 
@@ -22,7 +27,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
             navigate("/users/login");
             return;
         }
-        const storedUser = sessionStorage.getItem("authenticatedUser");
+        const storedUser = getAuthenticatedUser();
         if (storedUser) {
             const user = JSON.parse(storedUser);
             setProfile(user);
@@ -47,8 +52,12 @@ const EditProfile = ({ isPasswordMode = false }) => {
                     const newUser = { ...profile, name, surname, email, phoneNumber };
                     sessionStorage.setItem("authenticatedUser", JSON.stringify(newUser));
                     setProfile(newUser);
-                    alert("Perfil actualizado con éxito");
-                    navigate("/users/profile");
+                    if (isPasswordMode) {
+                        setPopupMessage("Contraseña actualizada con éxito");
+                    } else {
+                        setPopupMessage("Perfil actualizado con éxito");
+                    }
+                    setShowPopup(true);
                 },
                 (error) => {
                     console.error("Error al actualizar el perfil:", error);
@@ -58,17 +67,23 @@ const EditProfile = ({ isPasswordMode = false }) => {
         };
 
         if (isPasswordMode) {
+
             changePassword(
                 profile.id,
                 oldPassword,
                 newPassword,
                 () => {
+                    if (oldPassword === newPassword) {
+                        setError("La nueva contraseña no puede ser igual a la actual");
+                        return;
+                    }
+
                     console.log("Contraseña cambiada con éxito");
                     updateProfileData();
                 },
                 (err) => {
+                    setError("La contraseña actual no es correcta")
                     console.error("Error al cambiar la contraseña:", err);
-                    alert("No se pudo actualizar la contraseña");
                 }
             );
         } else {
@@ -84,7 +99,6 @@ const EditProfile = ({ isPasswordMode = false }) => {
         <div className="contenedor">
             <div className="caja-edit">
                 {!isPasswordMode && <h2 className="titulo">Editar perfil</h2>}
-                {isPasswordMode && <h2 className="titulo">Cambiar contraseña</h2>}
 
                 {!isPasswordMode && (
                     <>
@@ -137,21 +151,31 @@ const EditProfile = ({ isPasswordMode = false }) => {
                     </>
                 )}
 
+                {isPasswordMode && <h2 className="titulo">Cambiar contraseña</h2>}
+                {isPasswordMode && error && <p className="mensaje-error">{error}</p>}
+
                 {isPasswordMode && (
                     <form className="form" onSubmit={handleSave}>
                         <label htmlFor="oldPassword">Contraseña actual</label>
-                        <input
-                            type="password"
-                            id="oldPassword"
-                            value={oldPassword}
-                            placeholder="Escribe tu contraseña actual..."
-                            onChange={(e) => setOldPassword(e.target.value)}
-                        />
+
+                        <div className="contenedor-password">
+                            <input
+                                type={showOldPassword ? "text" : "password"}
+                                id="oldPassword"
+                                value={oldPassword}
+                                placeholder="Escribe tu contraseña actual..."
+                                onChange={(e) => setOldPassword(e.target.value)}
+                            />
+                            <span
+                                className="ver-password"
+                                onClick={() => setShowOldPassword(!showOldPassword)}
+                            > &#128065; </span>
+                        </div>
 
                         <label htmlFor="newPassword">Nueva contraseña</label>
                         <div className="contenedor-password">
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={showNewPassword ? "text" : "password"}
                                 id="newPassword"
                                 value={newPassword}
                                 placeholder="Escribe tu nueva contraseña..."
@@ -159,7 +183,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
                             />
                             <span
                                 className="ver-password"
-                                onClick={() => setShowPassword(!showPassword)}
+                                onClick={() => setShowNewPassword(!showNewPassword)}
                             > &#128065; </span>
                         </div>
 
@@ -170,6 +194,11 @@ const EditProfile = ({ isPasswordMode = false }) => {
                     </form>
                 )}
             </div>
+
+            <Popup text={popupMessage} show={showPopup} onOk={() => {
+                setShowPopup(false);
+                navigate("/users/profile");
+            }} />
         </div>
     );
 };

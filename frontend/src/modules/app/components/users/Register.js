@@ -1,7 +1,11 @@
-import React, {use, useState} from "react";
+import React, { useEffect, useState} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
-import {appFetch, fetchConfig, getAuthenticatedUser, setAuthenticatedUser} from "../../../../backend/appFetch";
+import {
+    getAuthenticatedUser,
+    getServiceToken,
+    setAuthenticatedUser
+} from "../../../../backend/appFetch";
 import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
 
@@ -12,10 +16,17 @@ const Register = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-    const [showErrorPopup, setShowErrorPopup] = useState(false);
-
+    const [showPopup, setShowPopup] = useState(false);
+    const [error, setError] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = getServiceToken();
+        if (token) {
+            navigate("/routines", { replace: true });
+        }
+    }, [navigate]);
+
     const handleSubmit = () => {
         const user = {
             name: name.trim(),
@@ -31,11 +42,11 @@ const Register = () => {
                 console.log("Registro correcto:", data);
                 setAuthenticatedUser(data.user);
                 console.log("Nuevo authenticatedUser de sessionStorage:", getAuthenticatedUser());
-                setShowSuccessPopup(true);
+                setShowPopup(true);
             },
             (error) => {
+                setError(true);
                 console.error("Error en el registro:", error);
-                setShowErrorPopup(true);
             },
             () => navigate("/users/login")
         );
@@ -51,6 +62,8 @@ const Register = () => {
                 />
 
                 <h2 className="titulo">Regístrate</h2>
+
+                {error && <p className="mensaje-error">Correo electrónico o teléfono ya existe</p>}
 
                 <form className="form" onSubmit={(e) => {
                     e.preventDefault();
@@ -126,11 +139,10 @@ const Register = () => {
                 </form>
             </div>
 
-            <Popup text={"Usuario registrado con éxito"} show={showSuccessPopup} onOk={() => {
-                setShowSuccessPopup(false);
+            <Popup text={"Usuario registrado con éxito"} show={showPopup} onOk={() => {
+                setShowPopup(false);
                 navigate("/routines", { replace: true, state: { registered: true, email } });
             }} />
-            <Popup text={"Error al registrar al usuario"} show={showErrorPopup} onOk={() => setShowErrorPopup(false)} />
         </div>
     );
 };
