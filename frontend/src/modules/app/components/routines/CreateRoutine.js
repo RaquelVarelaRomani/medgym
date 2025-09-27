@@ -41,7 +41,8 @@ const CreateRoutine = () => {
     }, []);
 
     const filteredExercises = availableExercises.filter(exercise =>
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+        exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !exercises.some(e => e.id === exercise.id)
     );
 
     const handleInputChange = (e) => {
@@ -198,8 +199,12 @@ const CreateRoutine = () => {
                                 placeholder="Buscar ejercicio o escribir el nombre..."
                                 value={exercise.nombre}
                                 onChange={(e) => {
-                                    handleExerciseChange(index, "nombre", e.target.value);
-                                    setSearchTerm(e.target.value);
+                                    const newValue = e.target.value;
+                                    if (newValue !== exercise.nombre) {
+                                        handleExerciseChange(index, "id", null); // Clear id if changing
+                                    }
+                                    handleExerciseChange(index, "nombre", newValue);
+                                    setSearchTerm(newValue);
                                     setShowExerciseSearch(index);
                                 }}
                                 onFocus={() => {

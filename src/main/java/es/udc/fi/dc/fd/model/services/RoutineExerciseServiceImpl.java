@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,8 +29,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private ExerciseDao exerciseDao;
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId)
-            throws InstanceNotFoundException, PermissionException {
+    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, String description, Integer position)
+            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         User user = permissionChecker.checkUser(userId);
 
         Optional<Routine> opRoutine = routineDao.findById(routineId);
@@ -48,7 +50,20 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
             throw new PermissionException();
         }
 
-        RoutineExercise routineExercise = new RoutineExercise(routine, exercise);
+        if (routineExerciseDao.existsByRoutineIdAndExerciseId(routineId, exerciseId)) {
+            throw new DuplicateInstanceException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
+        }
+
+        List<RoutineExercise> routineExercises = routineExerciseDao.findByRoutineId(routineId);
+        if (position != null) {
+            for (RoutineExercise re : routineExercises) {
+                if (re.getPosition() != null && re.getPosition().equals(position)) {
+                    throw new DuplicateInstanceException("routineExercise", "position: " + position);
+                }
+            }
+        }
+
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, description, position);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -68,6 +83,36 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         }
 
         routineExerciseDao.delete(routineExercise);
+    }
+
+    @Override
+    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, String description, Integer position)
+            throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
+        User user = permissionChecker.checkUser(userId);
+
+        Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
+        if(opRoutineExercise.isEmpty()) {
+            throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
+        }
+        RoutineExercise routineExercise = opRoutineExercise.get();
+
+        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routineExercise.getRoutine().getTrainer())) {
+            throw new PermissionException();
+        }
+
+        List<RoutineExercise> routineExercises = routineExerciseDao.findByRoutineId(routineId);
+        if (position != null) {
+            for (RoutineExercise re : routineExercises) {
+                if (re.getPosition() != null && re.getPosition().equals(position) && !re.getExercise().getId().equals(exerciseId)) {
+                    throw new DuplicateInstanceException("routineExercise", "position: " + position);
+                }
+            }
+        }
+
+        routineExercise.setDescription(description);
+        routineExercise.setPosition(position);
+
+        return routineExerciseDao.save(routineExercise);
     }
 
     @Override

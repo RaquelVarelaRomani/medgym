@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./CreateRoutine.css"; // Reuse same CSS
 import { useNavigate, useParams } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
@@ -8,10 +8,9 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 const EditRoutine = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // routine ID from URL
-    console.log("Editing routine ID:", id);
     const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "" });
     const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "" });
-    const [exercises, setExercises] = useState([{ id: null, nombre: "", descripcion: "" }]);
+    const [exercises, setExercises] = useState([{ id: null, nombre: "", descripcion: "", position: null }]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
@@ -19,12 +18,14 @@ const EditRoutine = () => {
     const [titleError, setTitleError] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const inputContainerRefs = useRef([]);
 
     const loadExercises = () => {
         exerciseService.getAllExercises(
             (data) => {
                 const exercisesArray = data.content ? data.content : data;
-                setAvailableExercises(exercisesArray);
+                const sortedAvailableExercises = exercisesArray.sort((a, b) => a.name.localeCompare(b.name));
+                setAvailableExercises(sortedAvailableExercises);
             },
             (err) => {
                 console.error("Error loading exercises:", err);
@@ -37,7 +38,6 @@ const EditRoutine = () => {
         routineService.getRoutine(
             id,
             (data) => {
-                console.log("Routine data:", data);
                 const routineObj = data.content ? data.content[0] : data;
                 setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
                 setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
@@ -51,10 +51,11 @@ const EditRoutine = () => {
                         const mappedExercises = exercisesArray.map((re) => ({
                             id: re.exerciseId,
                             nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
-                            descripcion: re.exerciseDescription || re.description || "",
-                        }));
-                        setExercises(mappedExercises.length ? mappedExercises : [{ id: null, nombre: "", descripcion: "" }]);
-                        setOriginalExercises(mappedExercises);
+                            descripcion: re.description || "",
+                            position: re.position || null,
+                        })).sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
+                        setExercises(mappedExercises.length ? mappedExercises : [{ id: null, nombre: "", descripcion: "", position: null }]);
+                        setOriginalExercises(JSON.parse(JSON.stringify(mappedExercises)));
                         setLoading(false);
                     },
                     (err) => {
@@ -77,30 +78,84 @@ const EditRoutine = () => {
         loadRoutine();
     }, [id]);
 
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (showExerciseSearch !== null && inputContainerRefs.current[showExerciseSearch] && !inputContainerRefs.current[showExerciseSearch].contains(e.target)) {
+                setShowExerciseSearch(null);
+                setSearchTerm("");
+            }
+        };
+
+        if (showExerciseSearch !== null) {
+            document.addEventListener('click', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, [showExerciseSearch]);
+
     const filteredExercises = availableExercises.filter(ex =>
-        ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ex.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !exercises.some(e => e.id === ex.id)
     );
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setRoutineData(prev => ({ ...prev, [name]: value }));
+        setRoutineData(prev => {
+            const newData = { ...prev, [name]: value };
+            console.log('New routineData:', newData);
+            return newData;
+        });
         if (name === "titulo" && value.length > 50) setTitleError("El título es demasiado grande");
         else setTitleError("");
     };
 
     const handleExerciseChange = (index, field, value) => {
         const newExercises = [...exercises];
-        newExercises[index][field] = value;
+        if (field === "position") {
+            newExercises[index][field] = value === "" ? null : Number(value);
+        } else if (field === "descripcion") {
+            newExercises[index][field] = value.trim();
+        } else {
+            newExercises[index][field] = value;
+        }
+        console.log('New exercises:', newExercises);
         setExercises(newExercises);
     };
 
     const handleAddExercise = () => {
-        const newId = exercises.length ? Math.max(...exercises.map(e => e.id || 0)) + 1 : 1;
-        setExercises([...exercises, { id: null, nombre: "", descripcion: "" }]);
+        setShowExerciseSearch(null);
+        setExercises([...exercises, { id: null, nombre: "", descripcion: "", position: exercises.length + 1 }]);
     };
 
-    const handleRemoveExercise = (id) => {
-        setExercises(exercises.filter((ex) => ex.id !== id));
+    const handleRemoveExercise = (index) => {
+        const newExercises = [...exercises];
+        newExercises.splice(index, 1);
+        newExercises.forEach((ex, i) => ex.position = i + 1);
+        setExercises(newExercises);
+    };
+
+    const handleMoveUp = (index) => {
+        if (index > 0) {
+            const newExercises = [...exercises];
+            const tempPos = newExercises[index].position;
+            newExercises[index].position = newExercises[index - 1].position;
+            newExercises[index - 1].position = tempPos;
+            [newExercises[index], newExercises[index - 1]] = [newExercises[index - 1], newExercises[index]];
+            setExercises(newExercises);
+        }
+    };
+
+    const handleMoveDown = (index) => {
+        if (index < exercises.length - 1) {
+            const newExercises = [...exercises];
+            const tempPos = newExercises[index].position;
+            newExercises[index].position = newExercises[index + 1].position;
+            newExercises[index + 1].position = tempPos;
+            [newExercises[index], newExercises[index + 1]] = [newExercises[index + 1], newExercises[index]];
+            setExercises(newExercises);
+        }
     };
 
     const handleSelectExercise = (index, selectedExercise) => {
@@ -115,21 +170,87 @@ const EditRoutine = () => {
     };
 
     const handleSave = async () => {
+
         const titleChanged = routineData.titulo !== originalRoutineData.titulo;
         const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
 
-        const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
         const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
+        const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
+        const updatedExercises = exercises.filter(e => {
+            const original = originalExercises.find(oe => oe.id === e.id);
+            if (original) {
+                const descChanged = e.descripcion !== original.descripcion;
+                const posChanged = e.position !== original.position;
+                console.log(`Exercise ${e.id}: descChanged=${descChanged} (${e.descripcion} !== ${original.descripcion}), posChanged=${posChanged} (${e.position} !== ${original.position}, typeof e.pos: ${typeof e.position}, typeof orig.pos: ${typeof original.position})`);
+                return descChanged || posChanged;
+            }
+            return false;
+        });
 
-        const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0;
+        const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
         if (!titleChanged && !descriptionChanged && !exercisesChanged) {
             alert("No hay cambios para guardar.");
             return;
         }
 
-        try {
-            if (titleChanged || descriptionChanged) {
+        let successMessage = "";
+        let errorMessage = "";
+
+        for (const ex of removedExercises) {
+            console.log(`Deleting exercise ${ex.nombre} (id: ${ex.id})`);
+            try {
+                await new Promise((resolve, reject) => {
+                    routineExerciseService.deleteRoutineExercise(id, ex.id, resolve, reject);
+                });
+                successMessage += `Ejercicio ${ex.nombre} eliminado correctamente.\n`;
+            } catch (error) {
+                console.log(`Error deleting exercise ${ex.nombre}:`, error);
+                errorMessage += `Error al eliminar el ejercicio ${ex.nombre}: ${error.message}\n`;
+            }
+        }
+
+        for (const ex of updatedExercises) {
+            const original = originalExercises.find(oe => oe.id === ex.id);
+            const posChanged = ex.position !== original.position;
+            if (posChanged) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        routineExerciseService.updateRoutineExercise(id, ex.id, ex.descripcion, null, resolve, reject);
+                    });
+                } catch (error) {
+                    console.log(`Error setting position to null for exercise:`, error);
+                    errorMessage += `Error al actualizar el ejercicio ${ex.nombre}: ${error.message}\n`;
+                }
+            }
+        }
+        for (const ex of updatedExercises) {
+            const original = originalExercises.find(oe => oe.id === ex.id);
+            try {
+                await new Promise((resolve, reject) => {
+                    routineExerciseService.updateRoutineExercise(id, ex.id, ex.descripcion, ex.position, resolve, reject);
+                });
+                successMessage += `Ejercicio ${ex.nombre} actualizado correctamente.\n`;
+            } catch (error) {
+                console.log(`Error updating exercise:`, error);
+                errorMessage += `Error al actualizar el ejercicio ${ex.nombre}: ${error.message}\n`;
+            }
+        }
+
+        for (const ex of addedExercises) {
+            try {
+                await new Promise((resolve, reject) => {
+                    routineExerciseService.createRoutineExercise(id, ex.id, ex.descripcion, ex.position, resolve, reject);
+                });
+                successMessage += `Ejercicio ${ex.nombre} agregado correctamente.\n`;
+            } catch (error) {
+                console.log(`Error adding exercise:`, error);
+                errorMessage += `Error al agregar el ejercicio ${ex.nombre}: ${error.message}\n`;
+            }
+        }
+
+        if (titleChanged || descriptionChanged) {
+            try {
                 await new Promise((resolve, reject) => {
                     routineService.updateRoutine(
                         id,
@@ -139,28 +260,22 @@ const EditRoutine = () => {
                         reject
                     );
                 });
+                successMessage += "Datos de la rutina actualizados correctamente.\n";
+            } catch (error) {
+                console.log(`Error updating routine:`, error);
+                errorMessage += `Error al actualizar los datos de la rutina: ${error.message}\n`;
             }
+        }
 
-            const addPromises = addedExercises.map(ex =>
-                new Promise((resolve, reject) => {
-                    routineExerciseService.createRoutineExercise(id, ex.id, resolve, reject);
-                })
-            );
+        if (errorMessage) {
+            alert(`Se produjeron los siguientes errores:\n${errorMessage}`);
+        }
+        if (successMessage) {
+            alert(`Se realizaron los siguientes cambios:\n${successMessage}`);
+        }
 
-            const removePromises = removedExercises.map(ex =>
-                new Promise((resolve, reject) => {
-                    routineExerciseService.deleteRoutineExercise(id, ex.id, resolve, reject);
-                })
-            );
-
-            await Promise.all([...addPromises, ...removePromises]);
-
-            alert("Rutina modificada correctamente.");
+        if (!errorMessage) {
             navigate(`/routines`);
-
-        } catch (error) {
-            console.error("Error saving routine:", error);
-            alert("Error al guardar la rutina. Por favor, inténtelo de nuevo.");
         }
     };
 
@@ -199,7 +314,7 @@ const EditRoutine = () => {
                         <button
                             type="button"
                             className="boton-eliminar-ejercicio"
-                            onClick={() => handleRemoveExercise(exercise.id)}
+                            onClick={() => handleRemoveExercise(index)}
                             title="Eliminar ejercicio"
                         >
                             <img
@@ -208,13 +323,18 @@ const EditRoutine = () => {
                                 className="icono-papelera"
                             />
                         </button>
-                        <div className="ejercicio-input-container">
+                        <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 value={exercise.nombre}
+                                disabled={originalExercises.some(oe => oe.id === exercise.id)}
                                 onChange={(e) => {
-                                    handleExerciseChange(index, "nombre", e.target.value);
-                                    setSearchTerm(e.target.value);
+                                    const newValue = e.target.value;
+                                    if (newValue !== exercise.nombre) {
+                                        handleExerciseChange(index, "id", null); // Clear id if changing
+                                    }
+                                    handleExerciseChange(index, "nombre", newValue);
+                                    setSearchTerm(newValue);
                                     setShowExerciseSearch(index);
                                 }}
                                 onFocus={() => {
@@ -222,7 +342,7 @@ const EditRoutine = () => {
                                     setSearchTerm(exercise.nombre);
                                 }}
                             />
-                            {showExerciseSearch === index && searchTerm && (
+                            {showExerciseSearch === index && (
                                 <div className="ejercicio-dropdown">
                                     {filteredExercises.map((ex, i) => (
                                         <div
@@ -235,6 +355,32 @@ const EditRoutine = () => {
                                     ))}
                                 </div>
                             )}
+                        </div>
+                        <div className="ejercicio-input-container">
+                            <label>Descripción:</label>
+                            <input
+                                type="text"
+                                value={exercise.descripcion}
+                                onChange={(e) => handleExerciseChange(index, "descripcion", e.target.value)}
+                            />
+                        </div>
+                        <div className="exercise-controls">
+                            <button
+                                type="button"
+                                onClick={() => handleMoveUp(index)}
+                                disabled={index === 0}
+                                className="move-button"
+                            >
+                                ▲
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleMoveDown(index)}
+                                disabled={index === exercises.length - 1}
+                                className="move-button"
+                            >
+                                ▼
+                            </button>
                         </div>
                     </div>
 

@@ -53,7 +53,9 @@ const RoutineDetails = () => {
                             ? routineExercisesPage.content
                             : routineExercisesPage;
 
-                        setExercises(exercisesArray);
+                        const sortedExercises = exercisesArray.sort((a, b) => a.position - b.position);
+
+                        setExercises(sortedExercises);
                         setLoading(false);
                     },
                     (exerciseErrors) => {
@@ -102,13 +104,13 @@ const RoutineDetails = () => {
         </div>
 
           <div className="lista-ejercicios">
-            {exercises.map((exercise) => (
+            {exercises.map((exercise, index) => (
                 <div key={exercise.id} className="ejercicio">
                   <div
                       className="header-ejercicio"
                       onClick={() => toggleExercise(exercise.id)}
                   >
-                    <h3>{exercise.exerciseName}</h3>
+                    <h3>{index + 1}. {exercise.exerciseName}</h3>
                     <span className={`flecha ${expandedExercises[exercise.id] ? 'expandida' : ''}`}>
                   &#9660; {/* flecha para desplegar */}
                 </span>
@@ -117,6 +119,7 @@ const RoutineDetails = () => {
                   {expandedExercises[exercise.id] && (
                       <div className="ejercicio-contenido">
                         <p className="descripcion-ejercicio">{exercise.exerciseDescription}</p>
+                        <p className="descripcion-ejercicio">{exercise.description}</p>
                       </div>
                   )}
                 </div>

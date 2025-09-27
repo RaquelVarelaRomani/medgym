@@ -28,25 +28,25 @@ INSERT INTO exercises (name, description) VALUES
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial
-INSERT INTO routine_exercises (routine_id, exercise_id) VALUES
-    (1, 1), -- sentadillas
-    (1, 2), -- flexiones
-    (1, 7), -- peso muerto
-    (1, 8); -- press banca
+INSERT INTO routine_exercises (routine_id, exercise_id, description, position) VALUES
+    (1, 1, '3 series de 12 repeticiones', 1),
+    (1, 2, '3 series de 15 repeticiones', 2),
+    (1, 7, '4 series de 10 repeticiones', 3),
+    (1, 8, '3 series de 12 repeticiones', 4);
 
 -- Rutina 2: cardio avanzado
-INSERT INTO routine_exercises (routine_id, exercise_id) VALUES
-    (2, 3), -- burpees
-    (2, 6), -- saltos de comba
-    (2, 10); -- mountain climbers
+INSERT INTO routine_exercises (routine_id, exercise_id, description, position) VALUES
+    (2, 3, '5 series de 10 repeticiones', 1),
+    (2, 6, '10 minutos', 2),
+    (2, 10, '3 series de 20 repeticiones', 3);
 
 -- Rutina 3: cuerpo completo
-INSERT INTO routine_exercises (routine_id, exercise_id) VALUES
-    ( 3, 1), -- sentadillas
-    (3, 2), -- flexiones
-    (3, 5), -- zancadas
-    (3, 9); -- dominadas
+INSERT INTO routine_exercises (routine_id, exercise_id, description, position) VALUES
+    (3, 1, '3 series de 15 repeticiones', 1),
+    (3, 2, '3 series al fallo', 2),
+    (3, 5, '3 series de 12 repeticiones por pierna', 3),
+    (3, 9, '4 series al fallo', 4);
 
 -- Rutina 4: yoga relajación
-INSERT INTO routine_exercises (routine_id, exercise_id) VALUES
-    (4, 4); -- plancha abdominal
+INSERT INTO routine_exercises (routine_id, exercise_id, description, position) VALUES
+    (4, 4, '3 series de 1 minuto', 1);
