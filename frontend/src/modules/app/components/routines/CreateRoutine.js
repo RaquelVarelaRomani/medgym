@@ -1,11 +1,9 @@
 import React, {useEffect, useState, useRef} from "react";
 import "./CreateRoutine.css";
 import { useNavigate } from "react-router-dom";
-import RoutineDetails from "./RoutineDetails";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
 
 
 const CreateRoutine = () => {
@@ -19,17 +17,6 @@ const CreateRoutine = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
-
-    // Check authentication
-    useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
-
-        loadExercises();
-    }, [navigate]);
 
     const loadExercises = () => {
         setLoading(true);

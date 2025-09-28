@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import "./Routines.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import { getAuthenticatedUser } from "../../../../backend/appFetch";
 import ConfirmationPopup from "../common/ConfirmationPopup";
 
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
@@ -43,12 +43,6 @@ const Routines = () => {
 
     //cargar datos de usuario
     useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
-
         const storedUser = getAuthenticatedUser();
         console.log(JSON.parse(storedUser));
         if (storedUser) {
@@ -56,7 +50,6 @@ const Routines = () => {
         }
 
         loadRoutines();
-
 
     }, [navigate]);
 

@@ -1,11 +1,7 @@
-import React, { useEffect, useState} from "react";
+import React, { useState} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
-import {
-    getAuthenticatedUser,
-    getServiceToken,
-    setAuthenticatedUser
-} from "../../../../backend/appFetch";
+import { getAuthenticatedUser, setAuthenticatedUser } from "../../../../backend/appFetch";
 import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
 
@@ -19,13 +15,6 @@ const Register = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const token = getServiceToken();
-        if (token) {
-            navigate("/routines", { replace: true });
-        }
-    }, [navigate]);
 
     const handleSubmit = () => {
         const user = {

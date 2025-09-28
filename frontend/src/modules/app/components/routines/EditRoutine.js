@@ -5,7 +5,6 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import Popup from "../common/Popup";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
 
 const EditRoutine = () => {
     const navigate = useNavigate();
@@ -22,15 +21,6 @@ const EditRoutine = () => {
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
     const [popupMessage, setPopupMessage] = useState(null);
-
-    // Check authentication
-    useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
-    }, [navigate]);
 
     const loadExercises = () => {
         exerciseService.getAllExercises(

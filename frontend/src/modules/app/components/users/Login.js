@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { login } from "../../../../backend/userService";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
-import {getServiceToken, setAuthenticatedUser, getAuthenticatedUser } from "../../../../backend/appFetch";
+import { setAuthenticatedUser, getAuthenticatedUser } from "../../../../backend/appFetch";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -10,13 +10,6 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const token = getServiceToken();
-        if (token) {
-            navigate("/routines", { replace: true });
-        }
-    }, [navigate]);
 
     const handleSubmit = () => {
         login(

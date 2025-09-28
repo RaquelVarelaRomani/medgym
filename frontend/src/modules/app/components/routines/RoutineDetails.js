@@ -1,13 +1,11 @@
 import React, {useEffect, useState} from "react";
 // OJO! Importa estilos definidos en CSS
 import "./RoutineDetails.css";
-import { Link } from "react-router-dom";
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
 
 const RoutineDetails = () => {
   const { id } = useParams();
@@ -17,15 +15,6 @@ const RoutineDetails = () => {
   const [expandedExercises, setExpandedExercises] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Check authentication
-  useEffect(() => {
-      const token = getServiceToken();
-      if (!token) {
-          navigate("/users/login");
-          return;
-      }
-  }, [navigate]);
 
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {

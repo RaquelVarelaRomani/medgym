@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../../../backend/userService";
-import {getAuthenticatedUser, getServiceToken, removeAuthenticatedUser} from "../../../../backend/appFetch";
+import {getAuthenticatedUser, removeAuthenticatedUser} from "../../../../backend/appFetch";
 import Popup from "../common/Popup";
 
 const Profile = () => {
@@ -11,12 +11,6 @@ const Profile = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
-
         const storedUser = getAuthenticatedUser();
         if (storedUser) {
             setProfile(JSON.parse(storedUser));

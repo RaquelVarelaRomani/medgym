@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
 import { useNavigate } from "react-router-dom";
 import { changePassword, updateProfile } from "../../../../backend/userService";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import { getAuthenticatedUser } from "../../../../backend/appFetch";
 import Popup from "../common/Popup";
 
 const EditProfile = ({ isPasswordMode = false }) => {
@@ -22,11 +22,6 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
         const storedUser = getAuthenticatedUser();
         if (storedUser) {
             const user = JSON.parse(storedUser);

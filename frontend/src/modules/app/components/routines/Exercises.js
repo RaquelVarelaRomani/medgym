@@ -11,15 +11,6 @@ import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetc
 const Exercises = () => {
     const navigate = useNavigate();
 
-    // Check authentication
-    useEffect(() => {
-        const token = getServiceToken();
-        if (!token) {
-            navigate("/users/login");
-            return;
-        }
-    }, [navigate]);
-
     //CAMBIAR: usuario de prueba para vista de entrenador
 
     //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
