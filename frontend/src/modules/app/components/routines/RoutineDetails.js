@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
+import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
 
 const RoutineDetails = () => {
   const { id } = useParams();
@@ -16,6 +17,15 @@ const RoutineDetails = () => {
   const [expandedExercises, setExpandedExercises] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Check authentication
+  useEffect(() => {
+      const token = getServiceToken();
+      if (!token) {
+          navigate("/users/login");
+          return;
+      }
+  }, [navigate]);
 
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {

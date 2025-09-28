@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Exercises.css";
 import { Link, useNavigate} from "react-router-dom";
+import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -9,6 +10,16 @@ import { Link, useNavigate} from "react-router-dom";
 // Definición componente funcional (el que React renderiza como pantalla)
 const Exercises = () => {
     const navigate = useNavigate();
+
+    // Check authentication
+    useEffect(() => {
+        const token = getServiceToken();
+        if (!token) {
+            navigate("/users/login");
+            return;
+        }
+    }, [navigate]);
+
     //CAMBIAR: usuario de prueba para vista de entrenador
 
     //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
