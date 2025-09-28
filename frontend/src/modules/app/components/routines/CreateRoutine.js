@@ -18,6 +18,10 @@ const CreateRoutine = () => {
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
 
+    useEffect(() => {
+        loadExercises();
+    }, []);
+
     const loadExercises = () => {
         setLoading(true);
         setError(null);

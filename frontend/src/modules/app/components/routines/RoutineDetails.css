@@ -4,15 +4,14 @@
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
     padding: 0;
 }
 
 .caja-routine-details {
-    background-color: rgba(255, 255, 255, 0.7);
+    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
     padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;

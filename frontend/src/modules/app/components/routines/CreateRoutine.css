@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
+    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
     padding: 2rem;
 }
 
