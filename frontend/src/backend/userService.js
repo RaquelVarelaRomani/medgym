@@ -86,3 +86,10 @@ export const deleteUser = (id, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 );
+
+export const getProfilePicture = (id, onSuccess, onErrors) => appFetch(
+    `/users/${id}/profilePicture`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

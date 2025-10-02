@@ -3,8 +3,8 @@ import React, {useEffect, useState} from "react";
 import "./Routines.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
-import { getAuthenticatedUser } from "../../../../backend/appFetch";
 import ConfirmationPopup from "../common/ConfirmationPopup";
+import { tryLoginFromServiceToken } from "../../../../backend/userService";
 
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
@@ -41,17 +41,19 @@ const Routines = () => {
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
 
-    //cargar datos de usuario
     useEffect(() => {
-        const storedUser = getAuthenticatedUser();
-        console.log(JSON.parse(storedUser));
-        if (storedUser) {
-            setCurrentUser(JSON.parse(storedUser));
-        }
-
-        loadRoutines();
-
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);  // ya viene del backend
+                loadRoutines();                     // solo cargas rutinas si hay usuario válido
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
     }, [navigate]);
+
 
     const loadRoutines = () => {
         setLoading(true);
