@@ -25,7 +25,7 @@ public class UserServiceTest {
 	private UserService userService;
 
 	private User createUser(String email) {
-		return new User("name", "surname", email, "+34 000 000 000", "password");
+		return new User("name", "surname", email, "+34 000 000 000", "password", null);
 	}
 
 	@Test

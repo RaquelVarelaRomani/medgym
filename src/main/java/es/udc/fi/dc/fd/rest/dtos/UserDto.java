@@ -15,17 +15,19 @@ public class UserDto {
 	private String email;
 	private String phoneNumber;
 	private String password;
+	private byte[] profilePicture;
 	private String role;
 
 	public UserDto() {}
 
-	public UserDto(Long id, String name, String surname, String email, String phoneNumber, String role) {
+	public UserDto(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture, String role) {
 
 		this.id = id;
 		this.name = name.trim();
 		this.surname = surname.trim();
 		this.email = email.trim();
 		this.phoneNumber = phoneNumber.trim();
+		this.profilePicture = profilePicture;
 		this.role = role;
 		
 	}
@@ -80,6 +82,13 @@ public class UserDto {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public byte[] getProfilePicture() {
+		return profilePicture;
+	}
+	public void setProfilePicture(byte[] profilePicture) {
+		this.profilePicture = profilePicture;
 	}
 
 	public String getRole() {

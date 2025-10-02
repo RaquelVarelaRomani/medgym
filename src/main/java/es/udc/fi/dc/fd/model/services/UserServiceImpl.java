@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User updateProfile(Long id, String name, String surname, String email, String phoneNumber) throws InstanceNotFoundException {
+	public User updateProfile(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture) throws InstanceNotFoundException {
 
 		User user = permissionChecker.checkUser(id);
 
@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
 		user.setSurname(surname);
 		user.setEmail(email);
 		user.setPhoneNumber(phoneNumber);
+		user.setProfilePicture(profilePicture);
 
 		return user;
 
