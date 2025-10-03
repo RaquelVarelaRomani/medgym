@@ -39,7 +39,7 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @Transactional
 public class ExerciseControllerTest {
 
-    private final static String PASSWORD = "password";
+	private final static String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,9 +68,9 @@ public class ExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         RoleType roleType) throws IncorrectLoginException {
+														RoleType roleType) throws IncorrectLoginException {
 
-        User user = new User(name, surname, email, phoneNumber, PASSWORD);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
@@ -166,7 +166,66 @@ public class ExerciseControllerTest {
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(updatedDto)))
-                .andExpect(status().isForbidden());    }
+                .andExpect(status().isForbidden());    
+	}
+
+	@Test
+	public void testUpdateExerciseStatusAsClientFails() throws Exception {
+		ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise", "PENDING");
+		String createdExerciseJson = createExercise(adminUser, originalDto)
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+
+		// Solo enviamos el campo status
+		String updateStatusJson = "{ \"status\": \"APPROVED\" }";
+
+		mockMvc.perform(put("/api/exercises/" + createdExercise.getId() + "/status")
+				.header("Authorization", "Bearer " + clientUser.getServiceToken())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(updateStatusJson))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void testUpdateExerciseStatusAsTrainer() throws Exception {
+		ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise", "PENDING");
+		String createdExerciseJson = createExercise(adminUser, originalDto)
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+
+		String updateStatusJson = "{ \"status\": \"APPROVED\" }";
+
+		mockMvc.perform(put("/api/exercises/" + createdExercise.getId() + "/status")
+				.header("Authorization", "Bearer " + trainerUser.getServiceToken())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(updateStatusJson))
+				.andExpect(status().isForbidden());
+	}
+
+	@Test
+	public void testUpdateExerciseStatusAsAdmin() throws Exception {
+		ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise", "PENDING");
+		String createdExerciseJson = createExercise(adminUser, originalDto)
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
+
+		String updateStatusJson = "{ \"status\": \"APPROVED\" }";
+
+
+
+		mockMvc.perform(put("/api/exercises/" + createdExercise.getId() + "/status")
+				.header("Authorization", "Bearer " + adminUser.getServiceToken())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(updateStatusJson))
+				.andExpect(status().isOk());
+	}
+
 
     @Test
     public void testDeleteExerciseAsClientFails() throws Exception {

@@ -19,6 +19,7 @@ public class ExerciseDto {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
+        this.status = status.trim();
     }
 
     public Long getId() {

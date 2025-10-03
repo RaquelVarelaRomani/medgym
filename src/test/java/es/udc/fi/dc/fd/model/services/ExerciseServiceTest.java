@@ -7,6 +7,7 @@ import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ExerciseServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com");
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", RoleType.CLIENT);
         return userDao.save(user);
     }
 

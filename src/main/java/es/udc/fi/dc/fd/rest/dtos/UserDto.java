@@ -1,6 +1,5 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -26,7 +25,7 @@ public class UserDto {
 		this.surname = surname.trim();
 		this.email = email.trim();
 		this.phoneNumber = phoneNumber.trim();
-		this.role = role;
+		this.role = role.trim();
 		
 	}
 

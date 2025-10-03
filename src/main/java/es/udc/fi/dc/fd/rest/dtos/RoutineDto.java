@@ -28,8 +28,8 @@ public class RoutineDto {
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
         this.trainerId = trainerId;
-        this.trainerName = trainerName;
-        this.trainerSurname = trainerSurname;
+        this.trainerName = trainerName.trim();
+        this.trainerSurname = trainerSurname.trim();
     }
 
     public Long getId() {
