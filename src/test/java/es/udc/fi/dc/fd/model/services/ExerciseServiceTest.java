@@ -27,7 +27,7 @@ public class ExerciseServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com");
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", null);
         return userDao.save(user);
     }
 

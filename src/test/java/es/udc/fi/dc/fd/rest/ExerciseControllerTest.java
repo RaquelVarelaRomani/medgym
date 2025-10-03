@@ -39,7 +39,7 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @Transactional
 public class ExerciseControllerTest {
 
-    private final static String PASSWORD = "password";
+	private final static String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,9 +68,9 @@ public class ExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         RoleType roleType) throws IncorrectLoginException {
+															RoleType roleType) throws IncorrectLoginException {
 
-        User user = new User(name, surname, email, phoneNumber, PASSWORD);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);

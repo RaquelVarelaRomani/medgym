@@ -37,7 +37,7 @@ public class RoutineExerciseServiceTest {
 
     private User createUser(String email, User.RoleType role) {
         User trainer = new User("Pepe", "Domingo", email,
-                "666555444", "password");
+                "666555444", "password", null);
         trainer.setRole(role);
         return userDao.save(trainer);
     }
