@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
 
 import es.udc.fi.dc.fd.rest.controllers.UserController;
@@ -77,7 +78,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         User.RoleType roleType) throws Exception {
+    User.RoleType roleType) throws Exception {
         User user = new User(name, surname, email, phoneNumber, PASSWORD);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
@@ -90,7 +91,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Exercise createExercise(String name) {
-        return exerciseDao.save(new Exercise(name, name + " description"));
+        return exerciseDao.save(new Exercise(name, name + " description", ExerciseStatus.PENDING));
     }
 
     private Routine createRoutine(String name, User user) {

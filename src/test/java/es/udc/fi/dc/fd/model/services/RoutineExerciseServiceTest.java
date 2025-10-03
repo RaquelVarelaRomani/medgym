@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +44,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName){
-        Exercise exercise = new Exercise(exerciseName, "The description");
+        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING);
         return exerciseDao.save(exercise);
     }
 

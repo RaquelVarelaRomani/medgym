@@ -48,6 +48,12 @@ public class ExerciseController {
         return toExerciseDto(exerciseService.findExerciseById(id));
     }
 
+    @PutMapping("/{id}/status")
+    public ExerciseDto updateExerciseStatus(@PathVariable Long id, @RequestParam Exercise.ExerciseStatus status) throws InstanceNotFoundException {
+        exerciseService.updateExerciseStatus(id, status);
+        return toExerciseDto(exerciseService.findExerciseById(id));
+    }
+
     @GetMapping
     public List<ExerciseDto> findAllExercises() {
         return ExerciseConversor.toExerciseDtos(exerciseService.findAllExercises());

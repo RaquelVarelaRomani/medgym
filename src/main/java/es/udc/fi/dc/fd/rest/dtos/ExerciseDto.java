@@ -11,10 +11,11 @@ public class ExerciseDto {
     private Long id;
     private String name;
     private String description;
+    private String status;
 
     public ExerciseDto() {}
 
-    public ExerciseDto(Long id, String name, String description) {
+    public ExerciseDto(Long id, String name, String description, String status) {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
@@ -46,5 +47,14 @@ public class ExerciseDto {
 
     public void setDescription(String description) {
         this.description = description.trim();
+    }
+
+    @NotNull(groups={AllValidations.class})
+    @Size(min=1, max=20, groups={AllValidations.class})
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

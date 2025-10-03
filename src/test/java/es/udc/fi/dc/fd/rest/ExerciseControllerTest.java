@@ -93,7 +93,7 @@ public class ExerciseControllerTest {
 
     @Test
     public void testCreateAndGetExerciseAsAdmin() throws Exception {
-        ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up");
+        ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up", "PENDING");
 
         String createdExerciseJson = createExercise(adminUser, exerciseDto)
                 .andExpect(status().isCreated())
@@ -109,13 +109,13 @@ public class ExerciseControllerTest {
 
     @Test
     public void testUpdateExerciseAsAdmin() throws Exception {
-        ExerciseDto originalDto = new ExerciseDto(null, "Squat", "A basic squat");
+        ExerciseDto originalDto = new ExerciseDto(null, "Squat", "A basic squat", "PENDING");
         String createdExerciseJson = createExercise(adminUser, originalDto)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
 
-        ExerciseDto updatedDto = new ExerciseDto(createdExercise.getId(), "Jump Squat", "An advanced squat");
+        ExerciseDto updatedDto = new ExerciseDto(createdExercise.getId(), "Jump Squat", "An advanced squat", "PENDING");
         mockMvc.perform(put("/api/exercises/" + createdExercise.getId())
                         .header("Authorization", "Bearer " + adminUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -127,7 +127,7 @@ public class ExerciseControllerTest {
 
     @Test
     public void testDeleteExerciseAsAdmin() throws Exception {
-        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge");
+        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge", "PENDING");
         String createdExerciseJson = createExercise(adminUser, originalDto)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
@@ -151,17 +151,17 @@ public class ExerciseControllerTest {
 
     @Test
     public void testCreateExerciseAsClientFails() throws Exception {
-        ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up");
+        ExerciseDto exerciseDto = new ExerciseDto(null, "Push-ups", "A basic push-up", "PENDING");
         createExercise(clientUser, exerciseDto).andExpect(status().isForbidden());
     }
 
     @Test
     public void testUpdateExerciseAsClientFails() throws Exception {
-        ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise");
+        ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise", "PENDING");
         String createdExerciseJson = createExercise(adminUser, originalDto).andReturn().getResponse().getContentAsString();
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
 
-        ExerciseDto updatedDto = new ExerciseDto(createdExercise.getId(), "Side Plank", "Advanced core exercise");
+        ExerciseDto updatedDto = new ExerciseDto(createdExercise.getId(), "Side Plank", "Advanced core exercise", "PENDING");
         mockMvc.perform(put("/api/exercises/" + createdExercise.getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -170,7 +170,7 @@ public class ExerciseControllerTest {
 
     @Test
     public void testDeleteExerciseAsClientFails() throws Exception {
-        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge");
+        ExerciseDto originalDto = new ExerciseDto(null, "Lunge", "A basic lunge", "PENDING");
         String createdExerciseJson = createExercise(adminUser, originalDto)
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
@@ -188,13 +188,13 @@ public class ExerciseControllerTest {
 
     @Test
     public void testCreateExerciseAsTrainerFails() throws Exception {
-        ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise");
+        ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise", "PENDING");
         createExercise(trainerUser, exerciseDto).andExpect(status().isForbidden());
     }
 
     @Test
     public void testDeleteExerciseAsTrainerFails() throws Exception {
-        ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise");
+        ExerciseDto originalDto = new ExerciseDto(null, "Plank", "Core exercise", "PENDING");
         String createdExerciseJson = createExercise(adminUser, originalDto).andReturn().getResponse().getContentAsString();
         ExerciseDto createdExercise = objectMapper.readValue(createdExerciseJson, ExerciseDto.class);
 
@@ -212,7 +212,7 @@ public class ExerciseControllerTest {
 
     @Test
     public void testCreateExerciseUnauthenticatedFails() throws Exception {
-        ExerciseDto exerciseDto = new ExerciseDto(null, "Burpees", "Full body exercise");
+        ExerciseDto exerciseDto = new ExerciseDto(null, "Burpees", "Full body exercise", "PENDING");
         mockMvc.perform(post("/api/exercises")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(exerciseDto)))
