@@ -38,6 +38,12 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Exercise> findExercisesWithPendingStatus() {
+        return exerciseDao.findByStatus(ExerciseStatus.PENDING);
+    }
+
+    @Override
     public void updateExercise(Long exerciseId, String name, String description) throws InstanceNotFoundException, DuplicateInstanceException {
         Exercise exercise = findExerciseById(exerciseId);
 

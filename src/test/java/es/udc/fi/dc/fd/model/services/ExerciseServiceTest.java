@@ -213,6 +213,80 @@ public class ExerciseServiceTest {
     }
 
     @Test
+    public void testFindExercisesWithPendingStatus() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user");
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
+        Exercise exercise3 = exerciseService.createExercise("exercise3", "description3", user);
+
+        exerciseService.updateExerciseStatus(exercise2.getId(), ExerciseStatus.APPROVED);
+        exerciseService.updateExerciseStatus(exercise3.getId(), ExerciseStatus.REJECTED);
+
+        var pendingExercises = exerciseService.findExercisesWithPendingStatus();
+
+        // There should be only one pending exercise (exercise1)
+        assertEquals(11, pendingExercises.size());
+        assertEquals(exercise1.getId(), pendingExercises.get(10).getId());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusWhenNone() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user");
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
+
+        exerciseService.updateExerciseStatus(exercise1.getId(), ExerciseStatus.APPROVED);
+        exerciseService.updateExerciseStatus(exercise2.getId(), ExerciseStatus.REJECTED);
+
+        var pendingExercises = exerciseService.findExercisesWithPendingStatus();
+
+        // There should be no pending exercises
+        assertEquals(10, pendingExercises.size());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusWhenAll() throws DuplicateInstanceException {
+        User user = createUser("user");
+        exerciseService.createExercise("exercise1", "description1", user);
+        exerciseService.createExercise("exercise2", "description2", user);
+
+        var pendingExercises = exerciseService.findExercisesWithPendingStatus();
+
+        // Both exercises should be pending
+        assertEquals(12, pendingExercises.size());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusAfterDeletion() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user");
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
+
+        exerciseService.deleteExercise(exercise1.getId());
+
+        var pendingExercises = exerciseService.findExercisesWithPendingStatus();
+
+        // Only exercise2 should be pending
+        assertEquals(11, pendingExercises.size());
+        assertEquals(exercise2.getId(), pendingExercises.get(10).getId());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusAfterStatusUpdate() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user");
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
+
+        exerciseService.updateExerciseStatus(exercise1.getId(), ExerciseStatus.APPROVED);
+
+        var pendingExercises = exerciseService.findExercisesWithPendingStatus();
+
+        // Only exercise2 should be pending
+        assertEquals(11, pendingExercises.size());
+        assertEquals(exercise2.getId(), pendingExercises.get(10).getId());
+    }
+
+    @Test
     public void testCreateExerciseSetsDefaultStatus() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);    

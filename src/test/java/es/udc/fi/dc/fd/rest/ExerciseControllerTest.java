@@ -270,6 +270,27 @@ public class ExerciseControllerTest {
     }
 
     @Test
+    public void testFindExercisesWithPendingStatusAsAdmin() throws Exception {
+        mockMvc.perform(get("/api/exercises/pending")
+                        .header("Authorization", "Bearer " + adminUser.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusAsClientFails() throws Exception {
+        mockMvc.perform(get("/api/exercises/pending")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testFindExercisesWithPendingStatusAsTrainerFails() throws Exception {
+        mockMvc.perform(get("/api/exercises/pending")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     public void testCreateExerciseUnauthenticatedFails() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Burpees", "Full body exercise", "PENDING");
         mockMvc.perform(post("/api/exercises")

@@ -13,5 +13,6 @@ public interface ExerciseService {
     void updateExercise(Long exerciseId, String name, String description) throws InstanceNotFoundException, DuplicateInstanceException;
     void updateExerciseStatus(Long exerciseId, Exercise.ExerciseStatus status) throws InstanceNotFoundException;
     List<Exercise> findAllExercises();
+    List<Exercise> findExercisesWithPendingStatus();
     void deleteExercise(Long exerciseId) throws InstanceNotFoundException;
 }

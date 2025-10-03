@@ -60,6 +60,11 @@ public class ExerciseController {
         return ExerciseConversor.toExerciseDtos(exerciseService.findAllExercises());
     }
 
+    @GetMapping("/pending")
+    public List<ExerciseDto> findExercisesWithPendingStatus() {
+        return ExerciseConversor.toExerciseDtos(exerciseService.findExercisesWithPendingStatus());
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExercise(@PathVariable Long id) throws InstanceNotFoundException {
