@@ -76,7 +76,7 @@
 }
 
 
-.boton-eliminar{
+.boton-eliminar2{
   background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
   color: var(--text-dark);
   padding: 6px 0px;
@@ -88,7 +88,7 @@
   transition: all 0.3s ease;
 }
 
-.boton-eliminar:hover{
+.boton-eliminar2:hover{
   transform: translateY(-2px);
   box-shadow: 0 4px 10px var(--shadow-orange);
 }

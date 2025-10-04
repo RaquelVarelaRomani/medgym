@@ -36,14 +36,6 @@ const Exercises = () => {
   // return = lo que hay que renderizar en pantalla
   return (
        <div className="contenedor">
-
-        <img
-            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-            alt="Foto de perfil"
-            className="foto-perfil"
-            // onClick={() => navigate("/profile")}  // cuando actives la navegación
-        />
-
         <div className="exercises-titulo-grande">
             <h2>Ejercicios:</h2>
         </div>

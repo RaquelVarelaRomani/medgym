@@ -6,32 +6,6 @@ import * as routineService from "../../../../backend/routineService";
 import { getAuthenticatedUser } from "../../../../backend/appFetch";
 import ConfirmationPopup from "../common/ConfirmationPopup";
 
-//TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
-//useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
-//import { Link, useNavigate } from "react-router-dom";
-
-// import { config } from "../../../../config/constants.js"; // 
-
-// Declaración de la función rot13 (comentada correctamente)
-/*
-function rot13(s) {
-  // devolverá el string con las letras reemplazadas según la regla
-    return s.replace(
-    /[A-Z]/gi,
-    (c) =>
-        "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm"[
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".indexOf(c)
-        ]
-    // en este cifrado se desplaza 13 posiciones cada letra
-    );
-}
-*/
-
-
-//IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
-
-
-// Definición componente funcional (el que React renderiza como pantalla)
 const Routines = () => {
     const navigate = useNavigate();
 
@@ -142,31 +116,12 @@ const Routines = () => {
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
     <div className="contenedor">
 
-        <img
-            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-            alt="Foto de perfil"
-            className="foto-perfil"
-            onClick={handleProfileClick}
-        />
-
         <div className="routines-titulo-grande">
             <h2>Entrenamientos:</h2>
         </div>
 
-        {/*<div className="routines-titulo-grande">
-            <h2>Entrenamientos:</h2>
-                <img
-                //CAMBIAR: aqui tendria que ir la foto de perfil
-                src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-                alt="Foto de perfil"
-                className="foto-perfil"
-                //CAMBIAR: que al hacer clic en la foto te mande al perfil
-                //onClick={() => navigate("/profile")}
-                />
-        </div> */}
         <div className="lista-rutinas">
             {routines.map((routine) => ( //recorre el array de rutinas
-            //CAMBIAR: puede que esto no pueda ser asi
             <Link
                 to={`/routines/${routine.id}`}
                 key={routine.id}
@@ -177,7 +132,7 @@ const Routines = () => {
                     Generado por{" "}
                     {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
                         "Entrenador desconocido"}
-                </p> {/*CAMBIAR: tiene que funcionar con el backend */}
+                </p>
 
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
                 {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
@@ -223,7 +178,7 @@ const Routines = () => {
         />
 
     </div>
-    
+
   );
 };
 

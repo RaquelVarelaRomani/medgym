@@ -1,123 +1,219 @@
+/* main container */
 .contenedor-routine-details {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
-    padding: 0;
+    background: var(--bg-primary);
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 .caja-routine-details {
-    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
+    background: transparent;
     padding: 2rem;
-    border-radius: 10px;
     width: 100%;
-    max-width: 100%;
+    max-width: 1400px;
     box-sizing: border-box;
     position: relative;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
+/* back button */
 .boton-atras {
     position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
-    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
-    color: var(--text-dark);
-    font-weight: bold;
-    padding: 8px 20px;
-    border: none;
+    top: 0;
+    left: 0;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 1.25rem;
     transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+}
+
+.boton-atras::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .boton-atras:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
     transform: translateY(-2px);
-    background: linear-gradient(135deg, var(--boton-over-orange), var(--primary-orange));
-    box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
+.boton-atras:hover::before {
+    left: 100%;
+}
+
+.boton-atras:active {
+    transform: translateY(0);
+}
+
+/* title */
 .titulo-rutina {
-    font-size: 24px;
-    font-weight: bold;
-    color: var(--text-dark);
-    margin-bottom: 20px;
-    margin-top: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 3rem 0 2rem 0;
     text-align: center;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
 }
 
+/* description container */
 .descripcion-rutina {
-    background: var(--white);
-    border: 3px solid var(--accent-blue);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 25px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--text-dark);
-    box-shadow: 0 2px 5px var(--shadow-light);
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.descripcion-rutina::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    opacity: 0.5;
+}
+
+.descripcion-rutina:hover {
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 8px 24px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(255, 107, 53, 0.1);
 }
 
 .descripcion-rutina p {
     white-space: pre-wrap;
+    margin: 0;
+    color: var(--text-secondary);
 }
 
+/* exercise list */
 .lista-ejercicios {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    padding: 0 2rem 2rem;
+    gap: 1rem;
+    padding: 0;
     width: 100%;
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
+/* exercise container */
 .ejercicio {
     background: none;
     border: none;
-    border-radius: 10px;
-    overflow: visible;
+    border-radius: 12px;
+    overflow: hidden;
     width: 100%;
-    max-width: 600px;
     transition: all 0.3s ease;
-}
-
-.ejercicio:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
 .header-ejercicio {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    border: 2px solid var(--dark-gray);
-    border-radius: 10px;
+    padding: 1.25rem 1.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     cursor: pointer;
-    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
-    transition: background 0.3s ease;
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-ejercicio::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
 }
 
 .header-ejercicio:hover {
-    box-shadow: 0 4px 10px var(--shadow-orange);
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(255, 107, 53, 0.15);
+    transform: translateY(-2px);
+}
+
+.header-ejercicio:hover::before {
+    transform: translateX(100%);
 }
 
 .header-ejercicio h3 {
     margin: 0;
-    font-size: 18px;
-    color: var(--text-dark);
-    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* arrow dropdown */
 .flecha {
-    color: var(--text-dark);
+    color: var(--neon-orange);
     transition: transform 0.3s ease;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: bold;
 }
 
@@ -125,26 +221,31 @@
     transform: rotate(180deg);
 }
 
+/* expanded exercise */
 .ejercicio-contenido {
-    padding: 20px;
-    background: var(--white-70);
+    padding: 0;
+    background: transparent;
     animation: slideDown 0.3s ease;
-    border-radius: 10px;
-    margin-top: 1px;
-    box-shadow: var(--shadow-light);
+    margin-top: 0.5rem;
 }
 
 .descripcion-ejercicio {
-    margin: 0 0 15px 0;
-    color: var(--text-dark);
-    font-size: 15px;
-    line-height: 1.6;
-    padding: 15px;
-    background: var(--light-gray);
-    border-radius: 8px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    padding: 1.5rem;
+    background: linear-gradient(
+            135deg,
+            rgba(26, 26, 36, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* animacion al expandir ejercicios */
+/* slide down animation */
 @keyframes slideDown {
     from {
         opacity: 0;
@@ -154,4 +255,37 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* loading and error sections */
+.contenedor-routine-details > div:first-child {
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.contenedor-routine-details button:not(.boton-atras) {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    margin-top: 1rem;
+}
+
+.contenedor-routine-details button:not(.boton-atras):hover {
+    transform: translateY(-2px);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.6),
+            0 0 40px rgba(255, 107, 53, 0.4);
 }

@@ -1,115 +1,327 @@
+/* main container */
 .profile {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px;
-    background: linear-gradient(to right, var(--dark-orange-light),var(--primary-orange-light));
+    padding: 2rem;
+    background: var(--bg-primary);
     min-height: 100vh;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .profile-container {
-    background-color: rgba(255, 255, 255, 0.7);
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
     box-sizing: border-box;
-    max-width: 1600px;          /* ancho máximo del bloque */
-    width: 80vw;
+    max-width: 1400px;
+    width: 90%;
     min-height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    opacity: 0.6;
 }
 
 .profile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-left: 20px;         /* margen desde el borde */
+    margin-bottom: 3rem;
+    gap: 2rem;
 }
 
 .profile-info {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 2rem;
+    flex: 1;
 }
 
 .profile-photo {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
+    min-width: 180px;
     border-radius: 50%;
-    background: white;
+    background: linear-gradient(
+            135deg,
+            rgba(30, 30, 42, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    border: 2px solid var(--border-color);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.profile-photo:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
 }
 
 .profile-name {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .profile-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    align-items: flex-end;
+    gap: 0.75rem;
+    align-items: stretch;
+    min-width: 220px;
 }
 
+/* back button */
 .return-init-button {
     width: 100%;
-    padding: 12px 18px;
-    font-size: 1rem;
-    background: white;
-    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border:none;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
 }
 
+.return-init-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.return-init-button:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.return-init-button:hover::before {
+    left: 100%;
+}
+
+/* edit profile button */
 .edit-profile-button {
     width: 100%;
-    padding: 10px 20px;
-    font-size: 1rem;
-    background: white;
-    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: none;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
 }
 
+.edit-profile-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.edit-profile-button:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.edit-profile-button:hover::before {
+    left: 100%;
+}
+
+/* change password button */
+.change-password-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.change-password-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.change-password-button:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.change-password-button:hover::before {
+    left: 100%;
+}
+
+/* logout button */
 .logout-button {
     width: 100%;
-    padding: 10px 20px;
-    font-size: 1rem;
-    background: #c62828;
-    border-radius: 8px;
-    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #ff4757;
+    border: 2px solid #ff4757;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    border:none;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
 }
 
-.return-init-button:hover, .edit-profile-button:hover, .logout-button:hover{
+.logout-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 71, 87, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.logout-button:hover {
+    background: linear-gradient(135deg, #ff4757, #e84545);
+    color: white;
+    border-color: #ff6b7a;
+    box-shadow:
+            0 0 20px rgba(255, 71, 87, 0.5),
+            0 4px 15px rgba(255, 71, 87, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px var(--shadow-dark);
-    border: none;
+}
+
+.logout-button:hover::before {
+    left: 100%;
 }
 
 .profile-content {
-    margin-left: 30px;
+    margin-left: 0;
     text-align: left;
+    width: 100%;
 }
 
 .profile-data {
-    width: 80%;
+    width: 100%;
     max-width: 1000px;
     min-height: 200px;
-    border: 1px solid #000;
-    border-radius: 6px;
-    background: white;
-    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: linear-gradient(
+            135deg,
+            rgba(30, 30, 42, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    padding: 2rem;
     text-align: left;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 2;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+}
+
+.profile-data:hover {
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.profile-data strong {
+    color: var(--text-primary);
+    font-weight: 600;
 }
