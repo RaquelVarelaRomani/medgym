@@ -9,6 +9,7 @@ import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineExerciseDto;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Routine createRoutine(String name, User user) {
-        return routineDao.save(new Routine(name, name + " description", user));
+        return routineDao.save(new Routine(name, name + " description", Routine.VisibilityType.PUBLIC, user));
     }
 
     @Test

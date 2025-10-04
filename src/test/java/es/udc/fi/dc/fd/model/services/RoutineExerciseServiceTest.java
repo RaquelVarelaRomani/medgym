@@ -48,7 +48,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Routine createRoutine(String name, User user){
-        Routine routine = new Routine(name, "Rutina",user);
+        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, user);
         return routineDao.save(routine);
     }
 
