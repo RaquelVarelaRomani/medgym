@@ -5,120 +5,130 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 
 const CreateExercise = () => {
-    const navigate = useNavigate();
-    
-    const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    
-    const [exerciseData, setExerciseData] = useState({ name: "", description: ""});
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [titleError, setTitleError] = useState("");
 
-    //Verificar si hay usuario logueado e identificarlo
-    useEffect(() => {
-        tryLoginFromServiceToken(
-            (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);
-                setLoading(false);
-            },
-            () => {
-                console.error("Token inválido o expirado");
-                navigate("/users/login");
-            }
-        );
-    }, [navigate]);
+  const [exerciseData, setExerciseData] = useState({
+    name: "",
+    description: "",
+  });
 
-    const isTrainer = () => currentUser && currentUser.role === 'TRAINER';
+  // Verificar login y rol
+  useEffect(() => {
+    tryLoginFromServiceToken(
+      (authenticatedUser) => {
+        setCurrentUser(authenticatedUser.user);
+        setLoading(false);
+      },
+      () => {
+        console.error("Token inválido o expirado");
+        navigate("/users/login");
+      }
+    );
+  }, [navigate]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setExerciseData((prev) => ({...prev, [name]: value}));
-    };
-    
-    const handleSubmit = (e) => {
-        e.preventDefault();
+  const isTrainer = () => currentUser && currentUser.role === "TRAINER";
 
-        exerciseService.createExercise(
-            exerciseData.name,
-            exerciseData.description,
-            () => {
-                navigate("/routines/exercises");
-            },
-            (errors) => {
-                console.error("Error creating exercise:", errors);
-                setError(errors.globalError || "Error al crear el ejercicio");
-            }
-        );
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setExerciseData((prev) => ({ ...prev, [name]: value }));
 
-    const handleProfileClick = () => {
-        navigate("/users/profile");
+    if (name === "name" && value.length > 50) {
+      setTitleError("El nombre es demasiado largo");
+    } else {
+      setTitleError("");
+    }
+  };
+
+  const handleCancel = () => {
+    navigate("/exercises");
+  };
+
+  const handleSave = () => {
+    if (!exerciseData.name.trim()) {
+      setTitleError("El nombre es obligatorio");
+      return;
     }
 
-    if (loading) {
-        return (
-            <div className="contenedor">
-                <div className="loading-message">Cargando...</div>
-            </div>
-        );
-    }
+    exerciseService.createExercise(
+      exerciseData.name,
+      exerciseData.description,
+      () => {
+        navigate("/exercises");
+      },
+      (errors) => {
+        console.error("Error creando ejercicio:", errors);
+        setError(errors.globalError || "Error al crear el ejercicio");
+      }
+    );
+  };
 
-    if (error) {
-        return (
-            <div className="contenedor">
-                <div className="error-message">
-                    {error}
-                    <button onClick={() => setError(null)} className="retry-button"> Intentar de nuevo </button>
-                </div>
-            </div>
-        );
-    }
-
+  if (loading) return <div>Cargando...</div>;
+  if (error)
     return (
-        <div className="contenedor">
+      <div>
+        <p>{error}</p>
+        <button onClick={() => setError(null)}>Reintentar</button>
+      </div>
+    );
+
+  return (
+    <div className="contenedor-create-exercise">
+      <div className="header-crear-ejercicio">
+        <h2>Estás creando un nuevo ejercicio...</h2>
         <img
-            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-            alt="Logo"
-            className="foto-perfil"
-            onClick={handleProfileClick}
+          src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+          alt="Foto de perfil"
+          className="foto-perfil"
+          onClick={() => navigate("/users/profile")}
         />
+      </div>
 
-        <div className="routines-titulo-grande">
-            <h2>Crear nuevo ejercicio</h2>
-        </div>
+      {isTrainer() && (
+        <div className="form-crear-ejercicio">
+          <div className="form-div">
+            <label htmlFor="name">Nombre:</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Escriba aquí el nombre del ejercicio..."
+              value={exerciseData.name}
+              onChange={handleChange}
+              className={titleError ? "input-error" : ""}
+            />
+            {titleError && (
+              <span className="error-message">{titleError}</span>
+            )}
+          </div>
 
-        {/* Solo mostrar el formulario si el usuario es entrenador */}
-        {isTrainer() && ( 
-            <form className="create-exercise-form" onSubmit={handleSubmit}>
-            <label>
-                Nombre del ejercicio:
-                <input
-                    type="text"
-                    name="name"
-                    value={exerciseData.name}
-                    onChange={handleChange}
-                    required
-                />
-            </label>
+          <div className="form-div">
+            <label htmlFor="description">Descripción:</label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Describa brevemente el ejercicio..."
+              value={exerciseData.description}
+              onChange={handleChange}
+              rows={3}
+            />
+          </div>
 
-            <label>
-                Descripción:
-                <textarea
-                    name="description"
-                    value={exerciseData.description}
-                    onChange={handleChange}
-                    rows="4"
-                    required
-                />
-            </label>
-
-            <button type="submit" className="boton-crear-ejercicio">
-                Crear ejercicio
+          <div className="form-actions">
+            <button className="boton-guardar" onClick={handleSave}>
+              Guardar
             </button>
-            </form>
-        )}
+            <button className="boton-cancelar" onClick={handleCancel}>
+              Cancelar
+            </button>
+          </div>
         </div>
-    )
+      )}
+    </div>
+  );
 };
 
 export default CreateExercise;
-
