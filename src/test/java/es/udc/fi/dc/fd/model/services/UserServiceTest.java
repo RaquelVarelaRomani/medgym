@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,7 +26,7 @@ public class UserServiceTest {
 	private UserService userService;
 
 	private User createUser(String email) {
-		return new User("name", "surname", email, "+34 000 000 000", "password", null);
+		return new User("name", "surname", email, "+34 000 000 000", "password", null, RoleType.CLIENT);
 	}
 
 	@Test
