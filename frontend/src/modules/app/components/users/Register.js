@@ -1,7 +1,6 @@
 import React, { useState} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
-import { getAuthenticatedUser, setAuthenticatedUser } from "../../../../backend/appFetch";
 import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
 
@@ -29,8 +28,6 @@ const Register = () => {
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                setAuthenticatedUser(data.user);
-                console.log("Nuevo authenticatedUser de sessionStorage:", getAuthenticatedUser());
                 setShowPopup(true);
             },
             (error) => {

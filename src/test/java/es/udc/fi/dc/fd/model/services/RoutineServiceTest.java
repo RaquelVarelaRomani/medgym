@@ -28,7 +28,7 @@ public class RoutineServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com", RoleType.CLIENT);
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", null,  RoleType.CLIENT);
         return userDao.save(user);
     }
 

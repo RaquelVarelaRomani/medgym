@@ -10,6 +10,7 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    profile_picture MEDIUMBLOB,
     role TINYINT NOT NULL,
 
     CONSTRAINT user_id_pk PRIMARY KEY (id),

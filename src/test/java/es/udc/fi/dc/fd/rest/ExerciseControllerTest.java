@@ -70,7 +70,8 @@ public class ExerciseControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
 														RoleType roleType) throws IncorrectLoginException {
 
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null);
+
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);

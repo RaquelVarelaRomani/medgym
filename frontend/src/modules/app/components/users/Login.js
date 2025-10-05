@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { login } from "../../../../backend/userService";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
-import { setAuthenticatedUser, getAuthenticatedUser } from "../../../../backend/appFetch";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -17,8 +16,6 @@ const Login = () => {
             password,
             (data) => {
                 console.log("Login correcto:", data);
-                setAuthenticatedUser(data.user);
-                console.log("Nuevo authenticatedUser de sessionStorage:", getAuthenticatedUser());
                 navigate("/routines");
             },
             (error) => {

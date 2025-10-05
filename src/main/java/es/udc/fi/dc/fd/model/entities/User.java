@@ -18,17 +18,19 @@ public class User {
 	private String email;
 	private String phoneNumber;
 	private String password;
+	private byte[] profilePicture;
 	private RoleType role;
 
 	public User() {
 	}
 
-	public User(String name, String surname, String email, String phoneNumber, String password, RoleType role) {
+	public User(String name, String surname, String email, String phoneNumber, String password, byte[] profilePicture, RoleType role) {
 		this.name = name;
 		this.surname = surname;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.password = password;
+		this.profilePicture = profilePicture;
 		this.role = role;
 	}
 
@@ -76,11 +78,20 @@ public class User {
 		this.password = password;
 	}
 
+	public byte[] getProfilePicture() {
+		return profilePicture;
+	}
+
+	public void setProfilePicture(byte[] profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+
 	public RoleType getRole() {
 		return role;
 	}
 	public void setRole(RoleType role) {
 		this.role = role;
 	}
+
 
 }
