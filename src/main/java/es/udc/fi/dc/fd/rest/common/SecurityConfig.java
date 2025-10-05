@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/api/users/login")).permitAll()
                 .requestMatchers(antMatcher("/api/users/loginFromServiceToken")).permitAll()
                 .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/users/*")).hasRole("ADMIN")
-                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasAnyRole("ADMIN", "TRAINER")
                 .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*")).hasRole("ADMIN")
                 .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*/status")).hasRole("ADMIN")
                 .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/exercises/*")).hasRole("ADMIN")

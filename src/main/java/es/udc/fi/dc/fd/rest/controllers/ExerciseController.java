@@ -37,7 +37,7 @@ public class ExerciseController {
         URI location = URI.create("/api/exercises/" + exercise.getId());
         return ResponseEntity.created(location).body(toExerciseDto(exercise));
     }
- 
+
     @GetMapping("/{id}")
     public ExerciseDto getExercise(@PathVariable Long id) throws InstanceNotFoundException {
         return toExerciseDto(exerciseService.findExerciseById(id));

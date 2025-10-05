@@ -14,17 +14,17 @@ INSERT INTO routines (name, description, trainer_id) VALUES
     ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye:\n- Plancha abdominal (mantener 3 series de 30 segundos).', 4);
 
 -- Insertar ejercicios
-INSERT INTO exercises (name, description) VALUES
-    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.'),
-    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.'),
-    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.'),
-    ('Plancha abdominal', 'Ejercicio isométrico para el core.'),
-    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.'),
-    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.'),
-    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.'),
-    ('Press banca', 'Ejercicio de fuerza para el pecho.'),
-    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.'),
-    ('Mountain climbers', 'Ejercicio de cardio y core.');
+INSERT INTO exercises (name, description, status) VALUES
+    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'APPROVED'),
+    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'APPROVED'),
+    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'APPROVED'),
+    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'APPROVED'),
+    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'APPROVED'),
+    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'APPROVED'),
+    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'APPROVED'),
+    ('Press banca', 'Ejercicio de fuerza para el pecho.', 'APPROVED'),
+    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'APPROVED'),
+    ('Mountain climbers', 'Ejercicio de cardio y core.', 'APPROVED');
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial

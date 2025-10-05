@@ -26,7 +26,17 @@ public class ExerciseServiceImpl implements ExerciseService {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
 
-        Exercise exercise = new Exercise(name, description, ExerciseStatus.PENDING);
+        Exercise.ExerciseStatus status;
+
+        // Si el usuario es ADMIN → se aprueba directamente
+        if (user.getRole() == User.RoleType.ADMIN) {
+            status = Exercise.ExerciseStatus.APPROVED;
+        } else {
+            // Si es entrenador → pendiente de aprobación
+            status = Exercise.ExerciseStatus.PENDING;
+        }
+        
+        Exercise exercise = new Exercise(name, description, status);
         return exerciseDao.save(exercise);
     }
 

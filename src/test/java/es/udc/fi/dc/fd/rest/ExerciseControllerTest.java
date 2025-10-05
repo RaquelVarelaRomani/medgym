@@ -246,11 +246,13 @@ public class ExerciseControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
+/*  @Test
     public void testCreateExerciseAsTrainerFails() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise", "PENDING");
         createExercise(trainerUser, exerciseDto).andExpect(status().isForbidden());
     }
+ */
+
 
     @Test
     public void testDeleteExerciseAsTrainerFails() throws Exception {

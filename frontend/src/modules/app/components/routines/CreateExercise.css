@@ -1,134 +1,148 @@
 .contenedor-create-exercise {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
-  padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
+    padding: 2rem;
 }
 
 /* Cabecera */
 .header-crear-ejercicio {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 800px;
-  margin-bottom: 2rem;
-  padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
 }
 
 .header-crear-ejercicio h2 {
-  color: var(--text-dark);
-  font-size: 24px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px var(--shadow-dark);
+    color: var(--text-dark);
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px var(--shadow-dark);
 }
 
 .foto-perfil {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.2s;
-  box-shadow: 0 4px 10px var(--shadow-dark);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 10px var(--shadow-dark);
 }
 
 .foto-perfil:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 /* Caja principal del formulario */
 .form-crear-ejercicio {
-  background-color: var(--white-70);
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px var(--shadow-dark);
-  width: 100%;
-  max-width: 800px;
-  box-sizing: border-box;
+    background-color: var(--white-70);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px var(--shadow-dark);
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
 }
 
 .form-div {
-  margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .form-div label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: var(--text-dark);
-  font-size: 16px;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+    font-size: 16px;
 }
 
 .form-div input,
 .form-div textarea {
-  width: calc(100% - 1rem);
-  padding: 12px;
-  border: 2px solid var(--medium-gray);
-  border-radius: 8px;
-  margin-right: 1rem;
-  font-size: 14px;
-  font-family: inherit;
-  background-color: var(--light-gray);
-  color: var(--text-dark);
-  transition: all 0.3s ease;
-  box-sizing: border-box;
-  resize: none;
+    width: calc(100% - 1rem);
+    padding: 12px;
+    border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+    margin-right: 1rem;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: var(--light-gray);
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    resize: none;
 }
 
 .form-div input::placeholder,
 .form-div textarea::placeholder {
-  color: var(--dark-gray);
-  opacity: 0.7;
+    color: var(--dark-gray);
+    opacity: 0.7;
 }
 
 .form-div input:focus,
 .form-div textarea:focus {
-  outline: none;
-  border-color: var(--accent-blue);
-  background-color: var(--white);
-  box-shadow: 0 0 0 3px var(--white-30);
+    outline: none;
+    border-color: var(--accent-blue);
+    background-color: var(--white);
+    box-shadow: 0 0 0 3px var(--white-30);
 }
 
 /* Botones */
 .form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }
 
 .boton-guardar {
-  background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
-  color: var(--text-dark);
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  box-shadow: 0 2px 5px var(--shadow-orange);
-  transition: all 0.3s ease;
-  cursor: pointer;
+    background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
+    color: var(--text-dark);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px var(--shadow-orange);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .boton-guardar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
 }
 
 .boton-cancelar {
-  background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
-  color: var(--white);
-  padding: 8px 16px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  box-shadow: 0 2px 5px var(--shadow-dark);
-  transition: all 0.3s ease;
-  cursor: pointer;
+    background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
+    color: var(--white);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px var(--shadow-dark);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .boton-cancelar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.success-message {
+    color: var(--success-green);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: var(--error-red);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
 }
