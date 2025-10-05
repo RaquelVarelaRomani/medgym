@@ -6,6 +6,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ public class RoutineServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com", null);
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", null,  RoleType.CLIENT);
         return userDao.save(user);
     }
 

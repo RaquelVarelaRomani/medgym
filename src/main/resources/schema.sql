@@ -37,6 +37,7 @@ CREATE TABLE exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT exercise_id_pk PRIMARY KEY (id)
 );
