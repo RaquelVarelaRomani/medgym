@@ -84,6 +84,17 @@
 .profile-photo:hover {
     border-color: var(--neon-orange);
     box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 .profile-name {

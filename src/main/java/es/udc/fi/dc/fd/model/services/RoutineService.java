@@ -9,9 +9,11 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import java.util.List;
 
 public interface RoutineService {
-    Routine createRoutine(String name, String description, User user) throws DuplicateInstanceException;
-    Routine findRoutineById(Long routineId) throws InstanceNotFoundException;
-    void updateRoutine(Long userId, Long routineId, String name, String description) throws InstanceNotFoundException, DuplicateInstanceException, PermissionException;
+    Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility)
+            throws DuplicateInstanceException;
+    Routine findRoutineById(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException;
+    void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility)
+            throws InstanceNotFoundException, DuplicateInstanceException, PermissionException;
     void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException;
-    List<Routine> findAllRoutines();
+    List<Routine> findAllRoutines(Long userId) throws InstanceNotFoundException;
 }

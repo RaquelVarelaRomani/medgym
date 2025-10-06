@@ -5,6 +5,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.services.ExerciseService;
 import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.rest.dtos.ExerciseConversor;
@@ -48,9 +49,20 @@ public class ExerciseController {
         return toExerciseDto(exerciseService.findExerciseById(id));
     }
 
+    @PutMapping("/{id}/status")
+    public ExerciseDto updateExerciseStatus(@PathVariable Long id, @RequestBody ExerciseDto exerciseDto) throws InstanceNotFoundException {
+        exerciseService.updateExerciseStatus(id, ExerciseStatus.valueOf(exerciseDto.getStatus()));
+        return toExerciseDto(exerciseService.findExerciseById(id));
+    }
+
     @GetMapping
     public List<ExerciseDto> findAllExercises() {
         return ExerciseConversor.toExerciseDtos(exerciseService.findAllExercises());
+    }
+
+    @GetMapping("/pending")
+    public List<ExerciseDto> findExercisesWithPendingStatus() {
+        return ExerciseConversor.toExerciseDtos(exerciseService.findExercisesWithPendingStatus());
     }
 
     @DeleteMapping("/{id}")

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../../../backend/userService";
-import {getAuthenticatedUser, removeAuthenticatedUser} from "../../../../backend/appFetch";
+import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/Popup";
 
 const Profile = () => {
@@ -11,15 +10,16 @@ const Profile = () => {
     const [showPopup, setShowPopup] = useState(false);
 
     useEffect(() => {
-        const storedUser = getAuthenticatedUser();
-        if (storedUser) {
-            setProfile(JSON.parse(storedUser));
-        } else {
-            console.error("No hay usuario guardado");
-            // alert("No se pudo cargar el perfil");
-            // Debería redirigir a login
-        }
-
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                console.log("Respuesta loginFromServiceToken:", authenticatedUser.user);
+                setProfile(authenticatedUser.user); // ya tienes name, surname, email, profilePicture, etc.
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
     }, [navigate]);
 
     const handleReturnInit = () => {
@@ -28,7 +28,6 @@ const Profile = () => {
 
     const handleLogOut = () => {
         logout();
-        removeAuthenticatedUser();
         setShowPopup(true);
     }
 
@@ -52,7 +51,21 @@ const Profile = () => {
             <div className="profile-container">
                 <div className="profile-header">
                     <div className="profile-info">
-                        <div className="profile-photo"> Foto de perfil </div>
+                        <div className="profile-photo">
+                            {profile?.profilePicture ? (
+                                <img
+                                    src={`data:image/jpeg;base64,${profile.profilePicture}`}
+                                    alt="Foto de perfil"
+                                    className="profile-image"
+                                />
+                            ) : (
+                                <img
+                                    src="./assets/default-profile.jpg"
+                                    alt="Foto por defecto"
+                                    className="profile-image"
+                                />
+                            )}
+                        </div> 
                         <h2 className="profile-name">
                             {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                         </h2>

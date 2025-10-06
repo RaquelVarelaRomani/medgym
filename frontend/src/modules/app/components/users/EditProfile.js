@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
 import { useNavigate } from "react-router-dom";
-import { changePassword, updateProfile } from "../../../../backend/userService";
-import { getAuthenticatedUser } from "../../../../backend/appFetch";
+import { changePassword, updateProfile, tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/Popup";
+import FileUploadButton from "../common/FileUploadButton";
+import CropModal from "../common/CropModal";
 
 const EditProfile = ({ isPasswordMode = false }) => {
     const [profile, setProfile] = useState(null);
@@ -11,41 +12,46 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const [surname, setSurname] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [profilePicture, setProfilePicture] = useState(null);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
+    const [showCropper, setShowCropper] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState(null);
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = getAuthenticatedUser();
-        if (storedUser) {
-            const user = JSON.parse(storedUser);
-            setProfile(user);
-            setName(user.name);
-            setSurname(user.surname);
-            setEmail(user.email);
-            setPhoneNumber(user.phoneNumber);
-        } else {
-            console.error("No hay usuario guardado");
-            alert("No se pudo cargar el perfil");
-        }
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setProfile(authenticatedUser.user);
+                setName(authenticatedUser.user.name);
+                setSurname(authenticatedUser.user.surname);
+                setEmail(authenticatedUser.user.email);
+                setPhoneNumber(authenticatedUser.user.phoneNumber);
+                setProfilePicture(authenticatedUser.user.profilePicture);
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
     }, [navigate]);
+
 
     const handleSave = (e) => {
         e.preventDefault();
-        const updatedUser = { id: profile.id, name, surname, email, phoneNumber };
+        const updatedUser = { id: profile.id, name, surname, email, phoneNumber, profilePicture };
 
         const updateProfileData = () => {
             updateProfile(
                 updatedUser,
                 () => {
-                    const newUser = { ...profile, name, surname, email, phoneNumber };
-                    sessionStorage.setItem("authenticatedUser", JSON.stringify(newUser));
+                    const newUser = { ...profile, name, surname, email, phoneNumber, profilePicture };
                     setProfile(newUser);
                     if (isPasswordMode) {
                         setPopupMessage("Contraseña actualizada con éxito");
@@ -97,7 +103,42 @@ const EditProfile = ({ isPasswordMode = false }) => {
 
                 {!isPasswordMode && (
                     <>
-                        <div className="edit-profile-photo"> Foto de perfil </div>
+                        <div className="edit-profile-photo">
+                            {profile?.profilePicture ? (
+                                <img
+                                    src={`data:image/jpeg;base64,${profile.profilePicture}`}
+                                    alt="Foto de perfil"
+                                    className="profile-image"
+                                />
+                            ) : (
+                                <img
+                                    src="./assets/default-profile.jpg"
+                                    alt="Foto por defecto"
+                                    className="profile-image"
+                                />
+                            )}
+                        </div> 
+                        <FileUploadButton onFileSelect={(file) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                setShowCropper(true);
+                                setImageToCrop(reader.result);
+                            };
+                            reader.readAsDataURL(file);
+                        }} />
+                        {showCropper && (
+                            <CropModal
+                                imageSrc={imageToCrop}
+                                onCancel={() => setShowCropper(false)}
+                                onSave={(croppedImage) => {
+                                    const base64String = croppedImage.split(",")[1];
+                                    setProfile({ ...profile, profilePicture: base64String });
+                                    setProfilePicture(base64String);
+                                    setShowCropper(false);
+                                }}
+                            />
+                        )}
+
                         <form className="form" onSubmit={handleSave}>
                             <label htmlFor="name">Nombre</label>
                             <input
@@ -143,7 +184,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
                             </div>
                         </form>
-                    </>
+                    </> 
                 )}
 
                 {isPasswordMode && <h2 className="titulo">Cambiar contraseña</h2>}

@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import es.udc.fi.dc.fd.model.entities.Routine;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +73,8 @@ public class RoutineControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         RoleType roleType) throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD);
+                                                        RoleType roleType) throws IncorrectLoginException {
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
         userDao.save(user);
@@ -87,6 +89,7 @@ public class RoutineControllerTest {
         RoutineDto routineDto = new RoutineDto();
         routineDto.setName(name);
         routineDto.setDescription("Description for " + name);
+        routineDto.setVisibility("PUBLIC");
         return mockMvc.perform(post("/api/routines")
                 .header("Authorization", "Bearer " + user.getServiceToken())
                 .contentType(MediaType.APPLICATION_JSON)

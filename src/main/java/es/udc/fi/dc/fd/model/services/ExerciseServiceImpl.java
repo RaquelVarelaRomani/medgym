@@ -5,11 +5,12 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.ExerciseDao;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,7 +26,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
 
-        Exercise exercise = new Exercise(name, description);
+        Exercise exercise = new Exercise(name, description, ExerciseStatus.PENDING);
         return exerciseDao.save(exercise);
     }
 
@@ -34,6 +35,12 @@ public class ExerciseServiceImpl implements ExerciseService {
     public Exercise findExerciseById(Long exerciseId) throws InstanceNotFoundException {
         return exerciseDao.findById(exerciseId)
                 .orElseThrow(() -> new InstanceNotFoundException("project.entities.exercise", exerciseId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Exercise> findExercisesWithPendingStatus() {
+        return exerciseDao.findByStatus(ExerciseStatus.PENDING);
     }
 
     @Override
@@ -46,6 +53,12 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         exercise.setName(name);
         exercise.setDescription(description);
+    }
+
+    @Override
+    public void updateExerciseStatus(Long exerciseId, Exercise.ExerciseStatus status) throws InstanceNotFoundException {
+        Exercise exercise = findExerciseById(exerciseId);
+        exercise.setStatus(status);
     }
 
     @Override

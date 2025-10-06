@@ -7,20 +7,24 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "routines")
 public class Routine {
+    public enum VisibilityType {
+        PUBLIC,
+        PRIVATE
+    }
     private Long id;
     private String name;
     private String description;
-
     private LocalDateTime creationDate;
     private LocalDateTime modificationDate;
-
+    private VisibilityType visibility;
     private User trainer;
 
     public Routine() {}
 
-    public Routine(String name,  String description, User trainer) {
+    public Routine(String name,  String description, VisibilityType visibility, User trainer) {
         this.name = name;
         this.description = description;
+        this.visibility = visibility;
         this.trainer = trainer;
     }
 
@@ -64,6 +68,13 @@ public class Routine {
         this.modificationDate = modificationDate;
     }
 
+    public VisibilityType getVisibility() {
+        return visibility;
+    }
+    public void setVisibility(VisibilityType visibility) {
+        this.visibility = visibility;
+    }
+
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     public User getTrainer() {
@@ -71,5 +82,10 @@ public class Routine {
     }
     public void setTrainer(User user) {
         this.trainer = user;
+    }
+
+    @Transient
+    public boolean isPrivate() {
+        return visibility == VisibilityType.PRIVATE;
     }
 }

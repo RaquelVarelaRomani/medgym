@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Exercises.css";
 import { Link, useNavigate} from "react-router-dom";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import {tryLoginFromServiceToken} from "../../../../backend/userService";
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -16,15 +16,17 @@ const Exercises = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = getAuthenticatedUser();
-        console.log(JSON.parse(storedUser));
-        if (storedUser) {
-            setCurrentUser(JSON.parse(storedUser));
-        }
-
-        fetchExercises();
-
-    }, []);
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
+                fetchExercises();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+    }, [navigate]);
 
     useEffect(() => {
         fetchExercises();

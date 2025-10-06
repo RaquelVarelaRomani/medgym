@@ -80,6 +80,15 @@
 }
 
 /* form */
+.edit-profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Formulario */
+>>>>>>> origin
 .form {
     display: flex;
     flex-direction: column;
