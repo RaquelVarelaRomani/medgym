@@ -1,22 +1,31 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import jakarta.transaction.Transactional;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.ExerciseDao;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.RoutineExercise;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -41,8 +50,8 @@ public class RoutineExerciseServiceTest {
         return userDao.save(trainer);
     }
 
-    private Exercise createExercise(String exerciseName){
-        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING);
+    private Exercise createExercise(String exerciseName, User user){
+        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 
@@ -54,7 +63,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testAddExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise = createExercise("Ejercicio");
+        Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
@@ -68,7 +77,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise = createExercise("Ejercicio");
+        Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
@@ -79,7 +88,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise = createExercise("Ejercicio");
+        Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
@@ -94,7 +103,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise = createExercise("Ejercicio");
+        Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId());
@@ -105,7 +114,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise = createExercise("Ejercicio");
+        Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
@@ -117,9 +126,9 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainer("Pepe");
-        Exercise exercise1 = createExercise("Ejercicio 1");
-        Exercise exercise2 = createExercise("Ejercicio 2");
-        Exercise exercise3 = createExercise("Ejercicio 3");
+        Exercise exercise1 = createExercise("Ejercicio 1", trainer);
+        Exercise exercise2 = createExercise("Ejercicio 2", trainer);
+        Exercise exercise3 = createExercise("Ejercicio 3", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise1.getId(), 1);

@@ -86,8 +86,8 @@ public class RoutineExerciseControllerTest {
         return userController.login(loginParams);
     }
 
-    private Exercise createExercise(String name) {
-        return exerciseDao.save(new Exercise(name, name + " description", ExerciseStatus.PENDING));
+    private Exercise createExercise(String name, User user) {
+        return exerciseDao.save(new Exercise(name, name + " description", ExerciseStatus.PENDING, user));
     }
 
     private Routine createRoutine(String name, User user) {
@@ -96,8 +96,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testAddExerciseToRoutine() throws Exception {
-        Exercise exercise = createExercise("Ejercicio");
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "", "", 1);
 
@@ -115,8 +116,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testUpdateExerciseInRoutine() throws Exception {
-        Exercise exercise = createExercise("Ejercicio");
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, "", "", 2);
@@ -131,10 +133,11 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testGetExercisesForRoutinesPaging() throws Exception {
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        Exercise exercise1 = createExercise("Ejercicio 1");
-        Exercise exercise2 = createExercise("Ejercicio 2");
-        Exercise exercise3 = createExercise("Ejercicio 3");
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Routine routine = createRoutine("Rutina", trainer);
+        Exercise exercise1 = createExercise("Ejercicio 1", trainer);
+        Exercise exercise2 = createExercise("Ejercicio 2", trainer);
+        Exercise exercise3 = createExercise("Ejercicio 3", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), 1);
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise2.getId(), 2);
@@ -161,8 +164,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testDeleteExerciseToRoutine() throws Exception {
-        Exercise exercise = createExercise("Ejercicio");
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
@@ -172,8 +176,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testAddExerciseToRoutinePermissionDenied() throws Exception {
-        Exercise exercise = createExercise("Ejercicio.");
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio.", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(),"ExerciseName", "ExerciseDescription", 1);
         mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
@@ -185,8 +190,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testDeleteExerciseToRoutinePermissionDenied() throws Exception {
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        Exercise exercise1 = createExercise("Ejercicio 1");
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Routine routine = createRoutine("Rutina", trainer);
+        Exercise exercise1 = createExercise("Ejercicio 1", trainer);
         
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), 1);
 
@@ -210,7 +216,8 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testAddExerciseToNonExistentRoutine() throws Exception {
-        Exercise exercise = createExercise("Ejercicio");
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio", trainer);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, -1L, exercise.getId(), "ExerciseName", "ExerciseDescription", 1);
 
@@ -232,8 +239,9 @@ public class RoutineExerciseControllerTest {
 
     @Test
     public void testAddExerciseToRoutineWithInvalidToken() throws Exception {
-        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        Exercise exercise = createExercise("Ejercicio");
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Routine routine = createRoutine("Rutina", trainer);
+        Exercise exercise = createExercise("Ejercicio", trainer);
 
         RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "ExerciseName", "ExerciseDescription", 1);
 
