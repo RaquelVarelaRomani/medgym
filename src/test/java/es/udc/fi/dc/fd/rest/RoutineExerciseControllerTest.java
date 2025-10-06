@@ -2,6 +2,8 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
 
 import es.udc.fi.dc.fd.rest.controllers.UserController;
@@ -47,11 +49,6 @@ public class RoutineExerciseControllerTest {
     @Autowired
     private RoutineDao routineDao;
 
-
-
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
-
     @Autowired
     private RoutineExerciseService routineExerciseService;
 
@@ -61,25 +58,25 @@ public class RoutineExerciseControllerTest {
     @Autowired
     private UserController userController;
 
-    private AuthenticatedUserDto adminUser;
+    // private AuthenticatedUserDto adminUser;
     private AuthenticatedUserDto trainerUser;
-    private AuthenticatedUserDto anotherTrainerUser;
+    // private AuthenticatedUserDto anotherTrainerUser;
     private AuthenticatedUserDto clientUser;
 
     private final static String PASSWORD = "password";
 
     @org.junit.Before
     public void setUp() throws Exception {
-        adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", User.RoleType.ADMIN);
+        // adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", User.RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", User.RoleType.TRAINER);
-        anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003",
-            User.RoleType.TRAINER);
+        // anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", User.RoleType.CLIENT);
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         User.RoleType roleType) throws Exception {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null);
+    RoleType roleType) throws Exception {
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT);
+
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
         userDao.save(user);
@@ -91,7 +88,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Exercise createExercise(String name) {
-        return exerciseDao.save(new Exercise(name, name + " description"));
+        return exerciseDao.save(new Exercise(name, name + " description", ExerciseStatus.PENDING));
     }
 
     private Routine createRoutine(String name, User user) {
@@ -103,7 +100,7 @@ public class RoutineExerciseControllerTest {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
 
-        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), null, null, 1);
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, routine.getId(), exercise.getId(), "", "", 1);
 
         mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
@@ -123,7 +120,7 @@ public class RoutineExerciseControllerTest {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
 
-        RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, null, null, 2);
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, "", "", 2);
 
         mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
@@ -167,7 +164,7 @@ public class RoutineExerciseControllerTest {
     public void testDeleteExerciseToRoutine() throws Exception {
         Exercise exercise = createExercise("Ejercicio");
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
-        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
@@ -191,9 +188,8 @@ public class RoutineExerciseControllerTest {
     public void testDeleteExerciseToRoutinePermissionDenied() throws Exception {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
         Exercise exercise1 = createExercise("Ejercicio 1");
-
-        RoutineExercise routineExercise = routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(),
-                routine.getId(), exercise1.getId(), 1);
+        
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), 1);
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise1.getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))

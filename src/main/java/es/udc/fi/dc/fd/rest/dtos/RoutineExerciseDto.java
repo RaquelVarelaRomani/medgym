@@ -14,8 +14,8 @@ public class RoutineExerciseDto {
         this.id = id;
         this.routineId = routineId;
         this.exerciseId = exerciseId;
-        this.exerciseName = exerciseName;
-        this.exerciseDescription = exerciseDescription;
+        this.exerciseName = exerciseName.trim();
+        this.exerciseDescription = exerciseDescription.trim();
         this.position = position;
     }
 
