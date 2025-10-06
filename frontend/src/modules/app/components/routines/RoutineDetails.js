@@ -6,6 +6,7 @@ import "./RoutineDetails.css";
 import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
+import { tryLoginFromServiceToken } from "../../../../backend/userService";
 
 const RoutineDetails = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ const RoutineDetails = () => {
   const [expandedExercises, setExpandedExercises] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {
@@ -26,6 +28,24 @@ const RoutineDetails = () => {
 
   const handleBack = () => {
     navigate("/routines");
+  };
+
+  const isClient = () => {
+    if (!currentUser) return true;
+    return currentUser.role === 'CLIENT';
+  };
+  const isTrainer = () => {
+    if (!currentUser) return false;
+    return currentUser.role === 'TRAINER';
+  };
+  const isAdmin = () => {
+    if (!currentUser) return false;
+    return currentUser.role === 'ADMIN';
+  };
+
+  const isRoutineCreator = (routine) => {
+    if (!currentUser || !routine.trainerId) return false;
+    return currentUser.id === routine.trainerId;
   };
 
     const loadRoutine = () => {
@@ -74,8 +94,17 @@ const RoutineDetails = () => {
 
 
     useEffect(() => {
-        loadRoutine();
-    }, [id]);
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
+                loadRoutine();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+    }, [id, navigate]);
 
     if (loading) return <div className="contenedor-routine-details">Cargando rutina…</div>;
     if (error)
@@ -95,7 +124,12 @@ const RoutineDetails = () => {
             ←
           </button>
 
-          <h1 className="titulo-rutina">{routine.name}</h1>
+          <h1 className="titulo-rutina">
+            {routine.name}
+            {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
+              <span className="private-badge v-middle-align">🔒 Privado</span>
+            )}
+          </h1>
 
           <div className="descripcion-rutina">
             <p>{routine.description}</p>

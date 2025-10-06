@@ -144,6 +144,10 @@
     border-radius: 8px;
 }
 
+.v-middle-align {
+  vertical-align: middle;
+}
+
 /* animacion al expandir ejercicios */
 @keyframes slideDown {
     from {

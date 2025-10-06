@@ -174,7 +174,12 @@ const Routines = () => {
                 key={routine.id}
                 className="caja-rutina"
             >
-                <h3>{routine.name}</h3> {/*Ya usamos h2 en el titulo grande*/}
+                <h3>
+                    {routine.name}
+                    {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
+                        <span className="private-badge">🔒 Privado</span>
+                    )}
+                </h3> {/*Ya usamos h2 en el titulo grande*/}
                 <p>
                     Generado por{" "}
                     {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||

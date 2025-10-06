@@ -134,3 +134,14 @@
 .boton-crear:hover {
   transform: scale(1.1);
 }
+
+.private-badge {
+  background-color: #ff6b6b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  vertical-align: top;
+}
