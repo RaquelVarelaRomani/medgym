@@ -25,6 +25,7 @@ CREATE TABLE routines (
     creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modification_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     trainer_id BIGINT NOT NULL,
+    visibility TINYINT NOT NULL,
 
     CONSTRAINT routine_id_pk PRIMARY KEY (id),
     CONSTRAINT routine_trainer_id_fk FOREIGN KEY (trainer_id)

@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public class RoutineDto {
-
     public interface AllValidations {}
 
     private Long id;
@@ -18,18 +17,20 @@ public class RoutineDto {
     private Long trainerId;
     private String trainerName;
     private String trainerSurname;
+    private String visibility;
 
     public RoutineDto() {}
 
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname) {
+    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility) {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
         this.trainerId = trainerId;
-        this.trainerName = trainerName.trim();
-        this.trainerSurname = trainerSurname.trim();
+        this.trainerName = trainerName;
+        this.trainerSurname = trainerSurname;
+        this.visibility = visibility;
     }
 
     public Long getId() {
@@ -92,11 +93,20 @@ public class RoutineDto {
         this.trainerName = trainerName;
     }
 
-    public String getTrainerSurame() {
+    public String getTrainerSurname() {
         return trainerSurname;
     }
 
-    public void setTrainerSurame(String trainerSurame) {
-        this.trainerSurname = trainerSurame;
+    public void setTrainerSurname(String trainerSurname) {
+        this.trainerSurname = trainerSurname;
     }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
+
 }
