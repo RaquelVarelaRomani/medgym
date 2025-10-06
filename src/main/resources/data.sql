@@ -14,17 +14,21 @@ INSERT INTO routines (name, description, trainer_id) VALUES
     ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye:\n- Plancha abdominal (mantener 3 series de 30 segundos).', 4);
 
 -- Insertar ejercicios
-INSERT INTO exercises (name, description) VALUES
-    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.'),
-    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.'),
-    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.'),
-    ('Plancha abdominal', 'Ejercicio isométrico para el core.'),
-    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.'),
-    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.'),
-    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.'),
-    ('Press banca', 'Ejercicio de fuerza para el pecho.'),
-    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.'),
-    ('Mountain climbers', 'Ejercicio de cardio y core.');
+INSERT INTO exercises (name, description, creator_id, status) VALUES
+    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 1, 'APPROVED'),
+    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 4, 'APPROVED'),
+    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 1, 'APPROVED'),
+    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 4, 'APPROVED'),
+    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 1, 'APPROVED'),
+    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 4, 'APPROVED'),
+    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 1, 'APPROVED'),
+    ('Press banca', 'Ejercicio de fuerza para el pecho.', 4, 'APPROVED'),
+    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 1, 'APPROVED'),
+    ('Mountain climbers', 'Ejercicio de cardio y core.', 4, 'APPROVED'),
+    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 1, 'PENDING'),
+    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 1, 'REJECTED'),
+    ('Elevaciones laterales', 'Ejercicio para hombros.', 4, 'PENDING'),
+    ('Remo con mancuerna', 'Ejercicio para espalda.', 4, 'REJECTED');
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial

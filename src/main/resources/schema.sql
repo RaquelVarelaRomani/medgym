@@ -38,8 +38,13 @@ CREATE TABLE exercises (
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    creator_id BIGINT,
 
-    CONSTRAINT exercise_id_pk PRIMARY KEY (id)
+    CONSTRAINT exercise_id_pk PRIMARY KEY (id),
+    CONSTRAINT exercise_creator_id_fk FOREIGN KEY (creator_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
 );
 
 CREATE TABLE routine_exercises (
