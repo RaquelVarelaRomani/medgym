@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import "./Exercises.css";
 import { Link, useNavigate} from "react-router-dom";
 import {tryLoginFromServiceToken} from "../../../../backend/userService";
+import * as exerciseService from "../../../../backend/exerciseService";
+import ConfirmationPopup from "../common/ConfirmationPopup";
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -12,6 +14,8 @@ const Exercises = () => {
     const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(null);
     const [exercises, setExercises] = useState([]);
+    const [exerciseToDelete, setExerciseToDelete] = useState(null);
+    const [exerciseToReject, setExerciseToReject] = useState(null);
     const [viewMode, setViewMode] = useState("approved");
     const [loading, setLoading] = useState(true);
 
@@ -33,24 +37,48 @@ const Exercises = () => {
     }, [viewMode]);
 
     //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
-    const fetchExercises = async () => {
-        try {
-            setLoading(true);
+    const fetchExercises = () => {
+        setLoading(true);
 
-            // Temporary mock data
-            const mockExercises = viewMode === "approved" ? [
-                { id: 1, titulo: "Ejercicio nº 1", descripcion: "Descripción ejercicio nº 1", status: "approved" },
-                { id: 2, titulo: "Ejercicio nº 2", descripcion: "Descripción ejercicio nº 2", status: "approved" },
-                { id: 3, titulo: "Ejercicio nº 3", descripcion: "Descripción ejercicio nº 3", status: "approved" },
-            ] : [
-                { id: 4, titulo: "Ejercicio pendiente nº 1", descripcion: "Esperando aprobación", status: "pending" },
-                { id: 5, titulo: "Ejercicio pendiente nº 2", descripcion: "Esperando aprobación", status: "pending" },
-            ];
-            setExercises(mockExercises);
-        } catch (error) {
-            console.error("Error fetching exercises:", error);
-        } finally {
-            setLoading(false);
+        if (viewMode === "pending" && isAdmin()) {
+            exerciseService.getPendingExercises(
+                (data) => {
+                    const mappedExercises = data.map(exercise => ({
+                        id: exercise.id,
+                        titulo: exercise.name,
+                        descripcion: exercise.description,
+                        status: exercise.status
+                    }));
+                    setExercises(mappedExercises);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Error fetching pending exercises:", error);
+                    setLoading(false);
+                }
+            );
+        } else {
+            exerciseService.getAllExercises(
+                (data) => {
+                    const filteredExercises = data.filter(exercise =>
+                        exercise.status === "APPROVED"
+                    );
+
+                    const mappedExercises = filteredExercises.map(exercise => ({
+                        id: exercise.id,
+                        titulo: exercise.name,
+                        descripcion: exercise.description,
+                        status: exercise.status
+                    }));
+
+                    setExercises(mappedExercises);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Error fetching exercises:", error);
+                    setLoading(false);
+                }
+            );
         }
     };
 
@@ -60,22 +88,51 @@ const Exercises = () => {
     };
 
 
-    const handleDelete = (e, exerciseId) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Delete exercise", exerciseId);
+    const handleDelete = (exerciseId) => {
+        exerciseService.deleteExercise(
+            exerciseId,
+            () => {
+                console.log("Exercise deleted successfully");
+                fetchExercises(); // Refresh the list
+            },
+            (error) => {
+                console.error("Error deleting exercise:", error);
+            }
+        );
     };
 
-    const handleApprove = async (e, exerciseId) => {
+
+    const handleApprove = (e, exerciseId) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Approve exercise", exerciseId);
+
+        exerciseService.updateExerciseStatus(
+            exerciseId,
+            "APPROVED",
+            () => {
+                console.log("Exercise approved successfully");
+                fetchExercises(); // Refresh the list
+            },
+            (error) => {
+                console.error("Error approving exercise:", error);
+            }
+        );
     };
 
-    const handleReject = async (e, exerciseId) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Reject exercise", exerciseId);
+    const handleReject = (exerciseId) => {
+        console.log("handleReject called with:", exerciseId, "Type:", typeof exerciseId);
+
+        exerciseService.updateExerciseStatus(
+            exerciseId,
+            "REJECTED",
+            () => {
+                console.log("Exercise rejected successfully");
+                fetchExercises();
+            },
+            (error) => {
+                console.error("Error rejecting exercise:", error);
+            }
+        );
     };
 
     const handleAddExercise = () => {
@@ -120,7 +177,11 @@ const Exercises = () => {
                         {viewMode === "approved" && (isAdmin()) && (
                             <button
                                 className="boton-eliminar"
-                                onClick={(e) => handleDelete(e, exercise.id)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setExerciseToDelete(exercise.id);
+                                }}
                             >
                                 Eliminar
                             </button>
@@ -132,11 +193,15 @@ const Exercises = () => {
                                     className="boton-aprobar"
                                     onClick={(e) => handleApprove(e, exercise.id)}
                                 >
-                                    Aprobar
+                                Aprobar
                                 </button>
                                 <button
                                     className="boton-rechazar"
-                                    onClick={(e) => handleReject(e, exercise.id)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setExerciseToReject(exercise.id);
+                                    }}
                                 >
                                     Rechazar
                                 </button>
@@ -151,6 +216,30 @@ const Exercises = () => {
                     +
                 </button>
             )}
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres eliminar este ejercicio?"
+                show={exerciseToDelete !== null}
+                onOk={() => {
+                    if (exerciseToDelete) {
+                        handleDelete(exerciseToDelete);
+                    }
+                    setExerciseToDelete(null);
+                }}
+                onCancel={() => setExerciseToDelete(null)}
+            />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres rechazar este ejercicio?"
+                show={exerciseToReject !== null}
+                onOk={() => {
+                    if (exerciseToReject) {
+                        handleReject(exerciseToReject);
+                    }
+                    setExerciseToReject(null);
+                }}
+                onCancel={() => setExerciseToReject(null)}
+            />
         </div>
     );
 };

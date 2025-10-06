@@ -31,6 +31,20 @@ export const updateExercise = (id, name, description, onSuccess, onErrors) => ap
     onErrors
 )
 
+export const updateExerciseStatus = (id, status, onSuccess, onErrors) => appFetch(
+    `/exercises/${id}/status`,
+    fetchConfig("PUT", { status }),
+    onSuccess,
+    onErrors
+)
+
+export const getPendingExercises = (onSuccess, onErrors) => appFetch(
+    `/exercises/pending`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
+
 export const deleteExercise = (id, onSuccess, onErrors) => appFetch(
     `/exercises/${id}`,
     fetchConfig("DELETE"),
