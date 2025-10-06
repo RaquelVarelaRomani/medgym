@@ -66,21 +66,3 @@
     cursor: pointer;
     transition: background 0.3s ease;
 }
-
-.cancel-btn {
-    background: #ccc;
-    color: #333;
-}
-
-.cancel-btn:hover {
-    background: #bbb;
-}
-
-.save-btn {
-    background: #007bff;
-    color: #fff;
-}
-
-.save-btn:hover {
-    background: #0056b3;
-}

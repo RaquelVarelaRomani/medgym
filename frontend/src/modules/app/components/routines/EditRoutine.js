@@ -371,7 +371,7 @@ const EditRoutine = () => {
                 </button>
 
                 <div className="form-actions">
-                    <button className="boton-guardar" onClick={handleSave}>
+                    <button className="boton-guardar-rutina" onClick={handleSave}>
                         Guardar
                     </button>
                     <button className="boton-cancelar" onClick={handleCancel}>
