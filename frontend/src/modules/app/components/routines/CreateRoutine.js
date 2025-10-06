@@ -8,7 +8,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
-    const [routineData, setRoutineData] = useState({titulo: "", descripcion: ""});
+    const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC"});
     const [exercises, setExercises] = useState([{id: null, nombre: ""}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
@@ -124,6 +124,7 @@ const CreateRoutine = () => {
             routineData.titulo,
             routineData.descripcion,
             trainerId,
+            routineData.visibility,
             (createdRoutine) => {
                 console.log("Routine created:", createdRoutine);
                 const routineId = createdRoutine.id;
@@ -195,6 +196,19 @@ const CreateRoutine = () => {
                         onChange={handleInputChange}
                         rows={3}
                     />
+                </div>
+
+                <div className="form-div">
+                    <label>Visibilidad:</label>
+                    <select
+                        name="visibility"
+                        value={routineData.visibility}
+                        onChange={handleInputChange}
+                        aria-label="Seleccionar visibilidad de la rutina"
+                    >
+                        <option value="PUBLIC">Pública</option>
+                        <option value="PRIVATE">Privada</option>
+                    </select>
                 </div>
 
                 {exercises.map((exercise, index) => (
