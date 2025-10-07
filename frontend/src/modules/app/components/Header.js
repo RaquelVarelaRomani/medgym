@@ -30,17 +30,8 @@ const Header = () => {
         setIsDropdownOpen(false);
     };
 
-    const handleProfileClick = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
-
     const handleViewProfile = () => {
         navigate("/users/profile");
-        setIsDropdownOpen(false);
-    };
-
-    const handleEditProfile = () => {
-        navigate("/users/profile/edit-profile");
         setIsDropdownOpen(false);
     };
 
@@ -106,12 +97,6 @@ const Header = () => {
                                     onClick={handleViewProfile}
                                 >
                                     Ver Perfil
-                                </button>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={handleEditProfile}
-                                >
-                                    Editar Perfil
                                 </button>
                                 <button
                                     className="dropdown-item"
