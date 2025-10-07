@@ -15,13 +15,16 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [showCropper, setShowCropper] = useState(false);
     const [imageToCrop, setImageToCrop] = useState(null);
     const [error, setError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     const navigate = useNavigate();
 
@@ -68,16 +71,23 @@ const EditProfile = ({ isPasswordMode = false }) => {
         };
 
         if (isPasswordMode) {
+            setError("");
+            setPasswordError("");
+            if (newPassword !== confirmPassword) {
+                setPasswordError("Las contraseñas nuevas no coinciden. Inténtelo de nuevo.");
+                return;
+            }
+
+            if (oldPassword === newPassword) {
+                setPasswordError("La nueva contraseña no puede ser igual a la actual.");
+                return;
+            }
 
             changePassword(
                 profile.id,
                 oldPassword,
                 newPassword,
                 () => {
-                    if (oldPassword === newPassword) {
-                        setError("La nueva contraseña no puede ser igual a la actual");
-                        return;
-                    }
 
                     console.log("Contraseña cambiada con éxito");
                     updateProfileData();
@@ -189,7 +199,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
 
                 {isPasswordMode && <h2 className="titulo">Cambiar contraseña</h2>}
                 {isPasswordMode && error && <p className="mensaje-error">{error}</p>}
-
+                
                 {isPasswordMode && (
                     <form className="form" onSubmit={handleSave}>
                         <label htmlFor="oldPassword">Contraseña actual</label>
@@ -207,6 +217,11 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 onClick={() => setShowOldPassword(!showOldPassword)}
                             > &#128065; </span>
                         </div>
+                        {isPasswordMode && passwordError && (
+                            <p className="mensaje-error" style={{ alignSelf: "flex-start" }}>
+                                {passwordError}
+                            </p>
+                            )}
 
                         <label htmlFor="newPassword">Nueva contraseña</label>
                         <div className="contenedor-password">
@@ -222,6 +237,23 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 onClick={() => setShowNewPassword(!showNewPassword)}
                             > &#128065; </span>
                         </div>
+                        <label htmlFor="confirmPassword">Confirmar nueva contraseña</label>
+                        <div className="contenedor-password">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            placeholder="Vuelva a escribir su nueva contraseña..."
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        <span
+                            className="ver-password"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                            &#128065;
+                        </span>
+                        </div>
+
 
                         <div className="form-actions">
                             <button type="submit" className="save-btn">Guardar</button>
