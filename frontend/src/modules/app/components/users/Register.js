@@ -1,7 +1,6 @@
 import React, { useState} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
-import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
 
 const Register = () => {
@@ -11,7 +10,6 @@ const Register = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
 
@@ -29,13 +27,11 @@ const Register = () => {
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                setShowPopup(true);
-            },
+                navigate("/routines", { replace: true, state: { registered: true, email } })                        },
             (error) => {
                 setError(true);
                 console.error("Error en el registro:", error);
             },
-            () => navigate("/users/login")
         );
     };
 
@@ -126,10 +122,7 @@ const Register = () => {
                 </form>
             </div>
 
-            <Popup text={"Usuario registrado con éxito"} show={showPopup} onOk={() => {
-                setShowPopup(false);
-                navigate("/routines", { replace: true, state: { registered: true, email } });
-            }} />
+            
         </div>
     );
 };
