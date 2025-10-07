@@ -3,6 +3,7 @@ import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
+import Slogan from "../common/Slogan";
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -41,6 +42,8 @@ const Register = () => {
 
     return (
         <div className="contenedor">
+            <Slogan className="slogan-registro" />
+
             <div className="caja-login">
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}

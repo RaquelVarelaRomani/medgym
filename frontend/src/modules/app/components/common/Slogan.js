@@ -1,9 +1,10 @@
 import React from "react";
 import "./Slogan.css";
 
-const Slogan = () => {
+const Slogan = ({ className = "" }) => {
   return (
-    <p className="slogan-texto">Entrenemos tus sueños, no tus excusas.</p>
+    <p className={`slogan-texto ${className}`}>
+      Entrenemos tus sueños, no tus excusas.</p>
   );
 };
 
