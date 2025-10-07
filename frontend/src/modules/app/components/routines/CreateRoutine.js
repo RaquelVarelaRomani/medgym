@@ -166,11 +166,6 @@ const CreateRoutine = () => {
         <div className="contenedor-create-routine">
             <div className="header-crear-rutina">
                 <h2>Estás creando un nuevo entrenamiento...</h2>
-                <img
-                    src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-                    alt="Foto de perfil"
-                    className="foto-perfil"
-                />
             </div>
 
             <div className="form-crear-rutina">
@@ -215,18 +210,18 @@ const CreateRoutine = () => {
                     <div key={exercise.id} className="ejercicio-item">
                         <label>Ejercicio {index + 1}:</label>
                         {/*ELIMINAR (papelera)*/}
-                            <button
-                                type="button"
-                                className="boton-eliminar-ejercicio"
-                                onClick={() => handleRemoveExercise(exercise.id)}
-                                title="Eliminar ejercicio"
-                            >
-                                <img
+                        <button
+                            type="button"
+                            className="boton-eliminar-ejercicio"
+                            onClick={() => handleRemoveExercise(exercise.id)}
+                            title="Eliminar ejercicio"
+                        >
+                            <img
                                 src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
                                 alt="Eliminar"
                                 className="icono-papelera"
-                                />
-                            </button>
+                            />
+                        </button>
                         <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
@@ -246,7 +241,7 @@ const CreateRoutine = () => {
                                     setSearchTerm(exercise.nombre);
                                 }}
                             />
-                            
+
                             {showExerciseSearch === index && (
                                 <div className="ejercicio-dropdown">
                                     {filteredExercises.map((exercise, i) => (
@@ -273,17 +268,10 @@ const CreateRoutine = () => {
                 </button>
 
                 <div className="form-actions">
-                    <button
-                        className="boton-guardar"
-                        onClick={handleSave}
-                    >
+                    <button type="submit" className="boton-guardar-rutina">
                         Guardar
                     </button>
-
-                    <button
-                        className="boton-cancelar"
-                        onClick={handleCancel}
-                    >
+                    <button type="button" className="boton-cancelar" onClick={handleCancel}>
                         Cancelar
                     </button>
                 </div>

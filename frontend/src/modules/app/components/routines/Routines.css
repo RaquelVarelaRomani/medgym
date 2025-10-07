@@ -1,138 +1,271 @@
+/* main container */
 .contenedor {
-  /*flexbox -> los hijos se organizan en cajas flexibles*/
   display: flex;
-  /*dir en la que se almacenan los hijos (row, column)*/
   flex-direction: column;
-  /*alineacion hijos eje transversal*/
-  align-items: flex-start;;
-  /*alineacion hijos eje principal (vertical pq usamos column*/
-  /*justify-content: center;
-  /*viewport height*/
-  /*MIN height -> ocupa como minimo toda la pantalla*/
+  align-items: center;
   min-height: 100vh;
-
-  /*DEGRADADO*/
-  /*to bottom, to right, X deg(diagonal) siendo x los grados (270 para la diagonal) */
-  background: linear-gradient(to right, var(--dark-orange-light),var(--primary-orange-light));
-
-  padding-top: 2%; 
   width: 100%;
+  padding: 2rem;
+  background: var(--bg-primary) !important;
+  box-sizing: border-box;
 }
 
 .routines-titulo-grande {
-  display: flex; /*queremos todo flexbox para que se adapte*/
-  justify-content: space-between; /*distribuye los dos con el maximo espacio entre ellos*/
-  align-items: left;
-
-  margin-left: 5%; 
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 2rem;
+  padding-left: 0;
 }
 
-.foto-perfil {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%; /*para que sea un circulo*/
-  /*PORQUE LUEGO SE TIENE QUE HACER CLIC*/
-  cursor: pointer;
-/*para que no se pegue a la izq (la sacamos del flujo normal)*/
-  position: absolute;
-  /*distancias en la esquinita*/
-  top: 20px;         
-  right: 20px;  
+.routines-titulo-grande h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0;
+  letter-spacing: 0.05em;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/*CAMBIAR-> cuando se pueda hacer clic que al pasar por encima se agrande la foto*/
-/*.foto-perfil:hover*/
+/* routine list */
 .lista-rutinas {
-  margin-top: 20px; /*margen superior para separar de lo de arriba*/
   display: flex;
   flex-direction: column;
-  gap: 15px; /*añadimos espacio entre hijos para que qude mejor*/
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 100px;
+  box-sizing: border-box;
+}
+
+/* routine container */
+.caja-rutina {
+  background: linear-gradient(
+          135deg,
+          var(--bg-card) 0%,
+          rgba(26, 26, 36, 0.8) 100%
+  );
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.75rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: block;
+  box-sizing: border-box;
   width: 100%;
 }
 
-.caja-rutina {
-    /*CAMBIAR: le puse la opacidad de memoria -> mirar exactamente cual llevaba en el login*/
-  background: rgba(255, 255, 255, 0.7);
-  /*border: 2px solid black;
-  padding: 12px; Queda menos moderno y decidimos que fuera mas*/
-  text-decoration: none;
-  color: black;
+.caja-rutina::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          var(--neon-orange),
+          transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
 
-  /*CAMBIAR: ltambién redondee las esquinas de memoria (esta en la otra rama)*/
-  border-radius: 12px;
+.caja-rutina:hover {
+  transform: translateY(-8px);
+  border-color: var(--neon-orange);
+  box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(255, 107, 53, 0.2),
+          inset 0 0 60px rgba(255, 107, 53, 0.05);
+  background: linear-gradient(
+          135deg,
+          rgba(26, 26, 36, 0.95) 0%,
+          rgba(30, 30, 42, 0.9) 100%
+  );
+}
+
+.caja-rutina:hover::before {
+  transform: translateX(100%);
+}
+
+.caja-rutina h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.caja-rutina p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0 0 1.25rem 0;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* button container */
+.caja-rutina > div {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* edit button */
+.boton-editar {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-
-  /*nos quedaban mal en el centro*/
-  width: 90%;/*ancho de la pantalla*/
-  margin-left: 3%; 
-  margin-right: auto;
-
-  padding: 16px;
-  box-sizing: border-box;
-}
-.caja-rutina:hover{
-    transform: scale(1.005);
-    text-decoration: underline;
-}
-
-.boton-editar{
-  background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
-  color: var(--text-dark);
-  padding: 6px 14px;
-  border: none;
-  border-radius: 10px;
-  margin-right: 5px;
-  font-weight: bold;
-  font-size: 10px;
-  box-shadow: 0 2px 5px var(--shadow-orange);
+  position: relative;
+  overflow: hidden;
   transition: all 0.3s ease;
-  width: 60px;
-
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 100px;
 }
 
-.boton-editar:hover{
+.boton-editar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 107, 53, 0.3),
+          transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.boton-editar:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow:
+          0 0 20px rgba(255, 107, 53, 0.5),
+          0 4px 15px rgba(255, 107, 53, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px var(--shadow-orange);
 }
 
-.boton-eliminar{
-  background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
-  color: var(--text-dark);
-  padding: 6px 14px;
-  border: none;
+.boton-editar:hover::before {
+  left: 100%;
+}
+
+.boton-editar:active {
+  transform: translateY(0);
+}
+
+/* delete button */
+.boton-eliminar {
+  background: transparent;
+  color: #ff4757;
+  border: 2px solid #ff4757;
+  padding: 0.65rem 1.5rem;
   border-radius: 10px;
-  font-size: 10px;
-  font-weight: bold;
-  box-shadow: 0 2px 5px var(--shadow-orange);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
   transition: all 0.3s ease;
-  width: 60px;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 100px;
+  position: relative;
+  overflow: hidden;
 }
 
-.boton-eliminar:hover{
+.boton-eliminar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 71, 87, 0.3),
+          transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.boton-eliminar:hover {
+  background: linear-gradient(135deg, #ff4757, #e84545);
+  color: white;
+  border-color: #ff6b7a;
+  box-shadow:
+          0 0 20px rgba(255, 71, 87, 0.5),
+          0 4px 15px rgba(255, 71, 87, 0.3);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px var(--shadow-orange);
 }
 
+.boton-eliminar:hover::before {
+  left: 100%;
+}
 
+.boton-eliminar:active {
+  transform: translateY(0);
+}
+
+/* create button */
 .boton-crear {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  background-color: green;
+  bottom: 40px;
+  right: 40px;
+  background: linear-gradient(
+          135deg,
+          var(--neon-orange),
+          var(--neon-orange-dark)
+  );
   color: white;
   border: none;
   border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 30px;
+  width: 70px;
+  height: 70px;
+  font-size: 36px;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  position: relative;
+  overflow: hidden;
+}
+
+.boton-crear::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+  );
+  transition: left 0.5s ease;
 }
 
 .boton-crear:hover {
-  transform: scale(1.1);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow:
+          0 0 30px rgba(255, 107, 53, 0.6),
+          0 0 60px rgba(255, 107, 53, 0.4);
 }
 
 .private-badge {
@@ -143,5 +276,87 @@
   font-size: 14px;
   font-weight: bold;
   margin-left: 10px;
-  vertical-align: top;
+  vertical-align: middle;
+}
+
+.boton-crear:hover::before {
+  left: 100%;
+}
+
+.boton-crear:active {
+  transform: scale(1.05) rotate(90deg);
+}
+
+/* loading section */
+.loading-message {
+  width: 100%;
+  max-width: 1400px;
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* error section */
+.error-message {
+  width: 100%;
+  max-width: 1400px;
+  text-align: center;
+  padding: 2rem;
+  color: var(--accent-red);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(255, 71, 87, 0.05);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+  border-radius: 16px;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.retry-button {
+  background: linear-gradient(
+          135deg,
+          var(--neon-orange),
+          var(--neon-orange-dark)
+  );
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.retry-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.retry-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+          0 0 20px rgba(255, 107, 53, 0.6),
+          0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+.retry-button:hover::before {
+  left: 100%;
 }

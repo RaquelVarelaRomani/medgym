@@ -22,6 +22,7 @@ const Register = () => {
             email: email.trim(),
             phoneNumber: phoneNumber.trim(),
             password,
+            role: "CLIENT",
         };
 
         signUp(

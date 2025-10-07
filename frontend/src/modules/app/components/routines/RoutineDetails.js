@@ -127,7 +127,7 @@ const RoutineDetails = () => {
           <h1 className="titulo-rutina">
             {routine.name}
             {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-              <span className="private-badge v-middle-align">🔒 Privado</span>
+              <span className="private-badge">🔒 Privado</span>
             )}
           </h1>
 
