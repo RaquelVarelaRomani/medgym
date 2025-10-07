@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import './Header.css';
-import {tryLoginFromServiceToken} from "../../../backend/userService";
+import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import ProfilePhoto from "./common/profilePhoto";
 
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -21,9 +22,33 @@ const Header = () => {
         );
     }, [navigate]);
 
-    const handleProfileClick = () => {
-        navigate("/users/profile");
+    const handleMouseEnter = () => {
+        setIsDropdownOpen(true);
     };
+
+    const handleMouseLeave = () => {
+        setIsDropdownOpen(false);
+    };
+
+    const handleProfileClick = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
+    const handleViewProfile = () => {
+        navigate("/users/profile");
+        setIsDropdownOpen(false);
+    };
+
+    const handleEditProfile = () => {
+        navigate("/users/profile/edit-profile");
+        setIsDropdownOpen(false);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate("/users/login");
+    }
+
 
     return (
         <header className="app-header">
@@ -60,17 +85,43 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className="header-actions">
-                    <button
-                        className="profile-button"
-                        onClick={handleProfileClick}
+                    <div
+                        className="profile-dropdown"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
                     >
-                        <div className="header-profile-photo">
-                            <ProfilePhoto
-                                profilePicture={profile?.profilePicture}
-                                alt="Foto de perfil"
-                            />
-                        </div>
-                    </button>
+                        <button className="profile-button">
+                            <div className="header-profile-photo">
+                                <ProfilePhoto
+                                    profilePicture={profile?.profilePicture}
+                                    alt="Foto de perfil"
+                                />
+                            </div>
+                        </button>
+
+                        {isDropdownOpen && (
+                            <div className="dropdown-menu">
+                                <button
+                                    className="dropdown-item"
+                                    onClick={handleViewProfile}
+                                >
+                                    Ver Perfil
+                                </button>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={handleEditProfile}
+                                >
+                                    Editar Perfil
+                                </button>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={handleLogout}
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>
