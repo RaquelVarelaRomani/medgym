@@ -8,8 +8,11 @@ function ConfirmationPopup({ show, text, onOk, onCancel }) {
         <div className="popup-overlay">
             <div className="popup-content">
                 <p>{text}</p>
-                <button onClick={onCancel}>Cancelar</button>
-                <button onClick={onOk}>OK</button>
+                <div className="popup-buttons">
+                    <button className="popup-accept-btn" onClick={onOk}>Aceptar</button>
+                    <button className="popup-cancel-btn" onClick={onCancel}>Cancelar</button>
+                </div>
+
             </div>
         </div>
     );
