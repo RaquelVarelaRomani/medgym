@@ -1,10 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import './Header.css';
+import {tryLoginFromServiceToken} from "../../../backend/userService";
+import ProfilePhoto from "./common/profilePhoto";
 
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [profile, setProfile] = useState(null);
+
+    useEffect(() => {
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                console.log("User data in header:", authenticatedUser.user);
+                setProfile(authenticatedUser.user);
+            },
+            (error) => {
+                console.error("Failed to get user data in header:", error);
+            }
+        );
+    }, [navigate]);
 
     const handleProfileClick = () => {
         navigate("/users/profile");
@@ -45,13 +60,16 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className="header-actions">
-                    <button className="profile-button">
-                        <img
-                            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-                            alt="Foto de perfil"
-                            className="foto-perfil"
-                            onClick={() => handleProfileClick()}
-                        />
+                    <button
+                        className="profile-button"
+                        onClick={handleProfileClick}
+                    >
+                        <div className="header-profile-photo">
+                            <ProfilePhoto
+                                profilePicture={profile?.profilePicture}
+                                alt="Foto de perfil"
+                            />
+                        </div>
                     </button>
                 </div>
             </div>
