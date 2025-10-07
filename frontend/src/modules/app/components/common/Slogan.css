@@ -1,0 +1,38 @@
+.slogan-texto {
+  font-size: 3.2rem;
+  font-weight: 900;
+  text-align: center;
+  color: var(--neon-orange);
+  margin-top: 0.3rem; /*lo pongo más pegado arriba*/
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+  /*sintaxis para el brillo (es como un juego de capas)*/
+  /*text-shadow: desplazamientoX desplazamientoY difuminado color;*/
+  text-shadow:
+    0 0 3px rgba(255, 107, 53, 0.6),
+    0 0 12px rgba(255, 107, 53, 0.4),
+    0 0 24px rgba(255, 107, 53, 0.25);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  animation: entrada 1.2s ease;
+}
+
+/*entrada desde arriba*/
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*para que sea responsive*/
+@media (max-width: 768px) {
+  .slogan-texto {
+    font-size: 2.3rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+}

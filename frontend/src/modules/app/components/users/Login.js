@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { login } from "../../../../backend/userService";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
+import Slogan from "../common/Slogan";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -27,6 +28,9 @@ const Login = () => {
 
     return (
         <div className="contenedor">
+
+            <Slogan />
+
             <div className="caja-login">
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
