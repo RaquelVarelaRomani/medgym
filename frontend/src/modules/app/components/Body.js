@@ -11,6 +11,7 @@ import Routines from "./routines/Routines";
 import RoutineDetails from "./routines/RoutineDetails";
 import CreateRoutine from "./routines/CreateRoutine"
 import Exercises from "./routines/Exercises";
+import CreateExercise from "./routines/CreateExercise";
 import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
