@@ -9,6 +9,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownComponent = useRef(null);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -22,12 +23,28 @@ const Header = () => {
         );
     }, [navigate]);
 
-    const handleMouseEnter = () => {
-        setIsDropdownOpen(true);
+    //close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleLogoClick = (e) => {
+        if (location.pathname === '/routines') {
+            e.preventDefault(); //avoid reloading routines if already on that page
+        }
     };
 
-    const handleMouseLeave = () => {
-        setIsDropdownOpen(false);
+    const handleProfileClick = () => {
+        setIsDropdownOpen(!isDropdownOpen);
     };
 
     const handleViewProfile = () => {
@@ -48,7 +65,7 @@ const Header = () => {
 
                 {/* left section - branding */}
                 <div className="header-left">
-                    <Link to="/" className="logo-link">
+                    <Link to="/" className="logo-link" onClick={handleLogoClick}>
                         <img
                             src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                             alt="Logo medgym"
@@ -75,13 +92,12 @@ const Header = () => {
                 </nav>
 
                 {/* right section - profile */}
-                <div className="header-actions">
-                    <div
-                        className="profile-dropdown"
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                    >
-                        <button className="profile-button">
+                <div className="header-actions" ref={dropdownComponent}>
+                    <div className="profile-dropdown">
+                        <button
+                            className="profile-button"
+                            onClick={handleProfileClick}
+                        >
                             <div className="header-profile-photo">
                                 <ProfilePhoto
                                     profilePicture={profile?.profilePicture}

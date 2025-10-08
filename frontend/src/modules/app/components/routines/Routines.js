@@ -87,10 +87,6 @@ const Routines = () => {
     navigate("/routines/new");
     };
 
-    const handleProfileClick = () => {
-        navigate("/users/profile");
-    };
-
     if (loading) {
         return (
             <div className="contenedor">
