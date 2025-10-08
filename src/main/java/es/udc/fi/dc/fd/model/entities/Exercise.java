@@ -1,6 +1,16 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name= "exercises")
@@ -16,6 +26,7 @@ public class Exercise {
     private String name;
     private String description;
     private ExerciseStatus status;
+    private User creator;
 
     public Exercise() {}
 
@@ -23,6 +34,13 @@ public class Exercise {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Exercise(String name, String description, ExerciseStatus status, User creator) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.creator = creator;
     }
 
     @Id
@@ -55,5 +73,14 @@ public class Exercise {
     }
     public void setStatus(ExerciseStatus status) {
         this.status = status;
+    }
+
+    @ManyToOne()
+    @JoinColumn(name = "creator_id")
+    public User getCreator() {
+        return creator;
+    }
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 }

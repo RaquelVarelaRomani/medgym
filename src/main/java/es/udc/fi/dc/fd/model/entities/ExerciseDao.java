@@ -1,6 +1,8 @@
 package es.udc.fi.dc.fd.model.entities;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 
@@ -14,5 +16,8 @@ public interface ExerciseDao extends JpaRepository<Exercise, Long> {
 	Optional<Exercise> findByName(String name);
 
 	List<Exercise> findByStatus(ExerciseStatus status);
+
+	@Query("SELECT e FROM Exercise e WHERE e.status = :status OR (e.creator IS NOT NULL AND e.creator.id = :userId)")
+	List<Exercise> findByStatusOrCreatorId(@Param("status") ExerciseStatus status, @Param("userId") Long userId);
 
 }

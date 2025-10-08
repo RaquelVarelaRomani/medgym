@@ -2,6 +2,7 @@ import React, { useState} from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import {signUp} from "../../../../backend/userService";
+import Slogan from "../common/Slogan";
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -9,11 +10,25 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
+    const [showPopup, setShowPopup] = useState(false);
+    const [error, setError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = () => {
+        //limpiar errores que se hayan almacenado antes
+        setError("");
+        setPasswordError("");
+        
+        if(password !== confirmPassword){
+            setPasswordError("Las contraseñas no coinciden. Inténtelo de nuevo.");
+        }
+
+
         const user = {
             name: name.trim(),
             surname: surname.trim(),
@@ -29,7 +44,7 @@ const Register = () => {
                 console.log("Registro correcto:", data);
                 navigate("/routines", { replace: true, state: { registered: true, email } })                        },
             (error) => {
-                setError(true);
+                setError("Correo electrónico o teléfono ya existe");
                 console.error("Error en el registro:", error);
             },
         );
@@ -37,6 +52,8 @@ const Register = () => {
 
     return (
         <div className="contenedor">
+            <Slogan className="slogan-registro" />
+
             <div className="caja-login">
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
@@ -46,7 +63,7 @@ const Register = () => {
 
                 <h2 className="titulo">Regístrate</h2>
 
-                {error && <p className="mensaje-error">Correo electrónico o teléfono ya existe</p>}
+                {error && <p className="mensaje-error">{error}</p>}
 
                 <form className="form" onSubmit={(e) => {
                     e.preventDefault();
@@ -92,6 +109,12 @@ const Register = () => {
                         placeholder="Escriba aquí su número de teléfono..."
                     />
 
+                    {passwordError && (
+                        <p className="mensaje-error" style={{ alignSelf: "flex-start" }}>
+                        {passwordError}
+                        </p>
+                    )}
+                    
                     <label htmlFor="password">Contraseña</label>
                     <div className="contenedor-password">
                         <input
@@ -110,6 +133,24 @@ const Register = () => {
                         </span>
                     </div>
 
+                    <label htmlFor="confirmPassword">Confirmar contraseña</label>
+                    <div className="contenedor-password">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            placeholder="Vuelva a escribir aquí su contraseña..."
+                        />
+                        <span
+                            className="ver-password"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                            &#128065;
+                        </span>
+                    </div>
+                    
                     <p className="ir-a-login">
                         <Link to="/users/login" className="link-login">
                             Inicia sesión si ya tienes una cuenta.

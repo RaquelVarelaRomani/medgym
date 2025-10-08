@@ -31,7 +31,7 @@ const Body = () => {
                     <Route path="routines/edit/:id" element={<Layout><EditRoutine /></Layout>} />
                     <Route path="routines/:id" element={<Layout><RoutineDetails /></Layout>} />
                     <Route path="exercises" element={<Layout><Exercises /></Layout>} />
-                    <Route path="users/profile" element={<Profile />} />
+                    <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />

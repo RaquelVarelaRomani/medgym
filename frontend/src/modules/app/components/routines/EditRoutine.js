@@ -9,8 +9,8 @@ import Popup from "../common/Popup";
 const EditRoutine = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // routine ID from URL
-    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "" });
-    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "" });
+    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
+    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
     const [exercises, setExercises] = useState([{ id: null, nombre: "", position: null }]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
@@ -41,8 +41,8 @@ const EditRoutine = () => {
             id,
             (data) => {
                 const routineObj = data.content ? data.content[0] : data;
-                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
-                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
+                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
+                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
 
                 routineExerciseService.getRoutineExercises(
                     id,
@@ -176,6 +176,7 @@ const EditRoutine = () => {
 
         const titleChanged = routineData.titulo !== originalRoutineData.titulo;
         const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
+        const visibilityChanged = routineData.visibility !== originalRoutineData.visibility;
 
         const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
         const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
@@ -191,7 +192,7 @@ const EditRoutine = () => {
 
         const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
-        if (!titleChanged && !descriptionChanged && !exercisesChanged) {
+        if (!titleChanged && !descriptionChanged && !visibilityChanged && !exercisesChanged) {
             setPopupMessage("¡No hay cambios para guardar!");
             return;
         }
@@ -241,13 +242,14 @@ const EditRoutine = () => {
             }
         }
 
-        if (titleChanged || descriptionChanged) {
+        if (titleChanged || descriptionChanged || visibilityChanged) {
             try {
                 await new Promise((resolve, reject) => {
                     routineService.updateRoutine(
                         id,
                         routineData.titulo,
                         routineData.descripcion,
+                        routineData.visibility,
                         resolve,
                         reject
                     );
@@ -294,6 +296,19 @@ const EditRoutine = () => {
                         onChange={handleInputChange}
                         rows={3}
                     />
+                </div>
+
+                <div className="form-div">
+                    <label>Visibilidad:</label>
+                    <select
+                        name="visibility"
+                        value={routineData.visibility}
+                        onChange={handleInputChange}
+                        aria-label="Seleccionar visibilidad de la rutina"
+                    >
+                        <option value="PUBLIC">Pública</option>
+                        <option value="PRIVATE">Privada</option>
+                    </select>
                 </div>
 
                 {exercises.map((exercise, index) => (

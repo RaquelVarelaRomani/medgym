@@ -9,8 +9,8 @@ function ConfirmationPopup({ show, text, onOk, onCancel }) {
             <div className="popup-content">
                 <p>{text}</p>
                 <div className="popup-buttons">
-                    <button onClick={onCancel}>Cancelar</button>
-                    <button onClick={onOk}>OK</button>
+                    <button className="popup-accept-btn" onClick={onCancel}>Cancelar</button>
+                    <button className="popup-accept-btn" onClick={onOk}>OK</button>
                 </div>
             </div>
         </div>

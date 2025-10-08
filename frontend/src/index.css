@@ -19,6 +19,7 @@ body {
   --neon-orange-glow: rgba(255, 107, 53, 0.5);
   --accent-yellow: #ffa500;
   --accent-red: #ff4757;
+  --accent-red-dark: #c82333;
 
   /* text colors */
   --text-primary: #ffffff;
