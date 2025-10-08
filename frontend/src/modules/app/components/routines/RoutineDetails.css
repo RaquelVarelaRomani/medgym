@@ -245,6 +245,10 @@
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.v-middle-align {
+  vertical-align: middle;
+}
+
 /* slide down animation */
 @keyframes slideDown {
     from {

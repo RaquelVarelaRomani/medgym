@@ -71,7 +71,8 @@
 }
 
 .form-div input,
-.form-div textarea {
+.form-div textarea,
+.form-div select {
     width: 100%;
     padding: 0.875rem;
     border: 1px solid var(--border-color);
@@ -94,7 +95,8 @@
 }
 
 .form-div input:focus,
-.form-div textarea:focus {
+.form-div textarea:focus,
+.form-div select:focus {
     outline: none;
     border-color: var(--neon-orange);
     background: rgba(19, 19, 26, 0.8);
