@@ -193,7 +193,7 @@ const EditRoutine = () => {
         const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
         if (!titleChanged && !descriptionChanged && !visibilityChanged && !exercisesChanged) {
-            setPopupMessage("No hay cambios para guardar");
+            setPopupMessage("¡No hay cambios para guardar!");
             return;
         }
 
@@ -265,7 +265,7 @@ const EditRoutine = () => {
             setPopupMessage("Ocurrió un error");
         }
         if (successMessage) {
-            setPopupMessage("Se realizaron los cambios correctamente")
+            setPopupMessage("Cambios guardados. ¡Gracias!")
         }
     };
 

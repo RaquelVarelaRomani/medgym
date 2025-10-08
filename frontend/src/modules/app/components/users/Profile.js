@@ -82,7 +82,7 @@ const Profile = () => {
                 
             </div>
 
-            <Popup text={"Sesión cerrada"} show={showPopup} onOk={() => {
+            <Popup text={"Sesión cerrada. ¡Vuelva pronto!"} show={showPopup} onOk={() => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />
