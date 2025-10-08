@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -23,25 +26,39 @@ public class RoutineServiceImpl implements RoutineService {
     private UserService userService;
 
     @Override
-    public Routine createRoutine(String name, String description, User trainer) throws DuplicateInstanceException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility) throws DuplicateInstanceException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        Routine routine = new Routine(name, description, trainer);
+        Routine routine = new Routine(name, description, visibility, trainer);
         return routineDao.save(routine);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Routine findRoutineById(Long routineId) throws InstanceNotFoundException {
-        return routineDao.findById(routineId)
-                .orElseThrow(() -> new InstanceNotFoundException("project.entities.routine", routineId));
+    public Routine findRoutineById(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
+        Optional<Routine> opRoutine = routineDao.findById(routineId);
+
+        if (opRoutine.isEmpty()) {
+            throw new InstanceNotFoundException("project.entities.routine", routineId);
+        }
+
+        User user = userService.loginFromId(userId);
+        Routine routine = opRoutine.get();
+
+        if (user.getRole() != User.RoleType.ADMIN && userId != routine.getTrainer().getId() &&
+                routine.getVisibility() == Routine.VisibilityType.PRIVATE) {
+            throw new PermissionException();
+        }
+
+        return routine;
     }
 
     @Override
-    public void updateRoutine(Long userId, Long routineId, String name, String description) throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        Routine routine = findRoutineById(routineId);
+    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility)
+            throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+        Routine routine = findRoutineById(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -54,11 +71,12 @@ public class RoutineServiceImpl implements RoutineService {
 
         routine.setName(name);
         routine.setDescription(description);
+        routine.setVisibility(visibility);
     }
 
     @Override
     public void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
-        Routine routine = findRoutineById(routineId);
+        Routine routine = findRoutineById(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -70,7 +88,15 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Routine> findAllRoutines() {
-        return routineDao.findAll();
+    public List<Routine> findAllRoutines(Long userId) throws InstanceNotFoundException {
+        User user = userService.loginFromId(userId);
+        List<Routine> routines = routineDao.findAll();
+
+        if (user.getRole() == User.RoleType.ADMIN) {
+            return routines;
+        }
+
+        return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
+                .collect(Collectors.toList());
     }
 }

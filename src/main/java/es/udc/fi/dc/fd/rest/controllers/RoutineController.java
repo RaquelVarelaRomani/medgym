@@ -33,20 +33,24 @@ public class RoutineController {
     @PostMapping
     public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException {
         User user = userService.loginFromId(userId);
-        Routine routine = routineService.createRoutine(routineDto.getName(), routineDto.getDescription(), user);
+        Routine routine = routineService.createRoutine(routineDto.getName(), routineDto.getDescription(), user,
+                Routine.VisibilityType.valueOf(routineDto.getVisibility()));
         URI location = URI.create("/api/routines/" + routine.getId());
         return ResponseEntity.created(location).body(toRoutineDto(routine));
     }
 
     @GetMapping("/{id}")
-    public RoutineDto getRoutine(@PathVariable Long id) throws InstanceNotFoundException {
-        return toRoutineDto(routineService.findRoutineById(id));
+    public RoutineDto getRoutine(@RequestAttribute Long userId, @PathVariable Long id)
+            throws InstanceNotFoundException, PermissionException {
+        return toRoutineDto(routineService.findRoutineById(userId, id));
     }
 
     @PutMapping("/{id}")
-    public RoutineDto updateRoutine(@RequestAttribute Long userId, @PathVariable Long id, @RequestBody RoutineDto routineDto) throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        routineService.updateRoutine(userId, id, routineDto.getName(), routineDto.getDescription());
-        return toRoutineDto(routineService.findRoutineById(id));
+    public RoutineDto updateRoutine(@RequestAttribute Long userId, @PathVariable Long id, @RequestBody RoutineDto routineDto)
+            throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+        routineService.updateRoutine(userId, id, routineDto.getName(), routineDto.getDescription(),
+                Routine.VisibilityType.valueOf(routineDto.getVisibility()));
+        return toRoutineDto(routineService.findRoutineById(userId,id));
     }
 
     @DeleteMapping("/{id}")
@@ -56,8 +60,7 @@ public class RoutineController {
     }
 
     @GetMapping
-    public List<RoutineDto> findAllRoutines() {
-        return RoutineConversor.toRoutineDtos(routineService.findAllRoutines());
+    public List<RoutineDto> findAllRoutines(@RequestAttribute Long userId) throws InstanceNotFoundException {
+        return RoutineConversor.toRoutineDtos(routineService.findAllRoutines(userId));
     }
-
 }

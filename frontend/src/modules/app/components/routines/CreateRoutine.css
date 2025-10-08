@@ -1,28 +1,31 @@
-.contenedor-create-routine{
+/* main container */
+.contenedor-create-routine {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
-    background: linear-gradient(to right, var(--dark-orange-light), var(--primary-orange-light));
+    background: var(--bg-primary);
     padding: 2rem;
+    box-sizing: border-box;
 }
 
-.header-crear-rutina{
+.header-crear-rutina {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     margin-bottom: 2rem;
-    padding: 0 1rem;
+    padding: 0;
 }
 
-.header-crear-rutina h2{
-    color: var(--text-dark);
-    font-size: 24px;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px var(--shadow-dark);
+.header-crear-rutina h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
 }
 
 .foto-perfil {
@@ -31,20 +34,26 @@
     border-radius: 50%;
     cursor: pointer;
     transition: transform 0.2s;
-    box-shadow: 0 4px 10px var(--shadow-dark);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .foto-perfil:hover {
     transform: scale(1.1);
 }
 
+/* form */
 .form-crear-rutina {
-    background-color: var(--white-70);
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px var(--shadow-dark);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     box-sizing: border-box;
 }
 
@@ -54,23 +63,23 @@
 
 .form-div label {
     display: block;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 0.5rem;
-    color: var(--text-dark);
-    font-size: 16px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .form-div input,
 .form-div textarea {
-    width: calc(100% - 1rem);
-    padding: 12px;
-    border: 2px solid var(--medium-gray);
-    border-radius: 8px;
-    margin-right: 1rem;
-    font-size: 14px;
-    font-family: inherit;
-    background-color: var(--light-gray);
-    color: var(--text-dark);
+    width: 100%;
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: rgba(19, 19, 26, 0.6);
+    color: var(--text-primary);
     transition: all 0.3s ease;
     box-sizing: border-box;
     resize: none;
@@ -79,7 +88,7 @@
 
 .form-div input::placeholder,
 .form-div textarea::placeholder {
-    color: var(--dark-gray);
+    color: var(--text-muted);
     font-family: inherit;
     opacity: 0.7;
 }
@@ -87,192 +96,349 @@
 .form-div input:focus,
 .form-div textarea:focus {
     outline: none;
-    border-color: var(--accent-blue);
-    background-color: var(--white);
-    box-shadow: 0 0 0 3px var(--white-30);
+    border-color: var(--neon-orange);
+    background: rgba(19, 19, 26, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
+/* exercise container */
 .ejercicio-item {
     position: relative;
-    width: 91%;
+    width: 100%;
     margin-bottom: 1rem;
     padding: 1.5rem;
-    background-color: var(--light-gray);
-    border-radius: 10px;
-    border: 2px solid var(--medium-gray);
+    padding-left: 3rem;
+    padding-right: 4rem;
+    background: linear-gradient(
+            135deg,
+            rgba(30, 30, 42, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.ejercicio-item:hover {
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .ejercicio-item label {
-    font-weight: bold;
-    color: var(--text-dark);
+    font-weight: 600;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
     display: block;
-    font-size: 16px;
+    font-size: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* exercise input */
 .ejercicio-input-container {
     position: relative;
 }
 
 .ejercicio-input-container input {
-    width: calc(100% - 1rem);
-    padding: 10px;
-    border: 2px solid var(--medium-gray);
-    border-radius: 8px;
-    background-color: var(--white);
-    color: var(--text-dark);
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: rgba(19, 19, 26, 0.6);
+    color: var(--text-primary);
     transition: all 0.3s ease;
-    margin-right: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
 }
 
 .ejercicio-input-container input:focus {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px var(--white-30);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    background: rgba(19, 19, 26, 0.8);
 }
 
 .ejercicio-input-container input:disabled {
-    background-color: var(--medium-gray);
-    color: var(--dark-gray);
+    background: rgba(19, 19, 26, 0.3);
+    color: var(--text-muted);
     opacity: 0.6;
     cursor: not-allowed;
 }
 
+/* search dropdown */
 .ejercicio-dropdown {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    right: 1rem;;
-    background: var(--white);
-    border: 2px solid var(--accent-blue);
-    border-top: none;
-    border-radius: 8px;
-    max-height: 150px;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--neon-orange);
+    border-radius: 10px;
+    max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
-    box-shadow: 0 4px 10px var(--shadow-dark);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .ejercicio-option {
-    padding: 10px;
+    padding: 0.75rem;
     cursor: pointer;
     transition: background-color 0.2s;
-    color: var(--text-dark);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .ejercicio-option:hover {
-    background-color: var(--light-gray);
+    background: rgba(255, 107, 53, 0.1);
 }
 
+/* delete exercise button */
 .boton-eliminar-ejercicio {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  justify-content: flex-end;
-  align-items: left;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin-left: 10px;
+    position: absolute;
+    top: 15%;
+    right: 1rem;
+    background: transparent;
+    border: 1px solid var(--accent-red);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.boton-eliminar-ejercicio:hover {
+    background: rgba(255, 71, 87, 0.1);
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
 }
 
 .icono-papelera {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.2s ease, filter 0.2s ease;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+    filter: brightness(0) saturate(100%)
+    invert(56%) sepia(89%) saturate(2067%)
+    hue-rotate(346deg) brightness(101%) contrast(101%);
 }
 
 .boton-eliminar-ejercicio:hover .icono-papelera {
-  transform: scale(1.2);
-  filter: brightness(0.8);
+    transform: scale(1.1);
+    filter: brightness(0) saturate(100%)
+    invert(40%) sepia(89%) saturate(3067%)
+    hue-rotate(346deg) brightness(101%) contrast(101%);
 }
 
-
+/* add exercise button */
 .boton-agregar-ejercicio {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--success), #45a049);
-    color: var(--white);
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
     border: none;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: bold;
     cursor: pointer;
     margin: 1.5rem auto;
     display: block;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px var(--shadow-dark);
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-agregar-ejercicio::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .boton-agregar-ejercicio:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px var(--shadow-dark);
+    transform: scale(1.1);
+    box-shadow:
+            0 0 30px rgba(255, 107, 53, 0.6),
+            0 0 60px rgba(255, 107, 53, 0.4);
 }
 
-.boton-cancelar{
-    background: linear-gradient(135deg, var(--boton-over-orange), var(--dark-orange));
-    color: var(--text-dark);
-    padding: 8px 16px;
-    border: none;
+.boton-agregar-ejercicio:hover::before {
+    left: 100%;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* save button */
+.boton-guardar-rutina {
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    padding: 0.65rem 1.5rem;
     border-radius: 10px;
-    margin-left: 5px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px var(--shadow-orange);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-guardar-rutina::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.boton-guardar-rutina:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.boton-guardar-rutina:hover::before {
+    left: 100%;
+}
+
+.boton-guardar-rutina:active {
+    transform: translateY(0);
+}
+
+/* cancel button */
+.boton-cancelar {
+    background: transparent;
+    color: #ff4757;
+    border: 2px solid #ff4757;
+    padding: 0.65rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-cancelar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 71, 87, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .boton-cancelar:hover {
+    background: linear-gradient(135deg, #ff4757, #e84545);
+    color: white;
+    border-color: #ff6b7a;
+    box-shadow:
+            0 0 20px rgba(255, 71, 87, 0.5),
+            0 4px 15px rgba(255, 71, 87, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
 }
 
+.boton-cancelar:hover::before {
+    left: 100%;
+}
+
+.boton-cancelar:active {
+    transform: translateY(0);
+}
+
+/* scrollbar */
 .ejercicio-dropdown::-webkit-scrollbar {
     width: 8px;
 }
 
 .ejercicio-dropdown::-webkit-scrollbar-track {
-    background: var(--light-gray);
+    background: rgba(19, 19, 26, 0.5);
     border-radius: 4px;
 }
 
 .ejercicio-dropdown::-webkit-scrollbar-thumb {
-    background: var(--medium-gray);
+    background: var(--neon-orange);
     border-radius: 4px;
 }
 
 .ejercicio-dropdown::-webkit-scrollbar-thumb:hover {
-    background: var(--dark-gray);
+    background: var(--neon-orange-bright);
 }
 
-.ejercicio-option:first-child {
-    padding-top: 12px;
-}
-
+/* move buttons */
 .exercise-controls {
     display: flex;
     flex-direction: column;
     gap: 5px;
     position: absolute;
-    top: 10px;
-    left: 0px;
-    padding-right: 10px;
+    top: 1rem;
+    left: 0.75rem;
 }
 
 .move-button {
-    background: none;
-    border: none;
-    font-size: 18px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
     cursor: pointer;
-    padding: 2px;
-    color: var(--text-dark);
-    transition: color 0.2s;
+    padding: 0.25rem 0.5rem;
+    color: var(--neon-orange);
+    transition: all 0.2s;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .move-button:hover:not(:disabled) {
-    color: var(--accent-blue);
+    background: rgba(255, 107, 53, 0.1);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
 }
 
 .move-button:disabled {
-    color: var(--medium-gray);
+    color: var(--text-muted);
+    border-color: var(--border-color);
     cursor: not-allowed;
+    opacity: 0.3;
 }
