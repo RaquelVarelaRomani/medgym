@@ -175,8 +175,8 @@
 /* delete button */
 .boton-eliminar2 {
   background: transparent;
-  color: #ff4757;
-  border: 2px solid #ff4757;
+  color: var(--accent-red);
+  border: 2px solid var(--accent-red);
   padding: 0.65rem 1.5rem;
   border-radius: 10px;
   font-weight: 600;
@@ -206,7 +206,7 @@
 }
 
 .boton-eliminar2:hover {
-  background: linear-gradient(135deg, #ff4757, #e84545);
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
   color: white;
   border-color: #ff6b7a;
   box-shadow:
@@ -278,8 +278,8 @@
 
 .boton-rechazar {
   background: transparent;
-  color: #ff4757;
-  border: 2px solid #ff4757;
+  color: var(--accent-red);
+  border: 2px solid var(--accent-red);
   padding: 0.65rem 1.5rem;
   border-radius: 10px;
   font-weight: 600;
@@ -309,7 +309,7 @@
 }
 
 .boton-rechazar:hover {
-  background: linear-gradient(135deg, #ff4757, #c82333);
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
   color: white;
   border-color: #ff6b7a;
   box-shadow:

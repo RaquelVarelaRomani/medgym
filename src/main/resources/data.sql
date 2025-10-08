@@ -11,20 +11,25 @@ INSERT INTO routines (name, description, trainer_id, visibility) VALUES
     ('Rutina fuerza inicial', 'Entrenamiento básico de fuerza con pesas libres. Incluye:\n- Sentadillas (3 series de 10 reps)\n- Flexiones (3 series de 12 reps)\n- Peso muerto (3 series de 8 reps)\n- Press banca (3 series de 10 reps).', 1, 0),
     ('Rutina cardio avanzado', 'Sesión intensiva de cardio de alta intensidad. Incluye:\n- Burpees (3 series de 30 segundos)\n- Saltos de comba (3 series de 1 minuto)\n- Mountain climbers (3 series de 45 segundos).', 1, 0),
     ('Rutina cuerpo completo', 'Ejercicios generales para trabajar todo el cuerpo. Incluye:\n- Sentadillas (3 series de 10 reps)\n- Flexiones (3 series de 12 reps)\n- Zancadas (3 series de 10 reps por pierna)\n- Dominadas (3 series de 8 reps).', 4, 0),
-    ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye:\n- Plancha abdominal (mantener 3 series de 30 segundos).', 4, 0);
+    ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye:\n- Plancha abdominal (mantener 3 series de 30 segundos).', 4, 0),
+    ('Rutina privada Carlos', 'Rutina privada de fuerza avanzada para clientes premium. Incluye ejercicios intensos de fuerza.', 1, 1);
 
 -- Insertar ejercicios
-INSERT INTO exercises (name, description, status) VALUES
-    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'APPROVED'),
-    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'APPROVED'),
-    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'APPROVED'),
-    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'APPROVED'),
-    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'APPROVED'),
-    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'APPROVED'),
-    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'APPROVED'),
-    ('Press banca', 'Ejercicio de fuerza para el pecho.', 'APPROVED'),
-    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'APPROVED'),
-    ('Mountain climbers', 'Ejercicio de cardio y core.', 'APPROVED');
+INSERT INTO exercises (name, description, creator_id, status) VALUES
+    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 1, 'APPROVED'),
+    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 4, 'APPROVED'),
+    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 1, 'APPROVED'),
+    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 4, 'APPROVED'),
+    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 1, 'APPROVED'),
+    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 4, 'APPROVED'),
+    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 1, 'APPROVED'),
+    ('Press banca', 'Ejercicio de fuerza para el pecho.', 4, 'APPROVED'),
+    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 1, 'APPROVED'),
+    ('Mountain climbers', 'Ejercicio de cardio y core.', 4, 'APPROVED'),
+    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 1, 'PENDING'),
+    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 1, 'REJECTED'),
+    ('Elevaciones laterales', 'Ejercicio para hombros.', 4, 'PENDING'),
+    ('Remo con mancuerna', 'Ejercicio para espalda.', 4, 'REJECTED');
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial

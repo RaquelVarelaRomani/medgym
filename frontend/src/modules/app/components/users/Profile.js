@@ -22,15 +22,6 @@ const Profile = () => {
         );
     }, [navigate]);
 
-    const handleReturnInit = () => {
-        navigate("/routines"); // Redirige a la página principal
-    }
-
-    const handleLogOut = () => {
-        logout();
-        setShowPopup(true);
-    }
-
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
     }
@@ -72,10 +63,8 @@ const Profile = () => {
                     </div>
                 
                     <div className="profile-actions">
-                        <button className="return-init-button" onClick={handleReturnInit}> Volver al inicio </button>
                         <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
                         <button className="edit-profile-button" onClick={handleChangePassword}> Cambiar contraseña </button>
-                        <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
                     </div>
                 </div>
 
@@ -93,7 +82,7 @@ const Profile = () => {
                 
             </div>
 
-            <Popup text={"Sesión cerrada"} show={showPopup} onOk={() => {
+            <Popup text={"Sesión cerrada. ¡Vuelva pronto!"} show={showPopup} onOk={() => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />

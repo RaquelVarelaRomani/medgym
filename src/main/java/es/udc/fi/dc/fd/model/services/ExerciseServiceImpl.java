@@ -1,17 +1,17 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import es.udc.fi.dc.fd.model.entities.ExerciseDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.ExerciseDao;
+import es.udc.fi.dc.fd.model.entities.User;
 
 @Service
 @Transactional
@@ -19,6 +19,9 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Autowired
     private ExerciseDao exerciseDao;
+
+    @Autowired
+    private PermissionChecker permissionChecker;
 
     @Override
     public Exercise createExercise(String name, String description, User user) throws DuplicateInstanceException {
@@ -36,7 +39,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             status = Exercise.ExerciseStatus.PENDING;
         }
         
-        Exercise exercise = new Exercise(name, description, status);
+        Exercise exercise = new Exercise(name, description, status, user);
         return exerciseDao.save(exercise);
     }
 
@@ -73,8 +76,14 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Exercise> findAllExercises() {
-        return exerciseDao.findAll();
+    public List<Exercise> findAllExercises(Long userId) throws InstanceNotFoundException {
+        User user = permissionChecker.checkUser(userId);
+
+        return switch (user.getRole()) {
+            case ADMIN -> exerciseDao.findAll();
+            case TRAINER -> exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+            case CLIENT -> exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+        };
     }
 
     @Override

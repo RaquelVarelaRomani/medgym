@@ -3,9 +3,9 @@ import {
     appFetch
 } from "./appFetch";
 
-export const createRoutine = (name, description, trainerId, onSuccess, onErrors) => appFetch(
+export const createRoutine = (name, description, trainerId, visibility, onSuccess, onErrors) => appFetch(
     `/routines`,
-    fetchConfig("POST", { name, description, trainerId }),
+    fetchConfig("POST", { name, description, trainerId, visibility }),
     onSuccess,
     onErrors
 )
@@ -24,9 +24,9 @@ export const getAllRoutines = (onSuccess, onErrors) => appFetch(
     onErrors
 )
 
-export const updateRoutine = (id, name, description, onSuccess, onErrors) => appFetch(
+export const updateRoutine = (id, name, description, visibility, onSuccess, onErrors) => appFetch(
     `/routines/${id}`,
-    fetchConfig("PUT", { name, description }),
+    fetchConfig("PUT", { name, description, visibility }),
     onSuccess,
     onErrors
 )
