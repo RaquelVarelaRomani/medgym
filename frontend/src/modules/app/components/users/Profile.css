@@ -113,53 +113,6 @@
     min-width: 220px;
 }
 
-/* back button */
-.return-init-button {
-    width: 100%;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
-    background: transparent;
-    color: var(--neon-orange);
-    border: 2px solid var(--neon-orange);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-}
-
-.return-init-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 107, 53, 0.3),
-            transparent
-    );
-    transition: left 0.5s ease;
-}
-
-.return-init-button:hover {
-    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
-    color: white;
-    border-color: var(--neon-orange-bright);
-    box-shadow:
-            0 0 20px rgba(255, 107, 53, 0.5),
-            0 4px 15px rgba(255, 107, 53, 0.3);
-    transform: translateY(-2px);
-}
-
-.return-init-button:hover::before {
-    left: 100%;
-}
-
 /* edit profile button */
 .edit-profile-button {
     width: 100%;
@@ -251,53 +204,6 @@
 }
 
 .change-password-button:hover::before {
-    left: 100%;
-}
-
-/* logout button */
-.logout-button {
-    width: 100%;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
-    background: transparent;
-    color: #ff4757;
-    border: 2px solid #ff4757;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-}
-
-.logout-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 71, 87, 0.3),
-            transparent
-    );
-    transition: left 0.5s ease;
-}
-
-.logout-button:hover {
-    background: linear-gradient(135deg, #ff4757, #e84545);
-    color: white;
-    border-color: #ff6b7a;
-    box-shadow:
-            0 0 20px rgba(255, 71, 87, 0.5),
-            0 4px 15px rgba(255, 71, 87, 0.3);
-    transform: translateY(-2px);
-}
-
-.logout-button:hover::before {
     left: 100%;
 }
 
