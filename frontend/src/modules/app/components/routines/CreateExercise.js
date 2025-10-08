@@ -3,6 +3,7 @@ import "./CreateExercise.css";
 import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import Popup from "../common/Popup";
 
 const CreateExercise = () => {
     const navigate = useNavigate();
@@ -10,6 +11,8 @@ const CreateExercise = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [titleError, setTitleError] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupText, setPopupText] = useState("");
 
     const [exerciseData, setExerciseData] = useState({
         name: "",
@@ -56,7 +59,12 @@ const CreateExercise = () => {
             exerciseData.name,
             exerciseData.description,
             () => {
-                navigate("/exercises")
+                const message =
+                    currentUser.role === "ADMIN"
+                        ? "Ejercicio creado correctamente"
+                        : "Ejercicio creado correctamente. Pendiente de aprobación por un administrador.";
+                setPopupText(message);
+                setShowPopup(true);
             },
             (errors) => {
                 console.error("Error creando ejercicio:", errors);
@@ -117,6 +125,14 @@ const CreateExercise = () => {
                     </button>
                 </div>
             </div>
+            <Popup
+                show={showPopup}
+                text={popupText}
+                onOk={() => {
+                    setShowPopup(false)
+                    navigate("/exercises");
+                }}
+            />
         </div>
     );
 };
