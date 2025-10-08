@@ -1,44 +1,85 @@
-/* Fondo principal */
+/* main container */
 .contenedor {
     display: flex;
     flex-direction: column;
     align-items: center !important;
     justify-content: center;
     min-height: 100vh;
-    background: linear-gradient(to right, var(--dark-orange), var(--primary-orange));
-}
-
-/* Caja central */
-.caja-edit {
-    background-color: rgba(255, 255, 255, 0.7);
+    background: var(--bg-primary);
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
     box-sizing: border-box;
 }
 
-/* Título */
-.titulo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
+.caja-edit {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
 }
 
-/* Foto perfil */
+.caja-edit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    opacity: 0.6;
+}
+
+/* title */
+.titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* profile pic */
 .edit-profile-photo {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    background: white;
+    background: linear-gradient(
+            135deg,
+            rgba(30, 30, 42, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    border: 2px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px auto;
-    font-size: 0.9rem;
-    color: #333;
+    margin: 0 auto 2rem auto;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s ease;
 }
 
+.edit-profile-photo:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
+}
+
+/* form */
 .edit-profile-photo img {
     width: 100%;
     height: 100%;
@@ -47,89 +88,208 @@
 }
 
 /* Formulario */
+>>>>>>> origin
 .form {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     width: 100%;
 }
 
 .form label {
-    font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    text-align: left;
+    font-size: 0.95rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .form input {
-    padding: 10px;
-    border: none;
-    margin-bottom: 10px;
-    font-size: 14px;
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
     border-radius: 10px;
-    width: 300px;
+    width: 100%;
+    background: rgba(19, 19, 26, 0.6);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
 }
 
-/* Contraseña + icono (para ambos campos) */
+.form input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.form input:focus {
+    outline: none;
+    border-color: var(--neon-orange);
+    background: rgba(19, 19, 26, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* password container */
 .contenedor-password {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+.contenedor-password input {
+    flex: 1;
+    width: 100%;
+    padding-right: 2.5rem;
+    margin-bottom: 0 !important;
 }
 
 .ver-password {
     position: absolute;
-    right: 15px;
+    right: 0.75rem;
     cursor: pointer;
     font-size: 18px;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
 }
 
-/* Campos de contraseña simples (actual) */
+.ver-password:hover {
+    color: var(--neon-orange);
+}
+
+/* password input */
 .input-password {
-    padding: 10px;
-    border: none;
-    margin-bottom: 10px;
-    font-size: 14px;
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
     border-radius: 10px;
-    width: 300px;
+    width: 100%;
+    background: rgba(19, 19, 26, 0.6);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
 }
 
-/* Botones */
+.input-password:focus {
+    outline: none;
+    border-color: var(--neon-orange);
+    background: rgba(19, 19, 26, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* button container */
 .form-actions {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
     width: 100%;
 }
 
+/* save button */
 .save-btn {
-    background: white;
-    color: black;
-    border: none;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    font-weight: 600;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+.save-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .save-btn:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px var(--shadow-dark);
 }
 
+.save-btn:hover::before {
+    left: 100%;
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+/* cancel button  */
 .cancel-btn {
-    background: darkred;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: transparent;
+    color: #ff4757;
+    border: 2px solid #ff4757;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+}
+
+.cancel-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 71, 87, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
 }
 
 .cancel-btn:hover {
+    background: linear-gradient(135deg, #ff4757, #e84545);
+    color: white;
+    border-color: #ff6b7a;
+    box-shadow:
+            0 0 20px rgba(255, 71, 87, 0.5),
+            0 4px 15px rgba(255, 71, 87, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px var(--shadow-dark);
+}
+
+.cancel-btn:hover::before {
+    left: 100%;
+}
+
+.cancel-btn:active {
+    transform: translateY(0);
 }

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 // OJO! Importa estilos definidos en CSS
 import "./Exercises.css";
 import { Link, useNavigate} from "react-router-dom";
-import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetch";
+import {tryLoginFromServiceToken} from "../../../../backend/userService";
+import * as exerciseService from "../../../../backend/exerciseService";
+import ConfirmationPopup from "../common/ConfirmationPopup";
 
 //IMPORTANTE: kebab-case para las clases CSS (palabras-separadas-asi)
 
@@ -10,22 +12,127 @@ import {getAuthenticatedUser, getServiceToken} from "../../../../backend/appFetc
 // Definición componente funcional (el que React renderiza como pantalla)
 const Exercises = () => {
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser] = useState(null);
+    const [exercises, setExercises] = useState([]);
+    const [exerciseToDelete, setExerciseToDelete] = useState(null);
+    const [exerciseToReject, setExerciseToReject] = useState(null);
+    const [viewMode, setViewMode] = useState("approved");
+    const [loading, setLoading] = useState(true);
 
-    //CAMBIAR: usuario de prueba para vista de entrenador
+    useEffect(() => {
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
+                fetchExercises();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+    }, [navigate]);
+
+    useEffect(() => {
+        fetchExercises();
+    }, [viewMode]);
 
     //CAMBIAR: ARRAY ESTATICO PORQUE LUEGO HAY QUE CONECTAR CON EL BACKEND
-    const exercises = [
-    { id: 1, titulo: "Ejercicio nº 1", descripcion: "Descripción ejercicio nº 1" },
-    { id: 2, titulo: "Ejercicio nº 2", descripcion: "Descripción ejercicio nº 2"},
-    { id: 3, titulo: "Ejercicio nº 3", descripcion: "Descripción ejercicio nº 3"},
-  ];
+    const fetchExercises = () => {
+        setLoading(true);
+
+        if (viewMode === "pending" && isAdmin()) {
+            exerciseService.getPendingExercises(
+                (data) => {
+                    const mappedExercises = data.map(exercise => ({
+                        id: exercise.id,
+                        titulo: exercise.name,
+                        descripcion: exercise.description,
+                        status: exercise.status
+                    }));
+                    setExercises(mappedExercises);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Error fetching pending exercises:", error);
+                    setLoading(false);
+                }
+            );
+        } else {
+            exerciseService.getAllExercises(
+                (data) => {
+                    const filteredExercises = data.filter(exercise =>
+                        exercise.status === "APPROVED"
+                    );
+
+                    const mappedExercises = filteredExercises.map(exercise => ({
+                        id: exercise.id,
+                        titulo: exercise.name,
+                        descripcion: exercise.description,
+                        status: exercise.status
+                    }));
+
+                    setExercises(mappedExercises);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Error fetching exercises:", error);
+                    setLoading(false);
+                }
+            );
+        }
+    };
+
+    const isAdmin = () => {
+        if (!currentUser) return false;
+        return currentUser.role === 'ADMIN';
+    };
 
 
+    const handleDelete = (exerciseId) => {
+        exerciseService.deleteExercise(
+            exerciseId,
+            () => {
+                console.log("Exercise deleted successfully");
+                fetchExercises(); // Refresh the list
+            },
+            (error) => {
+                console.error("Error deleting exercise:", error);
+            }
+        );
+    };
 
-    const handleDelete = (e, exerciseId) => {
+
+    const handleApprove = (e, exerciseId) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("Delete exercise", exerciseId);
+
+        exerciseService.updateExerciseStatus(
+            exerciseId,
+            "APPROVED",
+            () => {
+                console.log("Exercise approved successfully");
+                fetchExercises(); // Refresh the list
+            },
+            (error) => {
+                console.error("Error approving exercise:", error);
+            }
+        );
+    };
+
+    const handleReject = (exerciseId) => {
+        console.log("handleReject called with:", exerciseId, "Type:", typeof exerciseId);
+
+        exerciseService.updateExerciseStatus(
+            exerciseId,
+            "REJECTED",
+            () => {
+                console.log("Exercise rejected successfully");
+                fetchExercises();
+            },
+            (error) => {
+                console.error("Error rejecting exercise:", error);
+            }
+        );
     };
 
     const handleAddExercise = () => {
@@ -33,49 +140,108 @@ const Exercises = () => {
     navigate("/exercises/new");
   };
 
+    if (loading) {
+        return <div className="contenedor">Cargando...</div>;
+    }
+
   // return = lo que hay que renderizar en pantalla
-  return (
-       <div className="contenedor">
+    return (
+        <div className="contenedor">
+            {isAdmin() && (
+                <div className="view-toggle-buttons">
+                    <button
+                        className={`toggle-button ${viewMode === 'approved' ? 'active' : ''}`}
+                        onClick={() => setViewMode('approved')}
+                    >
+                        Ejercicios Aprobados
+                    </button>
+                    <button
+                        className={`toggle-button ${viewMode === 'pending' ? 'active' : ''}`}
+                        onClick={() => setViewMode('pending')}
+                    >
+                        Ejercicios Pendientes
+                    </button>
+                </div>
+            )}
 
-        <img
-            src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-            alt="Foto de perfil"
-            className="foto-perfil"
-            // onClick={() => navigate("/profile")}  // cuando actives la navegación
-        />
+            <div className="lista-ejercicios">
+                {exercises.map((exercise) => (
+                    <Link
+                        to={`/exercises/${exercise.id}`}
+                        key={exercise.id}
+                        className="caja-ejercicio"
+                    >
+                        <h3>{exercise.titulo}</h3>
+                        <p>{exercise.descripcion}</p>
 
-        <div className="exercises-titulo-grande">
-            <h2>Ejercicios:</h2>
+                        {viewMode === "approved" && (isAdmin()) && (
+                            <button
+                                className="boton-eliminar"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setExerciseToDelete(exercise.id);
+                                }}
+                            >
+                                Eliminar
+                            </button>
+                        )}
+
+                        {viewMode === "pending" && isAdmin() && (
+                            <div className="approval-buttons">
+                                <button
+                                    className="boton-aprobar"
+                                    onClick={(e) => handleApprove(e, exercise.id)}
+                                >
+                                Aprobar
+                                </button>
+                                <button
+                                    className="boton-rechazar"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setExerciseToReject(exercise.id);
+                                    }}
+                                >
+                                    Rechazar
+                                </button>
+                            </div>
+                        )}
+                    </Link>
+                ))}
+            </div>
+
+            {(isAdmin()) && (
+                <button className="boton-crear" onClick={handleAddExercise}>
+                    +
+                </button>
+            )}
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres eliminar este ejercicio?"
+                show={exerciseToDelete !== null}
+                onOk={() => {
+                    if (exerciseToDelete) {
+                        handleDelete(exerciseToDelete);
+                    }
+                    setExerciseToDelete(null);
+                }}
+                onCancel={() => setExerciseToDelete(null)}
+            />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres rechazar este ejercicio?"
+                show={exerciseToReject !== null}
+                onOk={() => {
+                    if (exerciseToReject) {
+                        handleReject(exerciseToReject);
+                    }
+                    setExerciseToReject(null);
+                }}
+                onCancel={() => setExerciseToReject(null)}
+            />
         </div>
-
-        <div className="lista-ejercicios">
-            {exercises.map((exercise) => ( //recorre el array de ejercicios
-            //CAMBIAR: puede que esto no pueda ser asi
-            <Link
-                to={`/exercises/${exercise.id}`}
-                key={exercise.id}
-                className="caja-ejercicio"
-            >
-                <h3>{exercise.titulo}</h3> {/*Ya usamos h2 en el titulo grande*/}
-                <p>{exercise.descripcion}</p> {/*CAMBIAR: tiene que funcionar con el backend */}
-
-                        <button className="boton-eliminar"
-                                onClick={(e) => handleDelete(e, exercise.id)}>
-                            Eliminar
-                        </button>
-                
-            </Link>
-            ))}
-        </div>
-
-        {/*Boton CREAR*/}
-        <button className="boton-crear" onClick={handleAddExercise}>
-          +
-        </button>
-        
-    </div>
-    
-  );
+    );
 };
 
 export default Exercises;

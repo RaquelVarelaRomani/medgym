@@ -15,6 +15,7 @@ import CreateExercise from "./routines/CreateExercise";
 import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
+import Layout from "./Layout";
 
 const Body = () => {
     return (
@@ -26,12 +27,11 @@ const Body = () => {
                     <Route path="users/login" element={<Login />} />
                 </Route>
                 <Route element={<RequiresLogin />}>
-                    <Route path="routines" element={<Routines />} />
-                    <Route path="routines/new" element={<CreateRoutine />} />
-                    <Route path="routines/edit/:id" element={<EditRoutine />} />
-                    <Route path="routines/:id" element={<RoutineDetails />} />
-                    <Route path="exercises" element={<Exercises />} />
-                    <Route path="exercises/new" element={<CreateExercise />} />
+                    <Route path="routines" element={<Layout><Routines /></Layout>} />
+                    <Route path="routines/new" element={<Layout><CreateRoutine /></Layout>} />
+                    <Route path="routines/edit/:id" element={<Layout><EditRoutine /></Layout>} />
+                    <Route path="routines/:id" element={<Layout><RoutineDetails /></Layout>} />
+                    <Route path="exercises" element={<Layout><Exercises /></Layout>} />
                     <Route path="users/profile" element={<Profile />} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
