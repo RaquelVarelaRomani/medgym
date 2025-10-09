@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS routine_exercises;
+DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
 DROP TABLE IF EXISTS users;
@@ -64,4 +65,22 @@ CREATE TABLE routine_exercises (
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT routine_exercise_routine_id_exercise_id_uk UNIQUE (routine_id, exercise_id)
+);
+
+CREATE TABLE workouts (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    start_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    end_time DATETIME,
+    routine_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+
+    CONSTRAINT workout_id PRIMARY KEY (id),
+    CONSTRAINT workout_routine_id FOREIGN KEY (routine_id)
+        REFERENCES routines (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT workout_user_id FOREIGN KEY (user_id) 
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
