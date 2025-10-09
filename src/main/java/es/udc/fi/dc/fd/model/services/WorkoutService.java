@@ -1,13 +1,12 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Workout;
 
 import java.util.List;
 
 public interface WorkoutService {
-    void startWorkout(Routine routine, User user);
-    void finishWorkout(Long id);
+    Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException;
+    void finishWorkout(Long id) throws InstanceNotFoundException;
     List<Workout> findWorkoutsFromUser(Long userId);
 }

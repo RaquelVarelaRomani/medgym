@@ -1,0 +1,35 @@
+package es.udc.fi.dc.fd.rest.controllers;
+
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.services.WorkoutService;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDto;
+import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDtos;
+
+@RestController
+@RequestMapping("/api/workouts")
+public class WorkoutController {
+
+    @Autowired
+    private WorkoutService workoutService;
+
+    @PostMapping("/start")
+    public WorkoutDto startWorkout(@RequestAttribute Long userId, @RequestBody WorkoutDto workoutDto) throws InstanceNotFoundException {
+        return toWorkoutDto(workoutService.startWorkout(workoutDto.getRoutineId(), userId));
+    }
+
+    @PutMapping("/{id}/finish")
+    public void finishWorkout(@PathVariable Long id) throws InstanceNotFoundException {
+        workoutService.finishWorkout(id);
+    }
+
+    @GetMapping
+    public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
+        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+    }
+}
