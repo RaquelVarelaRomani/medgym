@@ -14,6 +14,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     profile_picture MEDIUMBLOB,
     role TINYINT NOT NULL,
+    status TINYINT NOT NULL DEFAULT 0,
 
     CONSTRAINT user_id_pk PRIMARY KEY (id),
     CONSTRAINT user_email_uk UNIQUE (email),

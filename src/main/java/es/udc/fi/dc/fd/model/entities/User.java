@@ -1,6 +1,10 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name= "users")
@@ -12,6 +16,11 @@ public class User {
 		ADMIN
 	}
 
+	public enum StatusType {
+		ACTIVE,
+		BLOCKED
+	}
+
 	private Long id;
 	private String name;
 	private String surname;
@@ -20,6 +29,7 @@ public class User {
 	private String password;
 	private byte[] profilePicture;
 	private RoleType role;
+	private StatusType status;
 
 	public User() {
 	}
@@ -32,6 +42,7 @@ public class User {
 		this.password = password;
 		this.profilePicture = profilePicture;
 		this.role = role;
+		this.status = StatusType.ACTIVE;
 	}
 
 	@Id
@@ -91,6 +102,13 @@ public class User {
 	}
 	public void setRole(RoleType role) {
 		this.role = role;
+	}
+
+	public StatusType getStatus() {
+		return status;
+	}
+	public void setStatus(StatusType status) {
+		this.status = status;
 	}
 
 

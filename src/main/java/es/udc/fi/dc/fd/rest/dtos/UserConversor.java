@@ -1,10 +1,10 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 
 public class UserConversor {
 
@@ -12,7 +12,7 @@ public class UserConversor {
 	}
 
 	public static final UserDto toUserDto(User user) {
-		return new UserDto(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhoneNumber(), user.getProfilePicture(), user.getRole().toString());
+		return new UserDto(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhoneNumber(), user.getProfilePicture(), user.getRole().toString(), user.getStatus().toString());
 	}
 
 	public static final List<UserDto> toUserDtos(List<User> users) {

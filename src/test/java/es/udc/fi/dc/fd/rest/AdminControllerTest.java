@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,6 +97,64 @@ public class AdminControllerTest {
     public void testGetAllUsers_Unauthenticated_Forbidden() throws Exception {
 
         mockMvc.perform(get("/api/admin/users"))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void testBlockUser_Admin_Ok() throws Exception {
+
+        AuthenticatedUserDto admin = createAuthenticatedUser("admin2@email.com", RoleType.ADMIN);
+        User userToBlock = new User("user", "2", "user2@email.com", "+34 000 000 001", "password", null, RoleType.CLIENT);
+        userToBlock.setPassword(passwordEncoder.encode(userToBlock.getPassword()));
+        userDao.save(userToBlock);
+
+        mockMvc.perform(put("/api/admin/users/" + userToBlock.getId() + "/block")
+                .header("Authorization", "Bearer " + admin.getServiceToken()))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testBlockUser_Client_Forbidden() throws Exception {
+
+        AuthenticatedUserDto client = createAuthenticatedUser("client2@email.com", RoleType.CLIENT);
+        User userToBlock = new User("user", "3", "user3@email.com", "+34 000 000 002", "password", null, RoleType.CLIENT);
+        userToBlock.setPassword(passwordEncoder.encode(userToBlock.getPassword()));
+        userDao.save(userToBlock);
+
+        mockMvc.perform(put("/api/admin/users/" + userToBlock.getId() + "/block")
+                .header("Authorization", "Bearer " + client.getServiceToken()))
+                .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void testUnblockUser_Admin_Ok() throws Exception {
+
+        AuthenticatedUserDto admin = createAuthenticatedUser("admin3@email.com", RoleType.ADMIN);
+        User userToUnblock = new User("user", "4", "user4@email.com", "+34 000 000 003", "password", null, RoleType.CLIENT);
+        userToUnblock.setPassword(passwordEncoder.encode(userToUnblock.getPassword()));
+        userToUnblock.setStatus(User.StatusType.BLOCKED);
+        userDao.save(userToUnblock);
+
+        mockMvc.perform(put("/api/admin/users/" + userToUnblock.getId() + "/unblock")
+                .header("Authorization", "Bearer " + admin.getServiceToken()))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testUnblockUser_Client_Forbidden() throws Exception {
+
+        AuthenticatedUserDto client = createAuthenticatedUser("client3@email.com", RoleType.CLIENT);
+        User userToUnblock = new User("user", "5", "user5@email.com", "+34 000 000 004", "password", null, RoleType.CLIENT);
+        userToUnblock.setPassword(passwordEncoder.encode(userToUnblock.getPassword()));
+        userToUnblock.setStatus(User.StatusType.BLOCKED);
+        userDao.save(userToUnblock);
+
+        mockMvc.perform(put("/api/admin/users/" + userToUnblock.getId() + "/unblock")
+                .header("Authorization", "Bearer " + client.getServiceToken()))
                 .andExpect(status().isForbidden());
 
     }
