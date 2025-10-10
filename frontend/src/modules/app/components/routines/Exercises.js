@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 // OJO! Importa estilos definidos en CSS
-import "./Exercises.css";
+import styles from "./Exercises.module.css";
 import { Link, useNavigate} from "react-router-dom";
 import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
@@ -141,22 +141,22 @@ const Exercises = () => {
   };
 
     if (loading) {
-        return <div className="contenedor">Cargando...</div>;
+        return <div className={styles.contenedor}>Cargando...</div>;
     }
 
   // return = lo que hay que renderizar en pantalla
     return (
-        <div className="contenedor">
+        <div className={styles.contenedor}>
             {isAdmin() && (
-                <div className="view-toggle-buttons">
+                <div className={styles['view-toggle-buttons']}>
                     <button
-                        className={`toggle-button ${viewMode === 'approved' ? 'active' : ''}`}
+                        className={`${styles['toggle-button']} ${viewMode === 'approved' ? styles.active : ''}`}
                         onClick={() => setViewMode('approved')}
                     >
                         Ejercicios Aprobados
                     </button>
                     <button
-                        className={`toggle-button ${viewMode === 'pending' ? 'active' : ''}`}
+                        className={`${styles['toggle-button']} ${viewMode === 'pending' ? styles.active : ''}`}
                         onClick={() => setViewMode('pending')}
                     >
                         Ejercicios Pendientes
@@ -164,19 +164,19 @@ const Exercises = () => {
                 </div>
             )}
 
-            <div className="lista-ejercicios">
+            <div className={styles['lista-ejercicios']}>
                 {exercises.map((exercise) => (
                     <Link
                         to={`/exercises/${exercise.id}`}
                         key={exercise.id}
-                        className="caja-ejercicio"
+                        className={styles['caja-ejercicio']}
                     >
                         <h3>{exercise.titulo}</h3>
                         <p>{exercise.descripcion}</p>
 
                         {viewMode === "approved" && (isAdmin()) && (
                             <button
-                                className="boton-eliminar"
+                                className={styles['boton-eliminar']}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -188,15 +188,15 @@ const Exercises = () => {
                         )}
 
                         {viewMode === "pending" && isAdmin() && (
-                            <div className="approval-buttons">
+                            <div className={styles['approval-buttons']}>
                                 <button
-                                    className="boton-aprobar"
+                                    className={styles['boton-aprobar']}
                                     onClick={(e) => handleApprove(e, exercise.id)}
                                 >
                                 Aprobar
                                 </button>
                                 <button
-                                    className="boton-rechazar"
+                                    className={styles['boton-rechazar']}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
@@ -212,7 +212,7 @@ const Exercises = () => {
             </div>
 
             {(isAdmin()) && (
-                <button className="boton-crear" onClick={handleAddExercise}>
+                <button className={styles['boton-crear']} onClick={handleAddExercise}>
                     +
                 </button>
             )}
@@ -245,3 +245,4 @@ const Exercises = () => {
 };
 
 export default Exercises;
+

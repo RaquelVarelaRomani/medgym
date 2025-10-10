@@ -236,35 +236,6 @@
     overflow: hidden;
 }
 
-.header-profile-photo .profile-photo {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    border-radius: 50% ;
-    background: transparent;
-    border: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: none;
-    transition: none;
-}
-
-.header-profile-photo .profile-photo:hover {
-    border-color: transparent;
-    box-shadow: none;
-}
-
-.header-profile-photo .profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
 
 /* profile dropdown */
 

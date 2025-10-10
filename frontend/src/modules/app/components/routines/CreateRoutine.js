@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
-import "./CreateRoutine.css";
+import styles from "./CreateRoutine.module.css";
 import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
@@ -9,7 +9,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 const CreateRoutine = () => {
     const navigate = useNavigate();
     const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC"});
-    const [exercises, setExercises] = useState([{id: null, nombre: ""}]);
+    const [exercises, setExercises] = useState([{id: null, nombre: "", position: 1}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -86,12 +86,42 @@ const CreateRoutine = () => {
     };
 
     const handleAddExercise = () => {
-        const newId = Math.max(...exercises.map(e => e.id)) + 1;
-        setExercises([...exercises, { id: newId, nombre: "" }]);
+        const newId = Math.max(...exercises.map(e => e.id || 0)) + 1;
+        const newPosition = exercises.length + 1;
+        setExercises([...exercises, { id: newId, nombre: "", position: newPosition }]);
     };
 
     const handleRemoveExercise = (id) => {
-    setExercises(exercises.filter(exercise => exercise.id !== id));
+        const newExercises = exercises.filter(exercise => exercise.id !== id);
+        // Reassign positions
+        newExercises.forEach((ex, index) => ex.position = index + 1);
+        setExercises(newExercises);
+    };
+
+    const handleMoveUp = (index) => {
+        if (index > 0) {
+            const newExercises = [...exercises];
+            // Swap positions
+            const tempPos = newExercises[index].position;
+            newExercises[index].position = newExercises[index - 1].position;
+            newExercises[index - 1].position = tempPos;
+            // Sort the array by position to reflect the new order
+            newExercises.sort((a, b) => a.position - b.position);
+            setExercises(newExercises);
+        }
+    };
+
+    const handleMoveDown = (index) => {
+        if (index < exercises.length - 1) {
+            const newExercises = [...exercises];
+            // Swap positions
+            const tempPos = newExercises[index].position;
+            newExercises[index].position = newExercises[index + 1].position;
+            newExercises[index + 1].position = tempPos;
+            // Sort the array by position to reflect the new order
+            newExercises.sort((a, b) => a.position - b.position);
+            setExercises(newExercises);
+        }
     };
 
 
@@ -132,11 +162,11 @@ const CreateRoutine = () => {
                 //crear ejercicios
                 const exercisesToSave = exercises
                     .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
-                    .map((ex, index) =>
+                    .map(ex =>
                     routineExerciseService.createRoutineExercise(
                         routineId,
                         ex.id,
-                        index + 1,
+                        ex.position,
                         () => {},
                         (err) => console.error("Error adding exercise:", err)
                     )
@@ -163,13 +193,13 @@ const CreateRoutine = () => {
         );
 
     return (
-        <div className="contenedor-create-routine">
-            <div className="header-crear-rutina">
+        <div className={styles['contenedor-create-routine']}>
+            <div className={styles['header-crear-rutina']}>
                 <h2>Estás creando un nuevo entrenamiento...</h2>
             </div>
 
-            <div className="form-crear-rutina">
-                <div className="form-div">
+            <div className={styles['form-crear-rutina']}>
+                <div className={styles['form-div']}>
                     <label>Título:</label>
                     <input
                         type="text"
@@ -177,12 +207,12 @@ const CreateRoutine = () => {
                         placeholder="Escriba aquí el título de la rutina."
                         value={routineData.titulo}
                         onChange={handleInputChange}
-                        className={titleError ? "input-error" : ""}
+                        className={titleError ? styles['input-error'] : ""}
                     />
-                    {titleError && <span className="error-message">{titleError}</span>}
+                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label>Descripción de la rutina:</label>
                     <textarea
                         name="descripcion"
@@ -193,7 +223,7 @@ const CreateRoutine = () => {
                     />
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label>Visibilidad:</label>
                     <select
                         name="visibility"
@@ -206,23 +236,22 @@ const CreateRoutine = () => {
                     </select>
                 </div>
 
-                {exercises.map((exercise, index) => (
-                    <div key={exercise.id} className="ejercicio-item">
+                {exercises.sort((a, b) => a.position - b.position).map((exercise, index) => (
+                    <div key={exercise.id} className={styles['ejercicio-item']}>
                         <label>Ejercicio {index + 1}:</label>
-                        {/*ELIMINAR (papelera)*/}
                         <button
                             type="button"
-                            className="boton-eliminar-ejercicio"
+                            className={styles['boton-eliminar-ejercicio']}
                             onClick={() => handleRemoveExercise(exercise.id)}
                             title="Eliminar ejercicio"
                         >
                             <img
                                 src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
                                 alt="Eliminar"
-                                className="icono-papelera"
+                                className={styles['icono-papelera']}
                             />
                         </button>
-                        <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
+                        <div className={styles['ejercicio-input-container']} ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 placeholder="Buscar ejercicio o escribir el nombre..."
@@ -243,11 +272,11 @@ const CreateRoutine = () => {
                             />
 
                             {showExerciseSearch === index && (
-                                <div className="ejercicio-dropdown">
+                                <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((exercise, i) => (
                                         <div
                                             key={i}
-                                            className="ejercicio-option"
+                                            className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, exercise)}
                                         >
                                             {exercise.name}
@@ -256,22 +285,39 @@ const CreateRoutine = () => {
                                 </div>
                             )}
                         </div>
-
+                        <div className={styles['exercise-controls']}>
+                            <button
+                                type="button"
+                                onClick={() => handleMoveUp(index)}
+                                disabled={index === 0}
+                                className={styles['move-button']}
+                            >
+                                ▲
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleMoveDown(index)}
+                                disabled={index === exercises.length - 1}
+                                className={styles['move-button']}
+                            >
+                                ▼
+                            </button>
+                        </div>
                     </div>
                 ))}
 
                 <button
-                    className="boton-agregar-ejercicio"
+                    className={styles['boton-agregar-ejercicio']}
                     onClick={handleAddExercise}
                 >
                     +
                 </button>
 
-                <div className="form-actions">
-                    <button type="submit" className="boton-guardar-rutina">
+                <div className={styles['form-actions']}>
+                    <button type="button" className={styles['boton-guardar-rutina']} onClick={handleSave}>
                         Guardar
                     </button>
-                    <button type="button" className="boton-cancelar" onClick={handleCancel}>
+                    <button type="button" className={styles['boton-cancelar']} onClick={handleCancel}>
                         Cancelar
                     </button>
                 </div>

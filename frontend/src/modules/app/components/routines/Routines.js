@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 // OJO! Importa estilos definidos en CSS
-import "./Routines.css";
+import styles from "./Routines.module.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/ConfirmationPopup";
@@ -89,18 +89,18 @@ const Routines = () => {
 
     if (loading) {
         return (
-            <div className="contenedor">
-                <div className="loading-message">Cargando entrenamientos...</div>
+            <div className={styles.contenedor}>
+                <div className={styles['loading-message']}>Cargando entrenamientos...</div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="contenedor">
-                <div className="error-message">
+            <div className={styles.contenedor}>
+                <div className={styles['error-message']}>
                     {error}
-                    <button onClick={loadRoutines} className="retry-button">
+                    <button onClick={loadRoutines} className={styles['retry-button']}>
                         Intentar de nuevo
                     </button>
                 </div>
@@ -112,23 +112,23 @@ const Routines = () => {
   return (
     
     // 1) Hacemos un div para agrupar todo dentro del recuadro del login
-    <div className="contenedor">
+    <div className={styles.contenedor}>
 
-        <div className="routines-titulo-grande">
+        <div className={styles['routines-titulo-grande']}>
             <h2>Entrenamientos:</h2>
         </div>
 
-        <div className="lista-rutinas">
+        <div className={styles['lista-rutinas']}>
             {routines.map((routine) => ( //recorre el array de rutinas
             <Link
                 to={`/routines/${routine.id}`}
                 key={routine.id}
-                className="caja-rutina"
+                className={styles['caja-rutina']}
             >
                 <h3>
                     {routine.name}
                     {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-                        <span className="private-badge">🔒 Privado</span>
+                        <span className={styles['private-badge']}>🔒 Privado</span>
                     )}
                 </h3> {/*Ya usamos h2 en el titulo grande*/}
                 <p>
@@ -140,12 +140,12 @@ const Routines = () => {
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
                 {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
                     <div>
-                        <button className="boton-editar"
+                        <button className={styles['boton-editar']}
                             onClick={(e) => handleEdit(e, routine.id)}>
                             Editar
                         </button>
                         <button
-                            className="boton-eliminar"
+                            className={styles['boton-eliminar']}
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -163,7 +163,7 @@ const Routines = () => {
 
         {/*Boton CREAR*/}
       {(isTrainer() || isAdmin()) && (
-        <button className="boton-crear" onClick={handleAddRoutine}>
+        <button className={styles['boton-crear']} onClick={handleAddRoutine}>
           +
         </button>
       )}

@@ -1,5 +1,5 @@
 import React, { useState} from "react";
-import "./Register.css";
+import styles from "./Register.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import {signUp} from "../../../../backend/userService";
 import Slogan from "../common/Slogan";
@@ -51,21 +51,21 @@ const Register = () => {
     };
 
     return (
-        <div className="contenedor">
-            <Slogan className="slogan-registro" />
+        <div className={styles.contenedor}>
+            <Slogan className={styles['slogan-registro']} />
 
-            <div className="caja-login">
+            <div className={styles['caja-login']}>
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Logo medgym"
-                    className="logo"
+                    className={styles.logo}
                 />
 
-                <h2 className="titulo">Regístrate</h2>
+                <h2 className={styles.titulo}>Regístrate</h2>
 
-                {error && <p className="mensaje-error">{error}</p>}
+                {error && <p className={styles['mensaje-error']}>{error}</p>}
 
-                <form className="form" onSubmit={(e) => {
+                <form className={styles.form} onSubmit={(e) => {
                     e.preventDefault();
                     handleSubmit();
                 }}>
@@ -110,13 +110,13 @@ const Register = () => {
                     />
 
                     {passwordError && (
-                        <p className="mensaje-error" style={{ alignSelf: "flex-start" }}>
+                        <p className={styles['mensaje-error']} style={{ alignSelf: "flex-start" }}>
                         {passwordError}
                         </p>
                     )}
                     
                     <label htmlFor="password">Contraseña</label>
-                    <div className="contenedor-password">
+                    <div className={styles['contenedor-password']}>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password"
@@ -126,7 +126,7 @@ const Register = () => {
                             placeholder="Escriba aquí su contraseña..."
                         />
                         <span
-                            className="ver-password"
+                            className={styles['ver-password']}
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             &#128065;
@@ -134,7 +134,7 @@ const Register = () => {
                     </div>
 
                     <label htmlFor="confirmPassword">Confirmar contraseña</label>
-                    <div className="contenedor-password">
+                    <div className={styles['contenedor-password']}>
                         <input
                             type={showConfirmPassword ? "text" : "password"}
                             id="confirmPassword"
@@ -144,20 +144,20 @@ const Register = () => {
                             placeholder="Vuelva a escribir aquí su contraseña..."
                         />
                         <span
-                            className="ver-password"
+                            className={styles['ver-password']}
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
                             &#128065;
                         </span>
                     </div>
                     
-                    <p className="ir-a-login">
-                        <Link to="/users/login" className="link-login">
+                    <p className={styles['ir-a-login']}>
+                        <Link to="/users/login" className={styles['link-login']}>
                             Inicia sesión si ya tienes una cuenta.
                         </Link>
                     </p>
 
-                    <button type="submit" className="boton-guardar">
+                    <button type="submit" className={styles['boton-guardar']}>
                         Guardar
                     </button>
                 </form>

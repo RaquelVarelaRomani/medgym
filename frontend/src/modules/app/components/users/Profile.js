@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./Profile.css";
+import styles from "./Profile.module.css";
 import { useNavigate } from "react-router-dom";
 import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/Popup";
@@ -38,37 +38,37 @@ const Profile = () => {
     }
 
     return (
-        <div className="profile">
-            <div className="profile-container">
-                <div className="profile-header">
-                    <div className="profile-info">
-                        <div className="profile-photo">
+        <div className={styles.profile}>
+            <div className={styles['profile-container']}>
+                <div className={styles['profile-header']}>
+                    <div className={styles['profile-info']}>
+                        <div className={styles['profile-photo']}>
                             {profile?.profilePicture ? (
                                 <img
                                     src={`data:image/jpeg;base64,${profile.profilePicture}`}
                                     alt="Foto de perfil"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             ) : (
                                 <img
                                     src="./assets/default-profile.jpg"
                                     alt="Foto por defecto"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             )}
                         </div> 
-                        <h2 className="profile-name">
+                        <h2 className={styles['profile-name']}>
                             {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                         </h2>
                     </div>
                 
-                    <div className="profile-actions">
-                        <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
-                        <button className="edit-profile-button" onClick={handleChangePassword}> Cambiar contraseña </button>
+                    <div className={styles['profile-actions']}>
+                        <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
+                        <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
                     </div>
                 </div>
 
-                <div className="profile-data">
+                <div className={styles['profile-data']}>
                     {profile ? (
                         <>
                             <p><strong>Email:</strong> {profile.email}</p>

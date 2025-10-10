@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import "./CreateRoutine.css"; // Reuse same CSS
+import styles from "./CreateRoutine.module.css"; // Reuse same CSS
 import { useNavigate, useParams } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
@@ -273,22 +273,22 @@ const EditRoutine = () => {
     if (error) return <div>{error}</div>;
 
     return (
-        <div className="contenedor-create-routine">
+        <div className={styles['contenedor-create-routine']}>
             <h2>Editar rutina</h2>
-            <div className="form-crear-rutina">
-                <div className="form-div">
+            <div className={styles['form-crear-rutina']}>
+                <div className={styles['form-div']}>
                     <label>Título:</label>
                     <input
                         type="text"
                         name="titulo"
                         value={routineData.titulo}
                         onChange={handleInputChange}
-                        className={titleError ? "input-error" : ""}
+                        className={titleError ? styles['input-error'] : ""}
                     />
-                    {titleError && <span className="error-message">{titleError}</span>}
+                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label>Descripción:</label>
                     <textarea
                         name="descripcion"
@@ -298,7 +298,7 @@ const EditRoutine = () => {
                     />
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label>Visibilidad:</label>
                     <select
                         name="visibility"
@@ -312,21 +312,21 @@ const EditRoutine = () => {
                 </div>
 
                 {exercises.map((exercise, index) => (
-                    <div key={index} className="ejercicio-item">
+                    <div key={index} className={styles['ejercicio-item']}>
                         <label>Ejercicio {index + 1}:</label>
                         <button
                             type="button"
-                            className="boton-eliminar-ejercicio"
+                            className={styles['boton-eliminar-ejercicio']}
                             onClick={() => handleRemoveExercise(index)}
                             title="Eliminar ejercicio"
                         >
                             <img
                                 src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
                                 alt="Eliminar"
-                                className="icono-papelera"
+                                className={styles['icono-papelera']}
                             />
                         </button>
-                        <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
+                        <div className={styles['ejercicio-input-container']} ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 value={exercise.nombre}
@@ -346,11 +346,11 @@ const EditRoutine = () => {
                                 }}
                             />
                             {showExerciseSearch === index && (
-                                <div className="ejercicio-dropdown">
+                                <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((ex, i) => (
                                         <div
                                             key={i}
-                                            className="ejercicio-option"
+                                            className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, ex)}
                                         >
                                             {ex.name}
@@ -359,12 +359,12 @@ const EditRoutine = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="exercise-controls">
+                        <div className={styles['exercise-controls']}>
                             <button
                                 type="button"
                                 onClick={() => handleMoveUp(index)}
                                 disabled={index === 0}
-                                className="move-button"
+                                className={styles['move-button']}
                             >
                                 ▲
                             </button>
@@ -372,7 +372,7 @@ const EditRoutine = () => {
                                 type="button"
                                 onClick={() => handleMoveDown(index)}
                                 disabled={index === exercises.length - 1}
-                                className="move-button"
+                                className={styles['move-button']}
                             >
                                 ▼
                             </button>
@@ -381,15 +381,15 @@ const EditRoutine = () => {
 
                 ))}
 
-                <button className="boton-agregar-ejercicio" onClick={handleAddExercise}>
+                <button className={styles['boton-agregar-ejercicio']} onClick={handleAddExercise}>
                     +
                 </button>
 
-                <div className="form-actions">
-                    <button className="boton-guardar-rutina" onClick={handleSave}>
+                <div className={styles['form-actions']}>
+                    <button className={styles['boton-guardar-rutina']} onClick={handleSave}>
                         Guardar
                     </button>
-                    <button className="boton-cancelar" onClick={handleCancel}>
+                    <button className={styles['boton-cancelar']} onClick={handleCancel}>
                         Cancelar
                     </button>
                 </div>

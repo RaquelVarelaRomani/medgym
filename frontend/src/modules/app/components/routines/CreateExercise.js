@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./CreateExercise.css";
+import styles from "./CreateExercise.module.css";
 import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
@@ -76,19 +76,19 @@ const CreateExercise = () => {
     if (loading) return <div>Cargando...</div>;
 
     return (
-        <div className="contenedor-create-exercise">
-            <div className="header-crear-ejercicio">
+        <div className={styles['contenedor-create-exercise']}>
+            <div className={styles['header-crear-ejercicio']}>
                 <h2>Estás creando un nuevo ejercicio...</h2>
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Foto de perfil"
-                    className="foto-perfil"
+                    className={styles['foto-perfil']}
                     onClick={() => navigate("/users/profile")}
                 />
             </div>
 
-            <div className="form-crear-ejercicio">
-                <div className="form-div">
+            <div className={styles['form-crear-ejercicio']}>
+                <div className={styles['form-div']}>
                     <label htmlFor="name">Nombre:</label>
                     <input
                         type="text"
@@ -97,12 +97,12 @@ const CreateExercise = () => {
                         placeholder="Escriba aquí el nombre del ejercicio..."
                         value={exerciseData.name}
                         onChange={handleChange}
-                        className={titleError ? "input-error" : ""}
+                        className={titleError ? styles['input-error'] : ""}
                     />
-                    {titleError && <span className="error-message">{titleError}</span>}
+                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label htmlFor="description">Descripción:</label>
                     <textarea
                         id="description"
@@ -114,13 +114,13 @@ const CreateExercise = () => {
                     />
                 </div>
 
-                {error && <div className="error-message">{error}</div>}
+                {error && <div className={styles['error-message']}>{error}</div>}
 
-                <div className="form-actions">
-                    <button className="boton-guardar" onClick={handleSave}>
+                <div className={styles['form-actions']}>
+                    <button className={styles['boton-guardar']} onClick={handleSave}>
                         Guardar
                     </button>
-                    <button className="boton-cancelar" onClick={handleCancel}>
+                    <button className={styles['boton-cancelar']} onClick={handleCancel}>
                         Cancelar
                     </button>
                 </div>

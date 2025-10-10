@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Cropper from "react-easy-crop";
-import "./CropModal.css";
+import styles from "./CropModal.module.css";
 
 const CropModal = ({ imageSrc, onCancel, onSave }) => {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -50,9 +50,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
     };
 
     return (
-        <div className="crop-modal">
-            <div className="crop-box">
-                <div className="crop-container">
+        <div className={styles['crop-modal']}>
+            <div className={styles['crop-box']}>
+                <div className={styles['crop-container']}>
                     <Cropper
                         image={imageSrc}
                         crop={crop}
@@ -64,7 +64,7 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                     />
                 </div>
 
-                <div className="zoom-control">
+                <div className={styles['zoom-control']}>
                     <label>Zoom</label>
                     <input
                         type="range"
@@ -76,9 +76,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                     />
                 </div>
 
-                <div className="crop-actions">
-                    <button className="cancel-btn" onClick={onCancel}>Cancelar</button>
-                    <button className="save-btn" onClick={handleSave}>Guardar</button>
+                <div className={styles['crop-actions']}>
+                    <button className={styles['cancel-btn']} onClick={onCancel}>Cancelar</button>
+                    <button className={styles['save-btn']} onClick={handleSave}>Guardar</button>
                 </div>
             </div>
         </div>
