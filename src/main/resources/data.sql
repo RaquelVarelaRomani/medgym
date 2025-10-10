@@ -55,3 +55,48 @@ INSERT INTO routine_exercises (routine_id, exercise_id, position) VALUES
 -- Rutina 4: yoga relajación
 INSERT INTO routine_exercises (routine_id, exercise_id, position) VALUES
     (4, 4, 1);
+
+INSERT INTO workouts (start_time, end_time, routine_id, user_id) VALUES
+    -- Carlos (entrenador id=1) probando su rutina
+    ('2025-09-15 08:00:00', '2025-09-15 09:00:00', 1, 1),
+    ('2025-09-18 08:00:00', '2025-09-18 09:05:00', 1, 1),
+
+    -- Laura (cliente id=2) siguiendo rutina de fuerza inicial
+    ('2025-09-20 19:30:00', '2025-09-20 20:10:00', 1, 2),
+    ('2025-09-22 19:00:00', '2025-09-22 19:50:00', 1, 2),
+
+    -- Miguel (cliente id=3) haciendo cardio avanzado
+    ('2025-09-19 07:30:00', '2025-09-19 08:10:00', 2, 3),
+    ('2025-09-21 07:45:00', '2025-09-21 08:20:00', 2, 3),
+    ('2025-10-01 07:30:00', NULL, 2, 3), -- sesión en curso
+
+    -- Sofía (entrenadora id=4) probando su rutina de yoga
+    ('2025-09-25 18:00:00', '2025-09-25 18:45:00', 4, 4),
+
+    -- Ana (admin id=5) probando rutina de cuerpo completo
+    ('2025-09-23 09:00:00', '2025-09-23 09:50:00', 3, 5),
+    ('2025-10-02 09:15:00', NULL, 3, 5), -- aún no finalizada
+
+    -- Laura (cliente) probando rutina de yoga de Sofía
+    ('2025-10-05 21:00:00', NULL, 4, 2),
+
+    -- Miguel (cliente) probando rutina privada de Carlos
+    ('2025-10-03 18:00:00', '2025-10-03 19:00:00', 5, 3),
+
+    -- Entrenamiento antiguo de prueba
+    ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2);
+
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id) VALUES
+    (12, 60, 45, 1, 3),
+    (10, 50, 40, 1, 4),
+    (8, 70, 55, 2, 2),
+    (15, 30, 35, 2, 1),
+    (10, 40, 30, 3, 5),
+    (20, 25, 25, 3, 6),
+    (6, 80, 60, 4, 7),
+    (12, 55, 42, 4, 8),
+    (10, 65, 50, 4, 9),
+    (8, 75, 48, 5, 10),
+    (14, 35, 33, 5, 1),
+    (10, 45, 38, 2, 6),
+    (9, 50, 52, 3, 2);

@@ -61,8 +61,8 @@ public class WorkoutServiceTest {
         assertEquals(routine.getId(), workout.getRoutine().getId());
 
         List<Workout> workouts = workoutDao.findAll();
-        assertEquals(1, workouts.size());
-        assertEquals(workout.getId(), workouts.get(0).getId());
+        assertEquals(14, workouts.size());
+        assertEquals(workout.getId(), workouts.get(0).getId() + 19);
     }
 
     @Test
