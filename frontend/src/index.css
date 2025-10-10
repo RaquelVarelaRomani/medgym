@@ -17,9 +17,15 @@ body {
   --neon-orange-bright: #ff8c5a;
   --neon-orange-dark: #e85a2a;
   --neon-orange-glow: rgba(255, 107, 53, 0.5);
+
+  /* other colors */
   --accent-yellow: #ffa500;
+  --accent-yellow-glow: rgba(255, 165, 0, 0.5);
   --accent-red: #ff4757;
+  --accent-red-glow: rgba(255, 71, 87, 0.5);
   --accent-red-dark: #c82333;
+  --accent-green: #88B625;
+  --accent-green-glow: rgba(136, 182, 37, 0.5);
 
   /* text colors */
   --text-primary: #ffffff;

@@ -16,6 +16,7 @@ import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
 import Layout from "./Layout";
+import UserModeration from "./users/UserModeration";
 
 const Body = () => {
     return (
@@ -35,6 +36,7 @@ const Body = () => {
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
+                    <Route path="users/moderation" element={<Layout><UserModeration /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

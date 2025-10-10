@@ -37,6 +37,10 @@ const Header = () => {
         };
     }, []);
 
+    const isAdmin = () => {
+        return profile?.role === 'ADMIN';
+    };
+
     const handleProfileClick = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
@@ -83,6 +87,16 @@ const Header = () => {
                     >
                         Ejercicios
                     </Link>
+                    {isAdmin() && (
+                        <Link
+                            to="/users/moderation"
+                            className={location.pathname.includes('/users/moderation')
+                                ? `${styles['nav-link']} ${styles['admin-link']} ${styles['active']}`
+                                : `${styles['nav-link']} ${styles['admin-link']}`}
+                        >
+                            Moderación
+                        </Link>
+                    )}
                 </nav>
 
                 {/* right section - profile */}
