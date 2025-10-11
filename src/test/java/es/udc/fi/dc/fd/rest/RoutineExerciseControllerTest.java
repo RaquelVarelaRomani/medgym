@@ -88,7 +88,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Exercise createExercise(String name, User user) {
-        return exerciseDao.save(new Exercise(name, name + " description", ExerciseStatus.PENDING, user));
+        return exerciseDao.save(new Exercise(name, name + " description", "General", "Ninguno", new byte[]{1,2,3}, ExerciseStatus.PENDING, user));
     }
 
     private Routine createRoutine(String name, User user) {

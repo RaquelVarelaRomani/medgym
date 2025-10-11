@@ -15,21 +15,23 @@ INSERT INTO routines (name, description, trainer_id, visibility) VALUES
     ('Rutina privada Carlos', 'Rutina privada de fuerza avanzada para clientes premium. Incluye ejercicios intensos de fuerza.', 1, 1);
 
 -- Insertar ejercicios
-INSERT INTO exercises (name, description, creator_id, status) VALUES
-    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 1, 'APPROVED'),
-    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 4, 'APPROVED'),
-    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 1, 'APPROVED'),
-    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 4, 'APPROVED'),
-    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 1, 'APPROVED'),
-    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 4, 'APPROVED'),
-    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 1, 'APPROVED'),
-    ('Press banca', 'Ejercicio de fuerza para el pecho.', 4, 'APPROVED'),
-    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 1, 'APPROVED'),
-    ('Mountain climbers', 'Ejercicio de cardio y core.', 4, 'APPROVED'),
-    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 1, 'PENDING'),
-    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 1, 'REJECTED'),
-    ('Elevaciones laterales', 'Ejercicio para hombros.', 4, 'PENDING'),
-    ('Remo con mancuerna', 'Ejercicio para espalda.', 4, 'REJECTED');
+-- Insertar ejercicios (con nuevos campos muscle_group, equipment, image)
+INSERT INTO exercises (name, description, muscle_group, equipment, image, creator_id, status) VALUES
+    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'Piernas', 'Ninguno', NULL, 1, 'APPROVED'),
+    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'Pectorales', 'Ninguno', NULL, 4, 'APPROVED'),
+    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'Full body', 'Ninguno', NULL, 1, 'APPROVED'),
+    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'Core', 'Esterilla', NULL, 4, 'APPROVED'),
+    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'Piernas', 'Ninguno', NULL, 1, 'APPROVED'),
+    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'Full body', 'Comba', NULL, 4, 'APPROVED'),
+    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'Espalda', 'Barra', NULL, 1, 'APPROVED'),
+    ('Press banca', 'Ejercicio de fuerza para el pecho.', 'Pectorales', 'Banco y barra', NULL, 4, 'APPROVED'),
+    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'Espalda', 'Barra de dominadas', NULL, 1, 'APPROVED'),
+    ('Mountain climbers', 'Ejercicio de cardio y core.', 'Core', 'Ninguno', NULL, 4, 'APPROVED'),
+    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 'Bíceps', 'Mancuernas', NULL, 1, 'PENDING'),
+    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 'Tríceps', 'Polea', NULL, 1, 'REJECTED'),
+    ('Elevaciones laterales', 'Ejercicio para hombros.', 'Hombros', 'Mancuernas', NULL, 4, 'PENDING'),
+    ('Remo con mancuerna', 'Ejercicio para espalda.', 'Espalda', 'Mancuerna', NULL, 4, 'REJECTED');
+
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial
