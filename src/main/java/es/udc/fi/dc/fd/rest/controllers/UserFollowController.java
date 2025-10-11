@@ -5,10 +5,11 @@ import static es.udc.fi.dc.fd.rest.dtos.UserFollowConversor.toUserFollowDto;
 import es.udc.fi.dc.fd.model.services.UserFollowService;
 import es.udc.fi.dc.fd.rest.dtos.UserFollowDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/follow/coach")
+@RequestMapping("/api/follow/trainer")
 public class UserFollowController {
     @Autowired
     private UserFollowService userFollowService;
@@ -19,6 +20,7 @@ public class UserFollowController {
     }
 
     @DeleteMapping("/{trainerId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unfollowTrainer(@PathVariable Long trainerId, @RequestAttribute Long userId) throws InstanceNotFoundException {
         userFollowService.unfollowTrainer(userId, trainerId);
     }
