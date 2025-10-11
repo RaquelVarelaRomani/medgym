@@ -8,10 +8,12 @@ import es.udc.fi.dc.fd.model.entities.UserFollowDao;
 import es.udc.fi.dc.fd.model.services.exceptions.FollowException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserFollowImpl implements UserFollowService {
     @Autowired
     private UserFollowDao userFollowDao;

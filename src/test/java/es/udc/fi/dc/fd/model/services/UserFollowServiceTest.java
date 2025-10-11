@@ -2,12 +2,23 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.UserFollow;
+import es.udc.fi.dc.fd.model.entities.UserFollowDao;
+import es.udc.fi.dc.fd.model.services.exceptions.FollowException;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import jakarta.transaction.Transactional;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -15,14 +26,60 @@ public class UserFollowServiceTest {
     @Autowired
     private UserFollowService userFollowService;
     @Autowired
-    private UserService userService;
+    private UserDao userDao;
+    @Autowired
+    private UserFollowDao userFollowDao;
+
+    private User createTrainer(){
+        User trainer = new User("Pepe", "Domingo", "hola@emeail.com",
+                "666555444", "password", null, User.RoleType.TRAINER);
+        return userDao.save(trainer);
+    }
+
+    private User createUser(){
+        User trainer = new User("Pepe", "Domingo", "hola2@emeail.com",
+                "666585444", "password", null, User.RoleType.CLIENT);
+        return userDao.save(trainer);
+    }
 
     @Test
-    public void testFollowTrainer() throws InstanceNotFoundException {
-        User trainer = userService.loginFromId(0L);
-        User user = userService.loginFromId(1L);
-        System.out.println(trainer);
-        System.out.println(user);
+    public void testFollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+        User user = createUser();
+        User trainer = createTrainer();
 
+        UserFollow userFollow = userFollowService.followTrainer(user.getId(), trainer.getId());
+        UserFollow userFollow1 = userFollowDao.findByUserAndTrainer(user, trainer).get();
+
+        assertEquals(userFollow1, userFollow);
+    }
+
+    @Test
+    public void testFollowClient() throws InstanceNotFoundException, IncorrectLoginException {
+        User user = createUser();
+
+        assertThrows(FollowException.class, () -> {
+            userFollowService.followTrainer(user.getId(), user.getId());
+        });
+    }
+
+    @Test
+    public void testUnfollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+        User user = createUser();
+        User trainer = createTrainer();
+
+        userFollowService.followTrainer(user.getId(), trainer.getId());
+        userFollowService.unfollowTrainer(user.getId(), trainer.getId());
+
+        assertFalse(userFollowDao.existsByUserAndTrainer(user, trainer));
+    }
+
+    @Test
+    public void testUnfollowedTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+        User user = createUser();
+        User trainer = createTrainer();
+
+        assertThrows(FollowException.class, () -> {
+            userFollowService.unfollowTrainer(user.getId(), trainer.getId());
+        });
     }
 }
