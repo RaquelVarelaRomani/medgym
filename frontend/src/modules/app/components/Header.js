@@ -2,13 +2,18 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
+import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
+import NotificationIcon from "./common/NotificationIcon";
+import NotificationPopup from "./common/NotificationPopup";
 
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [notifications, setNotifications] = useState([]);
     const dropdownComponent = useRef(null);
 
     useEffect(() => {
@@ -36,6 +41,15 @@ const Header = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    useEffect(() => {
+        if (!profile) return;
+
+        getUserNotifications(
+            (data) => setNotifications(data),
+            (error) => console.error("Error loading notifications:", error)
+        );
+    }, [profile]);
 
     const handleProfileClick = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -87,6 +101,16 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
+                    <div className={styles['notification-wrapper']}>
+                        <NotificationIcon onClick={() => setShowNotifications(prev => !prev)} />
+                        {showNotifications && (
+                            <NotificationPopup
+                                notifications={notifications}
+                                onClose={() => setShowNotifications(false)}
+                            />
+                        )}
+                    </div>
+
                     <div className={styles['profile-dropdown']}>
                         <button
                             className={styles['profile-button']}
@@ -100,7 +124,6 @@ const Header = () => {
                                 />
                             </div>
                         </button>
-
                         {isDropdownOpen && (
                             <div className={styles['dropdown-menu']}>
                                 <button

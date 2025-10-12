@@ -1,15 +1,22 @@
 package es.udc.fi.dc.fd.rest.controllers;
 
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.NotificationService;
+import es.udc.fi.dc.fd.model.services.RoutineService;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.NotificationDto;
+import es.udc.fi.dc.fd.rest.dtos.NotificationParamsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import static es.udc.fi.dc.fd.rest.dtos.NotificationConversor.toNotificationDto;
 import static es.udc.fi.dc.fd.rest.dtos.NotificationConversor.toNotificationDtos;
 
 @RestController
@@ -17,6 +24,14 @@ import static es.udc.fi.dc.fd.rest.dtos.NotificationConversor.toNotificationDtos
 public class NotificationController {
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private RoutineService routineService;
+
+    @PostMapping
+    public void createNotification(@RequestAttribute Long userId, @RequestBody NotificationParamsDto notificationParamsDto) throws PermissionException, InstanceNotFoundException {
+        notificationService.createNotification(routineService.findRoutineById(userId, notificationParamsDto.getRoutineId()));
+    }
 
     @GetMapping
     public List<NotificationDto> getUserNotifications(@RequestAttribute Long userId) {

@@ -77,6 +77,28 @@ public class NotificationControllerTest {
     }
 
     @Test
+    public void testCreateNotification() throws Exception {
+        // Preparar datos: crear trainer, client, rutina
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Routine routine = routineService.createRoutine(
+                "Rutina prueba", "Descripción", trainer, Routine.VisibilityType.PUBLIC);
+
+        // Construir body del request
+        String jsonBody = """
+        {
+          "routineId": %d
+        }
+        """.formatted(routine.getId());
+
+        // Ejecutar POST
+        mockMvc.perform(post("/api/notifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void testGetNotifications() throws Exception {
         User client = userDao.findById(clientUser.getUserDto().getId()).get();
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
