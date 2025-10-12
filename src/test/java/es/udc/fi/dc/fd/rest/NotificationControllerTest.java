@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.NotificationService;
 import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
 import es.udc.fi.dc.fd.model.services.RoutineService;
 import es.udc.fi.dc.fd.model.services.UserFollowService;
@@ -9,6 +10,7 @@ import es.udc.fi.dc.fd.rest.controllers.NotificationController;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.NotificationDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +51,9 @@ public class NotificationControllerTest {
 
     @Autowired
     private UserFollowService userFollowService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
@@ -110,4 +114,68 @@ public class NotificationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
+
+    @Test
+    public void testMarkNotificationAsRead() throws Exception {
+        // Preparar trainer y client
+        User client = userDao.findById(clientUser.getUserDto().getId()).get();
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        userFollowService.followTrainer(client.getId(), trainer.getId());
+
+        // Crear rutina pública (genera notificación)
+        routineService.createRoutine("Rutina lectura", "Desc", trainer, Routine.VisibilityType.PUBLIC);
+
+        // Obtener ID de la notificación directamente desde el servicio
+        Long notificationId = notificationService
+                .getNotificationsByUser(client.getId())
+                .get(0)
+                .getId();
+
+        // Ejecutar PUT para marcar como leída
+        mockMvc.perform(put("/api/notifications/" + notificationId + "/read")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        // Verificar que ahora está marcada como leída
+        mockMvc.perform(get("/api/notifications")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].isRead").value(true));
+    }
+
+    @Test
+    public void testDeleteNotification() throws Exception {
+        // Preparar trainer y client
+        User client = userDao.findById(clientUser.getUserDto().getId()).get();
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+
+        // Seguir al trainer y crear una rutina pública (genera notificación)
+        userFollowService.followTrainer(client.getId(), trainer.getId());
+        routineService.createRoutine("Rutina eliminar", "Descripción", trainer, Routine.VisibilityType.PUBLIC);
+
+        // Obtener ID de la notificación generada
+        Long notificationId = notificationService
+                .getNotificationsByUser(client.getId())
+                .get(0)
+                .getId();
+
+        // Confirmar que existe una notificación
+        mockMvc.perform(get("/api/notifications")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
+        // Ejecutar DELETE
+        mockMvc.perform(delete("/api/notifications/" + notificationId)
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk());
+
+        // Verificar que ya no hay notificaciones
+        mockMvc.perform(get("/api/notifications")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
 }

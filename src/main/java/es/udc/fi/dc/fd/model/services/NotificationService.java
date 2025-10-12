@@ -10,4 +10,6 @@ import java.util.List;
 public interface NotificationService {
     void createNotification(Routine routine) throws InstanceNotFoundException;
     List<Notification> getNotificationsByUser(Long userId);
+    void markNotificationAsRead(Long notificationId);
+    void deleteNotification(Long notificationId);
 }

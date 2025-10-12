@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
+import {markNotificationAsRead} from "../../../backend/notificationService";
 import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/NotificationIcon";
@@ -15,6 +16,10 @@ const Header = () => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const dropdownComponent = useRef(null);
+
+    const handleToggleNotifications = () => {
+        setShowNotifications(prev => !prev);
+    };
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -50,6 +55,13 @@ const Header = () => {
             (error) => console.error("Error loading notifications:", error)
         );
     }, [profile]);
+
+    const refreshNotifications = () => {
+        getUserNotifications(
+            (data) => setNotifications(data),
+            (error) => console.error("Error loading notifications:", error)
+        );
+    };
 
     const handleProfileClick = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -102,11 +114,21 @@ const Header = () => {
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
                     <div className={styles['notification-wrapper']}>
-                        <NotificationIcon onClick={() => setShowNotifications(prev => !prev)} />
+                        <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />
                         {showNotifications && (
                             <NotificationPopup
                                 notifications={notifications}
                                 onClose={() => setShowNotifications(false)}
+                                onNotificationRead={(id, action) => {
+                                    if (action === "delete") {
+                                        setNotifications(prev => prev.filter(n => n.id !== id));
+                                    } else if (action === "read") {
+                                        setNotifications(prev =>
+                                            prev.map(n => n.id === id ? { ...n, isRead: true } : n)
+                                        );
+                                    }
+                                    refreshNotifications();
+                                }}
                             />
                         )}
                     </div>

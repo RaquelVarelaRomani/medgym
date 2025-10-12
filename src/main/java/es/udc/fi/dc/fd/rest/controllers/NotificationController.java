@@ -7,12 +7,7 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.NotificationDto;
 import es.udc.fi.dc.fd.rest.dtos.NotificationParamsDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,5 +31,15 @@ public class NotificationController {
     @GetMapping
     public List<NotificationDto> getUserNotifications(@RequestAttribute Long userId) {
         return toNotificationDtos(notificationService.getNotificationsByUser(userId));
+    }
+
+    @PutMapping("/{id}/read")
+    public void markNotificationAsRead(@PathVariable Long id) {
+        notificationService.markNotificationAsRead(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteNotification(@PathVariable Long id) {
+        notificationService.deleteNotification(id);
     }
 }

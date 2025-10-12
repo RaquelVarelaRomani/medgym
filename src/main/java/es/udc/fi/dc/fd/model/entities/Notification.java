@@ -50,11 +50,10 @@ public class Notification {
         this.user = user;
     }
 
-    @Column(name = "is_read")
-    public boolean isRead() {
+    public boolean getIsRead() {
         return isRead;
     }
-    public void setRead(boolean read) {
+    public void setIsRead(boolean read) {
         isRead = read;
     }
 

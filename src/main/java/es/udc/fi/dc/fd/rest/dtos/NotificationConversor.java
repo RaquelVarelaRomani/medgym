@@ -9,10 +9,18 @@ public class NotificationConversor {
     private NotificationConversor() {}
 
     public static NotificationDto toNotificationDto(Notification notification) {
-        NotificationDto notificationDto = new NotificationDto();
-        notificationDto.setId(notification.getId());
-        notificationDto.setTime(notification.getDate());
+
+
+        NotificationDto notificationDto = new NotificationDto(
+                notification.getId(),
+                notification.getRoutine().getId(),
+                notification.getUser().getId(),
+                notification.getIsRead(),
+                notification.getDate(),
+                null);
+
         notificationDto.setMessage(notification.getRoutine().getName(), notification.getRoutine().getDescription());
+
         return notificationDto;
     }
 

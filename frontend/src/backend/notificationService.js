@@ -13,3 +13,17 @@ export const getUserNotifications = (onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 )
+
+export const markNotificationAsRead = (notificationId, onSuccess, onErrors) => appFetch(
+    `/notifications/${notificationId}/read`,
+    fetchConfig("PUT"),
+    onSuccess,
+    onErrors
+)
+
+export const deleteNotification = (notificationId, onSuccess, onErrors) => appFetch(
+    `/notifications/${notificationId}`,
+    fetchConfig("DELETE"),
+    onSuccess,
+    onErrors
+)

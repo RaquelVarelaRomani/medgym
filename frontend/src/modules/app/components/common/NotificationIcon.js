@@ -2,15 +2,15 @@ import React, { useEffect, useState } from "react";
 import styles from "./NotificationIcon.module.css";
 import * as notificationService from "../../../../backend/notificationService";
 
-const NotificationIcon = ({ onClick }) => {
+const NotificationIcon = ({ onClick, refreshTrigger }) => {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
         notificationService.getUserNotifications(
-            (data) => setCount(data.length),
+            (data) => setCount(data.filter(n => !n.isRead).length),
             (error) => console.error("Error loading notifications:", error)
         );
-    }, []);
+    }, [refreshTrigger]);
 
     return (
         <button className={styles['notification-button']} onClick={onClick}>
