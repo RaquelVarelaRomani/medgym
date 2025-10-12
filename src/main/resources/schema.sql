@@ -3,7 +3,9 @@ DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
+DROP TABLE IF EXISTS user_follow;
 DROP TABLE IF EXISTS users;
+
 
 CREATE TABLE users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -103,4 +105,14 @@ CREATE TABLE workout_exercises (
         REFERENCES routine_exercises(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+);
+
+CREATE TABLE user_follow (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    client_id BIGINT NOT NULL,
+    trainer_id BIGINT NOT NULL,
+    CONSTRAINT fk_user_follow_client FOREIGN KEY (client_id) REFERENCES users(id)
+         ON DELETE CASCADE,
+    CONSTRAINT fk_user_follow_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
+         ON DELETE CASCADE
 );
