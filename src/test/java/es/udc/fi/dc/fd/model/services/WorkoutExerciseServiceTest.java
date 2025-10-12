@@ -52,11 +52,11 @@ public class WorkoutExerciseServiceTest {
     @BeforeEach
     void setUp() {
         // Crear entrenador
-        trainer = new User("Carlos", "Gómez", "trainer@example.com", "602111222", "1234", null, RoleType.TRAINER);
+        trainer = new User("Carlos", "Gómez", "trainer@example.com", "602111222", "1234", null, RoleType.TRAINER, User.StatusType.ACTIVE);
         trainer = userDao.save(trainer);
 
         // Crear cliente
-        client = new User("Laura", "Martínez", "client@example.com", "600343444", "1234", null, RoleType.CLIENT);
+        client = new User("Laura", "Martínez", "client@example.com", "600343444", "1234", null, RoleType.CLIENT, User.StatusType.ACTIVE);
         client = userDao.save(client);
 
         // Crear rutina

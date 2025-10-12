@@ -29,7 +29,7 @@ public class ExerciseServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com", null, RoleType.CLIENT);
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(user);
     }
 
@@ -203,7 +203,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindAllExercises() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = new User("admin", "password", "name", "lastName", "admin@test.com", null, RoleType.ADMIN);
+        User user = new User("admin", "password", "name", "lastName", "admin@test.com", null, RoleType.ADMIN, User.StatusType.ACTIVE);
         user = userDao.save(user);
         exerciseService.createExercise("exercise1", "description1", user);
         exerciseService.createExercise("exercise2", "description2", user);

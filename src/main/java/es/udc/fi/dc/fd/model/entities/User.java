@@ -34,7 +34,7 @@ public class User {
 	public User() {
 	}
 
-	public User(String name, String surname, String email, String phoneNumber, String password, byte[] profilePicture, RoleType role) {
+	public User(String name, String surname, String email, String phoneNumber, String password, byte[] profilePicture, RoleType role, StatusType status) {
 		this.name = name;
 		this.surname = surname;
 		this.email = email;
@@ -42,7 +42,7 @@ public class User {
 		this.password = password;
 		this.profilePicture = profilePicture;
 		this.role = role;
-		this.status = StatusType.ACTIVE;
+		this.status = status;
 	}
 
 	@Id

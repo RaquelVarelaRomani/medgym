@@ -26,7 +26,7 @@ public class UserConversor {
 	}
 
 	public static final User toUser(UserDto userDto) {
-		return new User(userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPhoneNumber(), userDto.getPassword(), userDto.getProfilePicture(), RoleType.valueOf(userDto.getRole()));
+		return new User(userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPhoneNumber(), userDto.getPassword(), userDto.getProfilePicture(), RoleType.valueOf(userDto.getRole()), User.StatusType.valueOf(userDto.getStatus()));
 	}
 
 	public static final AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
