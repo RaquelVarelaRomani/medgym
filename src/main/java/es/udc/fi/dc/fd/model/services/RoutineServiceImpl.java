@@ -35,7 +35,9 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         Routine routine = routineDao.save(new Routine(name, description, visibility, trainer));
-        notificationService.createNotification(routine);
+        if (!routine.isPrivate()){
+            notificationService.createNotification(routine);
+        }
         return routine;
     }
 

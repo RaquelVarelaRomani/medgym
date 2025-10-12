@@ -9,7 +9,6 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String message;
     @ManyToOne
     @JoinColumn(name = "routine_id")
     private Routine routine;
@@ -21,8 +20,7 @@ public class Notification {
 
     public Notification() {}
 
-    public Notification(String message, Routine routine, User user, boolean isRead, LocalDateTime date) {
-        this.message = message;
+    public Notification(Routine routine, User user, boolean isRead, LocalDateTime date) {
         this.routine = routine;
         this.user = user;
         this.isRead = isRead;
@@ -35,14 +33,6 @@ public class Notification {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public Routine getRoutine() {

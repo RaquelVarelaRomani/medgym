@@ -19,15 +19,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private UserService userService;
 
-    private static final String MESSAGE = "New routine";
-
     @Override
     public void createNotification(Routine routine) throws InstanceNotFoundException {
         User trainer = userService.findUserById(routine.getTrainer().getId());
         List<UserFollow> userFollows = userFollowService.getFollowers(routine.getTrainer().getId());
 
         for (UserFollow userFollow : userFollows) {
-            notificationDao.save(new Notification(MESSAGE,routine, userFollow.getUser(), false,
+            notificationDao.save(new Notification(routine, userFollow.getUser(), false,
                     LocalDateTime.now().withNano(0)));
         }
     }

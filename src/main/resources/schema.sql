@@ -121,7 +121,6 @@ CREATE TABLE user_follow (
 
 CREATE TABLE notification (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    message VARCHAR(255) NOT NULL,
     routine_id BIGINT,
     user_id BIGINT NOT NULL,
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
