@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class UserFollowImpl implements UserFollowService {
+public class UserFollowServiceImpl implements UserFollowService {
     @Autowired
     private UserFollowDao userFollowDao;
     @Autowired

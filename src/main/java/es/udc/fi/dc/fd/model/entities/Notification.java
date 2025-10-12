@@ -5,15 +5,11 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "notifications")
 public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "routine_id")
     private Routine routine;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
     private User user;
     private boolean isRead;
     private LocalDateTime date;
@@ -27,26 +23,37 @@ public class Notification {
         this.date = date;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "routine_id")
     public Routine getRoutine() {
         return routine;
     }
-
     public void setRoutine(Routine routine) {
         this.routine = routine;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    public User getUser() {
+        return user;
+    }
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Column(name = "is_read")
     public boolean isRead() {
         return isRead;
     }
-
     public void setRead(boolean read) {
         isRead = read;
     }
@@ -54,16 +61,8 @@ public class Notification {
     public LocalDateTime getDate() {
         return date;
     }
-
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
