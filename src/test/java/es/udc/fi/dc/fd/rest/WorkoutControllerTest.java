@@ -163,6 +163,34 @@ public class WorkoutControllerTest {
     }
 
     @Test
+    public void testGetWorkoutByIdExists() throws Exception {
+        // Arrange: crear un workout real
+        ResultActions startAction = startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
+        String json = startAction.andReturn().getResponse().getContentAsString();
+        WorkoutDto createdWorkout = objectMapper.readValue(json, WorkoutDto.class);
+
+        // Act & Assert: obtener el workout por id
+        mockMvc.perform(get("/api/workouts/" + createdWorkout.getId())
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .header("X-User-Id", trainerUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(createdWorkout.getId().intValue()))
+                .andExpect(jsonPath("$.routineId").value(routine.getId().intValue()))
+                .andExpect(jsonPath("$.endTime").doesNotExist())
+                .andExpect(jsonPath("$.startTime").exists());
+    }
+
+    @Test
+    public void testGetWorkoutByIdNotFound() throws Exception {
+        // Act & Assert: id inexistente debe devolver 404
+        mockMvc.perform(get("/api/workouts/999")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .header("X-User-Id", trainerUser.getUserDto().getId()))
+                .andExpect(status().isNotFound());
+    }
+
+
+    @Test
     public void testGetWorkoutsEmpty() throws Exception {
         getUserWorkouts(trainerUser)
                 .andExpect(status().isOk())

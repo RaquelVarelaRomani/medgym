@@ -28,6 +28,11 @@ public class WorkoutController {
         workoutService.finishWorkout(id);
     }
 
+    @GetMapping("/{id}")
+    public WorkoutDto getWorkout(@PathVariable Long id) throws InstanceNotFoundException {
+        return toWorkoutDto(workoutService.findWorkoutById(id));
+    }
+
     @GetMapping
     public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));

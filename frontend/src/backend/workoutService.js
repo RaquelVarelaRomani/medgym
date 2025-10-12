@@ -17,6 +17,13 @@ export const finishWorkout = (workoutId, onSuccess, onErrors) => appFetch(
     onErrors
 )
 
+export const getWorkout = (workoutId, onSuccess, onErrors) => appFetch(
+    `/workouts/${workoutId}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
+
 export const getWorkouts = (onSuccess, onErrors) => appFetch(
     `/workouts`,
     fetchConfig("GET"),
