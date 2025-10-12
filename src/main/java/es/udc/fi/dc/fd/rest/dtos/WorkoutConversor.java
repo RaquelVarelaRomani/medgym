@@ -1,8 +1,8 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import es.udc.fi.dc.fd.model.entities.Workout;
-
 import java.util.List;
+
+import es.udc.fi.dc.fd.model.entities.Workout;
 
 public class WorkoutConversor {
 
@@ -10,7 +10,7 @@ public class WorkoutConversor {
     }
 
     public static WorkoutDto toWorkoutDto(Workout workout) {
-        return new WorkoutDto(workout.getId(), workout.getStartTime(), workout.getEndTime(), workout.getRoutine().getId(), workout.getUser().getId());
+        return new WorkoutDto(workout.getId(), workout.getStartTime(), workout.getEndTime(), workout.getRoutine().getId(), workout.getRoutine().getName(), workout.getUser().getId());
     }
 
     public static List<WorkoutDto> toWorkoutDtos(List<Workout> workouts) {

@@ -1,8 +1,8 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotNull;
 
 public class WorkoutDto {
 
@@ -12,16 +12,18 @@ public class WorkoutDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Long routineId;
+    private String routineName;
     private Long userId;
 
     public WorkoutDto() {
     }
 
-    public WorkoutDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, Long userId) {
+    public WorkoutDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.routineId = routineId;
+        this.routineName = routineName;
         this.userId = userId;
     }
 
@@ -52,6 +54,13 @@ public class WorkoutDto {
     }
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
+    }
+
+    public String getRoutineName() {
+        return routineName;
+    }
+    public void setRoutineName(String routineName) {
+        this.routineName = routineName;
     }
 
     public Long getUserId() {
