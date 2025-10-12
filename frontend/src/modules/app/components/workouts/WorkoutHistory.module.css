@@ -1,0 +1,306 @@
+/* main container */
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    background: var(--bg-primary) !important;
+    box-sizing: border-box;
+}
+
+.history-titulo-grande {
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 2rem;
+    padding-left: 0;
+}
+
+.history-titulo-grande h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0;
+    letter-spacing: 0.05em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.lista-workouts {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 100px;
+    box-sizing: border-box;
+}
+
+/* workout container */
+.caja-workout {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.caja-workout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.caja-workout:hover {
+    transform: translateY(-8px);
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.5),
+            0 0 40px rgba(255, 107, 53, 0.2),
+            inset 0 0 60px rgba(255, 107, 53, 0.05);
+    background: linear-gradient(
+            135deg,
+            rgba(26, 26, 36, 0.95) 0%,
+            rgba(30, 30, 42, 0.9) 100%
+    );
+}
+
+.caja-workout:hover::before {
+    transform: translateX(100%);
+}
+
+.workout-info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem 0;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.workout-date {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* workout duration */
+.workout-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.duration {
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.1),
+            rgba(255, 107, 53, 0.05)
+    );
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    padding: 0.5rem 1.25rem;
+    border-radius: 24px;
+    color: var(--neon-orange);
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.caja-workout:hover .duration {
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.2),
+            rgba(255, 107, 53, 0.1)
+    );
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.in-progress {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+/* empty page */
+.empty-message {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    margin: 0 auto;
+}
+
+.empty-message p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.start-button {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.start-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.6),
+            0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+.start-button:hover::before {
+    left: 100%;
+}
+
+.start-button:active {
+    transform: translateY(0);
+}
+
+/* loading section */
+.loading-message {
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* error section */
+.error-message {
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+    padding: 2rem;
+    color: var(--accent-red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(255, 71, 87, 0.05);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    border-radius: 16px;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.retry-button {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.retry-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.retry-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.6),
+            0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+.retry-button:hover::before {
+    left: 100%;
+}

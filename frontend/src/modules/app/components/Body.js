@@ -16,6 +16,7 @@ import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
 import Layout from "./Layout";
+import WorkoutHistory from "./workouts/WorkoutHistory";
 
 const Body = () => {
     return (
@@ -27,14 +28,15 @@ const Body = () => {
                     <Route path="users/login" element={<Login />} />
                 </Route>
                 <Route element={<RequiresLogin />}>
+                    <Route path="exercises" element={<Layout><Exercises /></Layout>} />
                     <Route path="routines" element={<Layout><Routines /></Layout>} />
                     <Route path="routines/new" element={<Layout><CreateRoutine /></Layout>} />
                     <Route path="routines/edit/:id" element={<Layout><EditRoutine /></Layout>} />
                     <Route path="routines/:id" element={<Layout><RoutineDetails /></Layout>} />
-                    <Route path="exercises" element={<Layout><Exercises /></Layout>} />
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
+                    <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>
