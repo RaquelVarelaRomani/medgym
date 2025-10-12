@@ -34,25 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class NotificationControllerTest {
     @Autowired
-    private NotificationController notificationController;
-
-    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private UserDao userDao;
 
     @Autowired
-    private ExerciseDao exerciseDao;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private RoutineService routineService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     private UserController userController;
@@ -94,6 +85,7 @@ public class NotificationControllerTest {
 
         mockMvc.perform(get("/api/notifications")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
     }
 }
