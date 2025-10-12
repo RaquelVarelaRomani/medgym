@@ -38,11 +38,11 @@ public class UserFollow {
         this.user = user;
     }
 
-    public User gettrainer() {
+    public User getTrainer() {
         return trainer;
     }
 
-    public void settrainer(User trainer) {
+    public void setTrainer(User trainer) {
         this.trainer = trainer;
     }
 }

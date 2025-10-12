@@ -77,10 +77,10 @@ public class UserFollowControllerTest {
 
     @Test
     public void testFollowAndUnfollowTrainer() throws Exception {
-        mockMvc.perform(post("/api/follow/trainer/" + trainerUser.getUserDto().getId())
+        mockMvc.perform(post("/api/users/follow/" + trainerUser.getUserDto().getId())
                 .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk());
-        mockMvc.perform(delete("/api/follow/trainer/" + trainerUser.getUserDto().getId())
+        mockMvc.perform(delete("/api/users/follow/" + trainerUser.getUserDto().getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isNoContent());
     }

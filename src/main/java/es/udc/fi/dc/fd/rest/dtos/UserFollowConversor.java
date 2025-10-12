@@ -9,7 +9,7 @@ public class UserFollowConversor {
     private UserFollowConversor() {}
 
     public static UserFollowDto toUserFollowDto(UserFollow userFollow) {
-        return new UserFollowDto(userFollow.getId(), userFollow.getUser().getId(), userFollow.gettrainer().getId());
+        return new UserFollowDto(userFollow.getId(), userFollow.getUser().getId(), userFollow.getTrainer().getId());
     }
 
     public List<UserFollowDto> toUserFollowDto(List<UserFollow> userFollows) {
