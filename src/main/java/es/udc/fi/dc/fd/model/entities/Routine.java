@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.entities;
 
+import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

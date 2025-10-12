@@ -5,6 +5,7 @@ import es.udc.fi.dc.fd.model.entities.User.RoleType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserConversor {
 
@@ -32,6 +33,14 @@ public class UserConversor {
 	public static final AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
 		return new AuthenticatedUserDto(serviceToken, toUserDto(user));
 
+	}
+
+	public static final UserSummaryDto toUserSummaryDto(User user) {
+		return new UserSummaryDto(user.getId(), user.getName());
+	}
+
+	public static final List<UserSummaryDto> toUserSummaryDtos(List<User> users) {
+		return users.stream().map(UserConversor::toUserSummaryDto).collect(Collectors.toList());
 	}
 
 }
