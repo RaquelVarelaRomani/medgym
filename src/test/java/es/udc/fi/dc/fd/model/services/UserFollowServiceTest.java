@@ -82,4 +82,13 @@ public class UserFollowServiceTest {
             userFollowService.unfollowTrainer(user.getId(), trainer.getId());
         });
     }
+
+    @Test
+    public void testFollowTheirself() throws InstanceNotFoundException, IncorrectLoginException {
+        User trainer = createTrainer();
+
+        assertThrows(FollowException.class, () -> {
+            userFollowService.followTrainer(trainer.getId(), trainer.getId());
+        });
+    }
 }

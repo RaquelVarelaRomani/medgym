@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -24,7 +25,7 @@ public class UserFollowImpl implements UserFollowService {
     public UserFollow followTrainer(Long userId, Long trainerId) throws InstanceNotFoundException {
         User trainer = userService.findUserById(trainerId);
 
-        if (trainer.getRole() != User.RoleType.TRAINER){
+        if (trainer.getRole() != User.RoleType.TRAINER || Objects.equals(userId, trainerId)){
             throw new FollowException(trainerId);
         }
 
