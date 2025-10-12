@@ -13,14 +13,18 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "routine_id")
     private Routine routine;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     private boolean isRead;
     private LocalDateTime date;
 
     public Notification() {}
 
-    public Notification(String message, Routine routine, boolean isRead, LocalDateTime date) {
+    public Notification(String message, Routine routine, User user, boolean isRead, LocalDateTime date) {
         this.message = message;
         this.routine = routine;
+        this.user = user;
         this.isRead = isRead;
         this.date = date;
     }
@@ -63,5 +67,13 @@ public class Notification {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

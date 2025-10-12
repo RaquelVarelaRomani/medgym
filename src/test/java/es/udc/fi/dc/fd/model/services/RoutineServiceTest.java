@@ -48,7 +48,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testCreateDuplicateRoutine() throws DuplicateInstanceException {
+    public void testCreateDuplicateRoutine() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user");
         routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
 
@@ -71,7 +71,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testUpdateRoutineDuplicateName() throws DuplicateInstanceException {
+    public void testUpdateRoutineDuplicateName() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user");
         routineService.createRoutine("routine1", "description", user, Routine.VisibilityType.PUBLIC);
         Routine routine2 = routineService.createRoutine("routine2", "description", user, Routine.VisibilityType.PUBLIC);
