@@ -1,12 +1,13 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.util.List;
+
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
-
-import java.util.List;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
 public interface UserService {
 	void signUp(User user) throws DuplicateInstanceException;
@@ -17,4 +18,6 @@ public interface UserService {
 	User findUserById(Long id) throws InstanceNotFoundException;
 	List<User> findAllUsers();
 	void deleteUser(Long id);
+	void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
+	void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
 }

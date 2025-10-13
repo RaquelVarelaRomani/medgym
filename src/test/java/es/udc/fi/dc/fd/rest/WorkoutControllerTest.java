@@ -67,7 +67,7 @@ public class WorkoutControllerTest {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
 
-        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234", null, User.RoleType.TRAINER);
+        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234", null, User.RoleType.TRAINER, User.StatusType.ACTIVE);
         userDao.save(trainer);
 
         routine = new Routine("Name", "Description", VisibilityType.PUBLIC, trainer);
@@ -77,7 +77,7 @@ public class WorkoutControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
                                                          String phoneNumber, RoleType roleType)
             throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 

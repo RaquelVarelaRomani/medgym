@@ -72,7 +72,7 @@ public class ExerciseControllerTest {
 														RoleType roleType) throws IncorrectLoginException {
 
 
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);

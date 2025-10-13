@@ -75,7 +75,7 @@ public class RoutineExerciseControllerTest {
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
     RoleType roleType) throws Exception {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);

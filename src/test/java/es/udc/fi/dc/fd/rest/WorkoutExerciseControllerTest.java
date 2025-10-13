@@ -95,7 +95,7 @@ public class WorkoutExerciseControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
                                                         String phoneNumber, RoleType roleType)
             throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 
