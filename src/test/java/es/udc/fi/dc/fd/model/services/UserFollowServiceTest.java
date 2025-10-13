@@ -32,13 +32,13 @@ public class UserFollowServiceTest {
 
     private User createTrainer(){
         User trainer = new User("Pepe", "Domingo", "hola@emeail.com",
-                "666555444", "password", null, User.RoleType.TRAINER);
+                "666555444", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
     private User createUser(){
         User trainer = new User("Pepe", "Domingo", "hola2@emeail.com",
-                "666585444", "password", null, User.RoleType.CLIENT);
+                "666585444", "password", null, User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
