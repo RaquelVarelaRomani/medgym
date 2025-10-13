@@ -1,0 +1,380 @@
+/* main container */
+.contenedor-workout-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.caja-workout-details {
+    background: transparent;
+    padding: 2rem;
+    width: 100%;
+    max-width: 1400px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* back button */
+.boton-atras {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+}
+
+.boton-atras::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.boton-atras:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.boton-atras:hover::before {
+    left: 100%;
+}
+
+/* routine name */
+.titulo-workout {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 3rem 0 2rem 0;
+    text-align: center;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* workout info container */
+.workout-info {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.05),
+            rgba(255, 107, 53, 0.02)
+    );
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+.info-label {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.info-value {
+    color: var(--neon-orange);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* exercise list */
+.lista-ejercicios {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.ejercicio {
+    background: none;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.header-ejercicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-ejercicio::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.header-ejercicio:hover {
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(255, 107, 53, 0.15);
+    transform: translateY(-2px);
+}
+
+.header-ejercicio:hover::before {
+    transform: translateX(100%);
+}
+
+.header-ejercicio h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* completed tick */
+.completed-tick {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.5);
+}
+
+/* arrow */
+.flecha {
+    color: var(--neon-orange);
+    transition: transform 0.3s ease;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.flecha.expandida {
+    transform: rotate(180deg);
+}
+
+/* expanded exercise container */
+.ejercicio-contenido {
+    padding: 0;
+    background: transparent;
+    animation: slideDown 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.descripcion-ejercicio {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    padding: 1.5rem;
+    background: linear-gradient(
+            135deg,
+            rgba(26, 26, 36, 0.6) 0%,
+            rgba(26, 26, 36, 0.4) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+/* expand animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* logged sets section */
+.logged-sets {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.05) 0%,
+            rgba(255, 107, 53, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    border-radius: 12px;
+}
+
+.logged-sets h4 {
+    margin: 0 0 1rem 0;
+    color: var(--neon-orange);
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.sets-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.set-item {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.9) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.set-item:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+.set-number {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.set-details {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.set-stat {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.set-stat strong {
+    color: var(--neon-orange);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.no-data-message {
+    margin: 1rem 0 0 0;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 107, 53, 0.05);
+    color: var(--text-secondary);
+    font-style: italic;
+    border-radius: 8px;
+}
+
+/* error section */
+.error-message {
+    color: var(--accent-red);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.retry-button {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.retry-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.6),
+            0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+/* loading section */
+.contenedor-workout-details {
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
+    padding: 4rem 2rem;
+}

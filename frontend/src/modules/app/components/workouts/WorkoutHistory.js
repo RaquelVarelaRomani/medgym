@@ -90,7 +90,7 @@ const WorkoutHistory = () => {
     return (
         <div className={styles.contenedor}>
             <div className={styles['history-titulo-grande']}>
-                <h2>Historial de Entrenamientos</h2>
+                <h2>Historial de entrenamientos</h2>
             </div>
 
             {workouts.length === 0 ? (

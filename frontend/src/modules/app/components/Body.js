@@ -17,6 +17,7 @@ import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
 import Layout from "./Layout";
 import WorkoutHistory from "./workouts/WorkoutHistory";
+import WorkoutDetails from "./workouts/WorkoutDetails";
 
 const Body = () => {
     return (
@@ -37,6 +38,7 @@ const Body = () => {
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
+                    <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>
