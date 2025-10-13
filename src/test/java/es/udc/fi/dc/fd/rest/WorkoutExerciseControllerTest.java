@@ -74,7 +74,7 @@ public class WorkoutExerciseControllerTest {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
 
         // Crear rutina
-        routine = new Routine("Full Body", "Rutina completa", VisibilityType.PUBLIC,
+        routine = new Routine("Full Body", "Rutina completa", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         routineDao.save(routine);
 
