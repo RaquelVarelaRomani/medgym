@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {deleteUser, getAllUsers, tryLoginFromServiceToken} from "../../../../backend/userService";
+import {tryLoginFromServiceToken} from "../../../../backend/userService";
+import * as adminService from "../../../../backend/adminService";
 import ConfirmationPopup from "../common/ConfirmationPopup";
 import styles from "./UserModeration.module.css";
 
@@ -8,7 +9,8 @@ const UserModeration = () => {
     const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(null);
     const [users, setUsers] = useState([]);
-    const [userToBan, setUserToBan] = useState(null);
+    const [userToBlock, setUserToBlock] = useState(null);
+    const [userToUnblock, setUserToUnblock] = useState(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -16,7 +18,7 @@ const UserModeration = () => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 if (authenticatedUser.user.role !== 'ADMIN') {
-                    console.error("Access denied: Admin only");
+                    console.error("Access denied: admin only");
                     navigate("/");
                     return;
                 }
@@ -32,7 +34,7 @@ const UserModeration = () => {
 
     const fetchUsers = () => {
         setLoading(true);
-        getAllUsers(
+        adminService.getAllUsers(
             (data) => {
                 setUsers(data);
                 setLoading(false);
@@ -43,9 +45,34 @@ const UserModeration = () => {
             }
         );
     };
+    const handleBlockUser = (userId) => {
+        adminService.blockUser(
+            userId,
+            () => {
+                console.log("User blocked successfully");
+                fetchUsers(); //reload list
+                setUserToBlock(null);
+            },
+            (error) => {
+                console.error("Error blocking user:", error);
+                setUserToBlock(null);
+            }
+        );
+    };
 
-    const handleBanUser = (userId) => {
-        console.log("Baneando usuario: ", userId);
+    const handleUnblockUser = (userId) => {
+        adminService.unblockUser(
+            userId,
+            () => {
+                console.log("User unblocked successfully");
+                fetchUsers(); //reload list
+                setUserToUnblock(null);
+            },
+            (error) => {
+                console.error("Error unblocking user:", error);
+                setUserToUnblock(null);
+            }
+        );
     };
 
     const filteredUsers = users.filter(user => {
@@ -62,13 +89,13 @@ const UserModeration = () => {
 
     return (
         <div className={styles.contenedor}>
-            <h1 className={styles.titulo}>Usuarios</h1>
+            <h1 className={styles.titulo}>Gestión de Usuarios</h1>
 
             <div className={styles['search-container']}>
                 <h3 className={styles['search-title']}>Buscar usuarios</h3>
                 <input
                     type="text"
-                    placeholder="Buscar por nombre o email..."
+                    placeholder="Buscar por nombre, email o usuario..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className={styles['search-input']}
@@ -76,7 +103,7 @@ const UserModeration = () => {
             </div>
 
             <div className={styles['users-count']}>
-            Número de usuarios: {filteredUsers.length}
+                Total de usuarios: {filteredUsers.length}
             </div>
 
             <div className={styles['users-list']}>
@@ -84,24 +111,37 @@ const UserModeration = () => {
                     <p className={styles['no-users']}>No se encontraron usuarios</p>
                 ) : (
                     filteredUsers.map((user) => (
-                        <div key={user.id} className={styles['user-card']}>
+                        <div key={user.id}
+                             className={`${styles['user-card']} ${user.status === 'BLOCKED' ? styles['blocked'] : ''}`}>
                             <div className={styles['user-info']}>
-                                <h3>{user.name}</h3>
+                                <div className={styles['name-container']}>
+                                    <h3>{user.name || user.userName}</h3>
+                                </div>
                                 <p className={styles['user-email']}>{user.email}</p>
                                 {user.role && (
                                     <span className={`${styles['user-role']} ${styles[user.role.toLowerCase()]}`}>
-                                        {user.role}
-                                    </span>
+            {user.role}
+        </span>
                                 )}
                             </div>
                             <div className={styles['user-actions']}>
-                                <button
-                                    className={styles['boton-ban']}
-                                    onClick={() => setUserToBan(user)}
-                                    disabled={user.role === 'ADMIN'}
-                                >
-                                    {user.role === 'ADMIN' ? 'Admin' : 'Banear'}
-                                </button>
+                                {user.status === 'BLOCKED' ? (
+                                    <button
+                                        className={styles['unblock-btn']}
+                                        onClick={() => setUserToUnblock(user)}
+                                        disabled={user.role === 'ADMIN'}
+                                    >
+                                        Desbloquear
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={styles['block-btn']}
+                                        onClick={() => setUserToBlock(user)}
+                                        disabled={user.role === 'ADMIN'}
+                                    >
+                                        {user.role === 'ADMIN' ? 'Admin' : 'Bloquear'}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))
@@ -109,14 +149,25 @@ const UserModeration = () => {
             </div>
 
             <ConfirmationPopup
-                text={`¿Estás seguro de que quieres banear a ${userToBan?.name || userToBan?.userName}?`}
-                show={userToBan !== null}
+                text={`¿Estás seguro de que quieres bloquear a ${userToBlock?.name || userToBlock?.userName}?`}
+                show={userToBlock !== null}
                 onOk={() => {
-                    if (userToBan) {
-                        handleBanUser(userToBan.id);
+                    if (userToBlock) {
+                        handleBlockUser(userToBlock.id);
                     }
                 }}
-                onCancel={() => setUserToBan(null)}
+                onCancel={() => setUserToBlock(null)}
+            />
+
+            <ConfirmationPopup
+                text={`¿Estás seguro de que quieres desbloquear a ${userToUnblock?.name || userToUnblock?.userName}?`}
+                show={userToUnblock !== null}
+                onOk={() => {
+                    if (userToUnblock) {
+                        handleUnblockUser(userToUnblock.id);
+                    }
+                }}
+                onCancel={() => setUserToUnblock(null)}
             />
         </div>
     );
