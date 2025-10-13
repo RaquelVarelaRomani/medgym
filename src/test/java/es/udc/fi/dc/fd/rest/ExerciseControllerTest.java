@@ -28,6 +28,7 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.ExerciseDto;
@@ -62,14 +63,14 @@ public class ExerciseControllerTest {
     private AuthenticatedUserDto trainerUser;
 
     @Before
-    public void setUp() throws IncorrectLoginException {
+    public void setUp() throws IncorrectLoginException, BlockedUserException {
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", RoleType.CLIENT);
         trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", RoleType.TRAINER);
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-														RoleType roleType) throws IncorrectLoginException {
+														RoleType roleType) throws IncorrectLoginException, BlockedUserException {
 
 
         User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null, User.StatusType.ACTIVE);

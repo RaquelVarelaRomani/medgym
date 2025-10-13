@@ -27,6 +27,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.UserService;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
@@ -46,6 +47,7 @@ import es.udc.fi.dc.fd.rest.dtos.UserDto;
 @RequestMapping("/api/users")
 public class UserController {
 
+	private static final String BLOCKED_USER_EXCEPTION_CODE = "project.exceptions.BlockedUserException";
 	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
 	private static final String INCORRECT_PASS_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
 
@@ -82,6 +84,18 @@ public class UserController {
 
 	}
 
+	@ExceptionHandler(BlockedUserException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	@ResponseBody
+	public ErrorsDto handleBlockedUserException(BlockedUserException exception, Locale locale) {
+
+		String errorMessage = messageSource.getMessage(BLOCKED_USER_EXCEPTION_CODE, null,
+				BLOCKED_USER_EXCEPTION_CODE, locale);
+
+		return new ErrorsDto(errorMessage);
+
+	}
+
 	@PostMapping("/signUp")
 	public ResponseEntity<AuthenticatedUserDto> signUp(
 			@Validated({ UserDto.AllValidations.class }) @RequestBody UserDto userDto)
@@ -98,7 +112,7 @@ public class UserController {
 	}
 
 	@PostMapping("/login")
-	public AuthenticatedUserDto login(@Validated @RequestBody LoginParamsDto params) throws IncorrectLoginException {
+	public AuthenticatedUserDto login(@Validated @RequestBody LoginParamsDto params) throws IncorrectLoginException, BlockedUserException {
 
 		User user = userService.login(params.getEmail(), params.getPassword());
 

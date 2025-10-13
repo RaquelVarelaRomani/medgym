@@ -19,6 +19,7 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
@@ -45,7 +46,7 @@ public class AdminControllerTest {
     private UserController userController;
 
     private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
-            throws IncorrectLoginException {
+            throws IncorrectLoginException, BlockedUserException {
 
         User user = new User("user", "1", email, "+34 000 000 000", "password", null, roleType, User.StatusType.ACTIVE);
 
