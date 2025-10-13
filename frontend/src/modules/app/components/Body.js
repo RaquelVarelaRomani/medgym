@@ -12,6 +12,8 @@ import RoutineDetails from "./routines/RoutineDetails";
 import CreateRoutine from "./routines/CreateRoutine"
 import Exercises from "./routines/Exercises";
 import CreateExercise from "./routines/CreateExercise";
+import ExerciseDetails from "./routines/ExerciseDetails";
+import EditExercise from "./routines/EditExercise";
 import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
@@ -33,6 +35,8 @@ const Body = () => {
                     <Route path="routines/:id" element={<Layout><RoutineDetails /></Layout>} />
                     <Route path="exercises" element={<Layout><Exercises /></Layout>} />
                     <Route path="exercises/new" element={<Layout><CreateExercise /></Layout>} />
+                    <Route path="exercises/edit/:id" element={<Layout><EditExercise/></Layout>} />
+                    <Route path="exercises/:id" element={<Layout><ExerciseDetails /></Layout>} />
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />

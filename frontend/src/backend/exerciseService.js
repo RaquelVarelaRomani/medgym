@@ -3,9 +3,9 @@ import {
     appFetch
 } from "./appFetch";
 
-export const createExercise = (name, description, onSuccess, onErrors) => appFetch(
+export const createExercise = (name, description, muscleGroup, equipment, image, onSuccess, onErrors) => appFetch(
     `/exercises`,
-    fetchConfig("POST", { name, description }),
+    fetchConfig("POST", { name, description, muscleGroup, equipment, image }),
     onSuccess,
     onErrors
 )
@@ -24,9 +24,9 @@ export const getAllExercises = (onSuccess, onErrors) => appFetch(
     onErrors
 )
 
-export const updateExercise = (id, name, description, onSuccess, onErrors) => appFetch(
+export const updateExercise = (id, name, description, muscleGroup, equipment, image, onSuccess, onErrors) => appFetch(
     `/exercises/${id}`,
-    fetchConfig("PUT", { name, description }),
+    fetchConfig("PUT", { name, description, muscleGroup, equipment, image }),
     onSuccess,
     onErrors
 )
