@@ -1,10 +1,10 @@
--- Insertar usuarios (roles: 0 = cliente, 1 = entrenador, 2 = admin)
-INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role) VALUES
-    ('Carlos', 'Gómez', 'carlos.gomez@example.com', '600111222', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/carlos.jpg'), 1), -- entrenador
-    ('Laura', 'Martínez', 'laura.martinez@example.com', '600333444', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/laura.jpg'), 0), -- cliente
-    ('Miguel', 'Fernández', 'miguel.fernandez@example.com', '600555666', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/miguel.jpg'), 0), -- cliente
-    ('Sofía', 'López', 'sofia.lopez@example.com', '600777888', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/sofia.jpg'), 1), -- entrenadora
-    ('Ana', 'Torres', 'ana.torres@example.com', '600999000', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/ana.jpg'), 2); -- admin
+-- Insertar usuarios (roles: 0 = cliente, 1 = entrenador, 2 = admin; status: 0 = ACTIVE, 1 = BLOCKED)
+INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status) VALUES
+    ('Carlos', 'Gómez', 'carlos.gomez@example.com', '600111222', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/carlos.jpg'), 1, 0), -- entrenador
+    ('Laura', 'Martínez', 'laura.martinez@example.com', '600333444', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/laura.jpg'), 0, 0), -- cliente
+    ('Miguel', 'Fernández', 'miguel.fernandez@example.com', '600555666', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/miguel.jpg'), 0, 0), -- cliente
+    ('Sofía', 'López', 'sofia.lopez@example.com', '600777888', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/sofia.jpg'), 1, 0), -- entrenadora
+    ('Ana', 'Torres', 'ana.torres@example.com', '600999000', '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/ana.jpg'), 2, 0); -- admin
 
 -- Insertar rutinas (entrenadores: Carlos id=1, Sofía id=4)
 INSERT INTO routines (name, description, trainer_id, visibility) VALUES
@@ -15,21 +15,23 @@ INSERT INTO routines (name, description, trainer_id, visibility) VALUES
     ('Rutina privada Carlos', 'Rutina privada de fuerza avanzada para clientes premium. Incluye ejercicios intensos de fuerza.', 1, 1);
 
 -- Insertar ejercicios
-INSERT INTO exercises (name, description, creator_id, status) VALUES
-    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 1, 'APPROVED'),
-    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 4, 'APPROVED'),
-    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 1, 'APPROVED'),
-    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 4, 'APPROVED'),
-    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 1, 'APPROVED'),
-    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 4, 'APPROVED'),
-    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 1, 'APPROVED'),
-    ('Press banca', 'Ejercicio de fuerza para el pecho.', 4, 'APPROVED'),
-    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 1, 'APPROVED'),
-    ('Mountain climbers', 'Ejercicio de cardio y core.', 4, 'APPROVED'),
-    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 1, 'PENDING'),
-    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 1, 'REJECTED'),
-    ('Elevaciones laterales', 'Ejercicio para hombros.', 4, 'PENDING'),
-    ('Remo con mancuerna', 'Ejercicio para espalda.', 4, 'REJECTED');
+-- Insertar ejercicios (con nuevos campos muscle_group, equipment, image)
+INSERT INTO exercises (name, description, muscle_group, equipment, image, creator_id, status) VALUES
+    ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'Piernas', 'Ninguno',LOAD_FILE('/var/lib/mysql-files/sentadilla.jpg'), 1, 'APPROVED'),
+    ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'Pectorales', 'Ninguno', LOAD_FILE('/var/lib/mysql-files/flexiones.jpg'), 4, 'APPROVED'),
+    ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'Full body', 'Ninguno', LOAD_FILE('/var/lib/mysql-files/burpees.jpg'), 1, 'APPROVED'),
+    ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'Core', 'Esterilla', LOAD_FILE('/var/lib/mysql-files/plancha.jpg'), 4, 'APPROVED'),
+    ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'Piernas', 'Ninguno', LOAD_FILE('/var/lib/mysql-files/zancadas.jpg'), 1, 'APPROVED'),
+    ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'Full body', 'Comba', LOAD_FILE('/var/lib/mysql-files/salto_comba.jpg'), 4, 'APPROVED'),
+    ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'Espalda', 'Barra', LOAD_FILE('/var/lib/mysql-files/peso_muerto.jpg'), 1, 'APPROVED'),
+    ('Press banca', 'Ejercicio de fuerza para el pecho.', 'Pectorales', 'Banco y barra', LOAD_FILE('/var/lib/mysql-files/press_banca.jpg'), 4, 'APPROVED'),
+    ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'Espalda', 'Barra de dominadas', LOAD_FILE('/var/lib/mysql-files/dominadas.jpg'), 1, 'APPROVED'),
+    ('Mountain climbers', 'Ejercicio de cardio y core.', 'Core', 'Ninguno', LOAD_FILE('/var/lib/mysql-files/mountain_climbers.jpg'), 4, 'APPROVED'),
+    ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 'Bíceps', 'Mancuernas', LOAD_FILE('/var/lib/mysql-files/curl_biceps.jpg'), 1, 'PENDING'),
+    ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 'Tríceps', 'Polea', LOAD_FILE('/var/lib/mysql-files/extensiones_triceps.jpg'), 1, 'REJECTED'),
+    ('Elevaciones laterales', 'Ejercicio para hombros.', 'Hombros', 'Mancuernas', LOAD_FILE('/var/lib/mysql-files/elevaciones_laterales.jpg'), 4, 'PENDING'),
+    ('Remo con mancuerna', 'Ejercicio para espalda.', 'Espalda', 'Mancuerna', LOAD_FILE('/var/lib/mysql-files/remo_mancuerna.jpg'), 4, 'REJECTED');
+
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial

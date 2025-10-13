@@ -14,6 +14,7 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
 @Service
 @Transactional
@@ -117,5 +118,27 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUser(Long id) {
 		userDao.deleteById(id);
+	}
+
+	@Override
+	public void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
+		User user = permissionChecker.checkUser(id);
+
+		if (user.getRole() == User.RoleType.ADMIN) {
+			throw new PermissionException();
+		}
+
+		user.setStatus(User.StatusType.BLOCKED);
+	}
+
+	@Override
+	public void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
+		User user = permissionChecker.checkUser(id);
+
+		if (user.getRole() == User.RoleType.ADMIN) {
+			throw new PermissionException();
+		}
+
+		user.setStatus(User.StatusType.ACTIVE);
 	}
 }

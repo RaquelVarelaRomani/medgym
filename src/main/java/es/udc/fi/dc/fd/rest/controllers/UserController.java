@@ -4,16 +4,15 @@ import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 
-import es.udc.fi.dc.fd.rest.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
@@ -27,15 +26,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.rest.common.ErrorsDto;
 import es.udc.fi.dc.fd.rest.common.JwtGenerator;
 import es.udc.fi.dc.fd.rest.common.JwtInfo;
-
-import static es.udc.fi.dc.fd.rest.dtos.UserConversor.*;
+import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.ChangePasswordParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toAuthenticatedUserDto;
+import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUser;
+import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDto;
+import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDtos;
+import es.udc.fi.dc.fd.rest.dtos.UserDto;
 
 @RestController
 @RequestMapping("/api/users")
@@ -140,7 +145,7 @@ public class UserController {
 
 	private String generateServiceToken(User user) {
 
-		JwtInfo jwtInfo = new JwtInfo(user.getId(), user.getEmail(), user.getRole().toString());
+		JwtInfo jwtInfo = new JwtInfo(user.getId(), user.getEmail(), user.getRole().toString(), user.getStatus().toString());
 
 		return jwtGenerator.generate(jwtInfo);
 

@@ -16,10 +16,11 @@ public class UserDto {
 	private String password;
 	private byte[] profilePicture;
 	private String role;
+	private String status;
 
 	public UserDto() {}
 
-	public UserDto(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture, String role) {
+	public UserDto(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture, String role, String status) {
 
 		this.id = id;
 		this.name = name.trim();
@@ -28,8 +29,8 @@ public class UserDto {
 		this.phoneNumber = phoneNumber.trim();
 		this.role = role.trim();
 		this.profilePicture = profilePicture;
-		this.role = role.trim();
-		
+		this.status = status.trim();
+
 	}
 
 	public Long getId() {
@@ -96,6 +97,13 @@ public class UserDto {
 	}
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

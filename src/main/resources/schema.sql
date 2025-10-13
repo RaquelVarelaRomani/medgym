@@ -15,7 +15,8 @@ CREATE TABLE users (
     phone_number VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
     profile_picture MEDIUMBLOB,
-    role TINYINT NOT NULL,
+    role TINYINT NOT NULL DEFAULT 0,
+    status TINYINT NOT NULL DEFAULT 0,
 
     CONSTRAINT user_id_pk PRIMARY KEY (id),
     CONSTRAINT user_email_uk UNIQUE (email),
@@ -42,6 +43,9 @@ CREATE TABLE exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
+    muscle_group VARCHAR(100),
+    equipment VARCHAR(100),
+    image MEDIUMBLOB,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     creator_id BIGINT,
 

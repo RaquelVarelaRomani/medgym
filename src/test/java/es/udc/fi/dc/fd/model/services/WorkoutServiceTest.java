@@ -37,7 +37,7 @@ public class WorkoutServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", null, RoleType.TRAINER);
+        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", null, RoleType.TRAINER, User.StatusType.ACTIVE);
         user.setName("Name");
         user.setEmail("user@example.com");
         user.setPhoneNumber("1234567890");
