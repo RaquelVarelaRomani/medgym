@@ -24,7 +24,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     private PermissionChecker permissionChecker;
 
     @Override
-    public Exercise createExercise(String name, String description, User user) throws DuplicateInstanceException {
+    public Exercise createExercise(String name, String description, String muscleGroup, String equipment, byte[] image, User user) throws DuplicateInstanceException {
         if (exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
@@ -39,7 +39,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             status = Exercise.ExerciseStatus.PENDING;
         }
         
-        Exercise exercise = new Exercise(name, description, status, user);
+        Exercise exercise = new Exercise(name, description, muscleGroup, equipment, image, status, user);
         return exerciseDao.save(exercise);
     }
 
@@ -57,7 +57,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public void updateExercise(Long exerciseId, String name, String description) throws InstanceNotFoundException, DuplicateInstanceException {
+    public void updateExercise(Long exerciseId, String name, String description, String muscleGroup, String equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
         Exercise exercise = findExerciseById(exerciseId);
 
         if (!exercise.getName().equals(name) && exerciseDao.existsByName(name)) {
@@ -66,6 +66,9 @@ public class ExerciseServiceImpl implements ExerciseService {
 
         exercise.setName(name);
         exercise.setDescription(description);
+        exercise.setMuscleGroup(muscleGroup);
+        exercise.setEquipment(equipment);
+        exercise.setImage(image);
     }
 
     @Override

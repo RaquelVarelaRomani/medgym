@@ -51,7 +51,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user){
-        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING, user);
+        Exercise exercise = new Exercise(exerciseName, "The description", "Piernas", "Mancuernas", new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 

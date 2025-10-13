@@ -64,7 +64,7 @@ public class WorkoutExerciseServiceTest {
         routine = routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", Exercise.ExerciseStatus.APPROVED, trainer);
+        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", "Piernas", "Ninguno", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exercise = exerciseDao.save(exercise);
 
         // Asignar ejercicio a la rutina

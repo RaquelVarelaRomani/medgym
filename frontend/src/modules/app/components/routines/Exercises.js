@@ -87,6 +87,10 @@ const Exercises = () => {
         return currentUser.role === 'ADMIN';
     };
 
+    const canAddExercise = () => {
+        return currentUser.role === 'ADMIN' || currentUser.role === 'TRAINER';
+    }
+
 
     const handleDelete = (exerciseId) => {
         exerciseService.deleteExercise(
@@ -136,9 +140,9 @@ const Exercises = () => {
     };
 
     const handleAddExercise = () => {
-    //pag de crear exercises CAMBIAR 
+    //pag de crear exercises
     navigate("/exercises/new");
-  };
+    };
 
     if (loading) {
         return <div className={styles.contenedor}>Cargando...</div>;
@@ -211,7 +215,7 @@ const Exercises = () => {
                 ))}
             </div>
 
-            {(isAdmin()) && (
+            {canAddExercise && (
                 <button className={styles['boton-crear']} onClick={handleAddExercise}>
                     +
                 </button>
