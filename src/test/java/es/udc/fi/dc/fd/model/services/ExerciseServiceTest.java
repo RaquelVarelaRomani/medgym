@@ -35,7 +35,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testCreateAndFindExercise() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         Exercise foundExercise = exerciseService.findExerciseById(exercise.getId());
@@ -45,7 +45,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testCreateDuplicateExercise() throws DuplicateInstanceException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         exerciseService.createExercise("exercise", "description", user);
 
         assertThrows(DuplicateInstanceException.class, () -> {
@@ -55,7 +55,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExercise() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExercise(exercise.getId(), "new name", "new description");
@@ -68,7 +68,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseDuplicateName() throws DuplicateInstanceException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         exerciseService.createExercise("exercise1", "description", user);
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description", user);
 
@@ -79,7 +79,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testDeleteExercise() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.deleteExercise(exercise.getId());
@@ -105,7 +105,7 @@ public class ExerciseServiceTest {
     
     @Test
     public void testCreateExerciseWithDefaultStatus() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         Exercise foundExercise = exerciseService.findExerciseById(exercise.getId());
@@ -115,7 +115,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatus() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
@@ -134,7 +134,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatusToNull() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), null);
@@ -146,7 +146,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatusToSameValue() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.PENDING);
@@ -158,7 +158,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatusMultipleTimes() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
@@ -176,7 +176,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatusAfterNameChange() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.updateExercise(exercise.getId(), "new name", "new description");
@@ -191,7 +191,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testUpdateExerciseStatusAfterDeletion() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
         exerciseService.deleteExercise(exercise.getId());
@@ -203,7 +203,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindAllExercises() throws DuplicateInstanceException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         exerciseService.createExercise("exercise1", "description1", user);
         exerciseService.createExercise("exercise2", "description2", user);
 
@@ -214,7 +214,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindExercisesWithPendingStatus() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
         Exercise exercise3 = exerciseService.createExercise("exercise3", "description3", user);
@@ -231,7 +231,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindExercisesWithPendingStatusWhenNone() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
 
@@ -246,7 +246,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindExercisesWithPendingStatusWhenAll() throws DuplicateInstanceException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         exerciseService.createExercise("exercise1", "description1", user);
         exerciseService.createExercise("exercise2", "description2", user);
 
@@ -258,7 +258,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindExercisesWithPendingStatusAfterDeletion() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
 
@@ -273,7 +273,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testFindExercisesWithPendingStatusAfterStatusUpdate() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", user);
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", user);
 
@@ -288,7 +288,7 @@ public class ExerciseServiceTest {
 
     @Test
     public void testCreateExerciseSetsDefaultStatus() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);    
         assertEquals(ExerciseStatus.PENDING, exercise.getStatus());
         assertEquals(ExerciseStatus.PENDING, exerciseService.findExerciseById(exercise.getId()).getStatus());

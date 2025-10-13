@@ -12,7 +12,7 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = () => {
@@ -31,9 +31,9 @@ const Register = () => {
                 console.log("Registro correcto:", data);
                 setShowPopup(true);
             },
-            (error) => {
-                setError(true);
-                console.error("Error en el registro:", error);
+            (errorResponse) => {
+                console.error("Error en el registro:", errorResponse);
+                setError(errorResponse.globalError || "Error en el registro");
             },
             () => navigate("/users/login")
         );
@@ -50,8 +50,7 @@ const Register = () => {
 
                 <h2 className="titulo">Regístrate</h2>
 
-                {error && <p className="mensaje-error">Correo electrónico o teléfono ya existe</p>}
-
+                {error && <p className="mensaje-error">{error}</p>}
                 <form className="form" onSubmit={(e) => {
                     e.preventDefault();
                     handleSubmit();
