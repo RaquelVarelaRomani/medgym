@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
+import * as workoutService from "../../../backend/workoutService";
 import ProfilePhoto from "./common/profilePhoto";
 
 const Header = () => {
@@ -9,6 +10,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [activeWorkout, setActiveWorkout] = useState(null);
     const dropdownComponent = useRef(null);
 
     useEffect(() => {
@@ -16,12 +18,26 @@ const Header = () => {
             (authenticatedUser) => {
                 console.log("User data in header:", authenticatedUser.user);
                 setProfile(authenticatedUser.user);
+                checkActiveWorkout();
             },
             (error) => {
                 console.error("Failed to get user data in header:", error);
             }
         );
     }, [navigate]);
+
+    const checkActiveWorkout = () => {
+        workoutService.getWorkouts(
+            (workouts) => {
+                const active = workouts.find(workout => !workout.endTime);
+                setActiveWorkout(active || null);
+            },
+            (error) => {
+                console.error("Error checking active workout:", error);
+                setActiveWorkout(null);
+            }
+        );
+    };
 
     //close dropdown when clicking outside
     useEffect(() => {
@@ -51,6 +67,12 @@ const Header = () => {
         navigate("/users/login");
     }
 
+    const handleActiveWorkoutClick = () => {
+        if (activeWorkout) {
+            navigate(`/workouts/${activeWorkout.id}`);
+        }
+    }
+
 
     return (
         <header className={styles['app-header']}>
@@ -71,6 +93,15 @@ const Header = () => {
 
                 {/* center section - nav buttons */}
                 <nav className={styles['nav-links']}>
+                    {activeWorkout && (
+                        <button
+                            className={styles['active-workout-badge']}
+                            onClick={handleActiveWorkoutClick}
+                            title={`Entrenamiento activo: ${activeWorkout.routineName}`}
+                        >
+                            🏋️ Entrenamiento Activo
+                        </button>
+                    )}
                     <Link
                         to="/routines"
                         className={location.pathname.includes('/routines') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}

@@ -86,7 +86,10 @@ INSERT INTO workouts (start_time, end_time, routine_id, user_id) VALUES
     ('2025-10-03 18:00:00', '2025-10-03 19:00:00', 5, 3),
 
     -- Entrenamiento antiguo de prueba
-    ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2);
+    ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2),
+
+    -- Workout activo para testing (hoy mismo)
+    ('2025-10-13 14:00:00', NULL, 1, 2); -- Laura con rutina de fuerza inicial
 
 INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id) VALUES
     (12, 60, 45, 1, 3),
