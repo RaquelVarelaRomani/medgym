@@ -79,7 +79,7 @@ public class WorkoutExerciseControllerTest {
         routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Piernas", Exercise.ExerciseStatus.APPROVED,
+        exercise = new Exercise("Sentadillas", "Ejercicio básico de piernas", "Piernas", "Barra", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);
 
@@ -93,9 +93,9 @@ public class WorkoutExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
-                                                         String phoneNumber, RoleType roleType)
+                                                        String phoneNumber, RoleType roleType)
             throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 

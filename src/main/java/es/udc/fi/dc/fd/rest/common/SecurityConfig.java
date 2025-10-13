@@ -1,7 +1,5 @@
 package es.udc.fi.dc.fd.rest.common;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher(HttpMethod.POST, "/api/routines")).hasAnyRole("ADMIN", "TRAINER")
                 .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
                 .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
+                .requestMatchers(antMatcher("/api/admin/**")).hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

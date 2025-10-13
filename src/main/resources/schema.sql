@@ -3,7 +3,9 @@ DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
+DROP TABLE IF EXISTS user_follow;
 DROP TABLE IF EXISTS users;
+
 
 CREATE TABLE users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -13,7 +15,8 @@ CREATE TABLE users (
     phone_number VARCHAR(20) NOT NULL,
     password VARCHAR(255) NOT NULL,
     profile_picture MEDIUMBLOB,
-    role TINYINT NOT NULL,
+    role TINYINT NOT NULL DEFAULT 0,
+    status TINYINT NOT NULL DEFAULT 0,
 
     CONSTRAINT user_id_pk PRIMARY KEY (id),
     CONSTRAINT user_email_uk UNIQUE (email),
@@ -40,6 +43,9 @@ CREATE TABLE exercises (
     id BIGINT NOT NULL AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
+    muscle_group VARCHAR(100),
+    equipment VARCHAR(100),
+    image MEDIUMBLOB,
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     creator_id BIGINT,
 
@@ -103,4 +109,14 @@ CREATE TABLE workout_exercises (
         REFERENCES routine_exercises(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+);
+
+CREATE TABLE user_follow (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    client_id BIGINT NOT NULL,
+    trainer_id BIGINT NOT NULL,
+    CONSTRAINT fk_user_follow_client FOREIGN KEY (client_id) REFERENCES users(id)
+         ON DELETE CASCADE,
+    CONSTRAINT fk_user_follow_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
+         ON DELETE CASCADE
 );

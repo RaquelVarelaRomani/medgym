@@ -74,7 +74,7 @@ public class RoutineControllerTest {
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
                                                         RoleType roleType) throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
         userDao.save(user);
