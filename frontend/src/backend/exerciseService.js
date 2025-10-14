@@ -51,3 +51,13 @@ export const deleteExercise = (id, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 )
+
+export const getExercisesByStatus = (status, onSuccess, onErrors) => {
+    const queryParam = status ? `?status=${encodeURIComponent(status)}` : "";
+    return appFetch(
+        `/exercises${queryParam}`,
+        fetchConfig("GET"),
+        onSuccess,
+        onErrors
+    );
+};
