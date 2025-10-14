@@ -15,8 +15,7 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
     const [showPopup, setShowPopup] = useState(false);
-    const [error, setError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = () => {
@@ -42,10 +41,11 @@ const Register = () => {
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                navigate("/routines", { replace: true, state: { registered: true, email } })                        },
-            (error) => {
-                setError("Correo electrónico o teléfono ya existe");
-                console.error("Error en el registro:", error);
+                setShowPopup(true);
+            },
+            (errorResponse) => {
+                console.error("Error en el registro:", errorResponse);
+                setError(errorResponse.globalError || "Error en el registro");
             },
         );
     };
@@ -63,9 +63,8 @@ const Register = () => {
 
                 <h2 className={styles.titulo}>Regístrate</h2>
 
-                {error && <p className={styles['mensaje-error']}>{error}</p>}
-
-                <form className={styles.form} onSubmit={(e) => {
+                {error && <p className="mensaje-error">{error}</p>}
+                <form className="form" onSubmit={(e) => {
                     e.preventDefault();
                     handleSubmit();
                 }}>

@@ -31,7 +31,7 @@ public class UserServiceTest {
 	@Test
 	public void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
 
-		User user = createUser("user", "+34 111 111 111");
+		User user = createUser("user@test.com");
 
 		userService.signUp(user);
 
