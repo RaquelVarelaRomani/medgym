@@ -15,6 +15,7 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 
 @Service
 @Transactional
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public User login(String email, String password) throws IncorrectLoginException {
+	public User login(String email, String password) throws IncorrectLoginException, BlockedUserException {
 
 		Optional<User> user = userDao.findByEmail(email);
 
@@ -59,6 +60,10 @@ public class UserServiceImpl implements UserService {
 
 		if (!passwordEncoder.matches(password, user.get().getPassword())) {
 			throw new IncorrectLoginException(email, password);
+		}
+
+		if (user.get().getStatus() == User.StatusType.BLOCKED) {
+			throw new BlockedUserException(email);
 		}
 
 		return user.get();
