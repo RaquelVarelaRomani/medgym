@@ -63,4 +63,20 @@ public class RoutineController {
     public List<RoutineDto> findAllRoutines(@RequestAttribute Long userId) throws InstanceNotFoundException {
         return RoutineConversor.toRoutineDtos(routineService.findAllRoutines(userId));
     }
+
+    @GetMapping("/filter")
+    public List<RoutineDto> findRoutinesByFilters(@RequestAttribute Long userId,
+                                                  @RequestParam(required = false) String muscleGroup,
+                                                  @RequestParam(required = false) String difficulty,
+                                                  @RequestParam(required = false) Long trainerId) throws InstanceNotFoundException {
+        Routine.DifficultyType difficultyType = null;
+        if (difficulty != null && !difficulty.trim().isEmpty()) {
+            try {
+                difficultyType = Routine.DifficultyType.valueOf(difficulty.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Invalid difficulty, ignore filter
+            }
+        }
+        return RoutineConversor.toRoutineDtos(routineService.findRoutinesByFilters(userId, muscleGroup, difficultyType, trainerId));
+    }
 }

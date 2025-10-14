@@ -44,7 +44,7 @@ public class WorkoutServiceTest {
         user.setPassword("1234");
         user = userDao.save(user);
 
-        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, user);
+        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         routine.setName("Morning Routine");
         routine = routineDao.save(routine);
     }
@@ -75,6 +75,29 @@ public class WorkoutServiceTest {
         Workout updated = workoutDao.findById(workout.getId()).orElseThrow();
         assertNotNull(updated.getEndTime());
         assertTrue(updated.getEndTime().isAfter(updated.getStartTime()));
+    }
+
+    @Test
+    public void testFindWorkoutByIdReturnsWorkout() throws InstanceNotFoundException {
+        // Arrange
+        Workout workout = workoutService.startWorkout(routine.getId(), user.getId());
+
+        // Act
+        Workout found = workoutService.findWorkoutById(workout.getId());
+
+        // Assert
+        assertNotNull(found);
+        assertEquals(workout.getId(), found.getId());
+        assertEquals(workout.getUser().getId(), found.getUser().getId());
+        assertEquals(workout.getRoutine().getId(), found.getRoutine().getId());
+        assertNotNull(found.getStartTime());
+        assertNull(found.getEndTime());
+    }
+
+    @Test
+    public void testFindWorkoutByIdNonexistentThrows() {
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> workoutService.findWorkoutById(999L));
     }
 
     @Test

@@ -60,7 +60,7 @@ public class WorkoutExerciseServiceTest {
         client = userDao.save(client);
 
         // Crear rutina
-        routine = new Routine("Rutina fuerza", "Descripción básica", VisibilityType.PUBLIC, trainer);
+        routine = new Routine("Rutina fuerza", "Descripción básica", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
         routine = routineDao.save(routine);
 
         // Crear ejercicio
