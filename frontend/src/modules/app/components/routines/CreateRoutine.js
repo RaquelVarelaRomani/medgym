@@ -8,7 +8,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
-    const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "MEDIUM"});
+    const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"});
     const [exercises, setExercises] = useState([{id: null, nombre: "", position: 1}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);

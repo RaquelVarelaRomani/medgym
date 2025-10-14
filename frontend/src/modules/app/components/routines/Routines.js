@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-// OJO! Importa estilos definidos en CSS
 import styles from "./Routines.module.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
@@ -45,6 +44,15 @@ const Routines = () => {
         );
     };
 
+    const getDifficultyText = (difficulty) => {
+        switch(difficulty) {
+            case 'BEGINNER': return 'Principiante';
+            case 'INTERMEDIATE': return 'Intermedia';
+            case 'ADVANCED': return 'Avanzada';
+            default: return difficulty;
+        }
+    };
+
     //CAMBIAR: hacer funcion auxiliar para mapear int a role
     const isClient = () => {
         if (!currentUser) return true;
@@ -63,6 +71,7 @@ const Routines = () => {
         if (!currentUser || !routine.trainerId) return false;
         return currentUser.id === routine.trainerId;
     }
+
     const handleEdit = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
@@ -136,6 +145,12 @@ const Routines = () => {
                     {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
                         "Entrenador desconocido"}
                 </p>
+
+                {routine.difficulty && (
+                    <span className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+            {getDifficultyText(routine.difficulty)}
+        </span>
+                )}
 
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
                 {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (

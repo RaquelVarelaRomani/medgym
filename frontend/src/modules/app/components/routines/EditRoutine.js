@@ -9,8 +9,8 @@ import Popup from "../common/Popup";
 const EditRoutine = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // routine ID from URL
-    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
-    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
+    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
+    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
     const [exercises, setExercises] = useState([{ id: null, nombre: "", position: null }]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
@@ -41,8 +41,8 @@ const EditRoutine = () => {
             id,
             (data) => {
                 const routineObj = data.content ? data.content[0] : data;
-                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
-                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
+                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility, difficulty: routineObj.difficulty });
+                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility, difficulty: routineObj.difficulty });
 
                 routineExerciseService.getRoutineExercises(
                     id,
@@ -177,6 +177,7 @@ const EditRoutine = () => {
         const titleChanged = routineData.titulo !== originalRoutineData.titulo;
         const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
         const visibilityChanged = routineData.visibility !== originalRoutineData.visibility;
+        const difficultyChanged = routineData.difficulty !== originalRoutineData.difficulty;
 
         const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
         const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
@@ -242,7 +243,7 @@ const EditRoutine = () => {
             }
         }
 
-        if (titleChanged || descriptionChanged || visibilityChanged) {
+        if (titleChanged || descriptionChanged || visibilityChanged || difficultyChanged) {
             try {
                 await new Promise((resolve, reject) => {
                     routineService.updateRoutine(
@@ -250,6 +251,7 @@ const EditRoutine = () => {
                         routineData.titulo,
                         routineData.descripcion,
                         routineData.visibility,
+                        routineData.difficulty,
                         resolve,
                         reject
                     );
@@ -299,6 +301,20 @@ const EditRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
+                    <label>Dificultad:</label>
+                    <select
+                        name="difficulty"
+                        value={routineData.difficulty}
+                        onChange={handleInputChange}
+                        aria-label="Seleccionar dificultad de la rutina"
+                    >
+                        <option value="BEGINNER">Principiante</option>
+                        <option value="INTERMEDIATE">Intermedia</option>
+                        <option value="ADVANCED">Avanzada</option>
+                    </select>
+                </div>
+
+                <div className={styles['form-div']}>
                     <label>Visibilidad:</label>
                     <select
                         name="visibility"
@@ -326,7 +342,8 @@ const EditRoutine = () => {
                                 className={styles['icono-papelera']}
                             />
                         </button>
-                        <div className={styles['ejercicio-input-container']} ref={(el) => inputContainerRefs.current[index] = el}>
+                        <div className={styles['ejercicio-input-container']}
+                             ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 value={exercise.nombre}
@@ -396,10 +413,10 @@ const EditRoutine = () => {
             </div>
             <Popup text={popupMessage} show={popupMessage !== null} onOk={() => {
                 setPopupMessage(null);
-                if (popupMessage.startsWith("S") /*chapuza épica, lo sé*/ ) {
+                if (popupMessage.startsWith("S") /*chapuza épica, lo sé*/) {
                     navigate(`/routines`);
                 }
-            }} />
+            }}/>
         </div>
     );
 };
