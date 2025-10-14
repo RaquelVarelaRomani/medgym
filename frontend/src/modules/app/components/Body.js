@@ -14,6 +14,7 @@ import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
 import Layout from "./Layout";
+import CreateExercise from "./routines/CreateExercise";
 
 const Body = () => {
     return (

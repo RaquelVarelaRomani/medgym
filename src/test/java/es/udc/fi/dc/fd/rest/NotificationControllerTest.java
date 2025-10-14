@@ -68,7 +68,7 @@ public class NotificationControllerTest {
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
                                                          User.RoleType roleType) throws Exception {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, User.RoleType.CLIENT);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, User.RoleType.CLIENT, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);

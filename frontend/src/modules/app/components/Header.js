@@ -19,6 +19,7 @@ const Header = () => {
 
     const handleToggleNotifications = () => {
         setShowNotifications(prev => !prev);
+        setIsDropdownOpen(false);
     };
 
     useEffect(() => {
@@ -38,6 +39,7 @@ const Header = () => {
         const handleClickOutside = (event) => {
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
                 setIsDropdownOpen(false);
+                setShowNotifications(false);
             }
         };
 
@@ -64,7 +66,8 @@ const Header = () => {
     };
 
     const handleProfileClick = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+        setIsDropdownOpen(prev => !prev);
+        setShowNotifications(false);
     };
 
     const handleViewProfile = () => {

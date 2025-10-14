@@ -35,6 +35,9 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         Routine routine = new Routine(name, description, visibility, Routine.DifficultyType.BEGINNER, trainer);
+
+        notificationService.createNotification(routine);
+
         return routineDao.save(routine);
     }
 
