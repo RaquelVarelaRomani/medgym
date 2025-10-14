@@ -3,9 +3,9 @@ import {
     appFetch
 } from "./appFetch";
 
-export const createRoutine = (name, description, trainerId, visibility, onSuccess, onErrors) => appFetch(
+export const createRoutine = (name, description, trainerId, visibility, difficulty, onSuccess, onErrors) => appFetch(
     `/routines`,
-    fetchConfig("POST", { name, description, trainerId, visibility }),
+    fetchConfig("POST", { name, description, trainerId, visibility, difficulty }),
     onSuccess,
     onErrors
 )

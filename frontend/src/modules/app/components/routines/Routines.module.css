@@ -108,6 +108,42 @@
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* difficulty badge */
+.routine-difficulty {
+  display: inline-block;
+  padding: 0.1rem 0.1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.routine-difficulty.beginner {
+  color: #4CAF50;
+  text-shadow:
+          0 0 3px rgba(76, 175, 80, 0.6),
+          0 0 12px rgba(76, 175, 80, 0.4),
+          0 0 24px rgba(76, 175, 80, 0.25);
+}
+
+.routine-difficulty.intermediate {
+  color: var(--neon-orange);
+  text-shadow:
+          0 0 3px rgba(255, 107, 53, 0.6),
+          0 0 12px rgba(255, 107, 53, 0.4),
+          0 0 24px rgba(255, 107, 53, 0.25);
+}
+
+.routine-difficulty.advanced {
+  color: var(--accent-red);
+  text-shadow:
+          0 0 3px rgba(255, 71, 87, 0.6),
+          0 0 12px rgba(255, 71, 87, 0.4),
+          0 0 24px rgba(255, 71, 87, 0.25);
+}
+
 /* button container */
 .caja-rutina > div {
   display: flex;
