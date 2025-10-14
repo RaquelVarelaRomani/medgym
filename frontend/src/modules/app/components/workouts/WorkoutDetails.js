@@ -147,9 +147,11 @@ const WorkoutDetails = () => {
 
     if (!workout) return null;
 
+    const isInProgress = !workout.endTime;
+
     return (
         <div className={styles['contenedor-workout-details']}>
-            <div className={styles['caja-workout-details']}>
+            <div className={`${styles['caja-workout-details']} ${isInProgress ? styles['active-workout-details'] : ''}`}>
                 <button className={styles['boton-atras']} onClick={handleBack}>
                     ←
                 </button>

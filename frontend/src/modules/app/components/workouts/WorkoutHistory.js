@@ -28,7 +28,15 @@ const WorkoutHistory = () => {
         workoutService.getWorkouts(
             (data) => {
                 console.log("Workouts loaded:", data);
-                setWorkouts(data);
+                // Sort workouts: active (in progress) first, then by start time descending
+                const sortedWorkouts = data.sort((a, b) => {
+                    const aInProgress = !a.endTime;
+                    const bInProgress = !b.endTime;
+                    if (aInProgress && !bInProgress) return -1;
+                    if (!aInProgress && bInProgress) return 1;
+                    return new Date(b.startTime) - new Date(a.startTime);
+                });
+                setWorkouts(sortedWorkouts);
                 setLoading(false);
             },
             (errors) => {
@@ -113,7 +121,7 @@ const WorkoutHistory = () => {
                             <Link
                                 to={`/workouts/${workout.id}`}
                                 key={workout.id}
-                                className={styles['caja-workout']}
+                                className={`${styles['caja-workout']} ${isInProgress ? styles['active-workout'] : ''}`}
                             >
                                 <div className={styles['workout-info']}>
                                     <h3>{workout.routineName}</h3>
