@@ -116,6 +116,47 @@
     justify-content: center;
 }
 
+.active-workout-badge {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 107, 53, 0.2),
+        rgba(255, 140, 90, 0.1)
+    );
+    border: 1px solid var(--neon-orange);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    color: var(--neon-orange-bright);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+    animation: pulse-badge 2s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.active-workout-badge:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 107, 53, 0.3),
+        rgba(255, 140, 90, 0.2)
+    );
+    box-shadow: 0 0 25px rgba(255, 107, 53, 0.5);
+    transform: translateY(-1px);
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 107, 53, 0.6);
+    }
+}
+
 .nav-link {
     text-decoration: none;
     color: var(--text-secondary);
