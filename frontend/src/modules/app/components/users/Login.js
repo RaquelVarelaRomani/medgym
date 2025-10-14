@@ -20,8 +20,11 @@ const Login = () => {
                 navigate("/routines");
             },
             (error) => {
-                setError("Usuario o contraseña incorrectos");
-                console.error("Error en login:", error);
+                if (error.globalError === 'project.exceptions.BlockedUserException') {
+                    setError('Tu cuenta ha sido bloqueada.');
+                } else {
+                    setError('Usuario o contraseña incorrectos.');
+                }
             }
         )
     };

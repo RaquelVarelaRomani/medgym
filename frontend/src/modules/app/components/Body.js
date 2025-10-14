@@ -18,6 +18,7 @@ import EditRoutine from "./routines/EditRoutine";
 import RequiresLogin from "./common/RequiresLogin";
 import RequiresLogout from "./common/RequiresLogout";
 import Layout from "./Layout";
+import UserModeration from "./users/UserModeration";
 import WorkoutHistory from "./workouts/WorkoutHistory";
 import WorkoutDetails from "./workouts/WorkoutDetails";
 
@@ -43,6 +44,7 @@ const Body = () => {
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
+                    <Route path="users/moderation" element={<Layout><UserModeration /></Layout>} />
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
