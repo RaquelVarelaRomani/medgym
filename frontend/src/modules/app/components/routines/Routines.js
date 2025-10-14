@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from "react";
-// OJO! Importa estilos definidos en CSS
 import styles from "./Routines.module.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-
+import * as workoutService from "../../../../backend/workoutService";
 const Routines = () => {
     const navigate = useNavigate();
 
@@ -86,6 +85,22 @@ const Routines = () => {
     //pag de crear rutinas CAMBIAR 
     navigate("/routines/new");
     };
+    const handleStartWorkout = (e, routineId) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        workoutService.startWorkout(
+            routineId,
+            (workoutData) => {
+                console.log("Workout iniciado:", workoutData);
+                navigate(`/workouts/session/${workoutData.id}`);
+            },
+            (error) => {
+                console.error("Error al iniciar entrenamiento:", error);
+                alert("No se pudo iniciar el entrenamiento. Inténtelo de nuevo.");
+            }
+        );
+    };
 
     if (loading) {
         return (
@@ -125,18 +140,32 @@ const Routines = () => {
                 key={routine.id}
                 className={styles['caja-rutina']}
             >
-                <h3>
-                    {routine.name}
-                    {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-                        <span className={styles['private-badge']}>🔒 Privado</span>
-                    )}
-                </h3> {/*Ya usamos h2 en el titulo grande*/}
-                <p>
-                    Generado por{" "}
-                    {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
-                        "Entrenador desconocido"}
-                </p>
+                <div className={styles["header-rutina"]}>
+                            <div className={styles["info-rutina"]}>
+                                <h3>
+                                    {routine.name}
+                                    {routine.visibility === "PRIVATE" &&
+                                        (isRoutineCreator(routine) || isAdmin()) && (
+                                            <span className={styles["private-badge"]}>🔒 Privado</span>
+                                        )}
+                                </h3>
+                                <p>
+                                    Generado por{" "}
+                                    {`${routine.trainerName ?? ""} ${
+                                        routine.trainerSurname ?? ""
+                                    }`.trim() || "Entrenador desconocido"}
+                                </p>
+                            </div>
 
+                            {(isClient() || isTrainer()) && (
+                                <button
+                                    className={styles["boton-empezar"]}
+                                    onClick={(e) => handleStartWorkout(e, routine.id)}
+                                >
+                                    Empezar entrenamiento
+                                </button>
+                            )}
+                        </div>
                 {/*boton editar y borrar para admins y creador de las rutinas*/}
                 {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
                     <div>
@@ -157,6 +186,7 @@ const Routines = () => {
 
                     </div>
                 )}
+
             </Link>
             ))}
         </div>
