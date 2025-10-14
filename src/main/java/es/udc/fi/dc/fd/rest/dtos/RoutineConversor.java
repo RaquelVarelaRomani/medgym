@@ -13,7 +13,8 @@ public class RoutineConversor {
     public static final RoutineDto toRoutineDto(Routine routine) {
         return new RoutineDto(routine.getId(), routine.getName(), routine.getDescription(), routine.getCreationDate(),
                 routine.getModificationDate(), routine.getTrainer().getId(), routine.getTrainer().getName(),
-                routine.getTrainer().getSurname(), routine.getVisibility().toString());
+                routine.getTrainer().getSurname(), routine.getVisibility().toString(),
+                routine.getDifficulty() != null ? routine.getDifficulty().toString() : null);
     }
 
     public static final List<RoutineDto> toRoutineDtos(List<Routine> routines) {

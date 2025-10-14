@@ -18,10 +18,11 @@ public class RoutineDto {
     private String trainerName;
     private String trainerSurname;
     private String visibility;
+    private String difficulty;
 
     public RoutineDto() {}
 
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility) {
+    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility, String difficulty) {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
@@ -31,6 +32,7 @@ public class RoutineDto {
         this.trainerName = trainerName;
         this.trainerSurname = trainerSurname;
         this.visibility = visibility;
+        this.difficulty = difficulty;
     }
 
     public Long getId() {
@@ -107,6 +109,14 @@ public class RoutineDto {
 
     public void setVisibility(String visibility) {
         this.visibility = visibility;
+    }
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

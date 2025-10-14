@@ -11,20 +11,29 @@ public class Routine {
         PUBLIC,
         PRIVATE
     }
+
+    public enum DifficultyType {
+        BEGINNER,
+        INTERMEDIATE,
+        ADVANCED
+    }
     private Long id;
     private String name;
     private String description;
     private LocalDateTime creationDate;
     private LocalDateTime modificationDate;
     private VisibilityType visibility;
+    private DifficultyType difficulty;
     private User trainer;
+    private java.util.List<RoutineExercise> routineExercises;
 
     public Routine() {}
 
-    public Routine(String name,  String description, VisibilityType visibility, User trainer) {
+    public Routine(String name,  String description, VisibilityType visibility, DifficultyType difficulty, User trainer) {
         this.name = name;
         this.description = description;
         this.visibility = visibility;
+        this.difficulty = difficulty;
         this.trainer = trainer;
     }
 
@@ -75,6 +84,15 @@ public class Routine {
         this.visibility = visibility;
     }
 
+    @Enumerated(EnumType.ORDINAL)
+    public DifficultyType getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(DifficultyType difficulty) {
+        this.difficulty = difficulty;
+    }
+
     @ManyToOne
     @JoinColumn(name = "trainer_id")
     public User getTrainer() {
@@ -82,6 +100,15 @@ public class Routine {
     }
     public void setTrainer(User user) {
         this.trainer = user;
+    }
+
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
+    public java.util.List<RoutineExercise> getRoutineExercises() {
+        return routineExercises;
+    }
+
+    public void setRoutineExercises(java.util.List<RoutineExercise> routineExercises) {
+        this.routineExercises = routineExercises;
     }
 
     @Transient
