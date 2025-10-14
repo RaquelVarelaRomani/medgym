@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./NotificationPopup.module.css";
-import {markNotificationAsRead, deleteNotification} from "../../../../backend/notificationService";
+import {markNotificationAsRead, deleteNotification} from "../../../../../backend/notificationService";
 
 const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) => {
     const popupRef = useRef(null);

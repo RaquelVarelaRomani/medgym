@@ -340,3 +340,53 @@
             rgba(255, 82, 82, 0.08)
     );
 }
+
+/* contenedor de la campana */
+.notification-wrapper {
+    position: relative;
+}
+
+/* popup de notificaciones */
+.notification-popup {
+    position: absolute;
+    top: 60px; /* baja el popup debajo de la campana */
+    right: -10px; /* ajusta horizontalmente según el diseño */
+    background: linear-gradient(
+            135deg,
+            rgba(19, 19, 26, 0.98) 0%,
+            rgba(26, 26, 36, 0.95) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            0 4px 16px rgba(255, 107, 53, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    min-width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1100;
+    animation: dropdownFadeIn 0.3s ease forwards;
+}
+
+/* título del popup */
+.notification-popup-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* items individuales */
+.notification-item {
+    padding: 12px 16px;
+    border-left: 3px solid var(--neon-orange);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}

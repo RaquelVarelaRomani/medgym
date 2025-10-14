@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./Profile.module.css";
 import { useNavigate } from "react-router-dom";
 import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
-import Popup from "../common/Popup";
+import Popup from "../common/popup/Popup";
 
 const Profile = () => {
     const navigate = useNavigate();

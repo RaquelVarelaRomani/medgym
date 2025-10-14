@@ -5,8 +5,8 @@ import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import {markNotificationAsRead} from "../../../backend/notificationService";
 import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
-import NotificationIcon from "./common/NotificationIcon";
-import NotificationPopup from "./common/NotificationPopup";
+import NotificationIcon from "./common/notifications/NotificationIcon";
+import NotificationPopup from "./common/notifications/NotificationPopup";
 
 const Header = () => {
     const location = useLocation();

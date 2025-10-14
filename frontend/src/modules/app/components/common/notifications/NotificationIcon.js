@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./NotificationIcon.module.css";
-import * as notificationService from "../../../../backend/notificationService";
+import * as notificationService from "../../../../../backend/notificationService";
 
 const NotificationIcon = ({ onClick, refreshTrigger }) => {
     const [count, setCount] = useState(0);

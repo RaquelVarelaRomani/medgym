@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./EditProfile.module.css";
 import { useNavigate } from "react-router-dom";
 import { changePassword, updateProfile, tryLoginFromServiceToken } from "../../../../backend/userService";
-import Popup from "../common/Popup";
+import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
 
