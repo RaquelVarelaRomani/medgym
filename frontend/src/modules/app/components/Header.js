@@ -65,6 +65,11 @@ const Header = () => {
         );
     };
 
+    const isAdmin = () => {
+        return profile?.role === 'ADMIN';
+
+    };
+
     const handleProfileClick = () => {
         setIsDropdownOpen(prev => !prev);
         setShowNotifications(false);
@@ -111,6 +116,22 @@ const Header = () => {
                         className={location.pathname.includes('/exercises') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Ejercicios
+                    </Link>
+                    {isAdmin() && (
+                        <Link
+                            to="/users/moderation"
+                            className={location.pathname.includes('/users/moderation')
+                                ? `${styles['nav-link']} ${styles['admin-link']} ${styles['active']}`
+                                : `${styles['nav-link']} ${styles['admin-link']}`}
+                        >
+                            Moderación
+                        </Link>
+                    )}
+                    <Link
+                        to="/workouts/history"
+                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Historial
                     </Link>
                 </nav>
 

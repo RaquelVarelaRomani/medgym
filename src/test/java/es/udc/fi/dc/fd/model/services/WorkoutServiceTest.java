@@ -78,6 +78,29 @@ public class WorkoutServiceTest {
     }
 
     @Test
+    public void testFindWorkoutByIdReturnsWorkout() throws InstanceNotFoundException {
+        // Arrange
+        Workout workout = workoutService.startWorkout(routine.getId(), user.getId());
+
+        // Act
+        Workout found = workoutService.findWorkoutById(workout.getId());
+
+        // Assert
+        assertNotNull(found);
+        assertEquals(workout.getId(), found.getId());
+        assertEquals(workout.getUser().getId(), found.getUser().getId());
+        assertEquals(workout.getRoutine().getId(), found.getRoutine().getId());
+        assertNotNull(found.getStartTime());
+        assertNull(found.getEndTime());
+    }
+
+    @Test
+    public void testFindWorkoutByIdNonexistentThrows() {
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> workoutService.findWorkoutById(999L));
+    }
+
+    @Test
     public void testFindWorkoutsFromUserreturnsWorkouts() {
         Workout w1 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
         Workout w2 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));

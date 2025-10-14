@@ -26,6 +26,8 @@ public class CommonControllerAdvice {
 
 	private static final String PERMISSION_EXCEPTION_CODE = "project.exceptions.PermissionException";
 
+	private static final String INVALID_EMAIL_EXCEPTION_CODE = "project.exceptions.InvalidEmailFormatException"; 
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -79,5 +81,17 @@ public class CommonControllerAdvice {
 		return new ErrorsDto(errorMessage);
 
 	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorsDto handleIllegalArgumentException(IllegalArgumentException exception, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                INVALID_EMAIL_EXCEPTION_CODE, 
+                null, 
+                "Formato de email inválido",
+                locale);
+        return new ErrorsDto(errorMessage);
+    }
 
 }

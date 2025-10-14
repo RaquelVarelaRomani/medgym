@@ -8,5 +8,6 @@ import java.util.List;
 public interface WorkoutService {
     Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException;
     void finishWorkout(Long id) throws InstanceNotFoundException;
+    Workout findWorkoutById(Long id) throws InstanceNotFoundException;
     List<Workout> findWorkoutsFromUser(Long userId);
 }

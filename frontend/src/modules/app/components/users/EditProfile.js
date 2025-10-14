@@ -61,11 +61,14 @@ const EditProfile = ({ isPasswordMode = false }) => {
                     } else {
                         setPopupMessage("Perfil actualizado con éxito");
                     }
+                    setError("");
                     setShowPopup(true);
                 },
-                (error) => {
-                    console.error("Error al actualizar el perfil:", error);
-                    alert("No se pudo actualizar el perfil");
+                (errorResponse) => {
+                    console.error("Error al actualizar el perfil:", errorResponse);
+
+                    const backendMessage = errorResponse?.response?.data?.globalError || "No se pudo actualizar el perfil";
+                    setError(backendMessage);
                 }
             );
         };
@@ -149,7 +152,9 @@ const EditProfile = ({ isPasswordMode = false }) => {
                             />
                         )}
 
-                        <form className={styles.form} onSubmit={handleSave}>
+                        {error && <p className="mensaje-error">{error}</p>}
+
+                        <form className="form" onSubmit={handleSave}>
                             <label htmlFor="name">Nombre</label>
                             <input
                                 type="text"
