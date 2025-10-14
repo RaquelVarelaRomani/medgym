@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import "./FileUploadButton.css";
+import styles from "./FileUploadButton.module.css";
 
 const FileUploadButton = ({ onFileSelect }) => {
     const fileInputRef = useRef(null);
@@ -17,7 +17,7 @@ const FileUploadButton = ({ onFileSelect }) => {
 
     return (
         <div>
-            <button className="file-upload-btn" type="button" onClick={handleButtonClick}>
+            <button className={styles['file-upload-btn']} type="button" onClick={handleButtonClick}>
                 Subir foto
             </button>
             <input

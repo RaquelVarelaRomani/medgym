@@ -17,7 +17,6 @@
     max-width: 1400px;
     box-sizing: border-box;
     position: relative;
-    margin-bottom: 2rem;
 }
 
 /* back button */
@@ -93,7 +92,6 @@
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 2rem;
-    margin-bottom: 3rem;
     font-size: 1rem;
     line-height: 1.8;
     color: var(--text-secondary);
@@ -243,6 +241,10 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.v-middle-align {
+  vertical-align: middle;
 }
 
 /* slide down animation */

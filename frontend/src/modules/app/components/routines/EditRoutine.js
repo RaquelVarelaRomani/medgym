@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import "./CreateRoutine.css"; // Reuse same CSS
+import styles from "./CreateRoutine.module.css"; // Reuse same CSS
 import { useNavigate, useParams } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
@@ -9,8 +9,8 @@ import Popup from "../common/Popup";
 const EditRoutine = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // routine ID from URL
-    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "" });
-    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "" });
+    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
+    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC" });
     const [exercises, setExercises] = useState([{ id: null, nombre: "", position: null }]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
@@ -41,8 +41,8 @@ const EditRoutine = () => {
             id,
             (data) => {
                 const routineObj = data.content ? data.content[0] : data;
-                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
-                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description });
+                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
+                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility });
 
                 routineExerciseService.getRoutineExercises(
                     id,
@@ -176,6 +176,7 @@ const EditRoutine = () => {
 
         const titleChanged = routineData.titulo !== originalRoutineData.titulo;
         const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
+        const visibilityChanged = routineData.visibility !== originalRoutineData.visibility;
 
         const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
         const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
@@ -191,8 +192,8 @@ const EditRoutine = () => {
 
         const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
-        if (!titleChanged && !descriptionChanged && !exercisesChanged) {
-            setPopupMessage("No hay cambios para guardar");
+        if (!titleChanged && !descriptionChanged && !visibilityChanged && !exercisesChanged) {
+            setPopupMessage("¡No hay cambios para guardar!");
             return;
         }
 
@@ -241,13 +242,14 @@ const EditRoutine = () => {
             }
         }
 
-        if (titleChanged || descriptionChanged) {
+        if (titleChanged || descriptionChanged || visibilityChanged) {
             try {
                 await new Promise((resolve, reject) => {
                     routineService.updateRoutine(
                         id,
                         routineData.titulo,
                         routineData.descripcion,
+                        routineData.visibility,
                         resolve,
                         reject
                     );
@@ -263,7 +265,7 @@ const EditRoutine = () => {
             setPopupMessage("Ocurrió un error");
         }
         if (successMessage) {
-            setPopupMessage("Se realizaron los cambios correctamente")
+            setPopupMessage("Cambios guardados. ¡Gracias!")
         }
     };
 
@@ -271,22 +273,22 @@ const EditRoutine = () => {
     if (error) return <div>{error}</div>;
 
     return (
-        <div className="contenedor-create-routine">
+        <div className={styles['contenedor-create-routine']}>
             <h2>Editar rutina</h2>
-            <div className="form-crear-rutina">
-                <div className="form-div">
+            <div className={styles['form-crear-rutina']}>
+                <div className={styles['form-div']}>
                     <label>Título:</label>
                     <input
                         type="text"
                         name="titulo"
                         value={routineData.titulo}
                         onChange={handleInputChange}
-                        className={titleError ? "input-error" : ""}
+                        className={titleError ? styles['input-error'] : ""}
                     />
-                    {titleError && <span className="error-message">{titleError}</span>}
+                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
                 </div>
 
-                <div className="form-div">
+                <div className={styles['form-div']}>
                     <label>Descripción:</label>
                     <textarea
                         name="descripcion"
@@ -296,22 +298,35 @@ const EditRoutine = () => {
                     />
                 </div>
 
+                <div className={styles['form-div']}>
+                    <label>Visibilidad:</label>
+                    <select
+                        name="visibility"
+                        value={routineData.visibility}
+                        onChange={handleInputChange}
+                        aria-label="Seleccionar visibilidad de la rutina"
+                    >
+                        <option value="PUBLIC">Pública</option>
+                        <option value="PRIVATE">Privada</option>
+                    </select>
+                </div>
+
                 {exercises.map((exercise, index) => (
-                    <div key={index} className="ejercicio-item">
+                    <div key={index} className={styles['ejercicio-item']}>
                         <label>Ejercicio {index + 1}:</label>
                         <button
                             type="button"
-                            className="boton-eliminar-ejercicio"
+                            className={styles['boton-eliminar-ejercicio']}
                             onClick={() => handleRemoveExercise(index)}
                             title="Eliminar ejercicio"
                         >
                             <img
                                 src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
                                 alt="Eliminar"
-                                className="icono-papelera"
+                                className={styles['icono-papelera']}
                             />
                         </button>
-                        <div className="ejercicio-input-container" ref={(el) => inputContainerRefs.current[index] = el}>
+                        <div className={styles['ejercicio-input-container']} ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 value={exercise.nombre}
@@ -331,11 +346,11 @@ const EditRoutine = () => {
                                 }}
                             />
                             {showExerciseSearch === index && (
-                                <div className="ejercicio-dropdown">
+                                <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((ex, i) => (
                                         <div
                                             key={i}
-                                            className="ejercicio-option"
+                                            className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, ex)}
                                         >
                                             {ex.name}
@@ -344,12 +359,12 @@ const EditRoutine = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="exercise-controls">
+                        <div className={styles['exercise-controls']}>
                             <button
                                 type="button"
                                 onClick={() => handleMoveUp(index)}
                                 disabled={index === 0}
-                                className="move-button"
+                                className={styles['move-button']}
                             >
                                 ▲
                             </button>
@@ -357,7 +372,7 @@ const EditRoutine = () => {
                                 type="button"
                                 onClick={() => handleMoveDown(index)}
                                 disabled={index === exercises.length - 1}
-                                className="move-button"
+                                className={styles['move-button']}
                             >
                                 ▼
                             </button>
@@ -366,15 +381,15 @@ const EditRoutine = () => {
 
                 ))}
 
-                <button className="boton-agregar-ejercicio" onClick={handleAddExercise}>
+                <button className={styles['boton-agregar-ejercicio']} onClick={handleAddExercise}>
                     +
                 </button>
 
-                <div className="form-actions">
-                    <button className="boton-guardar-rutina" onClick={handleSave}>
+                <div className={styles['form-actions']}>
+                    <button className={styles['boton-guardar-rutina']} onClick={handleSave}>
                         Guardar
                     </button>
-                    <button className="boton-cancelar" onClick={handleCancel}>
+                    <button className={styles['boton-cancelar']} onClick={handleCancel}>
                         Cancelar
                     </button>
                 </div>

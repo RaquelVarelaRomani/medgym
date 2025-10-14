@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react";
 // OJO! Importa estilos definidos en CSS
-import "./RoutineDetails.css";
+import styles from "./RoutineDetails.module.css";
+import stylesRoutine from "./Routines.module.css";
 //TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
 //useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
+import { tryLoginFromServiceToken } from "../../../../backend/userService";
 
 const RoutineDetails = () => {
   const { id } = useParams();
@@ -15,6 +17,7 @@ const RoutineDetails = () => {
   const [expandedExercises, setExpandedExercises] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {
@@ -26,6 +29,24 @@ const RoutineDetails = () => {
 
   const handleBack = () => {
     navigate("/routines");
+  };
+
+  const isClient = () => {
+    if (!currentUser) return true;
+    return currentUser.role === 'CLIENT';
+  };
+  const isTrainer = () => {
+    if (!currentUser) return false;
+    return currentUser.role === 'TRAINER';
+  };
+  const isAdmin = () => {
+    if (!currentUser) return false;
+    return currentUser.role === 'ADMIN';
+  };
+
+  const isRoutineCreator = (routine) => {
+    if (!currentUser || !routine.trainerId) return false;
+    return currentUser.id === routine.trainerId;
   };
 
     const loadRoutine = () => {
@@ -74,13 +95,22 @@ const RoutineDetails = () => {
 
 
     useEffect(() => {
-        loadRoutine();
-    }, [id]);
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
+                loadRoutine();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+    }, [id, navigate]);
 
-    if (loading) return <div className="contenedor-routine-details">Cargando rutina…</div>;
+    if (loading) return <div className={styles['contenedor-routine-details']}>Cargando rutina…</div>;
     if (error)
         return (
-            <div className="contenedor-routine-details">
+            <div className={styles['contenedor-routine-details']}>
                 <p>{error}</p>
                 <button onClick={() => window.location.reload()}>Reintentar</button>
             </div>
@@ -89,35 +119,40 @@ const RoutineDetails = () => {
     if (!routine) return null;
 
   return (
-      <div className="contenedor-routine-details">
-        <div className="caja-routine-details">
-          <button className="boton-atras" onClick={handleBack}>
+      <div className={styles['contenedor-routine-details']}>
+        <div className={styles['caja-routine-details']}>
+          <button className={styles['boton-atras']} onClick={handleBack}>
             ←
           </button>
 
-          <h1 className="titulo-rutina">{routine.name}</h1>
+          <h1 className={styles['titulo-rutina']}>
+            {routine.name}
+            {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
+              <span className={stylesRoutine['private-badge']}>🔒 Privado</span>
+            )}
+          </h1>
 
-          <div className="descripcion-rutina">
+          <div className={styles['descripcion-rutina']}>
             <p>{routine.description}</p>
           </div>
         </div>
 
-          <div className="lista-ejercicios">
+          <div className={styles['lista-ejercicios']}>
             {exercises.map((exercise, index) => (
-                <div key={exercise.id} className="ejercicio">
+                <div key={exercise.id} className={styles.ejercicio}>
                   <div
-                      className="header-ejercicio"
+                      className={styles['header-ejercicio']}
                       onClick={() => toggleExercise(exercise.id)}
                   >
                     <h3>{index + 1}. {exercise.exerciseName}</h3>
-                    <span className={`flecha ${expandedExercises[exercise.id] ? 'expandida' : ''}`}>
+                    <span className={`${styles.flecha} ${expandedExercises[exercise.id] ? styles.expandida : ''}`}>
                   &#9660; {/* flecha para desplegar */}
                 </span>
                   </div>
 
                   {expandedExercises[exercise.id] && (
-                      <div className="ejercicio-contenido">
-                        <p className="descripcion-ejercicio">{exercise.exerciseDescription}</p>
+                      <div className={styles['ejercicio-contenido']}>
+                        <p className={styles['descripcion-ejercicio']}>{exercise.exerciseDescription}</p>
                       </div>
                   )}
                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./EditProfile.css";
+import styles from "./EditProfile.module.css";
 import { useNavigate } from "react-router-dom";
 import { changePassword, updateProfile, tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/Popup";
@@ -15,13 +15,16 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
     const [showCropper, setShowCropper] = useState(false);
     const [imageToCrop, setImageToCrop] = useState(null);
     const [error, setError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     const navigate = useNavigate();
 
@@ -71,16 +74,23 @@ const EditProfile = ({ isPasswordMode = false }) => {
         };
 
         if (isPasswordMode) {
+            setError("");
+            setPasswordError("");
+            if (newPassword !== confirmPassword) {
+                setPasswordError("Las contraseñas nuevas no coinciden. Inténtelo de nuevo.");
+                return;
+            }
+
+            if (oldPassword === newPassword) {
+                setPasswordError("La nueva contraseña no puede ser igual a la actual.");
+                return;
+            }
 
             changePassword(
                 profile.id,
                 oldPassword,
                 newPassword,
                 () => {
-                    if (oldPassword === newPassword) {
-                        setError("La nueva contraseña no puede ser igual a la actual");
-                        return;
-                    }
 
                     console.log("Contraseña cambiada con éxito");
                     updateProfileData();
@@ -100,23 +110,24 @@ const EditProfile = ({ isPasswordMode = false }) => {
     };
 
     return (
-        <div className="contenedor">
-            <div className="caja-edit">
-                {!isPasswordMode && <h2 className="titulo">Editar perfil</h2>}
+        <div className={styles.contenedor}>
+            <div className={styles['caja-edit']}>
+                {!isPasswordMode && <h2 className={styles.titulo}>Editar perfil</h2>}
+
                 {!isPasswordMode && (
                     <>
-                        <div className="edit-profile-photo">
+                        <div className={styles['edit-profile-photo']}>
                             {profile?.profilePicture ? (
                                 <img
                                     src={`data:image/jpeg;base64,${profile.profilePicture}`}
                                     alt="Foto de perfil"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             ) : (
                                 <img
                                     src="./assets/default-profile.jpg"
                                     alt="Foto por defecto"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             )}
                         </div> 
@@ -183,22 +194,22 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                             />
 
-                            <div className="form-actions">
-                                <button type="submit" className="save-btn">Guardar</button>
-                                <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
+                            <div className={styles['form-actions']}>
+                                <button type="submit" className={styles['save-btn']}>Guardar</button>
+                                <button type="button" className={styles['cancel-btn']} onClick={handleCancel}>Cancelar</button>
                             </div>
                         </form>
                     </> 
                 )}
 
-                {isPasswordMode && <h2 className="titulo">Cambiar contraseña</h2>}
-                {isPasswordMode && error && <p className="mensaje-error">{error}</p>}
-
+                {isPasswordMode && <h2 className={styles.titulo}>Cambiar contraseña</h2>}
+                {isPasswordMode && error && <p className={styles['mensaje-error']}>{error}</p>}
+                
                 {isPasswordMode && (
-                    <form className="form" onSubmit={handleSave}>
+                    <form className={styles.form} onSubmit={handleSave}>
                         <label htmlFor="oldPassword">Contraseña actual</label>
 
-                        <div className="contenedor-password">
+                        <div className={styles['contenedor-password']}>
                             <input
                                 type={showOldPassword ? "text" : "password"}
                                 id="oldPassword"
@@ -207,13 +218,18 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 onChange={(e) => setOldPassword(e.target.value)}
                             />
                             <span
-                                className="ver-password"
+                                className={styles['ver-password']}
                                 onClick={() => setShowOldPassword(!showOldPassword)}
                             > &#128065; </span>
                         </div>
+                        {isPasswordMode && passwordError && (
+                            <p className={styles['mensaje-error']} style={{ alignSelf: "flex-start" }}>
+                                {passwordError}
+                            </p>
+                            )}
 
                         <label htmlFor="newPassword">Nueva contraseña</label>
-                        <div className="contenedor-password">
+                        <div className={styles['contenedor-password']}>
                             <input
                                 type={showNewPassword ? "text" : "password"}
                                 id="newPassword"
@@ -222,14 +238,31 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
                             <span
-                                className="ver-password"
+                                className={styles['ver-password']}
                                 onClick={() => setShowNewPassword(!showNewPassword)}
                             > &#128065; </span>
                         </div>
+                        <label htmlFor="confirmPassword">Confirmar nueva contraseña</label>
+                        <div className={styles['contenedor-password']}>
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            placeholder="Vuelva a escribir su nueva contraseña..."
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        <span
+                            className={styles['ver-password']}
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                            &#128065;
+                        </span>
+                        </div>
 
-                        <div className="form-actions">
-                            <button type="submit" className="save-btn">Guardar</button>
-                            <button type="button" className="cancel-btn" onClick={handleCancel}>Cancelar</button>
+
+                        <div className={styles['form-actions']}>
+                            <button type="submit" className={styles['save-btn']}>Guardar</button>
+                            <button type="button" className={styles['cancel-btn']} onClick={handleCancel}>Cancelar</button>
                         </div>
                     </form>
                 )}

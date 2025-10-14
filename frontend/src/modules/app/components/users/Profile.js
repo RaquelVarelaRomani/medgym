@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./Profile.css";
+import styles from "./Profile.module.css";
 import { useNavigate } from "react-router-dom";
 import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/Popup";
@@ -22,15 +22,6 @@ const Profile = () => {
         );
     }, [navigate]);
 
-    const handleReturnInit = () => {
-        navigate("/routines"); // Redirige a la página principal
-    }
-
-    const handleLogOut = () => {
-        logout();
-        setShowPopup(true);
-    }
-
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
     }
@@ -47,39 +38,37 @@ const Profile = () => {
     }
 
     return (
-        <div className="profile">
-            <div className="profile-container">
-                <div className="profile-header">
-                    <div className="profile-info">
-                        <div className="profile-photo">
+        <div className={styles.profile}>
+            <div className={styles['profile-container']}>
+                <div className={styles['profile-header']}>
+                    <div className={styles['profile-info']}>
+                        <div className={styles['profile-photo']}>
                             {profile?.profilePicture ? (
                                 <img
                                     src={`data:image/jpeg;base64,${profile.profilePicture}`}
                                     alt="Foto de perfil"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             ) : (
                                 <img
                                     src="./assets/default-profile.jpg"
                                     alt="Foto por defecto"
-                                    className="profile-image"
+                                    className={styles['profile-image']}
                                 />
                             )}
                         </div> 
-                        <h2 className="profile-name">
+                        <h2 className={styles['profile-name']}>
                             {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                         </h2>
                     </div>
                 
-                    <div className="profile-actions">
-                        <button className="return-init-button" onClick={handleReturnInit}> Volver al inicio </button>
-                        <button className="edit-profile-button" onClick={handleEditProfile}> Editar perfil </button>
-                        <button className="edit-profile-button" onClick={handleChangePassword}> Cambiar contraseña </button>
-                        <button className="logout-button" onClick={handleLogOut}> Cerrar sesión </button>
+                    <div className={styles['profile-actions']}>
+                        <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
+                        <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
                     </div>
                 </div>
 
-                <div className="profile-data">
+                <div className={styles['profile-data']}>
                     {profile ? (
                         <>
                             <p><strong>Email:</strong> {profile.email}</p>
@@ -93,7 +82,7 @@ const Profile = () => {
                 
             </div>
 
-            <Popup text={"Sesión cerrada"} show={showPopup} onOk={() => {
+            <Popup text={"Sesión cerrada. ¡Vuelva pronto!"} show={showPopup} onOk={() => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />

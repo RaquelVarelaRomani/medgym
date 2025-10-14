@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { login } from "../../../../backend/userService";
-import "./Login.css";
+import styles from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
+import Slogan from "../common/Slogan";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -26,19 +27,22 @@ const Login = () => {
     };
 
     return (
-        <div className="contenedor">
-            <div className="caja-login">
+        <div className={styles.contenedor}>
+
+            <Slogan />
+
+            <div className={styles['caja-login']}>
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Logo medgym"
-                    className="logo"
+                    className={styles.logo}
                 />
 
-                <h2 className="titulo">Inicia sesión</h2>
+                <h2 className={styles.titulo}>Inicia sesión</h2>
 
-                {error && <p className="mensaje-error">{error}</p>}
+                {error && <p className={styles['mensaje-error']}>{error}</p>}
 
-                <form className="form" onSubmit={(e) => {
+                <form className={styles.form} onSubmit={(e) => {
                     e.preventDefault();
                     handleSubmit();
                 }}>
@@ -53,7 +57,7 @@ const Login = () => {
                     />
 
                     <label htmlFor="password">Contraseña</label>
-                    <div className="contenedor-password">
+                    <div className={styles['contenedor-password']}>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password"
@@ -64,20 +68,20 @@ const Login = () => {
                         />
 
                         <span
-                            className="ver-password"
+                            className={styles['ver-password']}
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             &#128065;
                         </span>
                     </div>
 
-                    <p className="ir-a-registrarse">
-                        <Link to="/users/register" className="link-registrarse">
+                    <p className={styles['ir-a-registrarse']}>
+                        <Link to="/users/register" className={styles['link-registrarse']}>
                             Regístrate si todavía no tienes una cuenta.
                         </Link>
                     </p>
 
-                    <button type="submit" className="boton-entrar">
+                    <button type="submit" className={styles['boton-entrar']}>
                         Entrar
                     </button>
                 </form>

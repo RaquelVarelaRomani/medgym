@@ -1,0 +1,72 @@
+package es.udc.fi.dc.fd.rest.dtos;
+
+import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotNull;
+
+public class WorkoutDto {
+
+    public interface AllValidations {}
+
+    private Long id;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private Long routineId;
+    private String routineName;
+    private Long userId;
+
+    public WorkoutDto() {
+    }
+
+    public WorkoutDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId) {
+        this.id = id;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.routineId = routineId;
+        this.routineName = routineName;
+        this.userId = userId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @NotNull(groups = {AllValidations.class})
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public Long getRoutineId() {
+        return routineId;
+    }
+    public void setRoutineId(Long routineId) {
+        this.routineId = routineId;
+    }
+
+    public String getRoutineName() {
+        return routineName;
+    }
+    public void setRoutineName(String routineName) {
+        this.routineName = routineName;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+}

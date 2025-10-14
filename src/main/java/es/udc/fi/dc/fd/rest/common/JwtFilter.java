@@ -40,9 +40,14 @@ public class JwtFilter extends OncePerRequestFilter {
             String serviceToken = authHeaderValue.replace("Bearer ", "");
             JwtInfo jwtInfo = jwtGenerator.getInfo(serviceToken);
             
+            if ("BLOCKED".equals(jwtInfo.getStatus())) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
             request.setAttribute("serviceToken", serviceToken);
             request.setAttribute("userId", jwtInfo.getUserId());
-            
+
             configureSecurityContext(jwtInfo.getEmail(), jwtInfo.getRole());
             
         } catch (Exception e) {

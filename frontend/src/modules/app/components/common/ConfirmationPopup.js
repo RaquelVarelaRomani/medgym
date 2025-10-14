@@ -1,15 +1,17 @@
 import React from "react";
-import "./ConfirmationPopup.css";
+import styles from "./ConfirmationPopup.module.css";
 
 function ConfirmationPopup({ show, text, onOk, onCancel }) {
     if (!show) return null;
 
     return (
-        <div className="popup-overlay">
-            <div className="popup-content">
+        <div className={styles['popup-overlay']}>
+            <div className={styles['popup-content']}>
                 <p>{text}</p>
-                <button onClick={onCancel}>Cancelar</button>
-                <button onClick={onOk}>OK</button>
+                <div className={styles['popup-buttons']}>
+                    <button className={styles['popup-accept-btn']} onClick={onCancel}>Cancelar</button>
+                    <button className={styles['popup-accept-btn']} onClick={onOk}>OK</button>
+                </div>
             </div>
         </div>
     );

@@ -1,21 +1,21 @@
 
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import jakarta.transaction.Transactional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -29,8 +29,19 @@ public class ExerciseServiceTest {
     private UserDao userDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", "name", "lastName", "email@test.com", null, RoleType.CLIENT);
+        User user = new User(userName, "password", "name", "lastName", "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(user);
+    }
+
+    private Exercise createBasicExercise(User user, String name) throws DuplicateInstanceException {
+        return exerciseService.createExercise(
+                name,
+                "descripcion de prueba",
+                "Piernas",
+                "Mancuernas",
+                new byte[]{1, 2, 3},
+                user
+        );
     }
 
     @Test
@@ -49,7 +60,7 @@ public class ExerciseServiceTest {
         exerciseService.createExercise("exercise", "description", user);
 
         assertThrows(DuplicateInstanceException.class, () -> {
-            exerciseService.createExercise("exercise", "description", user);
+            createBasicExercise(user, "exercise");
         });
     }
 
@@ -58,12 +69,14 @@ public class ExerciseServiceTest {
         User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
-        exerciseService.updateExercise(exercise.getId(), "new name", "new description");
+        exerciseService.updateExercise(exercise.getId(), "new name", "new description", "Espalda", "Barra", new byte[]{4,5,6});
 
         Exercise updatedExercise = exerciseService.findExerciseById(exercise.getId());
 
         assertEquals("new name", updatedExercise.getName());
         assertEquals("new description", updatedExercise.getDescription());
+        assertEquals("Espalda", updatedExercise.getMuscleGroup());
+        assertEquals("Barra", updatedExercise.getEquipment());
     }
 
     @Test
@@ -73,7 +86,7 @@ public class ExerciseServiceTest {
         Exercise exercise2 = exerciseService.createExercise("exercise2", "description", user);
 
         assertThrows(DuplicateInstanceException.class, () -> {
-            exerciseService.updateExercise(exercise2.getId(), "exercise1", "new description");
+            exerciseService.updateExercise(exercise2.getId(), "exercise1", "new description", "Piernas", "Ninguno", new byte[]{1,2,3});
         });
     }
 
@@ -179,7 +192,7 @@ public class ExerciseServiceTest {
         User user = createUser("user@test.com");
         Exercise exercise = exerciseService.createExercise("exercise", "description", user);
 
-        exerciseService.updateExercise(exercise.getId(), "new name", "new description");
+        exerciseService.updateExercise(exercise.getId(), "new name", "new description", "Brazos", "Mancuernas", new byte[]{1,2,3});
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
 
         Exercise updatedExercise = exerciseService.findExerciseById(exercise.getId());
@@ -207,9 +220,9 @@ public class ExerciseServiceTest {
         exerciseService.createExercise("exercise1", "description1", user);
         exerciseService.createExercise("exercise2", "description2", user);
 
-        var exercises = exerciseService.findAllExercises();
+        var exercises = exerciseService.findAllExercises(user.getId());
 
-        assertEquals(12, exercises.size()); // Counting data.sql entries + 2 new ones
+        assertEquals(16, exercises.size()); // Counting data.sql entries + 2 new ones
     }
 
     @Test
@@ -224,9 +237,8 @@ public class ExerciseServiceTest {
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
-        // There should be only one pending exercise (exercise1)
-        assertEquals(11, pendingExercises.size());
-        assertEquals(exercise1.getId(), pendingExercises.get(10).getId());
+        assertEquals(3, pendingExercises.size());
+        assertEquals(exercise1.getId(), pendingExercises.get(2).getId());
     }
 
     @Test
@@ -240,8 +252,7 @@ public class ExerciseServiceTest {
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
-        // There should be no pending exercises
-        assertEquals(10, pendingExercises.size());
+        assertEquals(2, pendingExercises.size());
     }
 
     @Test
@@ -252,8 +263,7 @@ public class ExerciseServiceTest {
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
-        // Both exercises should be pending
-        assertEquals(12, pendingExercises.size());
+        assertEquals(4, pendingExercises.size()); // data.sql pending + 2
     }
 
     @Test
@@ -266,9 +276,9 @@ public class ExerciseServiceTest {
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
-        // Only exercise2 should be pending
-        assertEquals(11, pendingExercises.size());
-        assertEquals(exercise2.getId(), pendingExercises.get(10).getId());
+        // Only exercise2 should be pending + 2 from data.sql
+        assertEquals(3, pendingExercises.size());
+        assertEquals(exercise2.getId(), pendingExercises.get(2).getId());
     }
 
     @Test
@@ -281,9 +291,9 @@ public class ExerciseServiceTest {
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
-        // Only exercise2 should be pending
-        assertEquals(11, pendingExercises.size());
-        assertEquals(exercise2.getId(), pendingExercises.get(10).getId());
+        // Only exercise2 should be pending + 2 from data.sql
+        assertEquals(3, pendingExercises.size());
+        assertEquals(exercise2.getId(), pendingExercises.get(2).getId());
     }
 
     @Test

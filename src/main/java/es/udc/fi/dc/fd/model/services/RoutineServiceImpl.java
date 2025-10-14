@@ -31,7 +31,7 @@ public class RoutineServiceImpl implements RoutineService {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        Routine routine = new Routine(name, description, visibility, trainer);
+        Routine routine = new Routine(name, description, visibility, Routine.DifficultyType.BEGINNER, trainer);
         return routineDao.save(routine);
     }
 
@@ -98,5 +98,43 @@ public class RoutineServiceImpl implements RoutineService {
 
         return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Routine> findRoutinesByFilters(Long userId, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+        User user = userService.loginFromId(userId);
+        List<Routine> routines = routineDao.findAll();
+
+        // Filter by visibility
+        if (user.getRole() != User.RoleType.ADMIN) {
+            routines = routines.stream()
+                    .filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by muscle group if provided
+        if (muscleGroup != null && !muscleGroup.trim().isEmpty()) {
+            List<Routine> muscleGroupRoutines = routineDao.findByMuscleGroup(muscleGroup);
+            routines = routines.stream()
+                    .filter(muscleGroupRoutines::contains)
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by difficulty if provided
+        if (difficulty != null) {
+            routines = routines.stream()
+                    .filter(routine -> routine.getDifficulty() == difficulty)
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by trainer if provided
+        if (trainerId != null) {
+            routines = routines.stream()
+                    .filter(routine -> routine.getTrainer().getId().equals(trainerId))
+                    .collect(Collectors.toList());
+        }
+
+        return routines;
     }
 }

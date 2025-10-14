@@ -1,0 +1,76 @@
+@startuml
+!theme plain
+
+entity "users" as users {
+  *id : BIGINT <<PK>>
+  --
+  name : VARCHAR(50)
+  surname : VARCHAR(50)
+  email : VARCHAR(100) <<UNIQUE>>
+  phone_number : VARCHAR(20) <<UNIQUE>>
+  password : VARCHAR(255)
+  profile_picture : MEDIUMBLOB
+  role : TINYINT
+}
+
+entity "routines" as routines {
+  *id : BIGINT <<PK>>
+  --
+  name : VARCHAR(100)
+  description : TEXT
+  creation_date : DATETIME
+  modification_date : DATETIME
+  trainer_id : BIGINT <<FK>>
+  visibility : TINYINT
+}
+
+entity "exercises" as exercises {
+  *id : BIGINT <<PK>>
+  --
+  name : VARCHAR(100)
+  description : TEXT
+  status : VARCHAR(20)
+  creator_id : BIGINT <<FK>>
+}
+
+entity "routine_exercises" as routine_exercises {
+  *id : BIGINT <<PK>>
+  --
+  routine_id : BIGINT <<FK>>
+  exercise_id : BIGINT <<FK>>
+  position : INT
+}
+
+entity "workouts" as workouts {
+  *id : BIGINT <<PK>>
+  --
+  start_time : DATETIME
+  end_time : DATETIME
+  routine_id : BIGINT <<FK>>
+  user_id : BIGINT <<FK>>
+}
+
+entity "workout_exercises" as workout_exercises {
+  *id : BIGINT <<PK>>
+  --
+  reps : SMALLINT
+  weight : SMALLINT
+  durationSeconds : SMALLINT
+  workout_id : BIGINT <<FK>>
+  routine_exercise_id : BIGINT <<FK>>
+}
+
+' -------------------------------
+' Relaciones
+' -------------------------------
+
+users ||--o{ routines : "trainer_id"
+users ||--o{ exercises : "creator_id"
+routines ||--o{ routine_exercises : "routine_id"
+exercises ||--o{ routine_exercises : "exercise_id"
+routines ||--o{ workouts : "routine_id"
+users ||--o{ workouts : "user_id"
+workouts ||--o{ workout_exercises : "workout_id"
+routine_exercises ||--o{ workout_exercises : "routine_exercise_id"
+
+@enduml

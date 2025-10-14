@@ -1,8 +1,8 @@
 import React, { useState} from "react";
-import "./Register.css";
+import styles from "./Register.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import Popup from "../common/Popup";
 import {signUp} from "../../../../backend/userService";
+import Slogan from "../common/Slogan";
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -10,12 +10,24 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
     const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const handleSubmit = () => {
+        //limpiar errores que se hayan almacenado antes
+        setError("");
+        setPasswordError("");
+        
+        if(password !== confirmPassword){
+            setPasswordError("Las contraseñas no coinciden. Inténtelo de nuevo.");
+        }
+
+
         const user = {
             name: name.trim(),
             surname: surname.trim(),
@@ -35,20 +47,21 @@ const Register = () => {
                 console.error("Error en el registro:", errorResponse);
                 setError(errorResponse.globalError || "Error en el registro");
             },
-            () => navigate("/users/login")
         );
     };
 
     return (
-        <div className="contenedor">
-            <div className="caja-login">
+        <div className={styles.contenedor}>
+            <Slogan className={styles['slogan-registro']} />
+
+            <div className={styles['caja-login']}>
                 <img
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Logo medgym"
-                    className="logo"
+                    className={styles.logo}
                 />
 
-                <h2 className="titulo">Regístrate</h2>
+                <h2 className={styles.titulo}>Regístrate</h2>
 
                 {error && <p className="mensaje-error">{error}</p>}
                 <form className="form" onSubmit={(e) => {
@@ -95,8 +108,14 @@ const Register = () => {
                         placeholder="Escriba aquí su número de teléfono..."
                     />
 
+                    {passwordError && (
+                        <p className={styles['mensaje-error']} style={{ alignSelf: "flex-start" }}>
+                        {passwordError}
+                        </p>
+                    )}
+                    
                     <label htmlFor="password">Contraseña</label>
-                    <div className="contenedor-password">
+                    <div className={styles['contenedor-password']}>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password"
@@ -106,29 +125,44 @@ const Register = () => {
                             placeholder="Escriba aquí su contraseña..."
                         />
                         <span
-                            className="ver-password"
+                            className={styles['ver-password']}
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             &#128065;
                         </span>
                     </div>
 
-                    <p className="ir-a-login">
-                        <Link to="/users/login" className="link-login">
+                    <label htmlFor="confirmPassword">Confirmar contraseña</label>
+                    <div className={styles['contenedor-password']}>
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            id="confirmPassword"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            placeholder="Vuelva a escribir aquí su contraseña..."
+                        />
+                        <span
+                            className={styles['ver-password']}
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        >
+                            &#128065;
+                        </span>
+                    </div>
+                    
+                    <p className={styles['ir-a-login']}>
+                        <Link to="/users/login" className={styles['link-login']}>
                             Inicia sesión si ya tienes una cuenta.
                         </Link>
                     </p>
 
-                    <button type="submit" className="boton-guardar">
+                    <button type="submit" className={styles['boton-guardar']}>
                         Guardar
                     </button>
                 </form>
             </div>
 
-            <Popup text={"Usuario registrado con éxito"} show={showPopup} onOk={() => {
-                setShowPopup(false);
-                navigate("/routines", { replace: true, state: { registered: true, email } });
-            }} />
+            
         </div>
     );
 };

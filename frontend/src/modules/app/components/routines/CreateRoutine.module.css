@@ -10,6 +10,15 @@
     box-sizing: border-box;
 }
 
+.contenedor-create-routine h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+}
+
 .header-crear-rutina {
     display: flex;
     justify-content: space-between;
@@ -71,7 +80,8 @@
 }
 
 .form-div input,
-.form-div textarea {
+.form-div textarea,
+.form-div select {
     width: 100%;
     padding: 0.875rem;
     border: 1px solid var(--border-color);
@@ -94,7 +104,8 @@
 }
 
 .form-div input:focus,
-.form-div textarea:focus {
+.form-div textarea:focus,
+.form-div select:focus {
     outline: none;
     border-color: var(--neon-orange);
     background: rgba(19, 19, 26, 0.8);
@@ -337,8 +348,8 @@
 /* cancel button */
 .boton-cancelar {
     background: transparent;
-    color: #ff4757;
-    border: 2px solid #ff4757;
+    color: var(--accent-red);
+    border: 2px solid var(--accent-red);
     padding: 0.65rem 1.5rem;
     border-radius: 10px;
     font-weight: 600;
@@ -368,7 +379,7 @@
 }
 
 .boton-cancelar:hover {
-    background: linear-gradient(135deg, #ff4757, #e84545);
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
     color: white;
     border-color: #ff6b7a;
     box-shadow:
@@ -441,4 +452,13 @@
     border-color: var(--border-color);
     cursor: not-allowed;
     opacity: 0.3;
+}
+
+/* error message */
+.error-message {
+    color: var(--accent-red);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
 }

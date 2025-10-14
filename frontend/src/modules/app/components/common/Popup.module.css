@@ -1,0 +1,83 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 15, 0.8);
+  backdrop-filter: blur(5px); /*desenfoca lo de detrás*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: aparicion 0.3s ease;
+}
+
+.popup-content {
+    /*force el fondo porque si no, podia salir blanco*/
+  background: linear-gradient(145deg, #1a1a24, #13131a) !important; 
+  border: 1px solid rgba(255, 107, 53, 0.35);
+  box-shadow:
+    0 0 25px rgba(255, 107, 53, 0.25),
+    0 0 45px rgba(255, 107, 53, 0.1);
+  border-radius: 14px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  color: #fff !important;
+  animation: zoom 0.25s ease;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/*texto del pop up*/
+.popup-content p {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 1.8rem;
+  text-shadow:
+    0 0 8px rgba(255, 107, 53, 0.5),
+    0 0 20px rgba(255, 107, 53, 0.3);
+  letter-spacing: 0.4px;
+}
+
+/*ok*/
+.popup-content button {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.8rem 2.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow:
+    0 0 10px rgba(255, 107, 53, 0.3),
+    0 0 20px rgba(255, 107, 53, 0.2);
+}
+
+.popup-content button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 25px rgba(255, 107, 53, 0.5),
+    0 0 40px rgba(255, 107, 53, 0.3);
+}
+
+
+@keyframes aparicion {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoom {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

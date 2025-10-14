@@ -1,0 +1,242 @@
+/* contenedor principal */
+.contenedor-create-exercise {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.contenedor-create-exercise h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+}
+
+/* header */
+.header-crear-ejercicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 2rem;
+    padding: 0;
+}
+
+.header-crear-ejercicio h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.foto-perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.foto-perfil:hover {
+    transform: scale(1.1);
+}
+
+/* formulario */
+.form-crear-ejercicio {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+}
+
+.form-div {
+    margin-bottom: 1.5rem;
+}
+
+.form-div label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.form-div input,
+.form-div textarea,
+.form-div select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: rgba(19, 19, 26, 0.6);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    resize: none;
+    overflow-y: auto;
+}
+
+.form-div input::placeholder,
+.form-div textarea::placeholder {
+    color: var(--text-muted);
+    font-family: inherit;
+    opacity: 0.7;
+}
+
+.form-div input:focus,
+.form-div textarea:focus,
+.form-div select:focus {
+    outline: none;
+    border-color: var(--neon-orange);
+    background: rgba(19, 19, 26, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* botones de guardar y cancelar */
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+/* Guardar */
+.boton-guardar {
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    padding: 0.65rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-guardar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.boton-guardar:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.boton-guardar:hover::before {
+    left: 100%;
+}
+
+.boton-guardar:active {
+    transform: translateY(0);
+}
+
+/* Cancelar */
+.boton-cancelar {
+    background: transparent;
+    color: var(--accent-red);
+    border: 2px solid var(--accent-red);
+    padding: 0.65rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boton-cancelar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 71, 87, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.boton-cancelar:hover {
+    background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
+    color: white;
+    border-color: #ff6b7a;
+    box-shadow:
+            0 0 20px rgba(255, 71, 87, 0.5),
+            0 4px 15px rgba(255, 71, 87, 0.3);
+    transform: translateY(-2px);
+}
+
+.boton-cancelar:hover::before {
+    left: 100%;
+}
+
+.boton-cancelar:active {
+    transform: translateY(0);
+}
+
+/* MENSAJES DE ESTADO */
+.success-message {
+    color: var(--success-green);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.error-message {
+    color: var(--accent-red);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    text-align: center;
+}

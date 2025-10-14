@@ -1,22 +1,31 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import jakarta.transaction.Transactional;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.ExerciseDao;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.RoutineExercise;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,17 +46,17 @@ public class RoutineExerciseServiceTest {
 
     private User createTrainer(String email) {
         User trainer = new User("Pepe", "Domingo", email,
-                "666555444", "password", null, RoleType.TRAINER);
+                "666555444", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
-    private Exercise createExercise(String exerciseName){
-        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING);
+    private Exercise createExercise(String exerciseName, User user){
+        Exercise exercise = new Exercise(exerciseName, "The description", "Piernas", "Mancuernas", new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 
     private Routine createRoutine(String name, User user){
-        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, user);
+        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         return routineDao.save(routine);
     }
 
