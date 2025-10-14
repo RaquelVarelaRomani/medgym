@@ -3,7 +3,7 @@ import styles from "./Exercises.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
-import ConfirmationPopup from "../common/ConfirmationPopup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 
 const Exercises = () => {
     const navigate = useNavigate();

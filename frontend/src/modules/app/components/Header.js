@@ -2,14 +2,25 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
+import {markNotificationAsRead} from "../../../backend/notificationService";
+import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
+import NotificationIcon from "./common/notifications/NotificationIcon";
+import NotificationPopup from "./common/notifications/NotificationPopup";
 
 const Header = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const [notifications, setNotifications] = useState([]);
     const dropdownComponent = useRef(null);
+
+    const handleToggleNotifications = () => {
+        setShowNotifications(prev => !prev);
+        setIsDropdownOpen(false);
+    };
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -28,6 +39,7 @@ const Header = () => {
         const handleClickOutside = (event) => {
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
                 setIsDropdownOpen(false);
+                setShowNotifications(false);
             }
         };
 
@@ -37,12 +49,30 @@ const Header = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (!profile) return;
+
+        getUserNotifications(
+            (data) => setNotifications(data),
+            (error) => console.error("Error loading notifications:", error)
+        );
+    }, [profile]);
+
+    const refreshNotifications = () => {
+        getUserNotifications(
+            (data) => setNotifications(data),
+            (error) => console.error("Error loading notifications:", error)
+        );
+    };
+
     const isAdmin = () => {
         return profile?.role === 'ADMIN';
+
     };
 
     const handleProfileClick = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+        setIsDropdownOpen(prev => !prev);
+        setShowNotifications(false);
     };
 
     const handleViewProfile = () => {
@@ -107,6 +137,26 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
+                    <div className={styles['notification-wrapper']}>
+                        <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />
+                        {showNotifications && (
+                            <NotificationPopup
+                                notifications={notifications}
+                                onClose={() => setShowNotifications(false)}
+                                onNotificationRead={(id, action) => {
+                                    if (action === "delete") {
+                                        setNotifications(prev => prev.filter(n => n.id !== id));
+                                    } else if (action === "read") {
+                                        setNotifications(prev =>
+                                            prev.map(n => n.id === id ? { ...n, isRead: true } : n)
+                                        );
+                                    }
+                                    refreshNotifications();
+                                }}
+                            />
+                        )}
+                    </div>
+
                     <div className={styles['profile-dropdown']}>
                         <button
                             className={styles['profile-button']}
@@ -120,7 +170,6 @@ const Header = () => {
                                 />
                             </div>
                         </button>
-
                         {isDropdownOpen && (
                             <div className={styles['dropdown-menu']}>
                                 <button

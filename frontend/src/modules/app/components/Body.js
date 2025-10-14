@@ -1,4 +1,3 @@
-//Rutas principales -> donde se decide que página mostrar según el URL
 import React from "react";
 
 import {Navigate, Route, Routes} from "react-router-dom";
