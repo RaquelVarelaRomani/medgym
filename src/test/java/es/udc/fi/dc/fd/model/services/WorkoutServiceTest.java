@@ -44,7 +44,7 @@ public class WorkoutServiceTest {
         user.setPassword("1234");
         user = userDao.save(user);
 
-        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, user);
+        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         routine.setName("Morning Routine");
         routine = routineDao.save(routine);
     }

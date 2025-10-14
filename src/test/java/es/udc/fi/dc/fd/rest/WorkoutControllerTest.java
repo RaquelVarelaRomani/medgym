@@ -71,7 +71,7 @@ public class WorkoutControllerTest {
         final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234", null, User.RoleType.TRAINER, User.StatusType.ACTIVE);
         userDao.save(trainer);
 
-        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, trainer);
+        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
         routineDao.save(routine);
     }
 
