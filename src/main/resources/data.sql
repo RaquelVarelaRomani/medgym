@@ -105,3 +105,17 @@ INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routi
     (14, 35, 33, 5, 1),
     (10, 45, 38, 2, 6),
     (9, 50, 52, 3, 2);
+
+INSERT INTO user_follows (client_id, trainer_id)
+VALUES
+    (1, 2),
+    (3, 2),
+    (1, 4),
+    (3, 4);
+
+INSERT INTO notifications (routine_id, user_id, is_read, date)
+VALUES
+    (1, 1, FALSE, '2025-10-12 19:30:00'),
+    (1, 3, TRUE, '2025-10-11 17:45:00'),
+    (2, 1, FALSE, '2025-10-10 12:00:00'),
+    (NULL, 2, FALSE, '2025-10-09 09:15:00');

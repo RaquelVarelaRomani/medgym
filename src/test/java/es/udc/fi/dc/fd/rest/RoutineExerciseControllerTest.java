@@ -92,7 +92,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Routine createRoutine(String name, User user) {
-        return routineDao.save(new Routine(name, name + " description", Routine.VisibilityType.PUBLIC, user));
+        return routineDao.save(new Routine(name, name + " description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user));
     }
 
     @Test

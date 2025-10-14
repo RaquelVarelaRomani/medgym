@@ -28,14 +28,9 @@ const WorkoutHistory = () => {
         workoutService.getWorkouts(
             (data) => {
                 console.log("Workouts loaded:", data);
-                // Sort workouts: active (in progress) first, then by start time descending
-                const sortedWorkouts = data.sort((a, b) => {
-                    const aInProgress = !a.endTime;
-                    const bInProgress = !b.endTime;
-                    if (aInProgress && !bInProgress) return -1;
-                    if (!aInProgress && bInProgress) return 1;
-                    return new Date(b.startTime) - new Date(a.startTime);
-                });
+                const sortedWorkouts = data.sort((a, b) =>
+                    new Date(b.startTime) - new Date(a.startTime)
+                ); //recent ones first
                 setWorkouts(sortedWorkouts);
                 setLoading(false);
             },

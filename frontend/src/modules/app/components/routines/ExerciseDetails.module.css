@@ -1,0 +1,170 @@
+/* CONTENEDOR PRINCIPAL */
+.contenedor-exercise-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.caja-exercise-details {
+    background: transparent;
+    padding: 2rem;
+    width: 100%;
+    max-width: 1400px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* BOTÓN ATRÁS (MISMO ESTILO QUE RUTINAS) */
+.boton-atras {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+}
+
+.boton-atras::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 53, 0.3),
+            transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.boton-atras:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow:
+            0 0 20px rgba(255, 107, 53, 0.5),
+            0 4px 15px rgba(255, 107, 53, 0.3);
+    transform: translateY(-2px);
+}
+
+.boton-atras:hover::before {
+    left: 100%;
+}
+
+.boton-atras:active {
+    transform: translateY(0);
+}
+
+/* TÍTULO DEL EJERCICIO */
+.titulo-ejercicio {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 3rem 0 2rem 0;
+    text-align: center;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* CONTENEDOR PRINCIPAL DE INFO */
+.info-ejercicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* COLUMNA DE TEXTO */
+.detalles-ejercicio {
+    flex: 1;
+    min-width: 350px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.8;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.detalles-ejercicio::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    opacity: 0.5;
+}
+
+.detalles-ejercicio p {
+    margin: 0 0 1rem 0;
+    color: var(--text-secondary);
+}
+
+/* COLUMNA DE IMAGEN */
+.imagen-ejercicio {
+    flex: 1;
+    min-width: 350px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imagen-ejercicio img {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.imagen-ejercicio img:hover {
+    border-color: var(--neon-orange);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(255, 107, 53, 0.2);
+}
+
+/* ADAPTACIÓN RESPONSIVE */
+@media (max-width: 900px) {
+    .info-ejercicio {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .detalles-ejercicio,
+    .imagen-ejercicio {
+        width: 100%;
+        max-width: 600px;
+    }
+}

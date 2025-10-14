@@ -15,17 +15,19 @@ public class ExerciseDto {
     private String equipment;
     private byte[] image;
     private String status;
+    private Long creatorId;
 
     public ExerciseDto() {}
 
-    public ExerciseDto(Long id, String name, String description, String muscleGroup, String equipment, byte[] image, String status) {
+    public ExerciseDto(Long id, String name, String description, String muscleGroup, String equipment, byte[] image, String status, Long creatorId) {
         this.id = id;
-        this.name = name.trim();
-        this.description = description.trim();
-        this.muscleGroup = muscleGroup.trim();
-        this.equipment = equipment.trim();
+        this.name = name == null ? null : name.trim();
+        this.description = description == null ? null : description.trim();
+        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
+        this.equipment = equipment == null ? "" : equipment.trim();
         this.image = image;
-        this.status = status.trim();
+        this.status = status == null ? null : status.trim();
+        this.creatorId = creatorId;
     }
 
     public Long getId() {
@@ -87,5 +89,12 @@ public class ExerciseDto {
     }
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 }

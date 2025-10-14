@@ -1,76 +1,95 @@
 @startuml
-!theme plain
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide circle
 
-entity "users" as users {
-  *id : BIGINT <<PK>>
+entity "users" {
+  * id : BIGINT [PK]
   --
   name : VARCHAR(50)
   surname : VARCHAR(50)
-  email : VARCHAR(100) <<UNIQUE>>
-  phone_number : VARCHAR(20) <<UNIQUE>>
+  email : VARCHAR(100) [UNIQUE]
+  phone_number : VARCHAR(20) [UNIQUE]
   password : VARCHAR(255)
   profile_picture : MEDIUMBLOB
   role : TINYINT
 }
 
-entity "routines" as routines {
-  *id : BIGINT <<PK>>
+entity "routines" {
+  * id : BIGINT [PK]
   --
   name : VARCHAR(100)
   description : TEXT
   creation_date : DATETIME
   modification_date : DATETIME
-  trainer_id : BIGINT <<FK>>
+  trainer_id : BIGINT [FK → users.id]
   visibility : TINYINT
 }
 
-entity "exercises" as exercises {
-  *id : BIGINT <<PK>>
+entity "exercises" {
+  * id : BIGINT [PK]
   --
   name : VARCHAR(100)
   description : TEXT
   status : VARCHAR(20)
-  creator_id : BIGINT <<FK>>
+  creator_id : BIGINT [FK → users.id]
 }
 
-entity "routine_exercises" as routine_exercises {
-  *id : BIGINT <<PK>>
+entity "routine_exercises" {
+  * id : BIGINT [PK]
   --
-  routine_id : BIGINT <<FK>>
-  exercise_id : BIGINT <<FK>>
+  routine_id : BIGINT [FK → routines.id]
+  exercise_id : BIGINT [FK → exercises.id]
   position : INT
 }
 
-entity "workouts" as workouts {
-  *id : BIGINT <<PK>>
+entity "workouts" {
+  * id : BIGINT [PK]
   --
   start_time : DATETIME
   end_time : DATETIME
-  routine_id : BIGINT <<FK>>
-  user_id : BIGINT <<FK>>
+  routine_id : BIGINT [FK → routines.id]
+  user_id : BIGINT [FK → users.id]
 }
 
-entity "workout_exercises" as workout_exercises {
-  *id : BIGINT <<PK>>
+entity "workout_exercises" {
+  * id : BIGINT [PK]
   --
   reps : SMALLINT
   weight : SMALLINT
-  durationSeconds : SMALLINT
-  workout_id : BIGINT <<FK>>
-  routine_exercise_id : BIGINT <<FK>>
+  duration_seconds : SMALLINT
+  workout_id : BIGINT [FK → workouts.id]
+  routine_exercise_id : BIGINT [FK → routine_exercises.id]
 }
 
-' -------------------------------
-' Relaciones
-' -------------------------------
+entity "user_follows" {
+  * id : BIGINT [PK]
+  --
+  client_id : BIGINT [FK → users.id]
+  trainer_id : BIGINT [FK → users.id]
+}
 
-users ||--o{ routines : "trainer_id"
-users ||--o{ exercises : "creator_id"
-routines ||--o{ routine_exercises : "routine_id"
-exercises ||--o{ routine_exercises : "exercise_id"
-routines ||--o{ workouts : "routine_id"
-users ||--o{ workouts : "user_id"
-workouts ||--o{ workout_exercises : "workout_id"
-routine_exercises ||--o{ workout_exercises : "routine_exercise_id"
+entity "notifications" {
+  * id : BIGINT [PK]
+  --
+  routine_id : BIGINT [FK → routines.id]
+  user_id : BIGINT [FK → users.id]
+  is_read : BOOLEAN
+  date : DATETIME
+}
+
+' Relaciones
+users ||--o{ routines : trainer_id
+users ||--o{ exercises : creator_id
+routines ||--o{ routine_exercises : contiene
+exercises ||--o{ routine_exercises : pertenece
+routines ||--o{ workouts : genera
+users ||--o{ workouts : realiza
+workouts ||--o{ workout_exercises : incluye
+routine_exercises ||--o{ workout_exercises : referencia
+users ||--o{ notifications : recibe
+routines ||--o{ notifications : notifica
+users ||--o{ user_follows : client_id
+users ||--o{ user_follows : trainer_id
 
 @enduml

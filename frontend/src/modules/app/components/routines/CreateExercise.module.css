@@ -1,4 +1,4 @@
-/* contenedor principal */
+/* CONTENEDOR PRINCIPAL */
 .contenedor-create-exercise {
     display: flex;
     flex-direction: column;
@@ -19,7 +19,7 @@
     margin-bottom: 2rem;
 }
 
-/* header */
+/* HEADER */
 .header-crear-ejercicio {
     display: flex;
     justify-content: space-between;
@@ -27,15 +27,12 @@
     width: 100%;
     max-width: 900px;
     margin-bottom: 2rem;
-    padding: 0;
 }
 
 .header-crear-ejercicio h2 {
     color: var(--text-primary);
     font-size: 2rem;
     font-weight: 700;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    letter-spacing: -0.02em;
 }
 
 .foto-perfil {
@@ -51,13 +48,9 @@
     transform: scale(1.1);
 }
 
-/* formulario */
+/* FORMULARIO */
 .form-crear-ejercicio {
-    background: linear-gradient(
-            135deg,
-            var(--bg-card) 0%,
-            rgba(26, 26, 36, 0.8) 100%
-    );
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
     border: 1px solid var(--border-color);
     padding: 2rem;
     border-radius: 16px;
@@ -67,6 +60,7 @@
     box-sizing: border-box;
 }
 
+/* CAMPOS */
 .form-div {
     margin-bottom: 1.5rem;
 }
@@ -94,13 +88,11 @@
     transition: all 0.3s ease;
     box-sizing: border-box;
     resize: none;
-    overflow-y: auto;
 }
 
 .form-div input::placeholder,
 .form-div textarea::placeholder {
     color: var(--text-muted);
-    font-family: inherit;
     opacity: 0.7;
 }
 
@@ -113,7 +105,41 @@
     box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
-/* botones de guardar y cancelar */
+/* IMAGEN DEL EJERCICIO */
+.exercise-photo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.exercise-image {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: linear-gradient(
+        135deg,
+        rgba(30, 30, 42, 0.6) 0%,
+        rgba(26, 26, 36, 0.4) 100%
+    );
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.exercise-image:hover {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 25px rgba(255, 107, 53, 0.25);
+}
+
+/* BOTÓN DE CARGA DE IMAGEN */
+.upload-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+/* BOTONES */
 .form-actions {
     display: flex;
     gap: 0.75rem;
@@ -122,7 +148,7 @@
     width: 100%;
 }
 
-/* Guardar */
+/* GUARDAR */
 .boton-guardar {
     background: transparent;
     color: var(--neon-orange);
@@ -133,7 +159,6 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     min-width: 120px;
     position: relative;
     overflow: hidden;
@@ -146,12 +171,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 107, 53, 0.3),
-            transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
     transition: left 0.5s ease;
 }
 
@@ -160,8 +180,8 @@
     color: white;
     border-color: var(--neon-orange-bright);
     box-shadow:
-            0 0 20px rgba(255, 107, 53, 0.5),
-            0 4px 15px rgba(255, 107, 53, 0.3);
+        0 0 20px rgba(255, 107, 53, 0.5),
+        0 4px 15px rgba(255, 107, 53, 0.3);
     transform: translateY(-2px);
 }
 
@@ -169,11 +189,7 @@
     left: 100%;
 }
 
-.boton-guardar:active {
-    transform: translateY(0);
-}
-
-/* Cancelar */
+/* CANCELAR */
 .boton-cancelar {
     background: transparent;
     color: var(--accent-red);
@@ -184,7 +200,6 @@
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     min-width: 120px;
     position: relative;
     overflow: hidden;
@@ -197,12 +212,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 71, 87, 0.3),
-            transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 71, 87, 0.3), transparent);
     transition: left 0.5s ease;
 }
 
@@ -211,17 +221,13 @@
     color: white;
     border-color: #ff6b7a;
     box-shadow:
-            0 0 20px rgba(255, 71, 87, 0.5),
-            0 4px 15px rgba(255, 71, 87, 0.3);
+        0 0 20px rgba(255, 71, 87, 0.5),
+        0 4px 15px rgba(255, 71, 87, 0.3);
     transform: translateY(-2px);
 }
 
 .boton-cancelar:hover::before {
     left: 100%;
-}
-
-.boton-cancelar:active {
-    transform: translateY(0);
 }
 
 /* MENSAJES DE ESTADO */

@@ -1,10 +1,12 @@
 DROP TABLE IF EXISTS workout_exercises;
 DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
-DROP TABLE IF EXISTS user_follow;
+DROP TABLE IF EXISTS user_follows;
 DROP TABLE IF EXISTS users;
+
 
 
 CREATE TABLE users (
@@ -31,6 +33,7 @@ CREATE TABLE routines (
     modification_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     trainer_id BIGINT NOT NULL,
     visibility TINYINT NOT NULL,
+    difficulty TINYINT NOT NULL DEFAULT 0,
 
     CONSTRAINT routine_id_pk PRIMARY KEY (id),
     CONSTRAINT routine_trainer_id_fk FOREIGN KEY (trainer_id)
@@ -111,12 +114,32 @@ CREATE TABLE workout_exercises (
         ON DELETE CASCADE
 );
 
-CREATE TABLE user_follow (
+CREATE TABLE user_follows (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     client_id BIGINT NOT NULL,
     trainer_id BIGINT NOT NULL,
+
     CONSTRAINT fk_user_follow_client FOREIGN KEY (client_id) REFERENCES users(id)
          ON DELETE CASCADE,
     CONSTRAINT fk_user_follow_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
          ON DELETE CASCADE
 );
+
+CREATE TABLE notifications (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    routine_id BIGINT,
+    user_id BIGINT NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT notification_id_pk PRIMARY KEY (id),
+    CONSTRAINT notification_routine_id_fk FOREIGN KEY (routine_id)
+      REFERENCES routines(id)
+      ON UPDATE CASCADE
+      ON DELETE SET NULL,
+    CONSTRAINT notification_user_id_fk FOREIGN KEY (user_id)
+      REFERENCES users(id)
+      ON UPDATE CASCADE
+      ON DELETE CASCADE
+);
+
