@@ -37,14 +37,14 @@ public class WorkoutServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", null, RoleType.TRAINER);
+        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", null, RoleType.TRAINER, User.StatusType.ACTIVE);
         user.setName("Name");
         user.setEmail("user@example.com");
         user.setPhoneNumber("1234567890");
         user.setPassword("1234");
         user = userDao.save(user);
 
-        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, user);
+        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         routine.setName("Morning Routine");
         routine = routineDao.save(routine);
     }

@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
@@ -64,7 +65,7 @@ public class RoutineControllerTest {
     private AuthenticatedUserDto clientUser;
 
     @Before
-    public void setUp() throws IncorrectLoginException {
+    public void setUp() throws IncorrectLoginException, BlockedUserException {
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003",
@@ -73,8 +74,8 @@ public class RoutineControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                        RoleType roleType) throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT);
+                                                        RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
         userDao.save(user);
@@ -90,6 +91,7 @@ public class RoutineControllerTest {
         routineDto.setName(name);
         routineDto.setDescription("Description for " + name);
         routineDto.setVisibility("PUBLIC");
+        routineDto.setDifficulty("BEGINNER");
         return mockMvc.perform(post("/api/routines")
                 .header("Authorization", "Bearer " + user.getServiceToken())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -208,9 +210,38 @@ public class RoutineControllerTest {
         RoutineDto routineDto = new RoutineDto();
         routineDto.setName("Test");
         routineDto.setDescription("Test Description");
+        routineDto.setDifficulty("BEGINNER");
         mockMvc.perform(post("/api/routines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(routineDto)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testFindRoutinesByFilters() throws Exception {
+        createRoutine(trainerUser, "Beginner Routine").andExpect(status().isCreated());
+
+        RoutineDto intermediateRoutine = new RoutineDto();
+        intermediateRoutine.setName("Intermediate Routine");
+        intermediateRoutine.setDescription("Intermediate Description");
+        intermediateRoutine.setVisibility("PUBLIC");
+        intermediateRoutine.setDifficulty("INTERMEDIATE");
+        mockMvc.perform(post("/api/routines")
+                .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsBytes(intermediateRoutine))
+                .requestAttr("userId", trainerUser.getUserDto().getId()))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/api/routines/filter")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .param("difficulty", "BEGINNER"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].difficulty").value("BEGINNER"));
+
+        mockMvc.perform(get("/api/routines/filter")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .param("trainerId", trainerUser.getUserDto().getId().toString()))
+                .andExpect(status().isOk());
     }
 }

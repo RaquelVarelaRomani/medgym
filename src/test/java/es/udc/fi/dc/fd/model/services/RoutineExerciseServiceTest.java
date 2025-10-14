@@ -46,17 +46,17 @@ public class RoutineExerciseServiceTest {
 
     private User createTrainer(String email) {
         User trainer = new User("Pepe", "Domingo", email,
-                "666555444", "password", null, RoleType.TRAINER);
+                "666555444", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
     private Exercise createExercise(String exerciseName, User user){
-        Exercise exercise = new Exercise(exerciseName, "The description", ExerciseStatus.PENDING, user);
+        Exercise exercise = new Exercise(exerciseName, "The description", "Piernas", "Mancuernas", new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 
     private Routine createRoutine(String name, User user){
-        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, user);
+        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         return routineDao.save(routine);
     }
 

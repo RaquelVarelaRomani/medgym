@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
@@ -70,16 +71,16 @@ public class WorkoutExerciseControllerTest {
     private Workout workout;
 
     @BeforeEach
-    public void setUp() throws IncorrectLoginException {
+    public void setUp() throws IncorrectLoginException, BlockedUserException {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
 
         // Crear rutina
-        routine = new Routine("Full Body", "Rutina completa", VisibilityType.PUBLIC,
+        routine = new Routine("Full Body", "Rutina completa", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Piernas", Exercise.ExerciseStatus.APPROVED,
+        exercise = new Exercise("Sentadillas", "Ejercicio básico de piernas", "Piernas", "Barra", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);
 
@@ -93,9 +94,9 @@ public class WorkoutExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
-                                                         String phoneNumber, RoleType roleType)
-            throws IncorrectLoginException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType);
+                                                        String phoneNumber, RoleType roleType)
+            throws IncorrectLoginException, BlockedUserException {
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 

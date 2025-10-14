@@ -33,7 +33,7 @@ public class RoutineServiceTest {
     private RoutineDao routineDao;
 
     private User createUser(String userName) {
-        User user = new User(userName, "password", userName + "@test.com", userName, "email@test.com", null, RoleType.CLIENT);
+        User user = new User(userName, "password", userName + "@test.com", userName, "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(user);
     }
 

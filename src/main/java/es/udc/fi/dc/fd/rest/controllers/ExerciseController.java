@@ -42,7 +42,7 @@ public class ExerciseController {
     @PostMapping
     public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException {
         User user = userService.loginFromId(userId);
-        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), user);
+        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), exerciseDto.getMuscleGroup(), exerciseDto.getEquipment(), exerciseDto.getImage(), user);
         URI location = URI.create("/api/exercises/" + exercise.getId());
         return ResponseEntity.created(location).body(toExerciseDto(exercise));
     }
@@ -54,7 +54,7 @@ public class ExerciseController {
 
     @PutMapping("/{id}")
     public ExerciseDto updateExercise(@PathVariable Long id, @RequestBody ExerciseDto exerciseDto) throws InstanceNotFoundException, DuplicateInstanceException {
-        exerciseService.updateExercise(id, exerciseDto.getName(), exerciseDto.getDescription());
+        exerciseService.updateExercise(id, exerciseDto.getName(), exerciseDto.getDescription(), exerciseDto.getMuscleGroup(), exerciseDto.getEquipment(), exerciseDto.getImage());
         return toExerciseDto(exerciseService.findExerciseById(id));
     }
 
