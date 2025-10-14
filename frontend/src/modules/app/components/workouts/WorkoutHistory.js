@@ -28,7 +28,10 @@ const WorkoutHistory = () => {
         workoutService.getWorkouts(
             (data) => {
                 console.log("Workouts loaded:", data);
-                setWorkouts(data);
+                const sortedWorkouts = data.sort((a, b) =>
+                    new Date(b.startTime) - new Date(a.startTime)
+                ); //recent ones first
+                setWorkouts(sortedWorkouts);
                 setLoading(false);
             },
             (errors) => {
