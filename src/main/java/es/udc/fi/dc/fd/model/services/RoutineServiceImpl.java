@@ -1,19 +1,19 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -29,15 +29,14 @@ public class RoutineServiceImpl implements RoutineService {
     private NotificationService notificationService;
 
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility) throws DuplicateInstanceException, InstanceNotFoundException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        Routine routine = new Routine(name, description, visibility, Routine.DifficultyType.BEGINNER, trainer);
+        Routine routine = new Routine(name, description, visibility, difficulty, trainer);
 
         notificationService.createNotification(routine);
-
         return routineDao.save(routine);
     }
 
@@ -62,7 +61,7 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility)
+    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         Routine routine = findRoutineById(userId, routineId);
         User user = userService.loginFromId(userId);
@@ -78,6 +77,7 @@ public class RoutineServiceImpl implements RoutineService {
         routine.setName(name);
         routine.setDescription(description);
         routine.setVisibility(visibility);
+        routine.setDifficulty(difficulty);
     }
 
     @Override

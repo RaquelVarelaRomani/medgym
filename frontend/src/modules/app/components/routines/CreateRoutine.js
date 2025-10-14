@@ -8,7 +8,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
-    const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC"});
+    const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"});
     const [exercises, setExercises] = useState([{id: null, nombre: "", position: 1}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
@@ -161,6 +161,7 @@ const CreateRoutine = () => {
             routineData.descripcion,
             trainerId,
             routineData.visibility,
+            routineData.difficulty,
             (createdRoutine) => {
                 console.log("Routine created:", createdRoutine);
                 const routineId = createdRoutine.id;
@@ -230,6 +231,20 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
+                    <label>Dificultad:</label>
+                    <select
+                        name="difficulty"
+                        value={routineData.difficulty}
+                        onChange={handleInputChange}
+                        aria-label="Seleccionar dificultad de la rutina"
+                    >
+                        <option value="BEGINNER">Principiante</option>
+                        <option value="INTERMEDIATE">Intermedia</option>
+                        <option value="ADVANCED">Avanzada</option>
+                    </select>
+                </div>
+
+                <div className={styles['form-div']}>
                     <label>Visibilidad:</label>
                     <select
                         name="visibility"
@@ -257,7 +272,8 @@ const CreateRoutine = () => {
                                 className={styles['icono-papelera']}
                             />
                         </button>
-                        <div className={styles['ejercicio-input-container']} ref={(el) => inputContainerRefs.current[index] = el}>
+                        <div className={styles['ejercicio-input-container']}
+                             ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
                                 placeholder="Buscar ejercicio o escribir el nombre..."
