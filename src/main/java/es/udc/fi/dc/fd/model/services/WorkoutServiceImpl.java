@@ -43,6 +43,11 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
+    public Workout findWorkoutById(Long id) throws InstanceNotFoundException {
+        return workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
+    }
+
+    @Override
     public List<Workout> findWorkoutsFromUser(Long userId) {
         return workoutDao.findAllByUserId(userId);
     }
