@@ -1,16 +1,5 @@
 package es.udc.fi.dc.fd.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.services.NotificationService;
-import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
-import es.udc.fi.dc.fd.model.services.RoutineService;
-import es.udc.fi.dc.fd.model.services.UserFollowService;
-import es.udc.fi.dc.fd.rest.controllers.NotificationController;
-import es.udc.fi.dc.fd.rest.controllers.UserController;
-import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
-import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.NotificationDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +11,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.transaction.annotation.Transactional;
+
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.NotificationService;
+import es.udc.fi.dc.fd.model.services.RoutineService;
+import es.udc.fi.dc.fd.model.services.UserFollowService;
+import es.udc.fi.dc.fd.rest.controllers.UserController;
+import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -85,7 +86,7 @@ public class NotificationControllerTest {
         // Preparar datos: crear trainer, client, rutina
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
-                "Rutina prueba", "Descripción", trainer, Routine.VisibilityType.PUBLIC);
+                "Rutina prueba", "Descripción", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         // Construir body del request
         String jsonBody = """
@@ -107,7 +108,7 @@ public class NotificationControllerTest {
         User client = userDao.findById(clientUser.getUserDto().getId()).get();
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("test", "test", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("test", "test", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         mockMvc.perform(get("/api/notifications")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
@@ -123,7 +124,7 @@ public class NotificationControllerTest {
         userFollowService.followTrainer(client.getId(), trainer.getId());
 
         // Crear rutina pública (genera notificación)
-        routineService.createRoutine("Rutina lectura", "Desc", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("Rutina lectura", "Desc", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         // Obtener ID de la notificación directamente desde el servicio
         Long notificationId = notificationService
@@ -152,7 +153,7 @@ public class NotificationControllerTest {
 
         // Seguir al trainer y crear una rutina pública (genera notificación)
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("Rutina eliminar", "Descripción", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("Rutina eliminar", "Descripción", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         // Obtener ID de la notificación generada
         Long notificationId = notificationService

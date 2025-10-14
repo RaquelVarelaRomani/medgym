@@ -2,7 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as adminService from "../../../../backend/adminService";
-import ConfirmationPopup from "../common/ConfirmationPopup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import styles from "./UserModeration.module.css";
 
 const UserModeration = () => {

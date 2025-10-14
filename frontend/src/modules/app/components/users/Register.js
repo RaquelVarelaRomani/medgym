@@ -13,6 +13,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [passwordError, setPasswordError] = useState("");
     //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
     const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(null);

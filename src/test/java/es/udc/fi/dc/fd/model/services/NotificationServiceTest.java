@@ -1,19 +1,21 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import jakarta.transaction.Transactional;
 import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.*;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import jakarta.transaction.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -40,7 +42,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainer", "trainer", "trainer@trainer.com",
                 "666777223", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine", "routine", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("routine", "routine", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         assertEquals(1, notificationService.getNotificationsByUser(client.getId()).size());
     }
@@ -53,7 +55,7 @@ public class NotificationServiceTest {
                 "666777225", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine2", "desc", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("routine2", "desc", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         var notifications = notificationService.getNotificationsByUser(client.getId());
         assertEquals(1, notifications.size());
@@ -76,7 +78,7 @@ public class NotificationServiceTest {
                 "666777227", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine3", "desc", trainer, Routine.VisibilityType.PUBLIC);
+        routineService.createRoutine("routine3", "desc", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         // Verificar que hay 1 notificación generada
         var notifications = notificationService.getNotificationsByUser(client.getId());
