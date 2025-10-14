@@ -10,7 +10,7 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
 public interface RoutineService {
     Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
-            throws DuplicateInstanceException;
+            throws DuplicateInstanceException, InstanceNotFoundException;
     Routine findRoutineById(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException;
     void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException;

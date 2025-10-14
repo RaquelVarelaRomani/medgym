@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
-import Popup from "../common/Popup";
+import Popup from "../common/popup/Popup";
 
 const EditRoutine = () => {
     const navigate = useNavigate();

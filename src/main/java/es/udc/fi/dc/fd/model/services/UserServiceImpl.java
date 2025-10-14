@@ -17,6 +17,8 @@ import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 
+import es.udc.fi.dc.fd.util.EmailValidation;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -33,6 +35,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void signUp(User user) throws DuplicateInstanceException {
 
+		if (!EmailValidation.isValidEmail(user.getEmail())) {
+			throw new IllegalArgumentException("Formato de email inválido");
+		}
+		
 		if (userDao.existsByEmail(user.getEmail())) {
 			throw new DuplicateInstanceException("email", user.getEmail());
 		}
@@ -80,6 +86,10 @@ public class UserServiceImpl implements UserService {
 	public User updateProfile(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture) throws InstanceNotFoundException {
 
 		User user = permissionChecker.checkUser(id);
+
+		if (!EmailValidation.isValidEmail(email)) {
+			throw new IllegalArgumentException("Formato de email inválido");
+		}
 
 		user.setName(name);
 		user.setSurname(surname);

@@ -1,19 +1,29 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static es.udc.fi.dc.fd.model.entities.User.RoleType;
-import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.Workout;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -61,8 +71,8 @@ public class WorkoutServiceTest {
         assertEquals(routine.getId(), workout.getRoutine().getId());
 
         List<Workout> workouts = workoutDao.findAll();
-        assertEquals(14, workouts.size());
-        assertEquals(workout.getId(), workouts.get(0).getId() + 19);
+        assertEquals(15, workouts.size());
+        assertEquals(workout.getId(), workouts.get(0).getId() + 20);
     }
 
     @Test
@@ -75,6 +85,29 @@ public class WorkoutServiceTest {
         Workout updated = workoutDao.findById(workout.getId()).orElseThrow();
         assertNotNull(updated.getEndTime());
         assertTrue(updated.getEndTime().isAfter(updated.getStartTime()));
+    }
+
+    @Test
+    public void testFindWorkoutByIdReturnsWorkout() throws InstanceNotFoundException {
+        // Arrange
+        Workout workout = workoutService.startWorkout(routine.getId(), user.getId());
+
+        // Act
+        Workout found = workoutService.findWorkoutById(workout.getId());
+
+        // Assert
+        assertNotNull(found);
+        assertEquals(workout.getId(), found.getId());
+        assertEquals(workout.getUser().getId(), found.getUser().getId());
+        assertEquals(workout.getRoutine().getId(), found.getRoutine().getId());
+        assertNotNull(found.getStartTime());
+        assertNull(found.getEndTime());
+    }
+
+    @Test
+    public void testFindWorkoutByIdNonexistentThrows() {
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> workoutService.findWorkoutById(999L));
     }
 
     @Test

@@ -25,13 +25,18 @@ public class RoutineServiceImpl implements RoutineService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
         Routine routine = new Routine(name, description, visibility, difficulty, trainer);
+
+        notificationService.createNotification(routine);
         return routineDao.save(routine);
     }
 

@@ -12,7 +12,7 @@ public class UserFollowConversor {
         return new UserFollowDto(userFollow.getId(), userFollow.getUser().getId(), userFollow.getTrainer().getId());
     }
 
-    public List<UserFollowDto> toUserFollowDto(List<UserFollow> userFollows) {
+    public List<UserFollowDto> toUserFollowDtos(List<UserFollow> userFollows) {
        return userFollows.stream().map(UserFollowConversor::toUserFollowDto).collect(Collectors.toList());
     }
 }

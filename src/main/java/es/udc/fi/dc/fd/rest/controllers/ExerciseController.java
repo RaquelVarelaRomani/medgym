@@ -53,10 +53,33 @@ public class ExerciseController {
     }
 
     @PutMapping("/{id}")
-    public ExerciseDto updateExercise(@PathVariable Long id, @RequestBody ExerciseDto exerciseDto) throws InstanceNotFoundException, DuplicateInstanceException {
-        exerciseService.updateExercise(id, exerciseDto.getName(), exerciseDto.getDescription(), exerciseDto.getMuscleGroup(), exerciseDto.getEquipment(), exerciseDto.getImage());
+    public ExerciseDto updateExercise(@PathVariable Long id,
+                                    @RequestBody ExerciseDto exerciseDto,
+                                    @RequestAttribute Long userId)
+            throws InstanceNotFoundException, DuplicateInstanceException {
+
+        User user = userService.loginFromId(userId);
+        Exercise exercise = exerciseService.findExerciseById(id);
+
+        // 🔒 Solo el creador o un admin pueden editar
+        if (!user.getRole().equals(User.RoleType.ADMIN)
+                && !exercise.getCreator().getId().equals(user.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Only the creator or an admin can update this exercise");
+        }
+
+        exerciseService.updateExercise(
+                id,
+                exerciseDto.getName(),
+                exerciseDto.getDescription(),
+                exerciseDto.getMuscleGroup(),
+                exerciseDto.getEquipment(),
+                exerciseDto.getImage()
+        );
+
         return toExerciseDto(exerciseService.findExerciseById(id));
     }
+
 
     @PutMapping("/{id}/status")
     public ExerciseDto updateExerciseStatus(@PathVariable Long id, @RequestBody ExerciseDto exerciseDto) throws InstanceNotFoundException {

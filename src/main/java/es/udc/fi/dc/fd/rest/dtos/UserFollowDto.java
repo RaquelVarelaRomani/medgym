@@ -16,7 +16,6 @@ public class UserFollowDto {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -24,7 +23,6 @@ public class UserFollowDto {
     public Long getUserId() {
         return userId;
     }
-
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -32,7 +30,6 @@ public class UserFollowDto {
     public Long getTrainerId() {
         return trainerId;
     }
-
     public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
     }

@@ -26,14 +26,20 @@ const CreateRoutine = () => {
         setLoading(true);
         setError(null);
 
-        exerciseService.getAllExercises(
+        exerciseService.getExercisesByStatus(
+            "APPROVED",
             (data) => {
                 const exercisesArray = data.content ? data.content : data;
-                setAvailableExercises(exercisesArray);
+
+                const approvedExercises = exercisesArray.filter(
+                    (exercise) => exercise.status === "APPROVED"
+                );
+
+                setAvailableExercises(approvedExercises);
                 setLoading(false);
             },
             (err) => {
-                console.error("Error loading exercises:", err);
+                console.error("Error al cargar los ejercicios disponibles:", err);
                 setError("Error al cargar los ejercicios disponibles");
                 setLoading(false);
             }

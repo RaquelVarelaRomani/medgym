@@ -3,7 +3,9 @@ import styles from "./CreateExercise.module.css";
 import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import Popup from "../common/Popup";
+import Popup from "../common/popup/Popup";
+import FileUploadButton from "../common/FileUploadButton";
+import CropModal from "../common/CropModal";
 
 const CreateExercise = () => {
     const navigate = useNavigate();
@@ -17,9 +19,15 @@ const CreateExercise = () => {
     const [exerciseData, setExerciseData] = useState({
         name: "",
         description: "",
+        muscleGroup: "",
+        equipment: "",
+        image: null,    //Guardamos la imgaen en base64
     });
 
-  // Verificar login y rol
+    const[showCropper, setShowCropper] = useState(false);
+    const[imageToCrop, setImageToCrop] = useState(null);
+
+    // Verificar login y rol
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
@@ -58,6 +66,9 @@ const CreateExercise = () => {
         exerciseService.createExercise(
             exerciseData.name,
             exerciseData.description,
+            exerciseData.muscleGroup,
+            exerciseData.equipment,
+            exerciseData.image,
             () => {
                 const message =
                     currentUser.role === "ADMIN"
@@ -88,6 +99,45 @@ const CreateExercise = () => {
             </div>
 
             <div className={styles['form-crear-ejercicio']}>
+                <div className={styles["exercise-photo"]}>
+                    {exerciseData.image ? (
+                        <img
+                            src={`data:image/jpeg;base64,${exerciseData.image}`}
+                            alt="Previsualización del ejercicio"
+                            className={styles["exercise-image"]}
+                        />
+                    ) : (
+                        <img
+                            src="./assets/default-exercise.jpg"
+                            alt="Ejercicio por defecto"
+                            className={styles["exercise-image"]}
+                        />
+                    )}
+                </div>
+
+                <FileUploadButton
+                    onFileSelect={(file) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            setShowCropper(true);
+                            setImageToCrop(reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }}
+                />
+
+                {showCropper && (
+                    <CropModal
+                        imageSrc={imageToCrop}
+                        onCancel={() => setShowCropper(false)}
+                        onSave={(croppedImage) => {
+                            const base64String = croppedImage.split(",")[1];
+                            setExerciseData({ ...exerciseData, image: base64String });
+                            setShowCropper(false);
+                        }}
+                    />
+                )}
+
                 <div className={styles['form-div']}>
                     <label htmlFor="name">Nombre:</label>
                     <input
@@ -111,6 +161,30 @@ const CreateExercise = () => {
                         value={exerciseData.description}
                         onChange={handleChange}
                         rows={3}
+                    />
+                </div>
+
+                <div className={styles["form-div"]}>
+                    <label htmlFor="muscleGroup">Grupo muscular:</label>
+                    <input
+                        type="text"
+                        id="muscleGroup"
+                        name="muscleGroup"
+                        placeholder="Ej: Piernas, Espalda, Pecho..."
+                        value={exerciseData.muscleGroup}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className={styles["form-div"]}>
+                    <label htmlFor="equipment">Equipamiento:</label>
+                    <input
+                        type="text"
+                        id="equipment"
+                        name="equipment"
+                        placeholder="Ej: Mancuernas, Barra, Ninguno..."
+                        value={exerciseData.equipment}
+                        onChange={handleChange}
                     />
                 </div>
 

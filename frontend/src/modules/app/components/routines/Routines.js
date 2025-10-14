@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import styles from "./Routines.module.css";
 import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
-import ConfirmationPopup from "../common/ConfirmationPopup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 
 const Routines = () => {
