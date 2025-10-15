@@ -1,0 +1,154 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background: var(--bg-primary);
+  min-height: 100vh;
+  color: var(--text-primary);
+}
+
+.exerciseCard {
+  width: 100%;
+  max-width: 800px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.inputs {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.inputs input {
+  background: #1b1b28;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-primary);
+  width: 100px;
+}
+
+.inputs button {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.inputs button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+}
+
+.finishButton {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 2rem;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
+}
+
+.finishButton:hover {
+  box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+}
+
+.loading, .error {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.headerItem {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+}
+
+.setContainer {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.setHeader {
+  display: grid;
+  grid-template-columns: 100px 100px 100px 120px 120px;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+  padding: 0.2rem 0;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.setRow {
+  display: grid;
+  grid-template-columns: 100px 100px 100px 120px 120px;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.setBox {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 107, 53, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-align: center;
+  box-shadow: 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.setPlaceholder {
+  border-radius: 8px;
+  height: 2.1rem;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.timeBox {
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 2rem;
+  background: var(--bg-primary) !important;
+  box-sizing: border-box;
+}
+
+.loading-message {
+  width: 100%;
+  max-width: 1400px;
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+

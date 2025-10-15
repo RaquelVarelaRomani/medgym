@@ -19,6 +19,8 @@ import Layout from "./Layout";
 import WorkoutHistory from "./workouts/WorkoutHistory";
 import WorkoutDetails from "./workouts/WorkoutDetails";
 
+import WorkoutSession from "./workouts/WorkoutSession"
+
 const Body = () => {
     return (
         <Routes>
@@ -41,6 +43,8 @@ const Body = () => {
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
+                    <Route path="workouts/session/:sessionId" element={<Layout><WorkoutSession /></Layout>} />
+                    
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

@@ -85,6 +85,8 @@ const Routines = () => {
     //pag de crear rutinas CAMBIAR 
     navigate("/routines/new");
     };
+
+    //EMPEZAR ENTRENAMIENTO
     const handleStartWorkout = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
@@ -157,7 +159,7 @@ const Routines = () => {
                                 </p>
                             </div>
 
-                            {(isClient() || isTrainer()) && (
+                            {isClient() && ( //SI ES CLIENTE SOLO muestro el boton para empezar el entrenamiento
                                 <button
                                     className={styles["boton-empezar"]}
                                     onClick={(e) => handleStartWorkout(e, routine.id)}
@@ -186,6 +188,7 @@ const Routines = () => {
 
                     </div>
                 )}
+
 
             </Link>
             ))}
