@@ -152,7 +152,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
                             />
                         )}
 
-                        {error && <p className="mensaje-error">{error}</p>}
+                        {error && <p className={styles["mensaje-error"]}>{error}</p>}
 
                         <form className="form" onSubmit={handleSave}>
                             <label htmlFor="name">Nombre</label>

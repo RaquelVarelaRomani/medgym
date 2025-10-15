@@ -1,5 +1,6 @@
 import React, { useState} from "react";
 import styles from "./Register.module.css";
+import stylesLogin from "./Login.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import {signUp} from "../../../../backend/userService";
 import Slogan from "../common/Slogan";
@@ -14,18 +15,31 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
+    const [phoneError, setPhoneError] = useState("");
     //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
     const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
+    const validatePhoneNumber = (phone) => {
+        const phoneRegex = /^\+?[0-9]{9,15}$/;
+        return phoneRegex.test(phone);
+    };
+
     const handleSubmit = () => {
         //limpiar errores que se hayan almacenado antes
         setError("");
         setPasswordError("");
-        
+        setPhoneError("");
+
+        if (!validatePhoneNumber(phoneNumber)) {
+            setPhoneError("El número de teléfono no es válido. Debe contener entre 9 y 15 dígitos.");
+            return;
+        }
+
         if(password !== confirmPassword){
             setPasswordError("Las contraseñas no coinciden. Inténtelo de nuevo.");
+            return;
         }
 
 
@@ -36,17 +50,22 @@ const Register = () => {
             phoneNumber: phoneNumber.trim(),
             password,
             role: "CLIENT",
+            status: "ACTIVE",
         };
 
         signUp(
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                setShowPopup(true);
+                navigate("/routines");
             },
             (errorResponse) => {
                 console.error("Error en el registro:", errorResponse);
-                setError(errorResponse.globalError || "Error en el registro");
+                let errorMessage = errorResponse.globalError || "Error en el registro";
+                if (errorMessage.includes("DuplicateInstanceException")) {
+                    errorMessage = "El email o teléfono ya existe";
+                }
+                setError(errorMessage);
             },
         );
     };
@@ -64,11 +83,21 @@ const Register = () => {
 
                 <h2 className={styles.titulo}>Regístrate</h2>
 
-                {error && <p className="mensaje-error">{error}</p>}
-                <form className="form" onSubmit={(e) => {
+                {error && <p className={stylesLogin["mensaje-error"]}>{error}</p>}
+                <form className={styles["form"]} onSubmit={(e) => {
                     e.preventDefault();
                     handleSubmit();
                 }}>
+                    {phoneError && (
+                        <p className={stylesLogin['mensaje-error']} style={{ alignSelf: "flex-start" }}>
+                            {phoneError}
+                        </p>
+                    )}
+                    {passwordError && (
+                        <p className={stylesLogin['mensaje-error']} style={{ alignSelf: "flex-start" }}>
+                            {passwordError}
+                        </p>
+                    )}
                     <label htmlFor="name">Nombre</label>
                     <input
                         type="name"
@@ -109,12 +138,6 @@ const Register = () => {
                         placeholder="Escriba aquí su número de teléfono..."
                     />
 
-                    {passwordError && (
-                        <p className={styles['mensaje-error']} style={{ alignSelf: "flex-start" }}>
-                        {passwordError}
-                        </p>
-                    )}
-                    
                     <label htmlFor="password">Contraseña</label>
                     <div className={styles['contenedor-password']}>
                         <input
