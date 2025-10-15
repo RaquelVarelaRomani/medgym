@@ -151,7 +151,7 @@ const WorkoutDetails = () => {
 
     return (
         <div className={styles['contenedor-workout-details']}>
-            <div className={`${styles['caja-workout-details']} ${isInProgress ? styles['active-workout-details'] : ''}`}>
+            <div className={`${styles['caja-workout-details']}`}>
                 <button className={styles['boton-atras']} onClick={handleBack}>
                     ←
                 </button>

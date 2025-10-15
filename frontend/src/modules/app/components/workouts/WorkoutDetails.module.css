@@ -19,17 +19,6 @@
     position: relative;
 }
 
-.active-workout-details {
-    border: 2px solid var(--neon-orange) !important;
-    background: linear-gradient(
-            135deg,
-            rgba(255, 107, 53, 0.1) 0%,
-            rgba(26, 26, 36, 0.9) 100%
-    ) !important;
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3) !important;
-    border-radius: 16px;
-}
-
 /* back button */
 .boton-atras {
     position: absolute;
