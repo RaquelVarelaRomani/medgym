@@ -135,8 +135,6 @@ const Routines = () => {
             muscleGroup: "",
             trainerId: ""
         });
-        // Reload without filters
-        setTimeout(() => loadRoutines(), 0);
     };
     const isTrainer = () => {
         if (!currentUser) return false;
