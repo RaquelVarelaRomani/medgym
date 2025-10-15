@@ -45,4 +45,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteNotification(Long notificationId) {
         notificationDao.deleteById(notificationId);
     }
+
+    @Override
+    public void deleteNotificationsByRoutine(Long routineId) {
+        notificationDao.deleteByRoutineId(routineId);
+    }
 }

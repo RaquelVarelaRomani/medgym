@@ -51,4 +51,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     public List<Workout> findWorkoutsFromUser(Long userId) {
         return workoutDao.findAllByUserId(userId);
     }
+
+    @Override
+    public void deleteWorkoutsByRoutine(Long routineId) {
+        workoutDao.deleteByRoutineId(routineId);
+    }
 }

@@ -70,17 +70,12 @@ INSERT INTO workouts (start_time, end_time, routine_id, user_id) VALUES
     -- Miguel (cliente id=3) haciendo cardio avanzado
     ('2025-09-19 07:30:00', '2025-09-19 08:10:00', 2, 3),
     ('2025-09-21 07:45:00', '2025-09-21 08:20:00', 2, 3),
-    ('2025-10-01 07:30:00', NULL, 2, 3), -- sesión en curso
 
     -- Sofía (entrenadora id=4) probando su rutina de yoga
     ('2025-09-25 18:00:00', '2025-09-25 18:45:00', 4, 4),
 
     -- Ana (admin id=5) probando rutina de cuerpo completo
     ('2025-09-23 09:00:00', '2025-09-23 09:50:00', 3, 5),
-    ('2025-10-02 09:15:00', NULL, 3, 5), -- aún no finalizada
-
-    -- Laura (cliente) probando rutina de yoga de Sofía
-    ('2025-10-05 21:00:00', NULL, 4, 2),
 
     -- Miguel (cliente) probando rutina privada de Carlos
     ('2025-10-03 18:00:00', '2025-10-03 19:00:00', 5, 3),
@@ -88,8 +83,10 @@ INSERT INTO workouts (start_time, end_time, routine_id, user_id) VALUES
     -- Entrenamiento antiguo de prueba
     ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2),
 
-    -- Workout activo para testing (hoy mismo)
-    ('2025-10-13 14:00:00', NULL, 1, 2); -- Laura con rutina de fuerza inicial
+    -- Activos
+    ('2025-10-01 07:30:00', NULL, 2, 3), -- sesión en curso
+    ('2025-10-02 09:15:00', NULL, 3, 5), -- aún no finalizada
+    ('2025-10-05 21:00:00', NULL, 4, 2);
 
 INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id) VALUES
     (12, 60, 45, 1, 3),

@@ -74,6 +74,19 @@ const Header = () => {
         );
     }, [profile]);
 
+    // Listen for routine deletion events to refresh notifications
+    useEffect(() => {
+        const handleRoutineDeleted = () => {
+            refreshNotifications();
+        };
+
+        window.addEventListener('routineDeleted', handleRoutineDeleted);
+
+        return () => {
+            window.removeEventListener('routineDeleted', handleRoutineDeleted);
+        };
+    }, []);
+
     const refreshNotifications = () => {
         getUserNotifications(
             (data) => setNotifications(data),

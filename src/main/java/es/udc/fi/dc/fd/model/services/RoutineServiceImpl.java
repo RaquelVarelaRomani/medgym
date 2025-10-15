@@ -89,6 +89,9 @@ public class RoutineServiceImpl implements RoutineService {
             throw new PermissionException();
         }
 
+        // Delete related notifications before deleting the routine
+        notificationService.deleteNotificationsByRoutine(routineId);
+
         routineDao.delete(routine);
     }
 

@@ -163,6 +163,8 @@ const Routines = () => {
             routineId,
             () => {
                 setRoutines(prev => prev.filter(r => r.id !== routineId));
+                // Trigger notification refresh by updating a state that Header can listen to
+                window.dispatchEvent(new CustomEvent('routineDeleted'));
             },
             (error) => {
                 console.error("Error deleting routine:", error);
