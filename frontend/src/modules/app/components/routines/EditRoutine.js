@@ -193,7 +193,7 @@ const EditRoutine = () => {
 
         const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
 
-        if (!titleChanged && !descriptionChanged && !visibilityChanged && !exercisesChanged) {
+        if (!titleChanged && !descriptionChanged && !visibilityChanged && !difficultyChanged && !exercisesChanged) {
             setPopupMessage("¡No hay cambios para guardar!");
             return;
         }

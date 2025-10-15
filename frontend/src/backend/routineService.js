@@ -41,9 +41,9 @@ export const getFilteredRoutines = (muscleGroup, difficulty, trainerId, onSucces
     );
 }
 
-export const updateRoutine = (id, name, description, visibility, onSuccess, onErrors) => appFetch(
+export const updateRoutine = (id, name, description, visibility, difficulty, onSuccess, onErrors) => appFetch(
     `/routines/${id}`,
-    fetchConfig("PUT", { name, description, visibility }),
+    fetchConfig("PUT", { name, description, visibility, difficulty }),
     onSuccess,
     onErrors
 )
