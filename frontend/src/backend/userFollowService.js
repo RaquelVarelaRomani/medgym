@@ -13,3 +13,10 @@ export const unfollowTrainer = (trainerId, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 )
+
+export const getFollowers = (trainerId, onSuccess, onErrors) => appFetch(
+    `/users/follow/followers/${trainerId}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)

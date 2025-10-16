@@ -20,6 +20,7 @@ import Layout from "./Layout";
 import UserModeration from "./users/UserModeration";
 import WorkoutHistory from "./workouts/WorkoutHistory";
 import WorkoutDetails from "./workouts/WorkoutDetails";
+import FollowersPage from "./users/FollowersPage";
 
 const Body = () => {
     return (
@@ -40,6 +41,7 @@ const Body = () => {
                     <Route path="exercises/new" element={<Layout><CreateExercise /></Layout>} />
                     <Route path="exercises/edit/:id" element={<Layout><EditExercise/></Layout>} />
                     <Route path="exercises/:id" element={<Layout><ExerciseDetails /></Layout>} />
+                    <Route path="users/followers" element={<Layout><FollowersPage /></Layout>} />
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
