@@ -62,6 +62,7 @@ public class WorkoutServiceTest {
 
     @Test
     public void testStartWorkoutcreatesWorkout() {
+        List<Workout> workoutsBefore = workoutDao.findAll();
         Workout workout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
 
         assertNotNull(workout.getId());
@@ -70,9 +71,8 @@ public class WorkoutServiceTest {
         assertEquals(user.getId(), workout.getUser().getId());
         assertEquals(routine.getId(), workout.getRoutine().getId());
 
-        List<Workout> workouts = workoutDao.findAll();
-        assertEquals(14, workouts.size());
-        assertEquals(workout.getId(), workouts.get(0).getId() + 19);
+        List<Workout> workoutsAfter = workoutDao.findAll();
+        assertEquals(workoutsBefore.size() + 1, workoutsAfter.size());
     }
 
     @Test
