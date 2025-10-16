@@ -20,3 +20,10 @@ export const getFollowers = (trainerId, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 )
+
+export const getFollowedTrainers = (userId, onSuccess, onErrors) => appFetch(
+        `/users/follow/client/${userId}/following`,
+        fetchConfig("GET"),
+        onSuccess,
+        onErrors
+)

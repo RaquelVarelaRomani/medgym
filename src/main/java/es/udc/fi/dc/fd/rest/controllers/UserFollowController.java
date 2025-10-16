@@ -32,4 +32,9 @@ public class UserFollowController {
         return UserFollowConversor.toUserFollowDtos(userFollowService.getFollowers(trainerId));
     }
 
+    @GetMapping("/client/{userId}/following")
+    public List<UserFollowDto> getFollowedTrainers(@PathVariable Long userId) throws InstanceNotFoundException {
+        return UserFollowConversor.toUserFollowDtos(userFollowService.getFollowedTrainers(userId));
+    }
+
 }
