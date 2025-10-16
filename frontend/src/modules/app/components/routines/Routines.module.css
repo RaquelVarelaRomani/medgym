@@ -126,6 +126,28 @@
   box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
+.select-option-multi {
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select-option-multi:hover {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--neon-orange);
+  cursor: pointer;
+}
+
 /* filter buttons */
 .filter-actions {
   display: flex;

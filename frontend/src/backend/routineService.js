@@ -24,8 +24,9 @@ export const getAllRoutines = (onSuccess, onErrors) => appFetch(
     onErrors
 )
 
-export const getFilteredRoutines = (muscleGroup, difficulty, trainerId, onSuccess, onErrors) => {
+export const getFilteredRoutines = (muscleGroup, equipment, difficulty, trainerId, onSuccess, onErrors) => {
     const params = new URLSearchParams();
+    if (equipment) params.append('equipment', equipment);
     if (muscleGroup) params.append('muscleGroup', muscleGroup);
     if (difficulty) params.append('difficulty', difficulty);
     if (trainerId) params.append('trainerId', trainerId);

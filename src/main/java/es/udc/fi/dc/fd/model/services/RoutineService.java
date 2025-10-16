@@ -16,5 +16,5 @@ public interface RoutineService {
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException;
     void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException;
     List<Routine> findAllRoutines(Long userId) throws InstanceNotFoundException;
-    List<Routine> findRoutinesByFilters(Long userId, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException;
+    List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException;
 }

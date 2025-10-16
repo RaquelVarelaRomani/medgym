@@ -78,6 +78,7 @@ public class RoutineController {
 
     @GetMapping("/filter")
     public List<RoutineDto> findRoutinesByFilters(@RequestAttribute Long userId,
+                                                  @RequestParam(required = false) String equipment,
                                                   @RequestParam(required = false) String muscleGroup,
                                                   @RequestParam(required = false) String difficulty,
                                                   @RequestParam(required = false) Long trainerId) throws InstanceNotFoundException {
@@ -89,6 +90,6 @@ public class RoutineController {
                 // Invalid difficulty, ignore filter
             }
         }
-        return RoutineConversor.toRoutineDtos(routineService.findRoutinesByFilters(userId, muscleGroup, difficultyType, trainerId));
+        return RoutineConversor.toRoutineDtos(routineService.findRoutinesByFilters(userId, equipment, muscleGroup, difficultyType, trainerId));
     }
 }

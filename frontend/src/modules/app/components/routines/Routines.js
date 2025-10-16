@@ -4,6 +4,7 @@ import { Link, useNavigate} from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import * as exerciseService from "../../../../backend/exerciseService";
 
 const Routines = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
-    const [filters, setFilters] = useState({difficulty: "", muscleGroup: "", trainerId: ""});
+    const [filters, setFilters] = useState({difficulty: "", muscleGroup: [], equipment: [], trainerId: ""});
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     const filterRefs = useRef({});
@@ -28,12 +29,14 @@ const Routines = () => {
         "Piernas",
         "Tríceps"
     ]);
+    const [availableEquipment, setAvailableEquipment] = useState([]);
 
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 setCurrentUser(authenticatedUser.user);  // ya viene del backend
                 loadAllTrainers();
+                loadAllEquipment();
                 loadRoutines();                     // solo cargas rutinas si hay usuario válido
             },
             () => {
@@ -80,10 +83,27 @@ const Routines = () => {
         );
     };
 
-    const loadRoutines = () => {
+    const loadAllEquipment = () => {
+        exerciseService.getAllExercises(
+            (data) => {
+                const exercisesArray = data.content ? data.content : data;
+                const equipment = [...new Set(exercisesArray
+                    .filter(exercise => exercise.equipment)
+                    .map(exercise => exercise.equipment)
+                )].sort();
+                setAvailableEquipment(equipment);
+            },
+            (errors) => {
+                console.error("Error loading equipment:", errors);
+            }
+        );
+    };
+
+    const loadRoutines = (filtersToUse = filters) => {
         setLoading(true);
 
-        const hasFilters = filters.difficulty || filters.muscleGroup || filters.trainerId;
+        const hasFilters = filtersToUse.difficulty || filtersToUse.muscleGroup.length > 0 ||
+            filtersToUse.equipment.length > 0 || filtersToUse.trainerId;
 
         const handleSuccess = (data) => {
             console.log("Routines loaded:", data);
@@ -99,9 +119,10 @@ const Routines = () => {
 
         if (hasFilters) {
             routineService.getFilteredRoutines(
-                filters.muscleGroup || null,
-                filters.difficulty || null,
-                filters.trainerId || null,
+                filtersToUse.muscleGroup.join(',') || null,
+                filtersToUse.equipment.join(',') || null,
+                filtersToUse.difficulty || null,
+                filtersToUse.trainerId || null,
                 handleSuccess,
                 handleError
             );
@@ -118,6 +139,15 @@ const Routines = () => {
             default: return difficulty;
         }
     };
+
+    const handleMultiSelectChange = (filterName, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: prev[filterName].includes(value)
+                ? prev[filterName].filter(item => item !== value)
+                : [...prev[filterName], value]
+        }));
+    };
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({
             ...prev,
@@ -126,15 +156,18 @@ const Routines = () => {
     };
 
     const applyFilters = () => {
-        loadRoutines();
+        loadRoutines(filters);
     };
 
     const clearFilters = () => {
-        setFilters({
+        const clearedFilters = {
             difficulty: "",
-            muscleGroup: "",
+            muscleGroup: [],
+            equipment: [],
             trainerId: ""
-        });
+        };
+        setFilters(clearedFilters);
+        loadRoutines(clearedFilters);
     };
     const isTrainer = () => {
         if (!currentUser) return false;
@@ -268,7 +301,7 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-group']}>
-                    <label>Grupo Muscular:</label>
+                        <label>Grupos Musculares:</label>
                         <div className={styles['custom-select']} ref={(el) => {
                             filterRefs.current['muscleGroup'] = el;
                         }}>
@@ -276,30 +309,33 @@ const Routines = () => {
                                 className={styles['select-display']}
                                 onClick={() => setOpenDropdown(openDropdown === 'muscleGroup' ? null : 'muscleGroup')}
                             >
-                                <span>{filters.muscleGroup || 'Todos'}</span>
+                <span>
+                    {filters.muscleGroup.length > 0
+                        ? `${filters.muscleGroup.length} seleccionado${filters.muscleGroup.length > 1 ? 's' : ''}`
+                        : 'Todos'
+                    }
+                </span>
                                 <span className={styles['select-arrow']}>▼</span>
                             </div>
                             {openDropdown === 'muscleGroup' && (
                                 <div className={styles['select-dropdown']}>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('muscleGroup', '');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Todos
-                                    </div>
                                     {availableMuscleGroups.map(group => (
                                         <div
                                             key={group}
-                                            className={styles['select-option']}
-                                            onClick={() => {
-                                                handleFilterChange('muscleGroup', group);
-                                                setOpenDropdown(null);
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('muscleGroup', group);  // Singular
                                             }}
                                         >
-                                            {group}
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.muscleGroup.includes(group)}  // Singular
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{group}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -308,7 +344,50 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-group']}>
-                    <label>Entrenador:</label>
+                        <label>Equipamiento:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['equipment'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'equipment' ? null : 'equipment')}
+                            >
+                        <span>
+                            {filters.equipment.length > 0
+                                ? `${filters.equipment.length} seleccionado${filters.equipment.length > 1 ? 's' : ''}`
+                                : 'Todos'
+                            }
+                        </span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'equipment' && (
+                                <div className={styles['select-dropdown']}>
+                                    {availableEquipment.map(equip => (
+                                        <div
+                                            key={equip}
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('equipment', equip);
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.equipment.includes(equip)}
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{equip}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-group']}>
+                        <label>Entrenador:</label>
                         <div className={styles['custom-select']} ref={(el) => {
                             filterRefs.current['trainer'] = el;
                         }}>
@@ -353,7 +432,7 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-actions']}>
-                    <button
+                        <button
                             className={styles['apply-filter-button']}
                             onClick={applyFilters}
                         >
@@ -394,7 +473,8 @@ const Routines = () => {
                             </p>
 
                             {routine.difficulty && (
-                                <span className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+                                <span
+                                    className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
                                     {getDifficultyText(routine.difficulty)}
                                 </span>
                             )}
