@@ -105,10 +105,9 @@ INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routi
 
 INSERT INTO user_follows (client_id, trainer_id)
 VALUES
-    (1, 2),
-    (3, 2),
-    (1, 4),
-    (3, 4);
+    (3, 1),
+    (3, 4),
+    (2, 1);
 
 INSERT INTO notifications (routine_id, user_id, is_read, date)
 VALUES
