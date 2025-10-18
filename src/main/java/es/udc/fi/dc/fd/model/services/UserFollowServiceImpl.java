@@ -57,4 +57,9 @@ public class UserFollowServiceImpl implements UserFollowService {
     public List<UserFollow> getFollowers(Long trainerId) throws InstanceNotFoundException {
         return userFollowDao.findByTrainer(userService.findUserById(trainerId));
     }
+
+    @Override
+    public List<UserFollow> getFollowedTrainers(Long userId) throws InstanceNotFoundException {
+        return userFollowDao.findByUser(userService.loginFromId(userId));
+    }
 }

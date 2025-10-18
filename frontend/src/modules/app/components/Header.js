@@ -8,6 +8,7 @@ import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
 import NotificationPopup from "./common/notifications/NotificationPopup";
+import { getFollowers } from '../../../backend/userFollowService';
 
 const Header = () => {
     const location = useLocation();
@@ -17,6 +18,7 @@ const Header = () => {
     const [activeWorkout, setActiveWorkout] = useState(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [followersCount, setFollowersCount] = useState(0);
     const dropdownComponent = useRef(null);
 
     const handleToggleNotifications = () => {
@@ -30,6 +32,7 @@ const Header = () => {
                 console.log("User data in header:", authenticatedUser.user);
                 setProfile(authenticatedUser.user);
                 checkActiveWorkout();
+                checkFollowers(authenticatedUser.user);
             },
             (error) => {
                 console.error("Failed to get user data in header:", error);
@@ -48,6 +51,16 @@ const Header = () => {
                 setActiveWorkout(null);
             }
         );
+    };
+
+    const checkFollowers = (user) => {
+        if (user.role === "TRAINER") {
+            getFollowers(
+                user.id,
+                (followers) => setFollowersCount(followers.length),
+                () => setFollowersCount(0)
+            );
+        }
     };
 
     //close dropdown when clicking outside
@@ -161,6 +174,16 @@ const Header = () => {
                     >
                         Ejercicios
                     </Link>
+                    {profile?.role === "TRAINER" && (
+                        <Link
+                            to="/users/followers"
+                            className={location.pathname.includes('/followers')
+                                ? `${styles['nav-link']} ${styles['active']}`
+                                : styles['nav-link']}
+                        >
+                            Seguidores ({followersCount})
+                        </Link>
+                    )}
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"

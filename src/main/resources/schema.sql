@@ -1,11 +1,13 @@
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS workout_exercises;
 DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS user_follows;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
-DROP TABLE IF EXISTS user_follows;
 DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS = 1;
 
 
 

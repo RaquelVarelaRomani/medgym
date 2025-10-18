@@ -62,7 +62,7 @@ public class UserFollowControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         User.RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+                                                            User.RoleType roleType) throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
@@ -84,5 +84,9 @@ public class UserFollowControllerTest {
         mockMvc.perform(delete("/api/users/follow/" + trainerUser.getUserDto().getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isNoContent());
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                    .get("/api/users/follow/followers/" + trainerUser.getUserDto().getId())
+                    .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+            .andExpect(status().isOk());
     }
 }

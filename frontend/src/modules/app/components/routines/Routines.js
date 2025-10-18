@@ -1,9 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Routines.module.css";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import {
+    followTrainer,
+    unfollowTrainer,
+    getFollowedTrainers,
+} from "../../../../backend/userFollowService";
 
 const Routines = () => {
     const navigate = useNavigate();
@@ -13,11 +18,16 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
-    const [filters, setFilters] = useState({difficulty: "", muscleGroup: "", trainerId: ""});
+    const [filters, setFilters] = useState({
+        difficulty: "",
+        muscleGroup: "",
+        trainerId: "",
+    });
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     const filterRefs = useRef({});
     const [availableTrainers, setAvailableTrainers] = useState([]);
+    const [following, setFollowing] = useState([]);
     const [availableMuscleGroups] = useState([
         "Bíceps",
         "Core",
@@ -26,15 +36,24 @@ const Routines = () => {
         "Hombros",
         "Pectorales",
         "Piernas",
-        "Tríceps"
+        "Tríceps",
     ]);
+    const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
 
+
+    // 🔹 Login + carga inicial
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);  // ya viene del backend
+                const user = authenticatedUser.user;
+                setCurrentUser(user);
+
                 loadAllTrainers();
-                loadRoutines();                     // solo cargas rutinas si hay usuario válido
+                loadRoutines();
+
+                if (user.role === "CLIENT") {
+                    loadFollowing(user.id);
+                }
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -43,50 +62,66 @@ const Routines = () => {
         );
     }, [navigate]);
 
-    //close filter dropdown when clicking outside
+    // 🔹 Carga los entrenadores seguidos por el cliente
+    const loadFollowing = (userId) => {
+        getFollowedTrainers(
+            userId,
+            (data) => {
+                const trainerIds = data.map((f) => f.trainerId);
+                setFollowing(trainerIds);
+            },
+            (err) => console.error("Error cargando follows", err)
+        );
+    };
+
+    // 🔹 Cierra desplegables de filtros al hacer clic fuera
     useEffect(() => {
         const handleOutsideClick = (e) => {
-            if (openDropdown && filterRefs.current[openDropdown] && !filterRefs.current[openDropdown].contains(e.target)) {
+            if (
+                openDropdown &&
+                filterRefs.current[openDropdown] &&
+                !filterRefs.current[openDropdown].contains(e.target)
+            ) {
                 setOpenDropdown(null);
             }
         };
 
         if (openDropdown) {
-            document.addEventListener('click', handleOutsideClick);
+            document.addEventListener("click", handleOutsideClick);
         }
 
         return () => {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener("click", handleOutsideClick);
         };
     }, [openDropdown]);
 
+    // 🔹 Carga entrenadores disponibles
     const loadAllTrainers = () => {
         routineService.getAllRoutines(
             (data) => {
                 const trainers = data
-                    .filter(routine => routine.trainerId && routine.trainerName)
-                    .map(routine => ({
-                        id: routine.trainerId,
-                        name: `${routine.trainerName || ''} ${routine.trainerSurname || ''}`.trim()
+                    .filter((r) => r.trainerId && r.trainerName)
+                    .map((r) => ({
+                        id: r.trainerId,
+                        name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
                     }))
-                    .filter((trainer, index, self) =>
-                        index === self.findIndex(t => t.id === trainer.id)
+                    .filter(
+                        (t, i, self) => i === self.findIndex((x) => x.id === t.id)
                     );
                 setAvailableTrainers(trainers);
             },
-            (errors) => {
-                console.error("Error loading trainers:", errors);
-            }
+            (errors) => console.error("Error loading trainers:", errors)
         );
     };
 
+    // 🔹 Carga rutinas (filtradas o todas)
     const loadRoutines = () => {
         setLoading(true);
 
-        const hasFilters = filters.difficulty || filters.muscleGroup || filters.trainerId;
+        const hasFilters =
+            filters.difficulty || filters.muscleGroup || filters.trainerId;
 
         const handleSuccess = (data) => {
-            console.log("Routines loaded:", data);
             setRoutines(data);
             setLoading(false);
         };
@@ -110,59 +145,56 @@ const Routines = () => {
         }
     };
 
+    // 🔹 Traduce dificultad
     const getDifficultyText = (difficulty) => {
-        switch(difficulty) {
-            case 'BEGINNER': return 'Principiante';
-            case 'INTERMEDIATE': return 'Intermedia';
-            case 'ADVANCED': return 'Avanzada';
-            default: return difficulty;
+        switch (difficulty) {
+            case "BEGINNER":
+                return "Principiante";
+            case "INTERMEDIATE":
+                return "Intermedia";
+            case "ADVANCED":
+                return "Avanzada";
+            default:
+                return difficulty;
         }
     };
-    const handleFilterChange = (filterName, value) => {
-        setFilters(prev => ({
-            ...prev,
-            [filterName]: value
-        }));
+
+    // 🔹 Seguir / dejar de seguir entrenador
+    const handleFollowToggle = (trainerId) => {
+        if (following.includes(trainerId)) {
+            // Mostrar popup de confirmación antes de dejar de seguir
+            setTrainerToUnfollow(trainerId);
+        } else {
+            followTrainer(
+                trainerId,
+                () => setFollowing((prev) => [...prev, trainerId]),
+                () => console.error("Error al seguir entrenador")
+            );
+        }
     };
 
-    const applyFilters = () => {
-        loadRoutines();
-    };
+    // 🔹 Roles
+    const isTrainer = () => currentUser?.role === "TRAINER";
+    const isAdmin = () => currentUser?.role === "ADMIN";
+    const isClient = () => currentUser?.role === "CLIENT";
 
-    const clearFilters = () => {
-        setFilters({
-            difficulty: "",
-            muscleGroup: "",
-            trainerId: ""
-        });
-    };
-    const isTrainer = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'TRAINER';
-    };
-    const isAdmin = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'ADMIN';
-    };
+    const isRoutineCreator = (routine) =>
+        currentUser && routine.trainerId === currentUser.id;
 
-    const isRoutineCreator = (routine) => {
-        if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.trainerId;
-    }
-
+    // 🔹 Editar rutina
     const handleEdit = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
         navigate(`/routines/edit/${routineId}`);
     };
 
+    // 🔹 Eliminar rutina
     const handleDelete = (routineId) => {
         routineService.deleteRoutine(
             routineId,
             () => {
-                setRoutines(prev => prev.filter(r => r.id !== routineId));
-                // Trigger notification refresh by updating a state that Header can listen to
-                window.dispatchEvent(new CustomEvent('routineDeleted'));
+                setRoutines((prev) => prev.filter((r) => r.id !== routineId));
+                window.dispatchEvent(new CustomEvent("routineDeleted"));
             },
             (error) => {
                 console.error("Error deleting routine:", error);
@@ -171,15 +203,14 @@ const Routines = () => {
         );
     };
 
-    const handleAddRoutine = () => {
-    //pag de crear rutinas CAMBIAR 
-    navigate("/routines/new");
-    };
+    const handleAddRoutine = () => navigate("/routines/new");
 
     if (loading) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['loading-message']}>Cargando entrenamientos...</div>
+                <div className={styles["loading-message"]}>
+                    Cargando entrenamientos...
+                </div>
             </div>
         );
     }
@@ -187,9 +218,12 @@ const Routines = () => {
     if (error) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['error-message']}>
+                <div className={styles["error-message"]}>
                     {error}
-                    <button onClick={loadRoutines} className={styles['retry-button']}>
+                    <button
+                        onClick={loadRoutines}
+                        className={styles["retry-button"]}
+                    >
                         Intentar de nuevo
                     </button>
                 </div>
@@ -197,181 +231,21 @@ const Routines = () => {
         );
     }
 
-  // return = lo que hay que renderizar en pantalla
     return (
         <div className={styles.contenedor}>
-            <div className={styles['routines-header']}>
+            <div className={styles["routines-header"]}>
                 <h2>Entrenamientos</h2>
                 <button
-                    className={styles['filter-toggle-button']}
+                    className={styles["filter-toggle-button"]}
                     onClick={() => setShowFilters(!showFilters)}
                 >
                     Filtrar
                 </button>
             </div>
 
-            {showFilters && (
-                <div className={styles['filter-container']}>
-                    <div className={styles['filter-group']}>
-                        <label>Dificultad:</label>
-                        <div className={styles['custom-select']} ref={(el) => {
-                            filterRefs.current['difficulty'] = el;
-                        }}>
-                            <div
-                                className={styles['select-display']}
-                                onClick={() => setOpenDropdown(openDropdown === 'difficulty' ? null : 'difficulty')}
-                            >
-                                <span>{filters.difficulty ? getDifficultyText(filters.difficulty) : 'Todas'}</span>
-                                <span className={styles['select-arrow']}>▼</span>
-                            </div>
-                            {openDropdown === 'difficulty' && (
-                                <div className={styles['select-dropdown']}>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('difficulty', '');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Todas
-                                    </div>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('difficulty', 'BEGINNER');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Principiante
-                                    </div>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('difficulty', 'INTERMEDIATE');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Intermedia
-                                    </div>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('difficulty', 'ADVANCED');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Avanzada
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className={styles['filter-group']}>
-                    <label>Grupo Muscular:</label>
-                        <div className={styles['custom-select']} ref={(el) => {
-                            filterRefs.current['muscleGroup'] = el;
-                        }}>
-                            <div
-                                className={styles['select-display']}
-                                onClick={() => setOpenDropdown(openDropdown === 'muscleGroup' ? null : 'muscleGroup')}
-                            >
-                                <span>{filters.muscleGroup || 'Todos'}</span>
-                                <span className={styles['select-arrow']}>▼</span>
-                            </div>
-                            {openDropdown === 'muscleGroup' && (
-                                <div className={styles['select-dropdown']}>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('muscleGroup', '');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Todos
-                                    </div>
-                                    {availableMuscleGroups.map(group => (
-                                        <div
-                                            key={group}
-                                            className={styles['select-option']}
-                                            onClick={() => {
-                                                handleFilterChange('muscleGroup', group);
-                                                setOpenDropdown(null);
-                                            }}
-                                        >
-                                            {group}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className={styles['filter-group']}>
-                    <label>Entrenador:</label>
-                        <div className={styles['custom-select']} ref={(el) => {
-                            filterRefs.current['trainer'] = el;
-                        }}>
-                            <div
-                                className={styles['select-display']}
-                                onClick={() => setOpenDropdown(openDropdown === 'trainer' ? null : 'trainer')}
-                            >
-                    <span>
-                        {filters.trainerId
-                            ? availableTrainers.find(t => t.id === parseInt(filters.trainerId))?.name || 'Todos'
-                            : 'Todos'
-                        }
-                    </span>
-                                <span className={styles['select-arrow']}>▼</span>
-                            </div>
-                            {openDropdown === 'trainer' && (
-                                <div className={styles['select-dropdown']}>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('trainerId', '');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Todos
-                                    </div>
-                                    {availableTrainers.map(trainer => (
-                                        <div
-                                            key={trainer.id}
-                                            className={styles['select-option']}
-                                            onClick={() => {
-                                                handleFilterChange('trainerId', trainer.id.toString());
-                                                setOpenDropdown(null);
-                                            }}
-                                        >
-                                            {trainer.name || 'Entrenador desconocido'}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className={styles['filter-actions']}>
-                    <button
-                            className={styles['apply-filter-button']}
-                            onClick={applyFilters}
-                        >
-                            Aplicar Filtros
-                        </button>
-                        <button
-                            className={styles['clear-filter-button']}
-                            onClick={clearFilters}
-                        >
-                            Limpiar
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            <div className={styles['lista-rutinas']}>
+            <div className={styles["lista-rutinas"]}>
                 {routines.length === 0 ? (
-                    <div className={styles['no-results']}>
+                    <div className={styles["no-results"]}>
                         No se encontraron rutinas con los filtros seleccionados.
                     </div>
                 ) : (
@@ -379,34 +253,63 @@ const Routines = () => {
                         <Link
                             to={`/routines/${routine.id}`}
                             key={routine.id}
-                            className={styles['caja-rutina']}
+                            className={styles["caja-rutina"]}
                         >
                             <h3>
                                 {routine.name}
-                                {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-                                    <span className={styles['private-badge']}>🔒 Privado</span>
-                                )}
+                                {routine.visibility === "PRIVATE" &&
+                                    (isRoutineCreator(routine) || isAdmin()) && (
+                                        <span className={styles["private-badge"]}>
+                                            🔒 Privado
+                                        </span>
+                                    )}
                             </h3>
-                            <p>
-                                Generado por{" "}
-                                {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
-                                    "Entrenador desconocido"}
-                            </p>
+
+                            <div className={styles["trainer-info"]}>
+                                <p className={styles["trainer-name"]}>
+                                    Generado por{" "}
+                                    {`${routine.trainerName ?? ""} ${
+                                        routine.trainerSurname ?? ""
+                                    }`.trim() || "Entrenador desconocido"}
+                                </p>
+
+                                {isClient() && routine.trainerId && (
+                                    <button
+                                        className={`${styles["filter-toggle-button"]} ${styles["follow-btn"]}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleFollowToggle(routine.trainerId);
+                                        }}
+                                    >
+                                        {following.includes(routine.trainerId)
+                                            ? "Dejar de seguir al creador"
+                                            : "Seguir al creador"}
+                                    </button>
+                                )}
+                            </div>
 
                             {routine.difficulty && (
-                                <span className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+                                <span
+                                    className={`${styles["routine-difficulty"]} ${
+                                        styles[routine.difficulty.toLowerCase()]
+                                    }`}
+                                >
                                     {getDifficultyText(routine.difficulty)}
                                 </span>
                             )}
 
-                            {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
+                            {((isTrainer() && isRoutineCreator(routine)) ||
+                                isAdmin()) && (
                                 <div>
-                                    <button className={styles['boton-editar']}
-                                            onClick={(e) => handleEdit(e, routine.id)}>
+                                    <button
+                                        className={styles["boton-editar"]}
+                                        onClick={(e) => handleEdit(e, routine.id)}
+                                    >
                                         Editar
                                     </button>
                                     <button
-                                        className={styles['boton-eliminar']}
+                                        className={styles["boton-eliminar"]}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -423,7 +326,10 @@ const Routines = () => {
             </div>
 
             {(isTrainer() || isAdmin()) && (
-                <button className={styles['boton-crear']} onClick={handleAddRoutine}>
+                <button
+                    className={styles["boton-crear"]}
+                    onClick={handleAddRoutine}
+                >
                     +
                 </button>
             )}
@@ -432,12 +338,28 @@ const Routines = () => {
                 text="Seguro que quieres eliminar esta rutina?"
                 show={routineToDelete !== null}
                 onOk={() => {
-                    if (routineToDelete) {
-                        handleDelete(routineToDelete);
-                    }
+                    if (routineToDelete) handleDelete(routineToDelete);
                     setRoutineToDelete(null);
                 }}
                 onCancel={() => setRoutineToDelete(null)}
+            />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres dejar de seguir a este entrenador?"
+                show={trainerToUnfollow !== null}
+                onOk={() => {
+                    if (trainerToUnfollow) {
+                        unfollowTrainer(
+                            trainerToUnfollow,
+                            () => setFollowing((prev) =>
+                                prev.filter((id) => id !== trainerToUnfollow)
+                            ),
+                            () => console.error("Error al dejar de seguir entrenador")
+                        );
+                    }
+                    setTrainerToUnfollow(null);
+                }}
+                onCancel={() => setTrainerToUnfollow(null)}
             />
         </div>
     );
