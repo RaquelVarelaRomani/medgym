@@ -15,6 +15,8 @@
     max-width: 1400px;
     margin-bottom: 2rem;
     padding-left: 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 .history-titulo-grande h2 {
@@ -313,4 +315,96 @@
 
 .retry-button:hover::before {
     left: 100%;
+}
+
+.button-mode {
+    display: flex;
+    gap: 10px;
+}
+
+.calendario-container {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+}
+
+.calendario-dia {
+    background: linear-gradient(135deg, var(--bg-card), rgba(26,26,36,0.8));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.5rem;
+    min-height: 112px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.calendario-dia-num {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.calendario-workout {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    text-decoration: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.calendario-workout:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 8px rgba(255,107,53,0.5);
+}
+
+.calendario-header {
+  display: flex;
+  justify-content: center; /* Centra el contenido */
+  align-items: center;
+  gap: 1rem; /* Espacio entre flechas y mes */
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.calendario-header button {
+    background: linear-gradient(
+        135deg,
+        var(--neon-orange),
+        var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem; /* un poco más pequeño que start-button si quieres */
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.calendario-header span {
+  min-width: 80px;
+  text-align: center;
+  color: white;
 }
