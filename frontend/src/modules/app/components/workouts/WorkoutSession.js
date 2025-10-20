@@ -5,6 +5,7 @@ import * as workoutService from "../../../../backend/workoutService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import * as workoutExerciseService from "../../../../backend/workoutExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup"; 
 
 const WorkoutSession = () => {
   const { sessionId } = useParams();
@@ -18,13 +19,14 @@ const WorkoutSession = () => {
   const [formData, setFormData] = useState({});
   const [currentUser, setCurrentUser] = useState(null);
   const [notification, setNotification] = useState("");
+  const [showIncompletePopup, setShowIncompletePopup] = useState(false); 
 
-  //1) Verificamos usuario autenticado y que sea CLIENT
+ 
   useEffect(() => {
     tryLoginFromServiceToken(
       (authUser) => {
         if (authUser.user.role !== "CLIENT") {
-          navigate("/routines"); // 🔒 redirigimos si no es cliente
+          navigate("/routines"); 
         } else {
           setCurrentUser(authUser.user);
         }
@@ -33,7 +35,7 @@ const WorkoutSession = () => {
     );
   }, [navigate]);
 
-  //Cargamos los datos del entrenamiento y ejercicios
+  
   useEffect(() => {
     setLoading(true);
     workoutService.getWorkout(
@@ -43,7 +45,9 @@ const WorkoutSession = () => {
         routineExerciseService.getRoutineExercises(
           workoutData.routineId,
           (data) => {
-            const ordered = (data.content ?? data).sort((a, b) => a.position - b.position);
+            const ordered = (data.content ?? data).sort(
+              (a, b) => a.position - b.position
+            );
             setRoutineExercises(ordered);
             setLoading(false);
           },
@@ -60,6 +64,7 @@ const WorkoutSession = () => {
     );
   }, [sessionId]);
 
+  
   const handleChange = (routineExerciseId, field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -81,8 +86,13 @@ const WorkoutSession = () => {
       durationSeconds ? Number(durationSeconds) : null,
       routineExerciseId,
       () => {
-        //Guardamos la serie nueva que se vea
-        const newSet = { reps, weight, durationSeconds, date: new Date().toLocaleTimeString() };
+       
+        const newSet = {
+          reps,
+          weight,
+          durationSeconds,
+          date: new Date().toLocaleTimeString(),
+        };
         setLoggedSets((prev) => ({
           ...prev,
           [routineExerciseId]: [...(prev[routineExerciseId] || []), newSet],
@@ -92,10 +102,24 @@ const WorkoutSession = () => {
           [routineExerciseId]: { reps: "", weight: "", durationSeconds: "" },
         }));
       },
-      (err) => { //pongo esto por si ocurre algún error (sale encima de rutina ...)
+      (err) => {
         showNotification("⚠️ Error al registrar la serie.");
       }
     );
+  };
+
+  
+  const allExercisesCompleted = () => {
+    return routineExercises.every((ex) => loggedSets[ex.id]?.length > 0);
+  };
+
+  
+  const handleFinishAttempt = () => {
+    if (!allExercisesCompleted()) {
+      setShowIncompletePopup(true); // mostrar popup
+    } else {
+      handleFinishWorkout(); // todos completos
+    }
   };
 
   const handleFinishWorkout = () => {
@@ -114,20 +138,19 @@ const WorkoutSession = () => {
     setTimeout(() => setNotification(""), 2500);
   };
 
-  //CARGANDO ENTRENAMIENTO en la propia pantalla
+  
   if (loading) {
-  return (
-    <div className={styles.contenedor}>
-      <div className={styles["loading-message"]}>
-        Cargando entrenamiento...
+    return (
+      <div className={styles.contenedor}>
+        <div className={styles["loading-message"]}>
+          Cargando entrenamiento...
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
+  if (error) return <div className={styles.error}>{error}</div>;
 
-  if (error)
-    return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.container}>
@@ -143,33 +166,56 @@ const WorkoutSession = () => {
           <p>{ex.description}</p>
 
           <div className={styles.inputs}>
-
             <input
               type="number"
               placeholder="Reps"
               min="0"
               value={formData[ex.id]?.reps || ""}
-              onChange={(e) => handleChange(ex.id, "reps", e.target.value === "" ? "" : Math.max(0, Number(e.target.value)))}
+              onChange={(e) =>
+                handleChange(
+                  ex.id,
+                  "reps",
+                  e.target.value === ""
+                    ? ""
+                    : Math.max(0, Number(e.target.value))
+                )
+              }
             />
             <input
               type="number"
               placeholder="Peso (kg)"
               min="0"
               value={formData[ex.id]?.weight || ""}
-              onChange={(e) => handleChange(ex.id, "weight", e.target.value === "" ? "" : Math.max(0, Number(e.target.value)))}
+              onChange={(e) =>
+                handleChange(
+                  ex.id,
+                  "weight",
+                  e.target.value === ""
+                    ? ""
+                    : Math.max(0, Number(e.target.value))
+                )
+              }
             />
             <input
               type="number"
               placeholder="Duración (s)"
               min="0"
               value={formData[ex.id]?.durationSeconds || ""}
-              onChange={(e) => handleChange(ex.id, "durationSeconds", e.target.value === "" ? "" : Math.max(0, Number(e.target.value)))}
+              onChange={(e) =>
+                handleChange(
+                  ex.id,
+                  "durationSeconds",
+                  e.target.value === ""
+                    ? ""
+                    : Math.max(0, Number(e.target.value))
+                )
+              }
             />
 
             <button onClick={() => handleAddSet(ex.id)}>Añadir serie</button>
           </div>
 
-          {/*ver las series registradas*/}
+          {/* ver las series registradas */}
           {loggedSets[ex.id]?.length > 0 && (
             <div className={styles.setContainer}>
               <div className={styles.setHeader}>
@@ -183,16 +229,23 @@ const WorkoutSession = () => {
               {loggedSets[ex.id].map((s, i) => (
                 <div key={i} className={styles.setRow}>
                   <div className={styles.setBox}>Serie {i + 1}</div>
-                  {/*Reps*/}
-                  <div className={s.reps ? styles.setBox : styles.setPlaceholder}>
+                  <div
+                    className={s.reps ? styles.setBox : styles.setPlaceholder}
+                  >
                     {s.reps ? s.reps : ""}
                   </div>
-                  {/*Peso*/}
-                  <div className={s.weight ? styles.setBox : styles.setPlaceholder}>
+                  <div
+                    className={s.weight ? styles.setBox : styles.setPlaceholder}
+                  >
                     {s.weight ? s.weight : ""}
                   </div>
-                  {/*Duración*/}
-                  <div className={s.durationSeconds ? styles.setBox : styles.setPlaceholder}>
+                  <div
+                    className={
+                      s.durationSeconds
+                        ? styles.setBox
+                        : styles.setPlaceholder
+                    }
+                  >
                     {s.durationSeconds ? s.durationSeconds : ""}
                   </div>
                   <div className={styles.timeBox}>{s.date}</div>
@@ -200,17 +253,24 @@ const WorkoutSession = () => {
               ))}
             </div>
           )}
-
-
-
-
-
         </div>
       ))}
 
-      <button className={styles.finishButton} onClick={handleFinishWorkout}>
+      
+      <button className={styles.finishButton} onClick={handleFinishAttempt}>
         Finalizar entrenamiento
       </button>
+
+      
+      <ConfirmationPopup
+        text="Aún faltan ejercicios por registrar. ¿Deseas finalizar igualmente?"
+        show={showIncompletePopup}
+        onOk={() => {
+          setShowIncompletePopup(false);
+          handleFinishWorkout();
+        }}
+        onCancel={() => setShowIncompletePopup(false)}
+      />
     </div>
   );
 };
