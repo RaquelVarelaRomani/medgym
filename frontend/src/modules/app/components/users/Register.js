@@ -60,7 +60,7 @@ const Register = () => {
                 navigate("/routines");
             },
             (errorResponse) => {
-                console.error("Error en el registro:", errorResponse);
+                console.log("Error en el registro:", errorResponse);
                 let errorMessage = errorResponse.globalError || "Error en el registro";
                 if (errorMessage.includes("DuplicateInstanceException")) {
                     errorMessage = "El email o teléfono ya existe";
