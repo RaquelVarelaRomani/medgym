@@ -10,14 +10,17 @@
   box-sizing: border-box;
 }
 
-.routines-titulo-grande {
+/* header */
+.routines-header {
   width: 100%;
   max-width: 1400px;
   margin-bottom: 2rem;
-  padding-left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.routines-titulo-grande h2 {
+.routines-header h2 {
   font-size: 2rem;
   font-weight: 700;
   color: var(--text-secondary);
@@ -26,7 +29,55 @@
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* routine list */
+/* 🔸 botón de filtros (base también para seguir/dejar de seguir) */
+.filter-toggle-button {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.65rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-toggle-button:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 🔸 botón de seguir/dejar de seguir (mismo estilo base) */
+.follow-btn {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.55rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+}
+
+.follow-btn:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px);
+}
+
+/* lista de rutinas */
 .lista-rutinas {
   display: flex;
   flex-direction: column;
@@ -37,12 +88,12 @@
   box-sizing: border-box;
 }
 
-/* routine container */
+/* caja de rutina */
 .caja-rutina {
   background: linear-gradient(
-          135deg,
-          var(--bg-card) 0%,
-          rgba(26, 26, 36, 0.8) 100%
+    135deg,
+    var(--bg-card) 0%,
+    rgba(26, 26, 36, 0.8) 100%
   );
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -54,43 +105,21 @@
   position: relative;
   overflow: hidden;
   display: block;
-  box-sizing: border-box;
   width: 100%;
-}
-
-.caja-rutina::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-          90deg,
-          transparent,
-          var(--neon-orange),
-          transparent
-  );
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
 }
 
 .caja-rutina:hover {
   transform: translateY(-8px);
   border-color: var(--neon-orange);
   box-shadow:
-          0 8px 32px rgba(0, 0, 0, 0.5),
-          0 0 40px rgba(255, 107, 53, 0.2),
-          inset 0 0 60px rgba(255, 107, 53, 0.05);
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(255, 107, 53, 0.2),
+    inset 0 0 60px rgba(255, 107, 53, 0.05);
   background: linear-gradient(
-          135deg,
-          rgba(26, 26, 36, 0.95) 0%,
-          rgba(30, 30, 42, 0.9) 100%
+    135deg,
+    rgba(26, 26, 36, 0.95) 0%,
+    rgba(30, 30, 42, 0.9) 100%
   );
-}
-
-.caja-rutina:hover::before {
-  transform: translateX(100%);
 }
 
 .caja-rutina h3 {
@@ -101,51 +130,89 @@
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.caja-rutina p {
-  color: var(--text-secondary);
+/* info del entrenador */
+.trainer-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  gap: 1rem;
+}
+
+.trainer-name {
+  margin: 0;
   font-size: 0.95rem;
-  margin: 0 0 1.25rem 0;
+  color: var(--text-secondary);
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* button container */
-.caja-rutina > div {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+/* insignia privado */
+.private-badge {
+  background-color: #ff6b6b;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-left: 10px;
+  vertical-align: middle;
 }
 
-/* edit button */
+/* dificultad */
+.routine-difficulty {
+  display: inline-block;
+  padding: 0.1rem 0.1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.routine-difficulty.beginner {
+  color: #4caf50;
+  text-shadow:
+    0 0 3px rgba(76, 175, 80, 0.6),
+    0 0 12px rgba(76, 175, 80, 0.4),
+    0 0 24px rgba(76, 175, 80, 0.25);
+}
+
+.routine-difficulty.intermediate {
+  color: var(--neon-orange);
+  text-shadow:
+    0 0 3px rgba(255, 107, 53, 0.6),
+    0 0 12px rgba(255, 107, 53, 0.4),
+    0 0 24px rgba(255, 107, 53, 0.25);
+}
+
+.routine-difficulty.advanced {
+  color: var(--accent-red);
+  text-shadow:
+    0 0 3px rgba(255, 71, 87, 0.6),
+    0 0 12px rgba(255, 71, 87, 0.4),
+    0 0 24px rgba(255, 71, 87, 0.25);
+}
+
+/* botones editar / eliminar */
+.boton-editar,
+.boton-eliminar {
+  margin-right: 0.5rem;
+  margin-top: 0.7rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+/* editar */
 .boton-editar {
   background: transparent;
   color: var(--neon-orange);
   border: 2px solid var(--neon-orange);
-  padding: 0.65rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 10px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  min-width: 100px;
-}
-
-.boton-editar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 107, 53, 0.3),
-          transparent
-  );
-  transition: left 0.5s ease;
 }
 
 .boton-editar:hover {
@@ -153,80 +220,34 @@
   color: white;
   border-color: var(--neon-orange-bright);
   box-shadow:
-          0 0 20px rgba(255, 107, 53, 0.5),
-          0 4px 15px rgba(255, 107, 53, 0.3);
+    0 0 20px rgba(255, 107, 53, 0.5),
+    0 4px 15px rgba(255, 107, 53, 0.3);
   transform: translateY(-2px);
 }
 
-.boton-editar:hover::before {
-  left: 100%;
-}
-
-.boton-editar:active {
-  transform: translateY(0);
-}
-
-/* delete button */
+/* eliminar */
 .boton-eliminar {
   background: transparent;
   color: var(--accent-red);
   border: 2px solid var(--accent-red);
-  padding: 0.65rem 1.5rem;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  min-width: 100px;
-  position: relative;
-  overflow: hidden;
-}
-
-.boton-eliminar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 71, 87, 0.3),
-          transparent
-  );
-  transition: left 0.5s ease;
 }
 
 .boton-eliminar:hover {
-  background: linear-gradient(135deg, var(--accent-red),var(--accent-red-dark));
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
   color: white;
   border-color: #ff6b7a;
   box-shadow:
-          0 0 20px rgba(255, 71, 87, 0.5),
-          0 4px 15px rgba(255, 71, 87, 0.3);
+    0 0 20px rgba(255, 71, 87, 0.5),
+    0 4px 15px rgba(255, 71, 87, 0.3);
   transform: translateY(-2px);
 }
 
-.boton-eliminar:hover::before {
-  left: 100%;
-}
-
-.boton-eliminar:active {
-  transform: translateY(0);
-}
-
-/* create button */
+/* botón + crear rutina */
 .boton-crear {
   position: fixed;
   bottom: 40px;
   right: 40px;
-  background: linear-gradient(
-          135deg,
-          var(--neon-orange),
-          var(--neon-orange-dark)
-  );
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
   color: white;
   border: none;
   border-radius: 50%;
@@ -241,86 +262,26 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  position: relative;
-  overflow: hidden;
-}
-
-.boton-crear::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.3),
-          transparent
-  );
-  transition: left 0.5s ease;
 }
 
 .boton-crear:hover {
   transform: scale(1.1) rotate(90deg);
   box-shadow:
-          0 0 30px rgba(255, 107, 53, 0.6),
-          0 0 60px rgba(255, 107, 53, 0.4);
+    0 0 30px rgba(255, 107, 53, 0.6),
+    0 0 60px rgba(255, 107, 53, 0.4);
 }
 
-.private-badge {
-  background-color: #ff6b6b;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: bold;
-  margin-left: 10px;
-  vertical-align: middle;
-}
-
-.boton-crear:hover::before {
-  left: 100%;
-}
-
-.boton-crear:active {
-  transform: scale(1.05) rotate(90deg);
-}
-
-/* loading section */
-.loading-message {
-  width: 100%;
-  max-width: 1400px;
+/* mensajes */
+.loading-message,
+.error-message,
+.no-results {
   text-align: center;
-  padding: 4rem 2rem;
-  font-size: 1.25rem;
   color: var(--text-secondary);
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* error section */
-.error-message {
-  width: 100%;
-  max-width: 1400px;
-  text-align: center;
-  padding: 2rem;
-  color: var(--accent-red);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  background: rgba(255, 71, 87, 0.05);
-  border: 1px solid rgba(255, 71, 87, 0.2);
-  border-radius: 16px;
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin-top: 2rem;
 }
 
 .retry-button {
-  background: linear-gradient(
-          135deg,
-          var(--neon-orange),
-          var(--neon-orange-dark)
-  );
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -330,35 +291,13 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  position: relative;
-  overflow: hidden;
-}
-
-.retry-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.3),
-          transparent
-  );
-  transition: left 0.5s ease;
 }
 
 .retry-button:hover {
   transform: translateY(-2px);
   box-shadow:
-          0 0 20px rgba(255, 107, 53, 0.6),
-          0 0 40px rgba(255, 107, 53, 0.4);
-}
-
-.retry-button:hover::before {
-  left: 100%;
+    0 0 20px rgba(255, 107, 53, 0.6),
+    0 0 40px rgba(255, 107, 53, 0.4);
 }
 
 .header-rutina {

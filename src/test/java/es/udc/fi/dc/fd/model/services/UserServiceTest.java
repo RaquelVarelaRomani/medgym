@@ -31,7 +31,7 @@ public class UserServiceTest {
 	@Test
 	public void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
 
-		User user = createUser("user", "+34 111 111 111");
+		User user = createUser("user@test.com", "123456789");
 
 		userService.signUp(user);
 
@@ -46,11 +46,11 @@ public class UserServiceTest {
 	@Test
 	public void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin", "+34 222 222 222");
+		User admin = createUser("admin@admin.com", "+34 222 222 222");
 		admin.setRole(User.RoleType.ADMIN);
 		userService.signUp(admin);
 
-		User user = createUser("user2", "+34 333 333 333");
+		User user = createUser("user2@user2.com", "+34 333 333 333");
 		userService.signUp(user);
 
 		userService.blockUser(admin.getId(), user.getId());
@@ -64,11 +64,11 @@ public class UserServiceTest {
 	@Test
 	public void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin2", "+34 444 444 444");
+		User admin = createUser("admin2@admin2.com", "+34 444 444 444");
 		admin.setRole(User.RoleType.ADMIN);
 		userService.signUp(admin);
 
-		User user = createUser("user3", "+34 555 555 555");
+		User user = createUser("user3@user3.com", "+34 555 555 555");
 		userService.signUp(user);
 
 		userService.blockUser(admin.getId(), user.getId());

@@ -82,11 +82,13 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<Exercise> findAllExercises(Long userId) throws InstanceNotFoundException {
         User user = permissionChecker.checkUser(userId);
 
-        return switch (user.getRole()) {
-            case ADMIN -> exerciseDao.findAll();
-            case TRAINER -> exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
-            case CLIENT -> exerciseDao.findByStatus(ExerciseStatus.APPROVED);
-        };
+        if (user.getRole() == User.RoleType.ADMIN) {
+            return exerciseDao.findAll();
+        } else if (user.getRole() == User.RoleType.TRAINER) {
+            return exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+        } else {
+            return exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+        }
     }
 
     @Override

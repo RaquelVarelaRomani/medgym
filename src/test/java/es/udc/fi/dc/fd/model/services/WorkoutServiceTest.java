@@ -1,19 +1,29 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static es.udc.fi.dc.fd.model.entities.User.RoleType;
-import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.Workout;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -44,7 +54,7 @@ public class WorkoutServiceTest {
         user.setPassword("1234");
         user = userDao.save(user);
 
-        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, user);
+        routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         routine.setName("Morning Routine");
         routine = routineDao.save(routine);
     }
@@ -52,6 +62,7 @@ public class WorkoutServiceTest {
 
     @Test
     public void testStartWorkoutcreatesWorkout() {
+        List<Workout> workoutsBefore = workoutDao.findAll();
         Workout workout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
 
         assertNotNull(workout.getId());
@@ -60,9 +71,8 @@ public class WorkoutServiceTest {
         assertEquals(user.getId(), workout.getUser().getId());
         assertEquals(routine.getId(), workout.getRoutine().getId());
 
-        List<Workout> workouts = workoutDao.findAll();
-        assertEquals(14, workouts.size());
-        assertEquals(workout.getId(), workouts.get(0).getId() + 19);
+        List<Workout> workoutsAfter = workoutDao.findAll();
+        assertEquals(workoutsBefore.size() + 1, workoutsAfter.size());
     }
 
     @Test

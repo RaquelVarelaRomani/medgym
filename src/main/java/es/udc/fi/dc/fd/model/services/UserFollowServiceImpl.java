@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Transactional
-public class UserFollowImpl implements UserFollowService {
+public class UserFollowServiceImpl implements UserFollowService {
     @Autowired
     private UserFollowDao userFollowDao;
     @Autowired
@@ -50,5 +51,15 @@ public class UserFollowImpl implements UserFollowService {
         }
 
         userFollowDao.delete(userFollow.get());
+    }
+
+    @Override
+    public List<UserFollow> getFollowers(Long trainerId) throws InstanceNotFoundException {
+        return userFollowDao.findByTrainer(userService.findUserById(trainerId));
+    }
+
+    @Override
+    public List<UserFollow> getFollowedTrainers(Long userId) throws InstanceNotFoundException {
+        return userFollowDao.findByUser(userService.loginFromId(userId));
     }
 }

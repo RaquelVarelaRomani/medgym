@@ -116,7 +116,7 @@ const WorkoutHistory = () => {
                             <Link
                                 to={`/workouts/${workout.id}`}
                                 key={workout.id}
-                                className={styles['caja-workout']}
+                                className={`${styles['caja-workout']} ${isInProgress ? styles['active-workout'] : ''}`}
                             >
                                 <div className={styles['workout-info']}>
                                     <h3>{workout.routineName}</h3>

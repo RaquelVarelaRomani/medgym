@@ -380,3 +380,112 @@
 .boton-crear:active {
   transform: scale(1.05) rotate(90deg);
 }
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: flex-start;
+}
+
+/* Botón Editar */
+.boton-editar {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.boton-editar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 107, 53, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.boton-editar:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow:
+    0 0 20px rgba(255, 107, 53, 0.5),
+    0 4px 15px rgba(255, 107, 53, 0.3);
+  transform: translateY(-2px);
+}
+
+.boton-editar:hover::before {
+  left: 100%;
+}
+
+.boton-editar:active {
+  transform: translateY(0);
+}
+
+/* Botón Eliminar */
+.boton-eliminar {
+  background: transparent;
+  color: var(--accent-red);
+  border: 2px solid var(--accent-red);
+  padding: 0.65rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.boton-eliminar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 71, 87, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.boton-eliminar:hover {
+  background: linear-gradient(135deg, var(--accent-red), var(--accent-red-dark));
+  color: white;
+  border-color: #ff6b7a;
+  box-shadow:
+    0 0 20px rgba(255, 71, 87, 0.5),
+    0 4px 15px rgba(255, 71, 87, 0.3);
+  transform: translateY(-2px);
+}
+
+.boton-eliminar:hover::before {
+  left: 100%;
+}
+
+.boton-eliminar:active {
+  transform: translateY(0);
+}

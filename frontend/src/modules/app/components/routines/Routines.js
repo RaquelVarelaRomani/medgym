@@ -1,9 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Routines.module.css";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
-import ConfirmationPopup from "../common/ConfirmationPopup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import {
+    followTrainer,
+    unfollowTrainer,
+    getFollowedTrainers,
+} from "../../../../backend/userFollowService";
+
 import * as workoutService from "../../../../backend/workoutService";
 const Routines = () => {
     const navigate = useNavigate();
@@ -13,12 +19,42 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
+    const [filters, setFilters] = useState({
+        difficulty: "",
+        muscleGroup: "",
+        trainerId: "",
+    });
+    const [openDropdown, setOpenDropdown] = useState(null);
+    const [showFilters, setShowFilters] = useState(false);
+    const filterRefs = useRef({});
+    const [availableTrainers, setAvailableTrainers] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [availableMuscleGroups] = useState([
+        "Bíceps",
+        "Core",
+        "Espalda",
+        "Full body",
+        "Hombros",
+        "Pectorales",
+        "Piernas",
+        "Tríceps",
+    ]);
+    const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
 
+
+    // 🔹 Login + carga inicial
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);  // ya viene del backend
-                loadRoutines();                     // solo cargas rutinas si hay usuario válido
+                const user = authenticatedUser.user;
+                setCurrentUser(user);
+
+                loadAllTrainers();
+                loadRoutines();
+
+                if (user.role === "CLIENT") {
+                    loadFollowing(user.id);
+                }
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -27,52 +63,139 @@ const Routines = () => {
         );
     }, [navigate]);
 
-
-    const loadRoutines = () => {
-        setLoading(true);
-        routineService.getAllRoutines(
+    // 🔹 Carga los entrenadores seguidos por el cliente
+    const loadFollowing = (userId) => {
+        getFollowedTrainers(
+            userId,
             (data) => {
-                console.log("Routines loaded:", data);
-                setRoutines(data);
-                setLoading(false);
+                const trainerIds = data.map((f) => f.trainerId);
+                setFollowing(trainerIds);
             },
-            (errors) => {
-                console.error("Error loading routines:", errors);
-                setError(errors.globalError || "Error al cargar los entrenamientos");
-                setLoading(false);
-            }
+            (err) => console.error("Error cargando follows", err)
         );
     };
 
-    //CAMBIAR: hacer funcion auxiliar para mapear int a role
-    const isClient = () => {
-        if (!currentUser) return true;
-        return currentUser.role === 'CLIENT';
-    };
-    const isTrainer = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'TRAINER';
-    };
-    const isAdmin = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'ADMIN';
+    // 🔹 Cierra desplegables de filtros al hacer clic fuera
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (
+                openDropdown &&
+                filterRefs.current[openDropdown] &&
+                !filterRefs.current[openDropdown].contains(e.target)
+            ) {
+                setOpenDropdown(null);
+            }
+        };
+
+        if (openDropdown) {
+            document.addEventListener("click", handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleOutsideClick);
+        };
+    }, [openDropdown]);
+
+    // 🔹 Carga entrenadores disponibles
+    const loadAllTrainers = () => {
+        routineService.getAllRoutines(
+            (data) => {
+                const trainers = data
+                    .filter((r) => r.trainerId && r.trainerName)
+                    .map((r) => ({
+                        id: r.trainerId,
+                        name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
+                    }))
+                    .filter(
+                        (t, i, self) => i === self.findIndex((x) => x.id === t.id)
+                    );
+                setAvailableTrainers(trainers);
+            },
+            (errors) => console.error("Error loading trainers:", errors)
+        );
     };
 
-    const isRoutineCreator = (routine) => {
-        if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.trainerId;
-    }
+    // 🔹 Carga rutinas (filtradas o todas)
+    const loadRoutines = () => {
+        setLoading(true);
+
+        const hasFilters =
+            filters.difficulty || filters.muscleGroup || filters.trainerId;
+
+        const handleSuccess = (data) => {
+            setRoutines(data);
+            setLoading(false);
+        };
+
+        const handleError = (errors) => {
+            console.error("Error loading routines:", errors);
+            setError(errors.globalError || "Error al cargar los entrenamientos");
+            setLoading(false);
+        };
+
+        if (hasFilters) {
+            routineService.getFilteredRoutines(
+                filters.muscleGroup || null,
+                filters.difficulty || null,
+                filters.trainerId || null,
+                handleSuccess,
+                handleError
+            );
+        } else {
+            routineService.getAllRoutines(handleSuccess, handleError);
+        }
+    };
+
+    // 🔹 Traduce dificultad
+    const getDifficultyText = (difficulty) => {
+        switch (difficulty) {
+            case "BEGINNER":
+                return "Principiante";
+            case "INTERMEDIATE":
+                return "Intermedia";
+            case "ADVANCED":
+                return "Avanzada";
+            default:
+                return difficulty;
+        }
+    };
+
+    // 🔹 Seguir / dejar de seguir entrenador
+    const handleFollowToggle = (trainerId) => {
+        if (following.includes(trainerId)) {
+            // Mostrar popup de confirmación antes de dejar de seguir
+            setTrainerToUnfollow(trainerId);
+        } else {
+            followTrainer(
+                trainerId,
+                () => setFollowing((prev) => [...prev, trainerId]),
+                () => console.error("Error al seguir entrenador")
+            );
+        }
+    };
+
+    // 🔹 Roles
+    const isTrainer = () => currentUser?.role === "TRAINER";
+    const isAdmin = () => currentUser?.role === "ADMIN";
+    const isClient = () => currentUser?.role === "CLIENT";
+
+    const isRoutineCreator = (routine) =>
+        currentUser && routine.trainerId === currentUser.id;
+
+    // 🔹 Editar rutina
     const handleEdit = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
-        navigate(`/routines/edit/${routineId}`); //comprobar ruta
+        navigate(`/routines/edit/${routineId}`);
     };
 
+    // 🔹 Eliminar rutina
     const handleDelete = (routineId) => {
         routineService.deleteRoutine(
             routineId,
             () => {
-                setRoutines(prev => prev.filter(r => r.id !== routineId));
+                setRoutines((prev) => prev.filter((r) => r.id !== routineId));
+                window.dispatchEvent(new CustomEvent("routineDeleted"));
             },
             (error) => {
                 console.error("Error deleting routine:", error);
@@ -81,12 +204,9 @@ const Routines = () => {
         );
     };
 
-    const handleAddRoutine = () => {
-    //pag de crear rutinas CAMBIAR 
-    navigate("/routines/new");
-    };
-
-    //EMPEZAR ENTRENAMIENTO
+    const handleAddRoutine = () => navigate("/routines/new");
+    
+//EMPEZAR ENTRENAMIENTO
     const handleStartWorkout = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
@@ -107,7 +227,9 @@ const Routines = () => {
     if (loading) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['loading-message']}>Cargando entrenamientos...</div>
+                <div className={styles["loading-message"]}>
+                    Cargando entrenamientos...
+                </div>
             </div>
         );
     }
@@ -115,9 +237,12 @@ const Routines = () => {
     if (error) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['error-message']}>
+                <div className={styles["error-message"]}>
                     {error}
-                    <button onClick={loadRoutines} className={styles['retry-button']}>
+                    <button
+                        onClick={loadRoutines}
+                        className={styles["retry-button"]}
+                    >
                         Intentar de nuevo
                     </button>
                 </div>
@@ -125,40 +250,73 @@ const Routines = () => {
         );
     }
 
-  // return = lo que hay que renderizar en pantalla
-  return (
-    
-    // 1) Hacemos un div para agrupar todo dentro del recuadro del login
-    <div className={styles.contenedor}>
+    return (
+        <div className={styles.contenedor}>
+            <div className={styles["routines-header"]}>
+                <h2>Entrenamientos</h2>
+                <button
+                    className={styles["filter-toggle-button"]}
+                    onClick={() => setShowFilters(!showFilters)}
+                >
+                    Filtrar
+                </button>
+            </div>
 
-        <div className={styles['routines-titulo-grande']}>
-            <h2>Entrenamientos:</h2>
-        </div>
+            <div className={styles["lista-rutinas"]}>
+                {routines.length === 0 ? (
+                    <div className={styles["no-results"]}>
+                        No se encontraron rutinas con los filtros seleccionados.
+                    </div>
+                ) : (
+                    routines.map((routine) => (
+                        <Link
+                            to={`/routines/${routine.id}`}
+                            key={routine.id}
+                            className={styles["caja-rutina"]}
+                        >
+                            <h3>
+                                {routine.name}
+                                {routine.visibility === "PRIVATE" &&
+                                    (isRoutineCreator(routine) || isAdmin()) && (
+                                        <span className={styles["private-badge"]}>
+                                            🔒 Privado
+                                        </span>
+                                    )}
+                            </h3>
 
-        <div className={styles['lista-rutinas']}>
-            {routines.map((routine) => ( //recorre el array de rutinas
-            <Link
-                to={`/routines/${routine.id}`}
-                key={routine.id}
-                className={styles['caja-rutina']}
-            >
-                <div className={styles["header-rutina"]}>
-                            <div className={styles["info-rutina"]}>
-                                <h3>
-                                    {routine.name}
-                                    {routine.visibility === "PRIVATE" &&
-                                        (isRoutineCreator(routine) || isAdmin()) && (
-                                            <span className={styles["private-badge"]}>🔒 Privado</span>
-                                        )}
-                                </h3>
-                                <p>
+                            <div className={styles["trainer-info"]}>
+                                <p className={styles["trainer-name"]}>
                                     Generado por{" "}
                                     {`${routine.trainerName ?? ""} ${
                                         routine.trainerSurname ?? ""
                                     }`.trim() || "Entrenador desconocido"}
                                 </p>
+
+                                {isClient() && routine.trainerId && (
+                                    <button
+                                        className={`${styles["filter-toggle-button"]} ${styles["follow-btn"]}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleFollowToggle(routine.trainerId);
+                                        }}
+                                    >
+                                        {following.includes(routine.trainerId)
+                                            ? "Dejar de seguir al creador"
+                                            : "Seguir al creador"}
+                                    </button>
+                                )}
                             </div>
 
+                            {routine.difficulty && (
+                                <span
+                                    className={`${styles["routine-difficulty"]} ${
+                                        styles[routine.difficulty.toLowerCase()]
+                                    }`}
+                                >
+                                    {getDifficultyText(routine.difficulty)}
+                                </span>
+                            )}
                             {isClient() && ( //SI ES CLIENTE SOLO muestro el boton para empezar el entrenamiento
                                 <button
                                     className={styles["boton-empezar"]}
@@ -167,55 +325,71 @@ const Routines = () => {
                                     Empezar entrenamiento
                                 </button>
                             )}
-                        </div>
-                {/*boton editar y borrar para admins y creador de las rutinas*/}
-                {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
-                    <div>
-                        <button className={styles['boton-editar']}
-                            onClick={(e) => handleEdit(e, routine.id)}>
-                            Editar
-                        </button>
-                        <button
-                            className={styles['boton-eliminar']}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setRoutineToDelete(routine.id);
-                            }}
-                        >
-                            Eliminar
-                        </button>
 
-                    </div>
+                            {((isTrainer() && isRoutineCreator(routine)) ||
+                                isAdmin()) && (
+                                <div>
+                                    <button
+                                        className={styles["boton-editar"]}
+                                        onClick={(e) => handleEdit(e, routine.id)}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        className={styles["boton-eliminar"]}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setRoutineToDelete(routine.id);
+                                        }}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </div>
+                            )}
+                        </Link>
+                    ))
                 )}
+            </div>
 
+            {(isTrainer() || isAdmin()) && (
+                <button
+                    className={styles["boton-crear"]}
+                    onClick={handleAddRoutine}
+                >
+                    +
+                </button>
+            )}
 
-            </Link>
-            ))}
+            <ConfirmationPopup
+                text="Seguro que quieres eliminar esta rutina?"
+                show={routineToDelete !== null}
+                onOk={() => {
+                    if (routineToDelete) handleDelete(routineToDelete);
+                    setRoutineToDelete(null);
+                }}
+                onCancel={() => setRoutineToDelete(null)}
+            />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres dejar de seguir a este entrenador?"
+                show={trainerToUnfollow !== null}
+                onOk={() => {
+                    if (trainerToUnfollow) {
+                        unfollowTrainer(
+                            trainerToUnfollow,
+                            () => setFollowing((prev) =>
+                                prev.filter((id) => id !== trainerToUnfollow)
+                            ),
+                            () => console.error("Error al dejar de seguir entrenador")
+                        );
+                    }
+                    setTrainerToUnfollow(null);
+                }}
+                onCancel={() => setTrainerToUnfollow(null)}
+            />
         </div>
-
-        {/*Boton CREAR*/}
-      {(isTrainer() || isAdmin()) && (
-        <button className={styles['boton-crear']} onClick={handleAddRoutine}>
-          +
-        </button>
-      )}
-
-        <ConfirmationPopup
-            text="Seguro que quieres eliminar esta rutina?"
-            show={routineToDelete !== null}
-            onOk={() => {
-                if (routineToDelete) {
-                    handleDelete(routineToDelete);
-                }
-                setRoutineToDelete(null);
-            }}
-            onCancel={() => setRoutineToDelete(null)}
-        />
-
-    </div>
-
-  );
+    );
 };
 
 export default Routines;

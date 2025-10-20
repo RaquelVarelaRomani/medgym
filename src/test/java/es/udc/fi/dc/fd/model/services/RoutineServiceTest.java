@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,8 +38,8 @@ public class RoutineServiceTest {
 
     @Test
     public void testCreateAndFindRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
+        User user = createUser("user@test.com");
+        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         Routine foundRoutine = routineService.findRoutineById(user.getId(), routine.getId());
 
@@ -48,43 +47,44 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testCreateDuplicateRoutine() throws DuplicateInstanceException {
-        User user = createUser("user");
-        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
+    public void testCreateDuplicateRoutine() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user@test.com");
+        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         assertThrows(DuplicateInstanceException.class, () -> {
-            routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
+            routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         });
     }
 
     @Test
     public void testUpdateRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
+        User user = createUser("user@test.com");
+        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        routineService.updateRoutine(user.getId(), routine.getId(), "new name", "new description", Routine.VisibilityType.PUBLIC );
+        routineService.updateRoutine(user.getId(), routine.getId(), "new name", "new description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.INTERMEDIATE);
 
         Routine updatedRoutine = routineService.findRoutineById(user.getId(), routine.getId());
 
         assertEquals("new name", updatedRoutine.getName());
         assertEquals("new description", updatedRoutine.getDescription());
+        assertEquals(Routine.DifficultyType.INTERMEDIATE, updatedRoutine.getDifficulty());
     }
 
     @Test
-    public void testUpdateRoutineDuplicateName() throws DuplicateInstanceException {
-        User user = createUser("user");
-        routineService.createRoutine("routine1", "description", user, Routine.VisibilityType.PUBLIC);
-        Routine routine2 = routineService.createRoutine("routine2", "description", user, Routine.VisibilityType.PUBLIC);
+    public void testUpdateRoutineDuplicateName() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("user@test.com");
+        routineService.createRoutine("routine1", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Routine routine2 = routineService.createRoutine("routine2", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         assertThrows(DuplicateInstanceException.class, () -> {
-            routineService.updateRoutine(user.getId(), routine2.getId(), "routine1", "new description", Routine.VisibilityType.PUBLIC);
+            routineService.updateRoutine(user.getId(), routine2.getId(), "routine1", "new description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         });
     }
 
     @Test
     public void testDeleteRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
+        User user = createUser("user@test.com");
+        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         routineService.deleteRoutine(user.getId(), routine.getId());
 
@@ -95,10 +95,10 @@ public class RoutineServiceTest {
 
     @Test
     public void testGetAllRoutines() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user");
-        User user2 = createUser("user2");
-        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC);
-        routineService.createRoutine("routine2", "description2", user, Routine.VisibilityType.PRIVATE);
+        User user = createUser("user@test.com");
+        User user2 = createUser("user2@test.com");
+        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        routineService.createRoutine("routine2", "description2", user, Routine.VisibilityType.PRIVATE, Routine.DifficultyType.BEGINNER);
 
         // 4 en el script + 2 creados en este test
         assertEquals(6, routineService.findAllRoutines(user.getId()).size());
@@ -107,7 +107,7 @@ public class RoutineServiceTest {
 
     @Test
     public void testGetRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user");
+        User user = createUser("user@test.com");
         Routine routine = routineDao.findById(1L).get();
         assertEquals(routineService.findRoutineById(user.getId(), 1L), routine);
         routine.setVisibility(Routine.VisibilityType.PRIVATE);

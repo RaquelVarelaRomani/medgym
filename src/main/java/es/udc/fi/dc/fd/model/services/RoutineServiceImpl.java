@@ -1,19 +1,19 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -25,13 +25,18 @@ public class RoutineServiceImpl implements RoutineService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility) throws DuplicateInstanceException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        Routine routine = new Routine(name, description, visibility, trainer);
+        Routine routine = new Routine(name, description, visibility, difficulty, trainer);
+
+        notificationService.createNotification(routine);
         return routineDao.save(routine);
     }
 
@@ -56,7 +61,7 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility)
+    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         Routine routine = findRoutineById(userId, routineId);
         User user = userService.loginFromId(userId);
@@ -72,6 +77,7 @@ public class RoutineServiceImpl implements RoutineService {
         routine.setName(name);
         routine.setDescription(description);
         routine.setVisibility(visibility);
+        routine.setDifficulty(difficulty);
     }
 
     @Override
@@ -82,6 +88,9 @@ public class RoutineServiceImpl implements RoutineService {
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
             throw new PermissionException();
         }
+
+        // Delete related notifications before deleting the routine
+        notificationService.deleteNotificationsByRoutine(routineId);
 
         routineDao.delete(routine);
     }
@@ -98,5 +107,43 @@ public class RoutineServiceImpl implements RoutineService {
 
         return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Routine> findRoutinesByFilters(Long userId, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+        User user = userService.loginFromId(userId);
+        List<Routine> routines = routineDao.findAll();
+
+        // Filter by visibility
+        if (user.getRole() != User.RoleType.ADMIN) {
+            routines = routines.stream()
+                    .filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by muscle group if provided
+        if (muscleGroup != null && !muscleGroup.trim().isEmpty()) {
+            List<Routine> muscleGroupRoutines = routineDao.findByMuscleGroup(muscleGroup);
+            routines = routines.stream()
+                    .filter(muscleGroupRoutines::contains)
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by difficulty if provided
+        if (difficulty != null) {
+            routines = routines.stream()
+                    .filter(routine -> routine.getDifficulty() == difficulty)
+                    .collect(Collectors.toList());
+        }
+
+        // Filter by trainer if provided
+        if (trainerId != null) {
+            routines = routines.stream()
+                    .filter(routine -> routine.getTrainer().getId().equals(trainerId))
+                    .collect(Collectors.toList());
+        }
+
+        return routines;
     }
 }
