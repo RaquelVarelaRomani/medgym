@@ -5,6 +5,8 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import Popup from "../common/popup/Popup";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const EditRoutine = () => {
     const navigate = useNavigate();
@@ -271,7 +273,7 @@ const EditRoutine = () => {
         }
     };
 
-    if (loading) return <div>Cargando rutina...</div>;
+    if (loading) return <LoadingMessage text="Cargando rutina..." />;
     if (error) return <div>{error}</div>;
 
     return (

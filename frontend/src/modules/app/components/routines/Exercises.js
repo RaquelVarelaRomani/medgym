@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const Exercises = () => {
     const navigate = useNavigate();
@@ -132,8 +134,7 @@ const Exercises = () => {
         navigate("/exercises/new");
     };
 
-    if (loading) return <div className={styles.contenedor}>Cargando...</div>;
-
+    if (loading) return <LoadingMessage text="Cargando ejercicios..." />;
     return (
         <div className={styles.contenedor}>
             {isAdmin() && (

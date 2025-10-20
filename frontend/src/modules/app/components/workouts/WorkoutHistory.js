@@ -3,6 +3,9 @@ import {useEffect, useState} from "react";
 import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutHistory.module.css";
+import LoadingMessage from "../common/LoadingMessage";
+
+
 const WorkoutHistory = () => {
     const navigate = useNavigate();
     const [workouts, setWorkouts] = useState([]);
@@ -69,13 +72,7 @@ const WorkoutHistory = () => {
         return `${minutes} min`;
     };
 
-    if (loading) {
-        return (
-            <div className={styles.contenedor}>
-                <div className={styles['loading-message']}>Cargando historial...</div>
-            </div>
-        );
-    }
+    if (loading) return <LoadingMessage text="Cargando historial de entrenamientos..." />;
 
     if (error) {
         return (

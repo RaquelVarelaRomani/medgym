@@ -9,6 +9,8 @@ import {
     unfollowTrainer,
     getFollowedTrainers,
 } from "../../../../backend/userFollowService";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const Routines = () => {
     const navigate = useNavigate();
@@ -205,15 +207,7 @@ const Routines = () => {
 
     const handleAddRoutine = () => navigate("/routines/new");
 
-    if (loading) {
-        return (
-            <div className={styles.contenedor}>
-                <div className={styles["loading-message"]}>
-                    Cargando entrenamientos...
-                </div>
-            </div>
-        );
-    }
+     if (loading) return <LoadingMessage text="Cargando entrenamientos..." />;
 
     if (error) {
         return (
