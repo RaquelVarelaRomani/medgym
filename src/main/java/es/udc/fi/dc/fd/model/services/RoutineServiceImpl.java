@@ -1,7 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +110,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Routine> findRoutinesByFilters(Long userId, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 
@@ -122,9 +121,29 @@ public class RoutineServiceImpl implements RoutineService {
                     .collect(Collectors.toList());
         }
 
+        // Filter by equipment if provided (multi-select)
+        if (equipment != null && !equipment.trim().isEmpty()) {
+            String[] equipmentList = equipment.split(",");
+            Set<Routine> equipmentRoutines = new HashSet<>();
+
+            for (String equip : equipmentList) {
+                equipmentRoutines.addAll(routineDao.findByEquipment(equip.trim()));
+            }
+
+            routines = routines.stream()
+                    .filter(equipmentRoutines::contains)
+                    .collect(Collectors.toList());
+        }
+
         // Filter by muscle group if provided
         if (muscleGroup != null && !muscleGroup.trim().isEmpty()) {
-            List<Routine> muscleGroupRoutines = routineDao.findByMuscleGroup(muscleGroup);
+            String[] muscleGroupList = muscleGroup.split(",");
+            Set<Routine> muscleGroupRoutines = new HashSet<>();
+
+            for (String group : muscleGroupList) {
+                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(group.trim()));
+            }
+
             routines = routines.stream()
                     .filter(muscleGroupRoutines::contains)
                     .collect(Collectors.toList());

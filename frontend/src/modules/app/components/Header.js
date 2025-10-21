@@ -184,6 +184,14 @@ const Header = () => {
                             Seguidores ({followersCount})
                         </Link>
                     )}
+
+                    <Link
+                        to="/workouts/history"
+                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Historial
+                    </Link>
+
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"
@@ -194,12 +202,6 @@ const Header = () => {
                             Moderación
                         </Link>
                     )}
-                    <Link
-                        to="/workouts/history"
-                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
-                    >
-                        Historial
-                    </Link>
                 </nav>
 
                 {/* right section - profile */}

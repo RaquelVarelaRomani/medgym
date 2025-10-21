@@ -4,12 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import {
-    followTrainer,
-    unfollowTrainer,
-    getFollowedTrainers,
-} from "../../../../backend/userFollowService";
-import LoadingMessage from "../common/LoadingMessage";
+
+import * as exerciseService from "../../../../backend/exerciseService";
+import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
+
 
 
 const Routines = () => {
@@ -20,16 +18,11 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
-    const [filters, setFilters] = useState({
-        difficulty: "",
-        muscleGroup: "",
-        trainerId: "",
-    });
+    const [filters, setFilters] = useState({difficulty: "", muscleGroup: [], equipment: [], trainerId: ""});
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     const filterRefs = useRef({});
     const [availableTrainers, setAvailableTrainers] = useState([]);
-    const [following, setFollowing] = useState([]);
     const [availableMuscleGroups] = useState([
         "Bíceps",
         "Core",
@@ -40,19 +33,18 @@ const Routines = () => {
         "Piernas",
         "Tríceps",
     ]);
+    const [availableEquipment, setAvailableEquipment] = useState([]);
+    const [following, setFollowing] = useState([]);
     const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
 
-
-    // 🔹 Login + carga inicial
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 const user = authenticatedUser.user;
-                setCurrentUser(user);
-
+                setCurrentUser(user);  // ya viene del backend
                 loadAllTrainers();
-                loadRoutines();
-
+                loadAllEquipment();
+                loadRoutines();                     // solo cargas rutinas si hay usuario válido
                 if (user.role === "CLIENT") {
                     loadFollowing(user.id);
                 }
@@ -64,7 +56,6 @@ const Routines = () => {
         );
     }, [navigate]);
 
-    // 🔹 Carga los entrenadores seguidos por el cliente
     const loadFollowing = (userId) => {
         getFollowedTrainers(
             userId,
@@ -76,7 +67,7 @@ const Routines = () => {
         );
     };
 
-    // 🔹 Cierra desplegables de filtros al hacer clic fuera
+    //close filter dropdown when clicking outside
     useEffect(() => {
         const handleOutsideClick = (e) => {
             if (
@@ -97,7 +88,6 @@ const Routines = () => {
         };
     }, [openDropdown]);
 
-    // 🔹 Carga entrenadores disponibles
     const loadAllTrainers = () => {
         routineService.getAllRoutines(
             (data) => {
@@ -116,16 +106,42 @@ const Routines = () => {
         );
     };
 
-    // 🔹 Carga rutinas (filtradas o todas)
-    const loadRoutines = () => {
+    const loadAllEquipment = () => {
+        exerciseService.getAllExercises(
+            (data) => {
+                const exercisesArray = data.content ? data.content : data;
+                const equipment = [...new Set(exercisesArray
+                    .filter(exercise => exercise.equipment)
+                    .map(exercise => exercise.equipment)
+                )].sort();
+                setAvailableEquipment(equipment);
+            },
+            (errors) => {
+                console.error("Error loading equipment:", errors);
+            }
+        );
+    };
+
+    const loadRoutines = (filtersToUse = filters) => {
         setLoading(true);
 
-        const hasFilters =
-            filters.difficulty || filters.muscleGroup || filters.trainerId;
+        const hasFilters = filtersToUse.difficulty || filtersToUse.muscleGroup.length > 0 ||
+            filtersToUse.equipment.length > 0 || filtersToUse.trainerId;
 
         const handleSuccess = (data) => {
             setRoutines(data);
             setLoading(false);
+        };
+
+        const loadFollowing = (userId) => {
+            getFollowedTrainers(
+                userId,
+                (data) => {
+                    const trainerIds = data.map((f) => f.trainerId);
+                    setFollowing(trainerIds);
+                },
+                (err) => console.error("Error cargando follows", err)
+            );
         };
 
         const handleError = (errors) => {
@@ -136,9 +152,10 @@ const Routines = () => {
 
         if (hasFilters) {
             routineService.getFilteredRoutines(
-                filters.muscleGroup || null,
-                filters.difficulty || null,
-                filters.trainerId || null,
+                filtersToUse.muscleGroup.join(',') || null,
+                filtersToUse.equipment.join(',') || null,
+                filtersToUse.difficulty || null,
+                filtersToUse.trainerId || null,
                 handleSuccess,
                 handleError
             );
@@ -147,7 +164,6 @@ const Routines = () => {
         }
     };
 
-    // 🔹 Traduce dificultad
     const getDifficultyText = (difficulty) => {
         switch (difficulty) {
             case "BEGINNER":
@@ -161,7 +177,36 @@ const Routines = () => {
         }
     };
 
-    // 🔹 Seguir / dejar de seguir entrenador
+    const handleMultiSelectChange = (filterName, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: prev[filterName].includes(value)
+                ? prev[filterName].filter(item => item !== value)
+                : [...prev[filterName], value]
+        }));
+    };
+    const handleFilterChange = (filterName, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: value
+        }));
+    };
+
+    const applyFilters = () => {
+        loadRoutines(filters);
+    };
+
+    const clearFilters = () => {
+        const clearedFilters = {
+            difficulty: "",
+            muscleGroup: [],
+            equipment: [],
+            trainerId: ""
+        };
+        setFilters(clearedFilters);
+        loadRoutines(clearedFilters);
+    };
+
     const handleFollowToggle = (trainerId) => {
         if (following.includes(trainerId)) {
             // Mostrar popup de confirmación antes de dejar de seguir
@@ -175,7 +220,6 @@ const Routines = () => {
         }
     };
 
-    // 🔹 Roles
     const isTrainer = () => currentUser?.role === "TRAINER";
     const isAdmin = () => currentUser?.role === "ADMIN";
     const isClient = () => currentUser?.role === "CLIENT";
@@ -183,14 +227,12 @@ const Routines = () => {
     const isRoutineCreator = (routine) =>
         currentUser && routine.trainerId === currentUser.id;
 
-    // 🔹 Editar rutina
     const handleEdit = (e, routineId) => {
         e.preventDefault();
         e.stopPropagation();
         navigate(`/routines/edit/${routineId}`);
     };
 
-    // 🔹 Eliminar rutina
     const handleDelete = (routineId) => {
         routineService.deleteRoutine(
             routineId,
@@ -236,6 +278,211 @@ const Routines = () => {
                     Filtrar
                 </button>
             </div>
+
+            {showFilters && (
+                <div className={styles['filter-container']}>
+                    <div className={styles['filter-group']}>
+                        <label>Dificultad:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['difficulty'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'difficulty' ? null : 'difficulty')}
+                            >
+                                <span>{filters.difficulty ? getDifficultyText(filters.difficulty) : 'Todas'}</span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'difficulty' && (
+                                <div className={styles['select-dropdown']}>
+                                    <div
+                                        className={styles['select-option']}
+                                        onClick={() => {
+                                            handleFilterChange('difficulty', '');
+                                            setOpenDropdown(null);
+                                        }}
+                                    >
+                                        Todas
+                                    </div>
+                                    <div
+                                        className={styles['select-option']}
+                                        onClick={() => {
+                                            handleFilterChange('difficulty', 'BEGINNER');
+                                            setOpenDropdown(null);
+                                        }}
+                                    >
+                                        Principiante
+                                    </div>
+                                    <div
+                                        className={styles['select-option']}
+                                        onClick={() => {
+                                            handleFilterChange('difficulty', 'INTERMEDIATE');
+                                            setOpenDropdown(null);
+                                        }}
+                                    >
+                                        Intermedia
+                                    </div>
+                                    <div
+                                        className={styles['select-option']}
+                                        onClick={() => {
+                                            handleFilterChange('difficulty', 'ADVANCED');
+                                            setOpenDropdown(null);
+                                        }}
+                                    >
+                                        Avanzada
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-group']}>
+                        <label>Grupos Musculares:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['muscleGroup'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'muscleGroup' ? null : 'muscleGroup')}
+                            >
+                <span>
+                    {filters.muscleGroup.length > 0
+                        ? `${filters.muscleGroup.length} seleccionado${filters.muscleGroup.length > 1 ? 's' : ''}`
+                        : 'Todos'
+                    }
+                </span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'muscleGroup' && (
+                                <div className={styles['select-dropdown']}>
+                                    {availableMuscleGroups.map(group => (
+                                        <div
+                                            key={group}
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('muscleGroup', group);  // Singular
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.muscleGroup.includes(group)}  // Singular
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{group}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-group']}>
+                        <label>Equipamiento:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['equipment'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'equipment' ? null : 'equipment')}
+                            >
+                        <span>
+                            {filters.equipment.length > 0
+                                ? `${filters.equipment.length} seleccionado${filters.equipment.length > 1 ? 's' : ''}`
+                                : 'Todos'
+                            }
+                        </span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'equipment' && (
+                                <div className={styles['select-dropdown']}>
+                                    {availableEquipment.map(equip => (
+                                        <div
+                                            key={equip}
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('equipment', equip);
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.equipment.includes(equip)}
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{equip}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-group']}>
+                        <label>Entrenador:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['trainer'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'trainer' ? null : 'trainer')}
+                            >
+                    <span>
+                        {filters.trainerId
+                            ? availableTrainers.find(t => t.id === parseInt(filters.trainerId))?.name || 'Todos'
+                            : 'Todos'
+                        }
+                    </span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'trainer' && (
+                                <div className={styles['select-dropdown']}>
+                                    <div
+                                        className={styles['select-option']}
+                                        onClick={() => {
+                                            handleFilterChange('trainerId', '');
+                                            setOpenDropdown(null);
+                                        }}
+                                    >
+                                        Todos
+                                    </div>
+                                    {availableTrainers.map(trainer => (
+                                        <div
+                                            key={trainer.id}
+                                            className={styles['select-option']}
+                                            onClick={() => {
+                                                handleFilterChange('trainerId', trainer.id.toString());
+                                                setOpenDropdown(null);
+                                            }}
+                                        >
+                                            {trainer.name || 'Entrenador desconocido'}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-actions']}>
+                        <button
+                            className={styles['apply-filter-button']}
+                            onClick={applyFilters}
+                        >
+                            Aplicar Filtros
+                        </button>
+                        <button
+                            className={styles['clear-filter-button']}
+                            onClick={clearFilters}
+                        >
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className={styles["lista-rutinas"]}>
                 {routines.length === 0 ? (
@@ -285,10 +532,8 @@ const Routines = () => {
 
                             {routine.difficulty && (
                                 <span
-                                    className={`${styles["routine-difficulty"]} ${
-                                        styles[routine.difficulty.toLowerCase()]
-                                    }`}
-                                >
+                                    className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+
                                     {getDifficultyText(routine.difficulty)}
                                 </span>
                             )}
