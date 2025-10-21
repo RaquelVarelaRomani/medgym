@@ -204,42 +204,41 @@ describe('Authentication Components', () => {
         expect(login).toHaveBeenCalledWith('test@example.com', 'password123', expect.any(Function), expect.any(Function));
       });
     });
+  });
 
-    describe('RequiresLogin Component', () => {
-      test('renders when service token exists', () => {
-        getServiceToken.mockReturnValue('mock-token');
-  
-        render(
-          <MemoryRouter>
-            <Routes>
-              <Route path="/" element={<RequiresLogin />}>
-                <Route index element={<div>Protected Content</div>} />
-              </Route>
-            </Routes>
-          </MemoryRouter>
-        );
-  
-        expect(screen.getByText('Protected Content')).toBeInTheDocument();
-      });
-  
-      test('redirects to /users/login when no service token exists', () => {
-        getServiceToken.mockReturnValue(null);
-  
-        render(
-          <MemoryRouter initialEntries={['/']}>
-            <Routes>
-              <Route path="/" element={<RequiresLogin />}>
-                <Route index element={<div>Protected Content</div>} />
-              </Route>
-              <Route path="/users/login" element={<div>Login Page</div>} />
-            </Routes>
-          </MemoryRouter>
-        );
-  
-        expect(screen.getByText('Login Page')).toBeInTheDocument();
-      });
+  describe('RequiresLogin Component', () => {
+    test('renders when service token exists', () => {
+      getServiceToken.mockReturnValue('mock-token');
+
+      render(
+        <MemoryRouter>
+          <Routes>
+            <Route path="/" element={<RequiresLogin />}>
+              <Route index element={<div>Protected Content</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText('Protected Content')).toBeInTheDocument();
     });
-  
+
+    test('redirects to /users/login when no service token exists', () => {
+      getServiceToken.mockReturnValue(null);
+
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path="/" element={<RequiresLogin />}>
+              <Route index element={<div>Protected Content</div>} />
+            </Route>
+            <Route path="/users/login" element={<div>Login Page</div>} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText('Login Page')).toBeInTheDocument();
+    });
   });
 
   describe('Register Component', () => {
