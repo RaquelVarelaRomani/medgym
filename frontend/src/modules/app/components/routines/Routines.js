@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-
+import LoadingMessage from "../common/LoadingMessage";
 import * as exerciseService from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
 
