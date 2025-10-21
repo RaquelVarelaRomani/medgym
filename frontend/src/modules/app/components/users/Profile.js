@@ -71,7 +71,7 @@ const Profile = () => {
                 <div className={styles['profile-data']}>
                     {profile ? (
                         <>
-                            <p><strong>Email:</strong> {profile.email}</p>
+                            <p><strong>Correo electrónico:</strong> {profile.email}</p>
                             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
                             <p><strong>Rol:</strong> {roleString()}</p>
                         </>

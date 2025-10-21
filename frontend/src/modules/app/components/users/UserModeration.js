@@ -95,7 +95,7 @@ const UserModeration = () => {
                 <h3 className={styles['search-title']}>Buscar usuarios</h3>
                 <input
                     type="text"
-                    placeholder="Buscar por nombre, email o usuario..."
+                    placeholder="Buscar por nombre, correo electrónico o usuario..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className={styles['search-input']}
@@ -120,8 +120,12 @@ const UserModeration = () => {
                                 <p className={styles['user-email']}>{user.email}</p>
                                 {user.role && (
                                     <span className={`${styles['user-role']} ${styles[user.role.toLowerCase()]}`}>
-            {user.role}
-        </span>
+                                        {{
+                                            ADMIN: "Administrador",
+                                            TRAINER: "Entrenador",
+                                            CLIENT: "Cliente"
+                                        }[user.role] || user.role}
+                                    </span>
                                 )}
                             </div>
                             <div className={styles['user-actions']}>
