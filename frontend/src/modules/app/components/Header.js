@@ -63,6 +63,14 @@ const Header = () => {
         }
     };
 
+    useEffect(() => {
+    const handleWorkoutFinish = () => checkActiveWorkout();
+    window.addEventListener("workoutFinished", handleWorkoutFinish);
+    return () => {
+      window.removeEventListener("workoutFinished", handleWorkoutFinish);
+    };
+  }, []);
+
     //close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {

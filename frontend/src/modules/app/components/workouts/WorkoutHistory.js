@@ -4,8 +4,6 @@ import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutHistory.module.css";
 import LoadingMessage from "../common/LoadingMessage";
-
-
 const WorkoutHistory = () => {
     const navigate = useNavigate();
     const [workouts, setWorkouts] = useState([]);
@@ -76,6 +74,16 @@ const WorkoutHistory = () => {
     };
 
 
+    
+    const handleWorkoutClick = (workout) => {
+    if (!workout.endTime) {
+      
+      navigate(`/workouts/session/${workout.id}`);
+    } else {
+      
+      navigate(`/workouts/${workout.id}`);
+    }
+  };
     const prevMonth = () => {
     if (currentMonth === 0) {
         setCurrentMonth(11);
@@ -94,7 +102,9 @@ const WorkoutHistory = () => {
     }
     };    
 
+
     if (loading) return <LoadingMessage text="Cargando historial de entrenamientos..." />;
+
 
 
     if (error) {
