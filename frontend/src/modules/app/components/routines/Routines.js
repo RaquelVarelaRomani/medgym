@@ -1,10 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Routines.module.css";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
+import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
+
 
 const Routines = () => {
     const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Routines = () => {
         "Hombros",
         "Pectorales",
         "Piernas",
-        "Tríceps"
+        "Tríceps",
     ]);
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const [following, setFollowing] = useState([]);
@@ -44,7 +46,6 @@ const Routines = () => {
                 if (user.role === "CLIENT") {
                     loadFollowing(user.id);
                 }
-
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -53,20 +54,35 @@ const Routines = () => {
         );
     }, [navigate]);
 
+    const loadFollowing = (userId) => {
+        getFollowedTrainers(
+            userId,
+            (data) => {
+                const trainerIds = data.map((f) => f.trainerId);
+                setFollowing(trainerIds);
+            },
+            (err) => console.error("Error cargando follows", err)
+        );
+    };
+
     //close filter dropdown when clicking outside
     useEffect(() => {
         const handleOutsideClick = (e) => {
-            if (openDropdown && filterRefs.current[openDropdown] && !filterRefs.current[openDropdown].contains(e.target)) {
+            if (
+                openDropdown &&
+                filterRefs.current[openDropdown] &&
+                !filterRefs.current[openDropdown].contains(e.target)
+            ) {
                 setOpenDropdown(null);
             }
         };
 
         if (openDropdown) {
-            document.addEventListener('click', handleOutsideClick);
+            document.addEventListener("click", handleOutsideClick);
         }
 
         return () => {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener("click", handleOutsideClick);
         };
     }, [openDropdown]);
 
@@ -74,19 +90,17 @@ const Routines = () => {
         routineService.getAllRoutines(
             (data) => {
                 const trainers = data
-                    .filter(routine => routine.trainerId && routine.trainerName)
-                    .map(routine => ({
-                        id: routine.trainerId,
-                        name: `${routine.trainerName || ''} ${routine.trainerSurname || ''}`.trim()
+                    .filter((r) => r.trainerId && r.trainerName)
+                    .map((r) => ({
+                        id: r.trainerId,
+                        name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
                     }))
-                    .filter((trainer, index, self) =>
-                        index === self.findIndex(t => t.id === trainer.id)
+                    .filter(
+                        (t, i, self) => i === self.findIndex((x) => x.id === t.id)
                     );
                 setAvailableTrainers(trainers);
             },
-            (errors) => {
-                console.error("Error loading trainers:", errors);
-            }
+            (errors) => console.error("Error loading trainers:", errors)
         );
     };
 
@@ -113,7 +127,6 @@ const Routines = () => {
             filtersToUse.equipment.length > 0 || filtersToUse.trainerId;
 
         const handleSuccess = (data) => {
-            console.log("Routines loaded:", data);
             setRoutines(data);
             setLoading(false);
         };
@@ -150,11 +163,15 @@ const Routines = () => {
     };
 
     const getDifficultyText = (difficulty) => {
-        switch(difficulty) {
-            case 'BEGINNER': return 'Principiante';
-            case 'INTERMEDIATE': return 'Intermedia';
-            case 'ADVANCED': return 'Avanzada';
-            default: return difficulty;
+        switch (difficulty) {
+            case "BEGINNER":
+                return "Principiante";
+            case "INTERMEDIATE":
+                return "Intermedia";
+            case "ADVANCED":
+                return "Avanzada";
+            default:
+                return difficulty;
         }
     };
 
@@ -218,9 +235,8 @@ const Routines = () => {
         routineService.deleteRoutine(
             routineId,
             () => {
-                setRoutines(prev => prev.filter(r => r.id !== routineId));
-                // Trigger notification refresh by updating a state that Header can listen to
-                window.dispatchEvent(new CustomEvent('routineDeleted'));
+                setRoutines((prev) => prev.filter((r) => r.id !== routineId));
+                window.dispatchEvent(new CustomEvent("routineDeleted"));
             },
             (error) => {
                 console.error("Error deleting routine:", error);
@@ -229,15 +245,14 @@ const Routines = () => {
         );
     };
 
-    const handleAddRoutine = () => {
-    //pag de crear rutinas CAMBIAR 
-    navigate("/routines/new");
-    };
+    const handleAddRoutine = () => navigate("/routines/new");
 
     if (loading) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['loading-message']}>Cargando entrenamientos...</div>
+                <div className={styles["loading-message"]}>
+                    Cargando entrenamientos...
+                </div>
             </div>
         );
     }
@@ -245,9 +260,12 @@ const Routines = () => {
     if (error) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['error-message']}>
+                <div className={styles["error-message"]}>
                     {error}
-                    <button onClick={loadRoutines} className={styles['retry-button']}>
+                    <button
+                        onClick={loadRoutines}
+                        className={styles["retry-button"]}
+                    >
                         Intentar de nuevo
                     </button>
                 </div>
@@ -255,13 +273,12 @@ const Routines = () => {
         );
     }
 
-  // return = lo que hay que renderizar en pantalla
     return (
         <div className={styles.contenedor}>
-            <div className={styles['routines-header']}>
+            <div className={styles["routines-header"]}>
                 <h2>Entrenamientos</h2>
                 <button
-                    className={styles['filter-toggle-button']}
+                    className={styles["filter-toggle-button"]}
                     onClick={() => setShowFilters(!showFilters)}
                 >
                     Filtrar
@@ -473,9 +490,9 @@ const Routines = () => {
                 </div>
             )}
 
-            <div className={styles['lista-rutinas']}>
+            <div className={styles["lista-rutinas"]}>
                 {routines.length === 0 ? (
-                    <div className={styles['no-results']}>
+                    <div className={styles["no-results"]}>
                         No se encontraron rutinas con los filtros seleccionados.
                     </div>
                 ) : (
@@ -483,14 +500,18 @@ const Routines = () => {
                         <Link
                             to={`/routines/${routine.id}`}
                             key={routine.id}
-                            className={styles['caja-rutina']}
+                            className={styles["caja-rutina"]}
                         >
                             <h3>
                                 {routine.name}
-                                {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-                                    <span className={styles['private-badge']}>🔒 Privado</span>
-                                )}
+                                {routine.visibility === "PRIVATE" &&
+                                    (isRoutineCreator(routine) || isAdmin()) && (
+                                        <span className={styles["private-badge"]}>
+                                            🔒 Privado
+                                        </span>
+                                    )}
                             </h3>
+
                             <div className={styles["trainer-info"]}>
                                 <p className={styles["trainer-name"]}>
                                     Generado por{" "}
@@ -518,18 +539,22 @@ const Routines = () => {
                             {routine.difficulty && (
                                 <span
                                     className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+
                                     {getDifficultyText(routine.difficulty)}
                                 </span>
                             )}
 
-                            {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
+                            {((isTrainer() && isRoutineCreator(routine)) ||
+                                isAdmin()) && (
                                 <div>
-                                    <button className={styles['boton-editar']}
-                                            onClick={(e) => handleEdit(e, routine.id)}>
+                                    <button
+                                        className={styles["boton-editar"]}
+                                        onClick={(e) => handleEdit(e, routine.id)}
+                                    >
                                         Editar
                                     </button>
                                     <button
-                                        className={styles['boton-eliminar']}
+                                        className={styles["boton-eliminar"]}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -546,7 +571,10 @@ const Routines = () => {
             </div>
 
             {(isTrainer() || isAdmin()) && (
-                <button className={styles['boton-crear']} onClick={handleAddRoutine}>
+                <button
+                    className={styles["boton-crear"]}
+                    onClick={handleAddRoutine}
+                >
                     +
                 </button>
             )}
@@ -555,9 +583,7 @@ const Routines = () => {
                 text="Seguro que quieres eliminar esta rutina?"
                 show={routineToDelete !== null}
                 onOk={() => {
-                    if (routineToDelete) {
-                        handleDelete(routineToDelete);
-                    }
+                    if (routineToDelete) handleDelete(routineToDelete);
                     setRoutineToDelete(null);
                 }}
                 onCancel={() => setRoutineToDelete(null)}

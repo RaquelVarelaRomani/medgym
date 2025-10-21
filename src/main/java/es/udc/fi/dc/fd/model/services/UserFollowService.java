@@ -10,4 +10,5 @@ public interface UserFollowService {
     UserFollow followTrainer(Long userId, Long trainerId) throws InstanceNotFoundException;
     void unfollowTrainer(Long userId, Long trainerId) throws InstanceNotFoundException;
     List<UserFollow> getFollowers(Long trainerId) throws InstanceNotFoundException;
+    List<UserFollow> getFollowedTrainers(Long userId) throws InstanceNotFoundException;
 }
