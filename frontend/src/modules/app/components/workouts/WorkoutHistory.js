@@ -9,6 +9,9 @@ const WorkoutHistory = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
+    const [isList, setIsList] = useState(true);
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -69,6 +72,24 @@ const WorkoutHistory = () => {
         return `${minutes} min`;
     };
 
+    const prevMonth = () => {
+    if (currentMonth === 0) {
+        setCurrentMonth(11);
+        setCurrentYear(currentYear - 1);
+    } else {
+        setCurrentMonth(currentMonth - 1);
+    }
+    };
+
+    const nextMonth = () => {
+    if (currentMonth === 11) {
+        setCurrentMonth(0);
+        setCurrentYear(currentYear + 1);
+    } else {
+        setCurrentMonth(currentMonth + 1);
+    }
+    };    
+
     if (loading) {
         return (
             <div className={styles.contenedor}>
@@ -94,6 +115,10 @@ const WorkoutHistory = () => {
         <div className={styles.contenedor}>
             <div className={styles['history-titulo-grande']}>
                 <h2>Historial de entrenamientos</h2>
+                <div className={styles['button-mode']}>
+                    <button className={`${styles['start-button']} ${isList ? styles['active'] : ''}`} onClick={() => {setIsList(true)}}>Lista</button>
+                    <button className={`${styles['start-button']} ${!isList ? styles['active'] : ''}`} onClick={() => setIsList(false)}>Calendario</button>
+                </div>
             </div>
 
             {workouts.length === 0 ? (
@@ -106,7 +131,7 @@ const WorkoutHistory = () => {
                         Ver entrenamientos disponibles
                     </button>
                 </div>
-            ) : (
+            ) : isList ? (
                 <div className={styles['lista-workouts']}>
                     {workouts.map((workout) => {
                         const duration = calculateDuration(workout.startTime, workout.endTime);
@@ -133,6 +158,50 @@ const WorkoutHistory = () => {
                         );
                     })}
                 </div>
+            ) : (
+
+                <div className={styles['calendario-container']}>
+                    <div className={styles['calendario-header']}>
+                        <button onClick={prevMonth}>{'<'}</button>
+                        <span>{`${currentYear} - ${currentMonth + 1}`}</span>
+                        <button onClick={nextMonth}>{'>'}</button>
+                    </div>
+
+                {(() => {
+                    const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                    const daysInMonth = lastDay.getDate();
+                    const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+                    return (
+                    <div className={styles['calendario-grid']}>
+                        {daysArray.map((day) => {
+                        const dateString = new Date(currentYear, currentMonth, day)
+                            .toISOString()
+                            .split('T')[0];
+                        const workoutsForDay = workouts.filter(w =>
+                            w.startTime.startsWith(dateString)
+                        );
+
+                        return (
+                            <div key={day} className={styles['calendario-dia']}>
+                            <div className={styles['calendario-dia-num']}>{day}</div>
+                            {workoutsForDay.map(w => (
+                                <Link
+                                key={w.id}
+                                to={`/workouts/${w.id}`}
+                                className={styles['calendario-workout']}
+                                >
+                                {w.routineName}
+                                </Link>
+                            ))}
+                            </div>
+                        );
+                        })}
+                    </div>
+                    );
+                })()}
+                </div>
+
             )}
         </div>
     );
