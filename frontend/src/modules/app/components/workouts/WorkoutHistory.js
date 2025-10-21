@@ -116,8 +116,8 @@ const WorkoutHistory = () => {
             <div className={styles['history-titulo-grande']}>
                 <h2>Historial de entrenamientos</h2>
                 <div className={styles['button-mode']}>
-                    <button className={styles['start-button']} onClick={() => {setIsList(true)}}>Lista</button>
-                    <button className={styles['start-button']} onClick={() => {setIsList(false)}}>Calendario</button>
+                    <button className={`${styles['start-button']} ${isList ? styles['active'] : ''}`} onClick={() => {setIsList(true)}}>Lista</button>
+                    <button className={`${styles['start-button']} ${!isList ? styles['active'] : ''}`} onClick={() => setIsList(false)}>Calendario</button>
                 </div>
             </div>
 
