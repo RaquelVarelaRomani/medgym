@@ -30,14 +30,21 @@ const Routines = () => {
         "Tríceps"
     ]);
     const [availableEquipment, setAvailableEquipment] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
 
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);  // ya viene del backend
+                const user = authenticatedUser.user;
+                setCurrentUser(user);  // ya viene del backend
                 loadAllTrainers();
                 loadAllEquipment();
                 loadRoutines();                     // solo cargas rutinas si hay usuario válido
+                if (user.role === "CLIENT") {
+                    loadFollowing(user.id);
+                }
+
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -111,6 +118,17 @@ const Routines = () => {
             setLoading(false);
         };
 
+        const loadFollowing = (userId) => {
+            getFollowedTrainers(
+                userId,
+                (data) => {
+                    const trainerIds = data.map((f) => f.trainerId);
+                    setFollowing(trainerIds);
+                },
+                (err) => console.error("Error cargando follows", err)
+            );
+        };
+
         const handleError = (errors) => {
             console.error("Error loading routines:", errors);
             setError(errors.globalError || "Error al cargar los entrenamientos");
@@ -169,19 +187,26 @@ const Routines = () => {
         setFilters(clearedFilters);
         loadRoutines(clearedFilters);
     };
-    const isTrainer = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'TRAINER';
-    };
-    const isAdmin = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'ADMIN';
+
+    const handleFollowToggle = (trainerId) => {
+        if (following.includes(trainerId)) {
+            // Mostrar popup de confirmación antes de dejar de seguir
+            setTrainerToUnfollow(trainerId);
+        } else {
+            followTrainer(
+                trainerId,
+                () => setFollowing((prev) => [...prev, trainerId]),
+                () => console.error("Error al seguir entrenador")
+            );
+        }
     };
 
-    const isRoutineCreator = (routine) => {
-        if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.trainerId;
-    }
+    const isTrainer = () => currentUser?.role === "TRAINER";
+    const isAdmin = () => currentUser?.role === "ADMIN";
+    const isClient = () => currentUser?.role === "CLIENT";
+
+    const isRoutineCreator = (routine) =>
+        currentUser && routine.trainerId === currentUser.id;
 
     const handleEdit = (e, routineId) => {
         e.preventDefault();
@@ -466,11 +491,29 @@ const Routines = () => {
                                     <span className={styles['private-badge']}>🔒 Privado</span>
                                 )}
                             </h3>
-                            <p>
-                                Generado por{" "}
-                                {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
-                                    "Entrenador desconocido"}
-                            </p>
+                            <div className={styles["trainer-info"]}>
+                                <p className={styles["trainer-name"]}>
+                                    Generado por{" "}
+                                    {`${routine.trainerName ?? ""} ${
+                                        routine.trainerSurname ?? ""
+                                    }`.trim() || "Entrenador desconocido"}
+                                </p>
+
+                                {isClient() && routine.trainerId && (
+                                    <button
+                                        className={`${styles["filter-toggle-button"]} ${styles["follow-btn"]}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleFollowToggle(routine.trainerId);
+                                        }}
+                                    >
+                                        {following.includes(routine.trainerId)
+                                            ? "Dejar de seguir al creador"
+                                            : "Seguir al creador"}
+                                    </button>
+                                )}
+                            </div>
 
                             {routine.difficulty && (
                                 <span
@@ -518,6 +561,24 @@ const Routines = () => {
                     setRoutineToDelete(null);
                 }}
                 onCancel={() => setRoutineToDelete(null)}
+            />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres dejar de seguir a este entrenador?"
+                show={trainerToUnfollow !== null}
+                onOk={() => {
+                    if (trainerToUnfollow) {
+                        unfollowTrainer(
+                            trainerToUnfollow,
+                            () => setFollowing((prev) =>
+                                prev.filter((id) => id !== trainerToUnfollow)
+                            ),
+                            () => console.error("Error al dejar de seguir entrenador")
+                        );
+                    }
+                    setTrainerToUnfollow(null);
+                }}
+                onCancel={() => setTrainerToUnfollow(null)}
             />
         </div>
     );

@@ -505,6 +505,29 @@
   transform: translateY(0);
 }
 
+/* follow button */
+.follow-btn {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.55rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+}
+
+.follow-btn:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px);
+}
+
 /* create button */
 .boton-crear {
   position: fixed;
