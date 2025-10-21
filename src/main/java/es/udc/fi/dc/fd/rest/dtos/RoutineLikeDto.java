@@ -7,15 +7,13 @@ public class RoutineLikeDto {
     private Long id;
     private Long userId;
     private Long routineId;
-    private LocalDateTime date;
 
     public RoutineLikeDto() {}
 
-    public RoutineLikeDto(Long id, Long userId, Long routineId, LocalDateTime date) {
+    public RoutineLikeDto(Long id, Long userId, Long routineId) {
         this.id = id;
         this.userId = userId;
         this.routineId = routineId;
-        this.date = date;
     }
 
     public Long getId() {
@@ -42,11 +40,4 @@ public class RoutineLikeDto {
         this.routineId = routineId;
     }
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
 }

@@ -22,8 +22,8 @@ public class RoutineLikeController {
         routineLikeService.likeRoutine(userId, routineId);
     }
 
-    @GetMapping("/users/{userId}/routineLikes")
-    public List<RoutineLikeDto> getLikesByUser(@PathVariable Long userId) {
+    @GetMapping("/routineLikes")
+    public List<RoutineLikeDto> getLikesByUser(@RequestAttribute Long userId) {
         return toRoutineLikeDtos(routineLikeService.getLikesByUser(userId));
     }
 

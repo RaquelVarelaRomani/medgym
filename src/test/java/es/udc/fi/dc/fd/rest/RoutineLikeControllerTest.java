@@ -99,7 +99,7 @@ public class RoutineLikeControllerTest {
 
         routineLikeService.likeRoutine(clientUser.getUserDto().getId(), routine.getId());
 
-        mockMvc.perform(get("/api/users/" + clientUser.getUserDto().getId() + "/routineLikes")
+        mockMvc.perform(get("/api/routineLikes")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))

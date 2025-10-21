@@ -4,11 +4,13 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@Transactional
 public class RoutineLikeServiceImpl implements RoutineLikeService {
 
     @Autowired
@@ -26,8 +28,7 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
                 userDao.findById(userId).orElseThrow(() ->
                         new InstanceNotFoundException("project.entities.routineLikeDao", userId)),
                 routineDao.findById(routineId).orElseThrow(() ->
-                        new InstanceNotFoundException("project.entities.routineLikeDao", routineId)),
-                LocalDateTime.now()
+                        new InstanceNotFoundException("project.entities.routineLikeDao", routineId))
         ));
     }
 

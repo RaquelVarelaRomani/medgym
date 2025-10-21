@@ -148,7 +148,6 @@ CREATE TABLE routine_likes (
     id BIGINT NOT NULL AUTO_INCREMENT,
     routine_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT routine_likes_id_pk PRIMARY KEY (id),
     CONSTRAINT routine_likes_routine_id_fk FOREIGN KEY (routine_id)

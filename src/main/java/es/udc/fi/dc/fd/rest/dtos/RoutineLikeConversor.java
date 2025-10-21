@@ -12,8 +12,7 @@ public class RoutineLikeConversor {
         return new RoutineLikeDto(
                 routineLike.getId(),
                 routineLike.getUser().getId(),
-                routineLike.getRoutine().getId(),
-                routineLike.getDate()
+                routineLike.getRoutine().getId()
         );
     }
 

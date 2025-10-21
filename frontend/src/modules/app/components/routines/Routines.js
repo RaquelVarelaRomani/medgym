@@ -6,6 +6,8 @@ import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
+import HeartLike from "../common/HeartLike";
+import {getLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
 
 
 const Routines = () => {
@@ -34,15 +36,17 @@ const Routines = () => {
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const [following, setFollowing] = useState([]);
     const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
+    const [routineLikes, setRoutineLikes] = useState({});
 
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 const user = authenticatedUser.user;
-                setCurrentUser(user);  // ya viene del backend
+                setCurrentUser(user);
                 loadAllTrainers();
                 loadAllEquipment();
-                loadRoutines();                     // solo cargas rutinas si hay usuario válido
+                loadRoutines();
+                loadRoutineLikes();
                 if (user.role === "CLIENT") {
                     loadFollowing(user.id);
                 }
@@ -161,6 +165,13 @@ const Routines = () => {
             routineService.getAllRoutines(handleSuccess, handleError);
         }
     };
+
+    const loadRoutineLikes = () => {
+        getLikes(
+            data => setRoutineLikes(data),
+            error => console.error("Error loading routine likes:", error)
+        )
+    }
 
     const getDifficultyText = (difficulty) => {
         switch (difficulty) {
@@ -504,6 +515,25 @@ const Routines = () => {
                         >
                             <h3>
                                 {routine.name}
+                                <HeartLike
+                                    initialLiked={routineLikes.some(like => like.routineId === routine.id)}
+                                    onChange={(liked) => {
+                                        if (liked) {
+                                            likeRoutine(routine.id);
+                                            setRoutineLikes(prevLikes => [
+                                                ...prevLikes,
+                                                { routineId: routine.id, userId: currentUser.id }
+                                            ]);
+                                        } else {
+                                            unlikeRoutine(routine.id);
+                                            setRoutineLikes(prevLikes =>
+                                                prevLikes.filter(like => like.routineId !== routine.id)
+                                            );
+                                        }
+                                    }}
+                                />
+
+
                                 {routine.visibility === "PRIVATE" &&
                                     (isRoutineCreator(routine) || isAdmin()) && (
                                         <span className={styles["private-badge"]}>

@@ -6,6 +6,5 @@ import java.util.List;
 
 public interface RoutineLikeDao extends JpaRepository<RoutineLike, Long> {
     List<RoutineLike> findByUserId(Long userId);
-
     void deleteByUserIdAndRoutineId(Long userId, Long routineId);
 }

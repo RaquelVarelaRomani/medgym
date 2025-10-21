@@ -11,14 +11,12 @@ public class RoutineLike {
     private Long id;
     private User user;
     private Routine routine;
-    private LocalDateTime date;
 
     public RoutineLike() {}
 
-    public RoutineLike(User user, Routine routine, LocalDateTime date) {
+    public RoutineLike(User user, Routine routine) {
         this.user = user;
         this.routine = routine;
-        this.date = date;
     }
 
     @Id
@@ -46,13 +44,6 @@ public class RoutineLike {
     }
     public void setRoutine(Routine routine) {
         this.routine = routine;
-    }
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-    public void setDate(LocalDateTime date) {
-        this.date = date;
     }
 
 }
