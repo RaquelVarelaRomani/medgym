@@ -5,6 +5,7 @@ import * as workoutService from "../../../../backend/workoutService";
 import * as workoutExerciseService from "../../../../backend/workoutExerciseService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import LoadingMessage from "../common/LoadingMessage";
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -124,13 +125,7 @@ const WorkoutDetails = () => {
         return workoutExercises.filter(we => we.routineExerciseId === routineExerciseId);
     };
 
-    if (loading) {
-        return (
-            <div className={styles['contenedor-workout-details']}>
-                <div className={styles['loading-message']}>Cargando detalles del entrenamiento...</div>
-            </div>
-        );
-    }
+    if (loading) return <LoadingMessage text="Cargando detalles del entrenamiento..." />;
 
     if (error) {
         return (
