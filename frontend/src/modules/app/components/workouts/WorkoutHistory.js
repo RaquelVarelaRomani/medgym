@@ -148,7 +148,7 @@ const WorkoutHistory = () => {
 
                         return (
                             <Link
-                                to={`/workouts/${workout.id}`}
+                                to={isInProgress ? `/workouts/session/${workout.id}` : `/workouts/${workout.id}`}
                                 key={workout.id}
                                 className={`${styles['caja-workout']} ${isInProgress ? styles['active-workout'] : ''}`}
                             >
@@ -194,15 +194,18 @@ const WorkoutHistory = () => {
                         return (
                             <div key={day} className={styles['calendario-dia']}>
                             <div className={styles['calendario-dia-num']}>{day}</div>
-                            {workoutsForDay.map(w => (
-                                <Link
-                                key={w.id}
-                                to={`/workouts/${w.id}`}
-                                className={styles['calendario-workout']}
-                                >
-                                {w.routineName}
-                                </Link>
-                            ))}
+                            {workoutsForDay.map(w => {
+                                const isInProgress = !w.endTime;
+                                return (
+                                    <Link
+                                    key={w.id}
+                                    to={isInProgress ? `/workouts/session/${w.id}` : `/workouts/${w.id}`}
+                                    className={styles['calendario-workout']}
+                                    >
+                                    {w.routineName}
+                                    </Link>
+                                );
+                            })}
                             </div>
                         );
                         })}

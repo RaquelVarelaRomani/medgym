@@ -137,7 +137,7 @@ const Header = () => {
 
     const handleActiveWorkoutClick = () => {
         if (activeWorkout) {
-            navigate(`/workouts/${activeWorkout.id}`);
+            navigate(`/workouts/session/${activeWorkout.id}`);
         }
     }
 

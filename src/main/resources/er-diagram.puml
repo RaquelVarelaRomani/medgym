@@ -13,6 +13,7 @@ entity "users" {
   password : VARCHAR(255)
   profile_picture : MEDIUMBLOB
   role : TINYINT
+  status : TINYINT
 }
 
 entity "routines" {
@@ -24,6 +25,7 @@ entity "routines" {
   modification_date : DATETIME
   trainer_id : BIGINT [FK → users.id]
   visibility : TINYINT
+  difficulty : TINYINT
 }
 
 entity "exercises" {
@@ -31,6 +33,9 @@ entity "exercises" {
   --
   name : VARCHAR(100)
   description : TEXT
+  muscle_group : VARCHAR(100)
+  equipment : VARCHAR(100)
+  image : MEDIUMBLOB
   status : VARCHAR(20)
   creator_id : BIGINT [FK → users.id]
 }
@@ -78,6 +83,13 @@ entity "notifications" {
   date : DATETIME
 }
 
+entity "routine_likes" {
+  * id : BIGINT [PK]
+  --
+  routine_id : BIGINT [FK → routines.id]
+  user_id : BIGINT [FK → users.id]
+}
+
 ' Relaciones
 users ||--o{ routines : trainer_id
 users ||--o{ exercises : creator_id
@@ -91,5 +103,7 @@ users ||--o{ notifications : recibe
 routines ||--o{ notifications : notifica
 users ||--o{ user_follows : client_id
 users ||--o{ user_follows : trainer_id
+users ||--o{ routine_likes : da_like
+routines ||--o{ routine_likes : recibe_like
 
 @enduml

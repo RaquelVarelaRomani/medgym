@@ -1,4 +1,5 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS routine_likes;
 DROP TABLE IF EXISTS workout_exercises;
 DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
@@ -8,8 +9,6 @@ DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
 DROP TABLE IF EXISTS users;
 SET FOREIGN_KEY_CHECKS = 1;
-
-
 
 CREATE TABLE users (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -145,3 +144,18 @@ CREATE TABLE notifications (
       ON DELETE CASCADE
 );
 
+CREATE TABLE routine_likes (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    routine_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+
+    CONSTRAINT routine_likes_id_pk PRIMARY KEY (id),
+    CONSTRAINT routine_likes_routine_id_fk FOREIGN KEY (routine_id)
+        REFERENCES routines(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT routine_likes_user_id_fk FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+);
