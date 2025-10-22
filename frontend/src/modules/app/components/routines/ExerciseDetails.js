@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./ExerciseDetails.module.css";
 import * as exerciseService from "../../../../backend/exerciseService";
+import LoadingMessage from "../common/LoadingMessage";
 
 const ExerciseDetails = () => {
     const { id } = useParams();
@@ -23,7 +24,8 @@ const ExerciseDetails = () => {
         );
     }, [id]);
 
-    if (loading) return <div className={styles["contenedor-exercise-details"]}>Cargando...</div>;
+    if (loading) return <LoadingMessage text="Cargando ejercicio..." />;
+
     if (!exercise) return <div className={styles["contenedor-exercise-details"]}>Ejercicio no encontrado</div>;
 
     return (

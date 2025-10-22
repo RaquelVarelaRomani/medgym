@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
-
+import LoadingMessage from "../common/LoadingMessage";
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
@@ -190,7 +190,8 @@ const CreateRoutine = () => {
         );
     };
 
-    if (loading) return <div>Cargando ejercicios...</div>;
+    if (loading) return <LoadingMessage text="Cargando ejercicios..." />;
+
     if (error)
         return (
             <div>

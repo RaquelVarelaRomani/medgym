@@ -8,6 +8,7 @@ import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
 import NotificationPopup from "./common/notifications/NotificationPopup";
+import { getFollowers } from '../../../backend/userFollowService';
 
 const Header = () => {
     const location = useLocation();
@@ -17,6 +18,7 @@ const Header = () => {
     const [activeWorkout, setActiveWorkout] = useState(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [followersCount, setFollowersCount] = useState(0);
     const dropdownComponent = useRef(null);
 
     const handleToggleNotifications = () => {
@@ -30,6 +32,7 @@ const Header = () => {
                 console.log("User data in header:", authenticatedUser.user);
                 setProfile(authenticatedUser.user);
                 checkActiveWorkout();
+                checkFollowers(authenticatedUser.user);
             },
             (error) => {
                 console.error("Failed to get user data in header:", error);
@@ -49,6 +52,24 @@ const Header = () => {
             }
         );
     };
+
+    const checkFollowers = (user) => {
+        if (user.role === "TRAINER") {
+            getFollowers(
+                user.id,
+                (followers) => setFollowersCount(followers.length),
+                () => setFollowersCount(0)
+            );
+        }
+    };
+
+    useEffect(() => {
+    const handleWorkoutFinish = () => checkActiveWorkout();
+    window.addEventListener("workoutFinished", handleWorkoutFinish);
+    return () => {
+      window.removeEventListener("workoutFinished", handleWorkoutFinish);
+    };
+  }, []);
 
     //close dropdown when clicking outside
     useEffect(() => {
@@ -116,7 +137,7 @@ const Header = () => {
 
     const handleActiveWorkoutClick = () => {
         if (activeWorkout) {
-            navigate(`/workouts/${activeWorkout.id}`);
+            navigate(`/workouts/session/${activeWorkout.id}`);
         }
     }
 
@@ -161,6 +182,24 @@ const Header = () => {
                     >
                         Ejercicios
                     </Link>
+                    {profile?.role === "TRAINER" && (
+                        <Link
+                            to="/users/followers"
+                            className={location.pathname.includes('/followers')
+                                ? `${styles['nav-link']} ${styles['active']}`
+                                : styles['nav-link']}
+                        >
+                            Seguidores ({followersCount})
+                        </Link>
+                    )}
+
+                    <Link
+                        to="/workouts/history"
+                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Historial
+                    </Link>
+
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"
@@ -171,12 +210,6 @@ const Header = () => {
                             Moderación
                         </Link>
                     )}
-                    <Link
-                        to="/workouts/history"
-                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
-                    >
-                        Historial
-                    </Link>
                 </nav>
 
                 {/* right section - profile */}

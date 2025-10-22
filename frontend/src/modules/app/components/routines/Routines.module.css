@@ -126,6 +126,28 @@
   box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
+.select-option-multi {
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.select-option-multi:hover {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--neon-orange);
+  cursor: pointer;
+}
+
 /* filter buttons */
 .filter-actions {
   display: flex;
@@ -379,6 +401,7 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 1.5rem;
+  justify-content: space-between;
 }
 
 /* edit button */
@@ -481,6 +504,29 @@
 
 .boton-eliminar:active {
   transform: translateY(0);
+}
+
+/* follow button */
+.follow-btn {
+  background: transparent;
+  color: var(--neon-orange);
+  border: 2px solid var(--neon-orange);
+  padding: 0.55rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-width: 120px;
+}
+
+.follow-btn:hover {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border-color: var(--neon-orange-bright);
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px);
 }
 
 /* create button */
@@ -625,4 +671,29 @@
 
 .retry-button:hover::before {
   left: 100%;
+}
+
+.boton-empezar-redondo {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.boton-empezar-redondo:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 20px rgba(255, 107, 53, 0.6),
+    0 0 40px rgba(255, 107, 53, 0.4);
 }

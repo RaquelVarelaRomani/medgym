@@ -9,4 +9,5 @@ public interface UserFollowDao extends JpaRepository<UserFollow, Long> {
     boolean existsByUserAndTrainer(User user, User trainer);
     Optional<UserFollow> findByUserAndTrainer(User user, User trainer);
     List<UserFollow> findByTrainer(User trainer);
+    List<UserFollow> findByUser(User user);
 }

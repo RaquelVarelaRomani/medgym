@@ -1,9 +1,15 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./Routines.module.css";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import * as exerciseService from "../../../../backend/exerciseService";
+import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
+import HeartLike from "../common/HeartLike";
+import {getLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
+import * as workoutService from "../../../../backend/workoutService";
+
 
 const Routines = () => {
     const navigate = useNavigate();
@@ -13,7 +19,9 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
-    const [filters, setFilters] = useState({difficulty: "", muscleGroup: "", trainerId: ""});
+    const [activeWorkout, setActiveWorkout] = useState(null);
+    const [showActiveWorkoutPopup, setShowActiveWorkoutPopup] = useState(false);
+    const [filters, setFilters] = useState({difficulty: "", muscleGroup: [], equipment: [], trainerId: ""});
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     const filterRefs = useRef({});
@@ -26,15 +34,26 @@ const Routines = () => {
         "Hombros",
         "Pectorales",
         "Piernas",
-        "Tríceps"
+        "Tríceps",
     ]);
+    const [availableEquipment, setAvailableEquipment] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
+    const [routineLikes, setRoutineLikes] = useState({});
 
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);  // ya viene del backend
+                const user = authenticatedUser.user;
+                setCurrentUser(user);
                 loadAllTrainers();
-                loadRoutines();                     // solo cargas rutinas si hay usuario válido
+                loadAllEquipment();
+                loadRoutines();
+                loadRoutineLikes();
+                if (user.role === "CLIENT") {
+                    loadFollowing(user.id);
+                    checkActiveWorkout();
+                }
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -43,20 +62,46 @@ const Routines = () => {
         );
     }, [navigate]);
 
+
+    const checkActiveWorkout = () => {
+    workoutService.getWorkouts(
+      (data) => {
+        const active = data.find((w) => !w.endTime);
+        if (active) setActiveWorkout(active);
+      },
+      (error) => console.error("Error comprobando entrenamientos activos", error)
+    );
+  };
+
+    const loadFollowing = (userId) => {
+        getFollowedTrainers(
+            userId,
+            (data) => {
+                const trainerIds = data.map((f) => f.trainerId);
+                setFollowing(trainerIds);
+            },
+            (err) => console.error("Error cargando follows", err)
+        );
+    };
+
     //close filter dropdown when clicking outside
     useEffect(() => {
         const handleOutsideClick = (e) => {
-            if (openDropdown && filterRefs.current[openDropdown] && !filterRefs.current[openDropdown].contains(e.target)) {
+            if (
+                openDropdown &&
+                filterRefs.current[openDropdown] &&
+                !filterRefs.current[openDropdown].contains(e.target)
+            ) {
                 setOpenDropdown(null);
             }
         };
 
         if (openDropdown) {
-            document.addEventListener('click', handleOutsideClick);
+            document.addEventListener("click", handleOutsideClick);
         }
 
         return () => {
-            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener("click", handleOutsideClick);
         };
     }, [openDropdown]);
 
@@ -64,31 +109,56 @@ const Routines = () => {
         routineService.getAllRoutines(
             (data) => {
                 const trainers = data
-                    .filter(routine => routine.trainerId && routine.trainerName)
-                    .map(routine => ({
-                        id: routine.trainerId,
-                        name: `${routine.trainerName || ''} ${routine.trainerSurname || ''}`.trim()
+                    .filter((r) => r.trainerId && r.trainerName)
+                    .map((r) => ({
+                        id: r.trainerId,
+                        name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
                     }))
-                    .filter((trainer, index, self) =>
-                        index === self.findIndex(t => t.id === trainer.id)
+                    .filter(
+                        (t, i, self) => i === self.findIndex((x) => x.id === t.id)
                     );
                 setAvailableTrainers(trainers);
             },
+            (errors) => console.error("Error loading trainers:", errors)
+        );
+    };
+
+    const loadAllEquipment = () => {
+        exerciseService.getAllExercises(
+            (data) => {
+                const exercisesArray = data.content ? data.content : data;
+                const equipment = [...new Set(exercisesArray
+                    .filter(exercise => exercise.equipment)
+                    .map(exercise => exercise.equipment)
+                )].sort();
+                setAvailableEquipment(equipment);
+            },
             (errors) => {
-                console.error("Error loading trainers:", errors);
+                console.error("Error loading equipment:", errors);
             }
         );
     };
 
-    const loadRoutines = () => {
+    const loadRoutines = (filtersToUse = filters) => {
         setLoading(true);
 
-        const hasFilters = filters.difficulty || filters.muscleGroup || filters.trainerId;
+        const hasFilters = filtersToUse.difficulty || filtersToUse.muscleGroup.length > 0 ||
+            filtersToUse.equipment.length > 0 || filtersToUse.trainerId;
 
         const handleSuccess = (data) => {
-            console.log("Routines loaded:", data);
             setRoutines(data);
             setLoading(false);
+        };
+
+        const loadFollowing = (userId) => {
+            getFollowedTrainers(
+                userId,
+                (data) => {
+                    const trainerIds = data.map((f) => f.trainerId);
+                    setFollowing(trainerIds);
+                },
+                (err) => console.error("Error cargando follows", err)
+            );
         };
 
         const handleError = (errors) => {
@@ -99,9 +169,10 @@ const Routines = () => {
 
         if (hasFilters) {
             routineService.getFilteredRoutines(
-                filters.muscleGroup || null,
-                filters.difficulty || null,
-                filters.trainerId || null,
+                filtersToUse.muscleGroup.join(',') || null,
+                filtersToUse.equipment.join(',') || null,
+                filtersToUse.difficulty || null,
+                filtersToUse.trainerId || null,
                 handleSuccess,
                 handleError
             );
@@ -110,13 +181,33 @@ const Routines = () => {
         }
     };
 
+    const loadRoutineLikes = () => {
+        getLikes(
+            data => setRoutineLikes(data),
+            error => console.error("Error loading routine likes:", error)
+        )
+    }
+
     const getDifficultyText = (difficulty) => {
-        switch(difficulty) {
-            case 'BEGINNER': return 'Principiante';
-            case 'INTERMEDIATE': return 'Intermedia';
-            case 'ADVANCED': return 'Avanzada';
-            default: return difficulty;
+        switch (difficulty) {
+            case "BEGINNER":
+                return "Principiante";
+            case "INTERMEDIATE":
+                return "Intermedia";
+            case "ADVANCED":
+                return "Avanzada";
+            default:
+                return difficulty;
         }
+    };
+
+    const handleMultiSelectChange = (filterName, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: prev[filterName].includes(value)
+                ? prev[filterName].filter(item => item !== value)
+                : [...prev[filterName], value]
+        }));
     };
     const handleFilterChange = (filterName, value) => {
         setFilters(prev => ({
@@ -126,29 +217,39 @@ const Routines = () => {
     };
 
     const applyFilters = () => {
-        loadRoutines();
+        loadRoutines(filters);
     };
 
     const clearFilters = () => {
-        setFilters({
+        const clearedFilters = {
             difficulty: "",
-            muscleGroup: "",
+            muscleGroup: [],
+            equipment: [],
             trainerId: ""
-        });
-    };
-    const isTrainer = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'TRAINER';
-    };
-    const isAdmin = () => {
-        if (!currentUser) return false;
-        return currentUser.role === 'ADMIN';
+        };
+        setFilters(clearedFilters);
+        loadRoutines(clearedFilters);
     };
 
-    const isRoutineCreator = (routine) => {
-        if (!currentUser || !routine.trainerId) return false;
-        return currentUser.id === routine.trainerId;
-    }
+    const handleFollowToggle = (trainerId) => {
+        if (following.includes(trainerId)) {
+            // Mostrar popup de confirmación antes de dejar de seguir
+            setTrainerToUnfollow(trainerId);
+        } else {
+            followTrainer(
+                trainerId,
+                () => setFollowing((prev) => [...prev, trainerId]),
+                () => console.error("Error al seguir entrenador")
+            );
+        }
+    };
+
+    const isTrainer = () => currentUser?.role === "TRAINER";
+    const isAdmin = () => currentUser?.role === "ADMIN";
+    const isClient = () => currentUser?.role === "CLIENT";
+
+    const isRoutineCreator = (routine) =>
+        currentUser && routine.trainerId === currentUser.id;
 
     const handleEdit = (e, routineId) => {
         e.preventDefault();
@@ -160,9 +261,8 @@ const Routines = () => {
         routineService.deleteRoutine(
             routineId,
             () => {
-                setRoutines(prev => prev.filter(r => r.id !== routineId));
-                // Trigger notification refresh by updating a state that Header can listen to
-                window.dispatchEvent(new CustomEvent('routineDeleted'));
+                setRoutines((prev) => prev.filter((r) => r.id !== routineId));
+                window.dispatchEvent(new CustomEvent("routineDeleted"));
             },
             (error) => {
                 console.error("Error deleting routine:", error);
@@ -171,15 +271,37 @@ const Routines = () => {
         );
     };
 
-    const handleAddRoutine = () => {
-    //pag de crear rutinas CAMBIAR 
-    navigate("/routines/new");
-    };
+    const handleAddRoutine = () => navigate("/routines/new");
+
+
+    const handleStartWorkout = (e, routineId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (activeWorkout) {
+      setShowActiveWorkoutPopup(true);
+      return;
+    }
+
+    workoutService.startWorkout(
+      routineId,
+      (workoutData) => {
+        console.log("Workout iniciado:", workoutData);
+        navigate(`/workouts/session/${workoutData.id}`);
+      },
+      (error) => {
+        console.error("Error al iniciar entrenamiento:", error);
+        alert("No se pudo iniciar el entrenamiento. Inténtelo de nuevo.");
+      }
+    );
+  };
 
     if (loading) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['loading-message']}>Cargando entrenamientos...</div>
+                <div className={styles["loading-message"]}>
+                    Cargando entrenamientos...
+                </div>
             </div>
         );
     }
@@ -187,9 +309,12 @@ const Routines = () => {
     if (error) {
         return (
             <div className={styles.contenedor}>
-                <div className={styles['error-message']}>
+                <div className={styles["error-message"]}>
                     {error}
-                    <button onClick={loadRoutines} className={styles['retry-button']}>
+                    <button
+                        onClick={loadRoutines}
+                        className={styles["retry-button"]}
+                    >
                         Intentar de nuevo
                     </button>
                 </div>
@@ -197,13 +322,12 @@ const Routines = () => {
         );
     }
 
-  // return = lo que hay que renderizar en pantalla
     return (
         <div className={styles.contenedor}>
-            <div className={styles['routines-header']}>
+            <div className={styles["routines-header"]}>
                 <h2>Entrenamientos</h2>
                 <button
-                    className={styles['filter-toggle-button']}
+                    className={styles["filter-toggle-button"]}
                     onClick={() => setShowFilters(!showFilters)}
                 >
                     Filtrar
@@ -268,7 +392,7 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-group']}>
-                    <label>Grupo Muscular:</label>
+                        <label>Grupos Musculares:</label>
                         <div className={styles['custom-select']} ref={(el) => {
                             filterRefs.current['muscleGroup'] = el;
                         }}>
@@ -276,30 +400,33 @@ const Routines = () => {
                                 className={styles['select-display']}
                                 onClick={() => setOpenDropdown(openDropdown === 'muscleGroup' ? null : 'muscleGroup')}
                             >
-                                <span>{filters.muscleGroup || 'Todos'}</span>
+                <span>
+                    {filters.muscleGroup.length > 0
+                        ? `${filters.muscleGroup.length} seleccionado${filters.muscleGroup.length > 1 ? 's' : ''}`
+                        : 'Todos'
+                    }
+                </span>
                                 <span className={styles['select-arrow']}>▼</span>
                             </div>
                             {openDropdown === 'muscleGroup' && (
                                 <div className={styles['select-dropdown']}>
-                                    <div
-                                        className={styles['select-option']}
-                                        onClick={() => {
-                                            handleFilterChange('muscleGroup', '');
-                                            setOpenDropdown(null);
-                                        }}
-                                    >
-                                        Todos
-                                    </div>
                                     {availableMuscleGroups.map(group => (
                                         <div
                                             key={group}
-                                            className={styles['select-option']}
-                                            onClick={() => {
-                                                handleFilterChange('muscleGroup', group);
-                                                setOpenDropdown(null);
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('muscleGroup', group);  // Singular
                                             }}
                                         >
-                                            {group}
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.muscleGroup.includes(group)}  // Singular
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{group}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -308,7 +435,50 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-group']}>
-                    <label>Entrenador:</label>
+                        <label>Equipamiento:</label>
+                        <div className={styles['custom-select']} ref={(el) => {
+                            filterRefs.current['equipment'] = el;
+                        }}>
+                            <div
+                                className={styles['select-display']}
+                                onClick={() => setOpenDropdown(openDropdown === 'equipment' ? null : 'equipment')}
+                            >
+                        <span>
+                            {filters.equipment.length > 0
+                                ? `${filters.equipment.length} seleccionado${filters.equipment.length > 1 ? 's' : ''}`
+                                : 'Todos'
+                            }
+                        </span>
+                                <span className={styles['select-arrow']}>▼</span>
+                            </div>
+                            {openDropdown === 'equipment' && (
+                                <div className={styles['select-dropdown']}>
+                                    {availableEquipment.map(equip => (
+                                        <div
+                                            key={equip}
+                                            className={styles['select-option-multi']}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMultiSelectChange('equipment', equip);
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.equipment.includes(equip)}
+                                                onChange={() => {
+                                                }}
+                                                className={styles['checkbox']}
+                                            />
+                                            <span>{equip}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles['filter-group']}>
+                        <label>Entrenador:</label>
                         <div className={styles['custom-select']} ref={(el) => {
                             filterRefs.current['trainer'] = el;
                         }}>
@@ -353,7 +523,7 @@ const Routines = () => {
                     </div>
 
                     <div className={styles['filter-actions']}>
-                    <button
+                        <button
                             className={styles['apply-filter-button']}
                             onClick={applyFilters}
                         >
@@ -369,44 +539,100 @@ const Routines = () => {
                 </div>
             )}
 
-            <div className={styles['lista-rutinas']}>
+            <div className={styles["lista-rutinas"]}>
                 {routines.length === 0 ? (
-                    <div className={styles['no-results']}>
+                    <div className={styles["no-results"]}>
                         No se encontraron rutinas con los filtros seleccionados.
                     </div>
                 ) : (
                     routines.map((routine) => (
                         <Link
-                            to={`/routines/${routine.id}`}
+                            to={activeWorkout && activeWorkout.routineId === routine.id ? `/workouts/session/${activeWorkout.id}` : `/routines/${routine.id}`}
                             key={routine.id}
-                            className={styles['caja-rutina']}
+                            className={styles["caja-rutina"]}
                         >
                             <h3>
                                 {routine.name}
-                                {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-                                    <span className={styles['private-badge']}>🔒 Privado</span>
-                                )}
+                                <HeartLike
+                                    initialLiked={routineLikes.some(like => like.routineId === routine.id)}
+                                    onChange={(liked) => {
+                                        if (liked) {
+                                            likeRoutine(routine.id);
+                                            setRoutineLikes(prevLikes => [
+                                                ...prevLikes,
+                                                { routineId: routine.id, userId: currentUser.id }
+                                            ]);
+                                        } else {
+                                            unlikeRoutine(routine.id);
+                                            setRoutineLikes(prevLikes =>
+                                                prevLikes.filter(like => like.routineId !== routine.id)
+                                            );
+                                        }
+                                    }}
+                                />
+
+
+                                {routine.visibility === "PRIVATE" &&
+                                    (isRoutineCreator(routine) || isAdmin()) && (
+                                        <span className={styles["private-badge"]}>
+                                            🔒 Privado
+                                        </span>
+                                    )}
                             </h3>
-                            <p>
-                                Generado por{" "}
-                                {`${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
-                                    "Entrenador desconocido"}
-                            </p>
+
+                            {isClient() && (
+                            <button
+                                className={styles["boton-empezar-redondo"]}
+                                onClick={(e) => handleStartWorkout(e, routine.id)}
+                            >
+                                Empezar
+                            </button>
+                            )}
+
+
+                            <div className={styles["trainer-info"]}>
+                                <p className={styles["trainer-name"]}>
+                                    Generado por{" "}
+                                    {`${routine.trainerName ?? ""} ${
+                                        routine.trainerSurname ?? ""
+                                    }`.trim() || "Entrenador desconocido"}
+                                </p>
+
+                                {isClient() && routine.trainerId && (
+                                    <button
+                                        className={`${styles["filter-toggle-button"]} ${styles["follow-btn"]}`}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleFollowToggle(routine.trainerId);
+                                        }}
+                                    >
+                                        {following.includes(routine.trainerId)
+                                            ? "Dejar de seguir al creador"
+                                            : "Seguir al creador"}
+                                    </button>
+                                )}
+                            </div>
 
                             {routine.difficulty && (
-                                <span className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+                                <span
+                                    className={`${styles['routine-difficulty']} ${styles[routine.difficulty.toLowerCase()]}`}>
+
                                     {getDifficultyText(routine.difficulty)}
                                 </span>
                             )}
 
-                            {((isTrainer() && isRoutineCreator(routine)) || isAdmin()) && (
+                            {((isTrainer() && isRoutineCreator(routine)) ||
+                                isAdmin()) && (
                                 <div>
-                                    <button className={styles['boton-editar']}
-                                            onClick={(e) => handleEdit(e, routine.id)}>
+                                    <button
+                                        className={styles["boton-editar"]}
+                                        onClick={(e) => handleEdit(e, routine.id)}
+                                    >
                                         Editar
                                     </button>
                                     <button
-                                        className={styles['boton-eliminar']}
+                                        className={styles["boton-eliminar"]}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
@@ -423,7 +649,10 @@ const Routines = () => {
             </div>
 
             {(isTrainer() || isAdmin()) && (
-                <button className={styles['boton-crear']} onClick={handleAddRoutine}>
+                <button
+                    className={styles["boton-crear"]}
+                    onClick={handleAddRoutine}
+                >
                     +
                 </button>
             )}
@@ -432,12 +661,41 @@ const Routines = () => {
                 text="Seguro que quieres eliminar esta rutina?"
                 show={routineToDelete !== null}
                 onOk={() => {
-                    if (routineToDelete) {
-                        handleDelete(routineToDelete);
-                    }
+                    if (routineToDelete) handleDelete(routineToDelete);
                     setRoutineToDelete(null);
                 }}
                 onCancel={() => setRoutineToDelete(null)}
+            />
+
+
+            <ConfirmationPopup
+        show={showActiveWorkoutPopup}
+        text="Ya tienes un entrenamiento en progreso. ¿Deseas ir a él?"
+        okText="Ir al entrenamiento activo"
+        cancelText="Cancelar"
+        onOk={() => {
+          setShowActiveWorkoutPopup(false);
+          if (activeWorkout) navigate(`/workouts/session/${activeWorkout.id}`);
+        }}
+        onCancel={() => setShowActiveWorkoutPopup(false)}
+      />
+
+            <ConfirmationPopup
+                text="¿Seguro que quieres dejar de seguir a este entrenador?"
+                show={trainerToUnfollow !== null}
+                onOk={() => {
+                    if (trainerToUnfollow) {
+                        unfollowTrainer(
+                            trainerToUnfollow,
+                            () => setFollowing((prev) =>
+                                prev.filter((id) => id !== trainerToUnfollow)
+                            ),
+                            () => console.error("Error al dejar de seguir entrenador")
+                        );
+                    }
+                    setTrainerToUnfollow(null);
+                }}
+                onCancel={() => setTrainerToUnfollow(null)}
             />
         </div>
     );

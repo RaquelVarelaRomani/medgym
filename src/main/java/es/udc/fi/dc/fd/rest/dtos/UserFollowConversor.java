@@ -9,10 +9,10 @@ public class UserFollowConversor {
     private UserFollowConversor() {}
 
     public static UserFollowDto toUserFollowDto(UserFollow userFollow) {
-        return new UserFollowDto(userFollow.getId(), userFollow.getUser().getId(), userFollow.getTrainer().getId());
+        return new UserFollowDto(userFollow.getId(), userFollow.getUser().getId(), userFollow.getTrainer().getId(), userFollow.getUser().getName(), userFollow.getUser().getSurname(), userFollow.getUser().getEmail());
     }
 
-    public List<UserFollowDto> toUserFollowDtos(List<UserFollow> userFollows) {
-       return userFollows.stream().map(UserFollowConversor::toUserFollowDto).collect(Collectors.toList());
+    public static List<UserFollowDto> toUserFollowDtos(List<UserFollow> userFollows) {
+        return userFollows.stream().map(UserFollowConversor::toUserFollowDto).collect(Collectors.toList());
     }
 }
