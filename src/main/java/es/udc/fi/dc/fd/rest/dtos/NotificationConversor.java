@@ -19,7 +19,7 @@ public class NotificationConversor {
                 notification.getDate(),
                 null);
 
-        notificationDto.setMessage(notification.getRoutine().getName(), notification.getRoutine().getDescription());
+        notificationDto.setMessage(notification.getRoutine().getName());
 
         return notificationDto;
     }

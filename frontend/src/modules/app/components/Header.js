@@ -63,6 +63,14 @@ const Header = () => {
         }
     };
 
+    useEffect(() => {
+    const handleWorkoutFinish = () => checkActiveWorkout();
+    window.addEventListener("workoutFinished", handleWorkoutFinish);
+    return () => {
+      window.removeEventListener("workoutFinished", handleWorkoutFinish);
+    };
+  }, []);
+
     //close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -129,7 +137,7 @@ const Header = () => {
 
     const handleActiveWorkoutClick = () => {
         if (activeWorkout) {
-            navigate(`/workouts/${activeWorkout.id}`);
+            navigate(`/workouts/session/${activeWorkout.id}`);
         }
     }
 
@@ -184,6 +192,14 @@ const Header = () => {
                             Seguidores ({followersCount})
                         </Link>
                     )}
+
+                    <Link
+                        to="/workouts/history"
+                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Historial
+                    </Link>
+
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"
@@ -194,12 +210,6 @@ const Header = () => {
                             Moderación
                         </Link>
                     )}
-                    <Link
-                        to="/workouts/history"
-                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
-                    >
-                        Historial
-                    </Link>
                 </nav>
 
                 {/* right section - profile */}
