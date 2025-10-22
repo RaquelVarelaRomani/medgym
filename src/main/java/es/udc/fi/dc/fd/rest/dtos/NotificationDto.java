@@ -60,7 +60,7 @@ public class NotificationDto {
     public String getMessage() {
         return message;
     }
-    public void setMessage(String routineName, String routineDescription) {
-        this.message = "New routine: " + routineName + " " + routineDescription;
+    public void setMessage(String routineName) {
+        this.message = "Nueva rutina: " + routineName;
     }
 }
