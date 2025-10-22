@@ -3,6 +3,7 @@ import styles from "./FollowersPage.module.css";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import { getFollowers } from "../../../../backend/userFollowService";
 import { useNavigate } from "react-router-dom";
+import LoadingMessage from "../common/LoadingMessage";
 
 const FollowersPage = () => {
     const navigate = useNavigate();
@@ -43,7 +44,8 @@ const FollowersPage = () => {
         );
     }, [navigate]);
 
-    if (loading) return <div className={styles["followers-container"]}>Cargando...</div>;
+    if (loading) return <LoadingMessage text="Cargando seguidores..." />;
+
     if (error) return <div className={styles["followers-container"]}>{error}</div>;
 
     return (

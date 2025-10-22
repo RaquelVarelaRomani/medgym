@@ -8,6 +8,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const RoutineDetails = () => {
   const { id } = useParams();
@@ -107,7 +109,7 @@ const RoutineDetails = () => {
         );
     }, [id, navigate]);
 
-    if (loading) return <div className={styles['contenedor-routine-details']}>Cargando rutina…</div>;
+    if (loading) return <LoadingMessage text="Cargando rutina..." />;
     if (error)
         return (
             <div className={styles['contenedor-routine-details']}>
