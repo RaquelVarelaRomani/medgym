@@ -51,7 +51,7 @@ describe('Workout Components', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Cargando historial...')).toBeInTheDocument();
+      expect(screen.getByText('Cargando historial de entrenamientos...')).toBeInTheDocument();
     });
 
     test('redirects to login on authentication failure', () => {

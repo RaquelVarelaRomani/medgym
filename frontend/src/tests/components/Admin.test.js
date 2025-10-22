@@ -170,7 +170,7 @@ describe('Admin Components', () => {
         expect(screen.getByText('Jane Smith')).toBeInTheDocument();
       });
 
-      fireEvent.change(screen.getByPlaceholderText('Buscar por nombre, email o usuario...'), {
+      fireEvent.change(screen.getByPlaceholderText('Buscar por nombre, correo electrónico o usuario...'), {
         target: { value: 'john' },
       });
 
@@ -204,7 +204,7 @@ describe('Admin Components', () => {
         expect(screen.getByText('John Doe')).toBeInTheDocument();
       });
 
-      fireEvent.change(screen.getByPlaceholderText('Buscar por nombre, email o usuario...'), {
+      fireEvent.change(screen.getByPlaceholderText('Buscar por nombre, correo electrónico o usuario...'), {
         target: { value: 'nonexistent' },
       });
 

@@ -467,7 +467,7 @@ describe('Common Components', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText('Cargando...')).toBeInTheDocument();
+      expect(screen.getByText('Cargando seguidores...')).toBeInTheDocument();
     });
 
     test('redirects to login on authentication failure', async () => {
@@ -624,7 +624,7 @@ describe('Common Components', () => {
       await waitFor(() => {
         const activeWorkoutButton = screen.getByText('🏋️ Entrenamiento Activo');
         fireEvent.click(activeWorkoutButton);
-        expect(mockNavigate).toHaveBeenCalledWith('/workouts/123');
+        expect(mockNavigate).toHaveBeenCalledWith('/workouts/session/123');
       });
     });
 
