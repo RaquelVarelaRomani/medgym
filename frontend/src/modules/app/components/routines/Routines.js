@@ -547,7 +547,7 @@ const Routines = () => {
                 ) : (
                     routines.map((routine) => (
                         <Link
-                            to={`/routines/${routine.id}`}
+                            to={activeWorkout && activeWorkout.routineId === routine.id ? `/workouts/session/${activeWorkout.id}` : `/routines/${routine.id}`}
                             key={routine.id}
                             className={styles["caja-rutina"]}
                         >
