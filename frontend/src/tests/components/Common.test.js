@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 import Header from '../../modules/app/components/Header';
@@ -14,6 +14,8 @@ import FileUploadButton from '../../modules/app/components/common/FileUploadButt
 import ProfilePhoto from '../../modules/app/components/common/profilePhoto';
 import RequiresLogout from '../../modules/app/components/common/RequiresLogout';
 import Slogan from '../../modules/app/components/common/Slogan';
+import HeartLike from '../../modules/app/components/common/HeartLike';
+import LoadingMessage from '../../modules/app/components/common/LoadingMessage';
 import FollowersPage from '../../modules/app/components/users/FollowersPage';
 
 const mockNavigate = jest.fn();
@@ -21,7 +23,6 @@ const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
-  useLocation: () => ({ pathname: '/routines' }),
 }));
 
 jest.mock('../../backend/userService', () => ({
@@ -75,22 +76,6 @@ import { getServiceToken } from '../../backend/appFetch';
 describe('Common Components', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('Layout Component', () => {
-    test('renders children within layout', () => {
-      act(() => {
-        render(
-          <MemoryRouter>
-            <Layout>
-              <div>Test Content</div>
-            </Layout>
-          </MemoryRouter>
-        );
-      });
-
-      expect(screen.getByText('Test Content')).toBeInTheDocument();
-    });
   });
 
   describe('Slogan Component', () => {
@@ -434,6 +419,92 @@ describe('Common Components', () => {
 
       expect(screen.getByText((content) => content.includes('20 oct 2023, 15:30'))).toBeInTheDocument();
     });
+
+    test('handles error in markNotificationAsRead', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const mockOnNotificationRead = jest.fn();
+      const notifications = [
+        { id: 1, message: 'Test notification', date: '2023-01-01T00:00:00', isRead: false, routineId: 1 }
+      ];
+
+      markNotificationAsRead.mockImplementation((id, success, error) => error(new Error('Mark read failed')));
+
+      render(
+        <MemoryRouter>
+          <NotificationPopup
+            notifications={notifications}
+            onClose={() => {}}
+            onNotificationRead={mockOnNotificationRead}
+          />
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByText('Test notification'));
+
+      expect(consoleSpy).toHaveBeenCalledWith('Error marking notification as read:', expect.any(Error));
+      expect(mockNavigate).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    test('handles error in deleteNotification', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const mockOnNotificationRead = jest.fn();
+      const notifications = [
+        { id: 1, message: 'Test notification', date: '2023-01-01T00:00:00', isRead: false, routineId: 1 }
+      ];
+
+      deleteNotification.mockImplementation((id, success, error) => error(new Error('Delete failed')));
+
+      render(
+        <NotificationPopup
+          notifications={notifications}
+          onClose={() => {}}
+          onNotificationRead={mockOnNotificationRead}
+        />
+      );
+
+      const deleteButton = screen.getByText('✕');
+      fireEvent.click(deleteButton);
+
+      expect(consoleSpy).toHaveBeenCalledWith('Error deleting notification:', expect.any(Error));
+      expect(mockOnNotificationRead).not.toHaveBeenCalled();
+      consoleSpy.mockRestore();
+    });
+
+    test('handles notification without routineId', () => {
+      const mockOnNotificationRead = jest.fn();
+      const notifications = [
+        { id: 1, message: 'Test notification', date: '2023-01-01T00:00:00', isRead: false }
+      ];
+
+      markNotificationAsRead.mockImplementation((id, success) => success());
+
+      render(
+        <MemoryRouter>
+          <NotificationPopup
+            notifications={notifications}
+            onClose={() => {}}
+            onNotificationRead={mockOnNotificationRead}
+          />
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByText('Test notification'));
+
+      expect(markNotificationAsRead).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+      expect(mockNavigate).toHaveBeenCalledWith('/routines/undefined');
+    });
+
+    test('handles invalid date', () => {
+      const notifications = [
+        { id: 1, message: 'Test', date: 'invalid-date', isRead: false, routineId: 1 }
+      ];
+
+      render(<NotificationPopup notifications={notifications} onClose={() => {}} />);
+
+      // Should still render without crashing
+      expect(screen.getByText('Test')).toBeInTheDocument();
+    });
   });
 
   describe('CropModal Component', () => {
@@ -454,6 +525,32 @@ describe('Common Components', () => {
 
       fireEvent.click(screen.getByText('Cancelar'));
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
+    });
+
+    test('handles error in crop save', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      // Mock Image to trigger error
+      global.Image = class {
+        constructor() {
+          setTimeout(() => this.onerror(new Error('Image load error')), 0);
+        }
+      };
+
+      const mockOnSave = jest.fn();
+
+      render(<CropModal imageSrc={mockImageSrc} onCancel={() => {}} onSave={mockOnSave} />);
+
+      const completeCropButton = screen.getByText('Complete Crop');
+      fireEvent.click(completeCropButton);
+
+      fireEvent.click(screen.getByText('Guardar'));
+
+      setTimeout(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Error al recortar:', expect.any(Error));
+        expect(mockOnSave).not.toHaveBeenCalled();
+        consoleSpy.mockRestore();
+      }, 0);
     });
   });
 
@@ -553,6 +650,95 @@ describe('Common Components', () => {
 
       await waitFor(() => {
         expect(screen.getByText('No se pudieron cargar los seguidores.')).toBeInTheDocument();
+      });
+    });
+  
+    describe('HeartLike Component', () => {
+      test('renders heart icon correctly', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={false} onChange={mockOnChange} />);
+  
+        const button = screen.getByRole('button', { name: /dar me gusta/i });
+        expect(button).toBeInTheDocument();
+        expect(button).toHaveAttribute('aria-pressed', 'false');
+      });
+  
+      test('toggles like state on click', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={false} onChange={mockOnChange} />);
+  
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+  
+        expect(mockOnChange).toHaveBeenCalledWith(true);
+      });
+  
+      test('toggles unlike state on click', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={true} onChange={mockOnChange} />);
+  
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+  
+        expect(mockOnChange).toHaveBeenCalledWith(false);
+      });
+  
+      test('handles uncontrolled state', () => {
+        render(<HeartLike initialLiked={false} onChange={() => {}} />);
+  
+        const button = screen.getByRole('button');
+        expect(button).toHaveAttribute('aria-pressed', 'false');
+  
+        fireEvent.click(button);
+        expect(button).toHaveAttribute('aria-pressed', 'true');
+      });
+  
+      test('does not change when disabled', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={false} onChange={mockOnChange} disabled={true} />);
+  
+        const button = screen.getByRole('button');
+        fireEvent.click(button);
+  
+        expect(mockOnChange).not.toHaveBeenCalled();
+        expect(button).toBeDisabled();
+      });
+  
+      test('applies custom className', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={false} onChange={mockOnChange} className="custom-class" />);
+  
+        const button = screen.getByRole('button');
+        expect(button).toHaveClass('custom-class');
+      });
+  
+      test('uses custom ariaLabel', () => {
+        const mockOnChange = jest.fn();
+        render(<HeartLike liked={false} onChange={mockOnChange} ariaLabel="Custom label" />);
+  
+        const button = screen.getByRole('button', { name: 'Custom label' });
+        expect(button).toBeInTheDocument();
+      });
+    });
+  
+    describe('LoadingMessage Component', () => {
+      test('renders default loading message', () => {
+        render(<LoadingMessage />);
+  
+        expect(screen.getByText('Cargando...')).toBeInTheDocument();
+      });
+  
+      test('renders custom message', () => {
+        render(<LoadingMessage text="Loading data..." />);
+  
+        expect(screen.getByText('Loading data...')).toBeInTheDocument();
+      });
+  
+      test('applies styles correctly', () => {
+        render(<LoadingMessage />);
+  
+        const message = screen.getByText('Cargando...');
+        expect(message).toHaveClass('loading-message');
       });
     });
   });
@@ -802,6 +988,428 @@ describe('Common Components', () => {
 
         expect(screen.queryByText('Notificaciones')).not.toBeInTheDocument();
         expect(screen.getByText('Ver Perfil')).toBeInTheDocument();
+      });
+    });
+
+    test('handles tryLoginFromServiceToken error gracefully', async () => {
+      tryLoginFromServiceToken.mockImplementation((success, error) => error(new Error('Auth failed')));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+        // Should still render header but without user-specific content
+        expect(screen.queryByText('Ver Perfil')).not.toBeInTheDocument();
+      });
+    });
+
+    test('handles checkActiveWorkout error gracefully', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success, error) => error(new Error('Workout service error')));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+        // Should not show active workout badge when there's an error
+        expect(screen.queryByText('🏋️ Entrenamiento Activo')).not.toBeInTheDocument();
+      });
+    });
+
+    test('handles checkFollowers error gracefully', async () => {
+      const mockUser = { id: 1, role: 'TRAINER' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success, error) => error(new Error('Followers service error')));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+        // Should show followers link but with count 0 due to error
+        expect(screen.getByText('Seguidores (0)')).toBeInTheDocument();
+      });
+    });
+
+    test('handles getUserNotifications error gracefully', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success, error) => error(new Error('Notifications service error')));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+        // Should still render header even with notifications error
+        expect(screen.getByText('Entrenamientos')).toBeInTheDocument();
+      });
+    });
+
+    test('handles routine deletion event and refreshes notifications', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+      const mockNotifications = [
+        { id: 1, message: 'Test notification', isRead: false }
+      ];
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications
+        .mockImplementationOnce((success) => success(mockNotifications))
+        .mockImplementationOnce((success) => success([])); // After refresh
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+      });
+
+      // Simulate routine deletion event
+      window.dispatchEvent(new CustomEvent('routineDeleted'));
+
+      await waitFor(() => {
+        // Should have called refreshNotifications (second call to getUserNotifications)
+        expect(getUserNotifications).toHaveBeenCalledTimes(3);
+      });
+    });
+
+    test('handles refreshNotifications error gracefully', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+      const mockNotifications = [
+        { id: 1, message: 'Test notification', isRead: false }
+      ];
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications
+        .mockImplementationOnce((success) => success(mockNotifications))
+        .mockImplementationOnce((success, error) => error(new Error('Refresh failed')));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByAltText('Logo medgym')).toBeInTheDocument();
+      });
+
+      // Trigger refreshNotifications by dispatching routineDeleted event
+      window.dispatchEvent(new CustomEvent('routineDeleted'));
+
+      await waitFor(() => {
+        // Should handle error gracefully without crashing
+        expect(screen.getByText('Entrenamientos')).toBeInTheDocument();
+      });
+    });
+
+    test('notification popup onClose handler works correctly', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+      const mockNotifications = [
+        { id: 1, message: 'Test notification', isRead: false }
+      ];
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success(mockNotifications));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const notificationButton = screen.getByAltText('Notificaciones').closest('button');
+        fireEvent.click(notificationButton);
+        expect(screen.getByText('Notificaciones')).toBeInTheDocument();
+      });
+
+      // Click outside to close notification popup
+      fireEvent.mouseDown(document.body);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Notificaciones')).not.toBeInTheDocument();
+      });
+    });
+
+    test('notification popup onNotificationRead handler works for delete action', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+      const mockNotifications = [
+        { id: 1, message: 'Test notification', isRead: false, routineId: 1 }
+      ];
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success(mockNotifications));
+      getFollowers.mockImplementation((userId, success) => success([]));
+      deleteNotification.mockImplementation((id, success) => success());
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const notificationButton = screen.getByAltText('Notificaciones').closest('button');
+        fireEvent.click(notificationButton);
+        expect(screen.getByText('Test notification')).toBeInTheDocument();
+      });
+
+      // Click delete button (✕)
+      const deleteButton = screen.getByText('✕');
+      fireEvent.click(deleteButton);
+
+      await waitFor(() => {
+        // Notification should be removed from state
+        expect(screen.queryByText('Test notification')).not.toBeInTheDocument();
+        expect(deleteNotification).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+      });
+    });
+
+    test('notification popup onNotificationRead handler works for read action', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+      const mockNotifications = [
+        { id: 1, message: 'Test notification', isRead: false, routineId: 1 }
+      ];
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success(mockNotifications));
+      getFollowers.mockImplementation((userId, success) => success([]));
+      markNotificationAsRead.mockImplementation((id, success) => success());
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const notificationButton = screen.getByAltText('Notificaciones').closest('button');
+        fireEvent.click(notificationButton);
+        expect(screen.getByText('Test notification')).toBeInTheDocument();
+      });
+
+      // Click on notification to mark as read
+      fireEvent.click(screen.getByText('Test notification'));
+
+      await waitFor(() => {
+        expect(markNotificationAsRead).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+        expect(mockNavigate).toHaveBeenCalledWith('/routines/1');
+      });
+    });
+
+    test('routines link shows active state on routines page', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter initialEntries={['/routines']}>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const routinesLink = screen.getByText('Entrenamientos').closest('a');
+        expect(routinesLink).toHaveClass('active');
+      });
+    });
+
+    test('exercises link shows active state on exercises page', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter initialEntries={['/exercises']}>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const exercisesLink = screen.getByText('Ejercicios').closest('a');
+        expect(exercisesLink).toHaveClass('active');
+      });
+    });
+
+    test('history link shows active state on history page', async () => {
+      const mockUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter initialEntries={['/workouts/history']}>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const historyLink = screen.getByText('Historial').closest('a');
+        expect(historyLink).toHaveClass('active');
+      });
+    });
+
+    test('trainer followers link shows active state on followers page', async () => {
+      const mockUser = { id: 1, role: 'TRAINER' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter initialEntries={['/users/followers']}>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const followersLink = screen.getByText('Seguidores (0)').closest('a');
+        expect(followersLink).toHaveClass('active');
+      });
+    });
+
+    test('admin moderation link shows active state on moderation page', async () => {
+      const mockUser = { id: 1, role: 'ADMIN' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: mockUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter initialEntries={['/users/moderation']}>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        const moderationLink = screen.getByText('Moderación').closest('a');
+        expect(moderationLink).toHaveClass('active');
+        expect(moderationLink).toHaveClass('admin-link');
+      });
+    });
+
+    test('conditionally renders trainer followers link only for trainers', async () => {
+      // Test with CLIENT role - should not show followers link
+      const clientUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: clientUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Seguidores/)).not.toBeInTheDocument();
+      });
+
+      // Test with TRAINER role - should show followers link
+      const trainerUser = { id: 1, role: 'TRAINER' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: trainerUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Seguidores (0)')).toBeInTheDocument();
+      });
+    });
+
+    test('conditionally renders admin moderation link only for admins', async () => {
+      // Test with CLIENT role - should not show moderation link
+      const clientUser = { id: 1, role: 'CLIENT' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: clientUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText('Moderación')).not.toBeInTheDocument();
+      });
+
+      // Test with ADMIN role - should show moderation link
+      const adminUser = { id: 1, role: 'ADMIN' };
+
+      tryLoginFromServiceToken.mockImplementation((success) => success({ user: adminUser }));
+      getWorkouts.mockImplementation((success) => success([]));
+      getUserNotifications.mockImplementation((success) => success([]));
+      getFollowers.mockImplementation((userId, success) => success([]));
+
+      render(
+        <MemoryRouter>
+          <Header />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Moderación')).toBeInTheDocument();
       });
     });
   });

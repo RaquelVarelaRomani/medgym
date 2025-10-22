@@ -71,7 +71,6 @@ const Header = () => {
     };
   }, []);
 
-    //close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
@@ -185,7 +184,7 @@ const Header = () => {
                     {profile?.role === "TRAINER" && (
                         <Link
                             to="/users/followers"
-                            className={location.pathname.includes('/followers')
+                            className={location.pathname === '/users/followers'
                                 ? `${styles['nav-link']} ${styles['active']}`
                                 : styles['nav-link']}
                         >
@@ -203,7 +202,7 @@ const Header = () => {
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"
-                            className={location.pathname.includes('/users/moderation')
+                            className={location.pathname === '/users/moderation'
                                 ? `${styles['nav-link']} ${styles['admin-link']} ${styles['active']}`
                                 : `${styles['nav-link']} ${styles['admin-link']}`}
                         >
@@ -227,8 +226,8 @@ const Header = () => {
                                         setNotifications(prev =>
                                             prev.map(n => n.id === id ? { ...n, isRead: true } : n)
                                         );
+                                        refreshNotifications();
                                     }
-                                    refreshNotifications();
                                 }}
                             />
                         )}
