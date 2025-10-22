@@ -6,6 +6,8 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const CreateExercise = () => {
     const navigate = useNavigate();
@@ -84,8 +86,8 @@ const CreateExercise = () => {
         );
     };
 
-    if (loading) return <div>Cargando...</div>;
-
+    if (loading) return <LoadingMessage text="Cargando ejercicio..." />;
+    
     return (
         <div className={styles['contenedor-create-exercise']}>
             <div className={styles['header-crear-ejercicio']}>

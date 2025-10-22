@@ -4,6 +4,7 @@ import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as adminService from "../../../../backend/adminService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import styles from "./UserModeration.module.css";
+import LoadingMessage from "../common/LoadingMessage";
 
 const UserModeration = () => {
     const navigate = useNavigate();
@@ -83,9 +84,7 @@ const UserModeration = () => {
         );
     });
 
-    if (loading) {
-        return <div className={styles.contenedor}>Cargando usuarios...</div>;
-    }
+    if (loading) return <LoadingMessage text="Cargando usuarios..." />;
 
     return (
         <div className={styles.contenedor}>

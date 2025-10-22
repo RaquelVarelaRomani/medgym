@@ -6,6 +6,7 @@ import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
+import * as workoutService from "../../../../backend/workoutService";
 
 
 const Routines = () => {
@@ -16,6 +17,8 @@ const Routines = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
     const [routineToDelete, setRoutineToDelete] = useState(null);
+    const [activeWorkout, setActiveWorkout] = useState(null); 
+    const [showActiveWorkoutPopup, setShowActiveWorkoutPopup] = useState(false); 
     const [filters, setFilters] = useState({difficulty: "", muscleGroup: [], equipment: [], trainerId: ""});
     const [openDropdown, setOpenDropdown] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
@@ -45,6 +48,7 @@ const Routines = () => {
                 loadRoutines();                     // solo cargas rutinas si hay usuario válido
                 if (user.role === "CLIENT") {
                     loadFollowing(user.id);
+                    checkActiveWorkout(); 
                 }
             },
             () => {
@@ -53,6 +57,17 @@ const Routines = () => {
             }
         );
     }, [navigate]);
+
+
+    const checkActiveWorkout = () => {
+    workoutService.getWorkouts(
+      (data) => {
+        const active = data.find((w) => !w.endTime);
+        if (active) setActiveWorkout(active);
+      },
+      (error) => console.error("Error comprobando entrenamientos activos", error)
+    );
+  };
 
     const loadFollowing = (userId) => {
         getFollowedTrainers(
@@ -246,6 +261,29 @@ const Routines = () => {
     };
 
     const handleAddRoutine = () => navigate("/routines/new");
+    
+    
+    const handleStartWorkout = (e, routineId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (activeWorkout) {
+      setShowActiveWorkoutPopup(true);
+      return;
+    }
+
+    workoutService.startWorkout(
+      routineId,
+      (workoutData) => {
+        console.log("Workout iniciado:", workoutData);
+        navigate(`/workouts/session/${workoutData.id}`);
+      },
+      (error) => {
+        console.error("Error al iniciar entrenamiento:", error);
+        alert("No se pudo iniciar el entrenamiento. Inténtelo de nuevo.");
+      }
+    );
+  };
 
     if (loading) {
         return (
@@ -512,6 +550,16 @@ const Routines = () => {
                                     )}
                             </h3>
 
+                            {isClient() && (
+                            <button
+                                className={styles["boton-empezar-redondo"]}
+                                onClick={(e) => handleStartWorkout(e, routine.id)}
+                            >
+                                Empezar
+                            </button>
+                            )}
+
+
                             <div className={styles["trainer-info"]}>
                                 <p className={styles["trainer-name"]}>
                                     Generado por{" "}
@@ -588,6 +636,19 @@ const Routines = () => {
                 }}
                 onCancel={() => setRoutineToDelete(null)}
             />
+
+
+            <ConfirmationPopup
+        show={showActiveWorkoutPopup}
+        text="Ya tienes un entrenamiento en progreso. ¿Deseas ir a él?"
+        okText="Ir al entrenamiento activo"
+        cancelText="Cancelar"
+        onOk={() => {
+          setShowActiveWorkoutPopup(false);
+          if (activeWorkout) navigate(`/workouts/session/${activeWorkout.id}`);
+        }}
+        onCancel={() => setShowActiveWorkoutPopup(false)}
+      />
 
             <ConfirmationPopup
                 text="¿Seguro que quieres dejar de seguir a este entrenador?"
