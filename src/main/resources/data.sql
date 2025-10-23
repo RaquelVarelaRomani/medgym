@@ -30,6 +30,7 @@ INSERT INTO exercises (name, description, muscle_group, equipment, image, creato
     ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 'Bíceps', 'Mancuernas', LOAD_FILE('/var/lib/mysql-files/curl_biceps.jpg'), 1, 'PENDING'),
     ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 'Tríceps', 'Polea', LOAD_FILE('/var/lib/mysql-files/extensiones_triceps.jpg'), 1, 'REJECTED'),
     ('Elevaciones laterales', 'Ejercicio para hombros.', 'Hombros', 'Mancuernas', LOAD_FILE('/var/lib/mysql-files/elevaciones_laterales.jpg'), 4, 'PENDING'),
+    ('Elevaciones laterales 2', 'Ejercicio para hombros.', 'Hombros', 'Mancuernas', LOAD_FILE('/var/lib/mysql-files/elevaciones_laterales.jpg'), 4, 'BLOCKED'),
     ('Remo con mancuerna', 'Ejercicio para espalda.', 'Espalda', 'Mancuerna', LOAD_FILE('/var/lib/mysql-files/remo_mancuerna.jpg'), 4, 'REJECTED');
 
 
