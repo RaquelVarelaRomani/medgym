@@ -814,7 +814,6 @@ describe("Workout Components", () => {
           { id: 2, reps: 8, weight: 85, time: null },
         ];
 
-        // Mock to simulate pre-existing sets or multiple additions
         addWorkoutActivity.mockImplementation(
           (sessionId, exerciseId, reps, weight, time, success) => {
             success(mockSets[0]);
@@ -829,7 +828,6 @@ describe("Workout Components", () => {
           />,
         );
 
-        // Simulate adding first set
         const repsInput = screen.getByPlaceholderText("Reps");
         const weightInput = screen.getByPlaceholderText("Peso (kg)");
         const timeInput = screen.getByPlaceholderText("Tiempo (s)");
@@ -845,24 +843,17 @@ describe("Workout Components", () => {
             screen.getByText("Serie 1: 10 reps · 80 kg · 60s"),
           ).toBeInTheDocument();
         });
-
-        // For second set, we need to mock differently or use a different approach
-        // Since state is internal, we can test by checking the list updates
-        // But for simplicity, assume the component handles multiple sets
-        // In a real scenario, we might need to adjust the component or use a different test strategy
       });
     });
 
     describe("WorkoutDetails Component", () => {
-      // Existing tests...
-
       test("displays duration less than 1 hour correctly", async () => {
         const mockWorkout = {
           id: 1,
           routineId: 1,
           routineName: "Rutina Corta",
           startTime: "2023-10-01T10:00:00Z",
-          endTime: "2023-10-01T10:30:00Z", // 30 minutes
+          endTime: "2023-10-01T10:30:00Z",
         };
 
         tryLoginFromServiceToken.mockImplementation((success) => {
@@ -898,8 +889,6 @@ describe("Workout Components", () => {
     });
 
     describe("WorkoutHistory Component", () => {
-      // Existing tests...
-
       test("renders calendar view correctly", async () => {
         const mockWorkouts = [
           {
@@ -924,12 +913,11 @@ describe("Workout Components", () => {
           </MemoryRouter>,
         );
 
-        // Switch to calendar view
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument(); // Assuming current month/year
-          expect(screen.getByText("1")).toBeInTheDocument(); // Day 1
+          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText("1")).toBeInTheDocument();
           expect(screen.getByText("Rutina 1")).toBeInTheDocument();
         });
       });
@@ -958,21 +946,18 @@ describe("Workout Components", () => {
           </MemoryRouter>,
         );
 
-        // Switch to calendar view
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
           expect(screen.getByText("2025 - 10")).toBeInTheDocument();
         });
 
-        // Click next month
         fireEvent.click(screen.getByText(">"));
 
         await waitFor(() => {
           expect(screen.getByText("2025 - 11")).toBeInTheDocument();
         });
 
-        // Click prev month
         fireEvent.click(screen.getByText("<"));
 
         await waitFor(() => {
@@ -1004,7 +989,6 @@ describe("Workout Components", () => {
           </MemoryRouter>,
         );
 
-        // Switch to calendar view
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
@@ -1034,11 +1018,9 @@ describe("Workout Components", () => {
           </MemoryRouter>,
         );
 
-        // Initially list view
         expect(screen.getByText("Lista")).toHaveClass("active");
         expect(screen.getByText("Calendario")).not.toHaveClass("active");
 
-        // Switch to calendar
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
@@ -1046,7 +1028,6 @@ describe("Workout Components", () => {
           expect(screen.getByText("Lista")).not.toHaveClass("active");
         });
 
-        // Switch back to list
         fireEvent.click(screen.getByText("Lista"));
 
         await waitFor(() => {
@@ -1066,7 +1047,7 @@ describe("Workout Components", () => {
           success({ user: { id: 1, role: "CLIENT" } });
         });
 
-        getWorkout.mockImplementation(() => {}); // No success call to keep loading
+        getWorkout.mockImplementation(() => {});
 
         render(
           <MemoryRouter initialEntries={["/workouts/session/1"]}>
@@ -1344,7 +1325,6 @@ describe("Workout Components", () => {
           expect(screen.getByText("1. Press de banca")).toBeInTheDocument();
         });
 
-        // Add a set to complete the exercise
         const repsInput = screen.getByPlaceholderText("Reps");
         const addButton = screen.getByText("Añadir serie");
 
@@ -1355,7 +1335,6 @@ describe("Workout Components", () => {
           expect(screen.getByText("Serie 1")).toBeInTheDocument();
         });
 
-        // Finish workout
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
@@ -1409,7 +1388,6 @@ describe("Workout Components", () => {
           expect(screen.getByText("1. Press de banca")).toBeInTheDocument();
         });
 
-        // Do not add any sets, so incomplete
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
@@ -1420,7 +1398,6 @@ describe("Workout Components", () => {
           ).toBeInTheDocument();
         });
 
-        // Confirm
         fireEvent.click(screen.getByText("OK"));
 
         await waitFor(() => {
@@ -1480,7 +1457,6 @@ describe("Workout Components", () => {
           ).toBeInTheDocument();
         });
 
-        // Cancel
         fireEvent.click(screen.getByText("Cancelar"));
 
         await waitFor(() => {

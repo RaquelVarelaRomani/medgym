@@ -648,7 +648,6 @@ describe("Common Components", () => {
         <NotificationPopup notifications={notifications} onClose={() => {}} />,
       );
 
-      // Should still render without crashing
       expect(screen.getByText("Test")).toBeInTheDocument();
     });
   });
@@ -690,7 +689,6 @@ describe("Common Components", () => {
         .spyOn(console, "error")
         .mockImplementation(() => {});
 
-      // Mock Image to trigger error
       global.Image = class {
         constructor() {
           setTimeout(() => this.onerror(new Error("Image load error")), 0);
@@ -1258,7 +1256,6 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        // Should still render header but without user-specific content
         expect(screen.queryByText("Ver Perfil")).not.toBeInTheDocument();
       });
     });
@@ -1283,7 +1280,6 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        // Should not show active workout badge when there's an error
         expect(
           screen.queryByText("🏋️ Entrenamiento Activo"),
         ).not.toBeInTheDocument();
@@ -1310,7 +1306,6 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        // Should show followers link but with count 0 due to error
         expect(screen.getByText("Seguidores (0)")).toBeInTheDocument();
       });
     });
@@ -1335,7 +1330,6 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        // Should still render header even with notifications error
         expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
       });
     });
@@ -1352,7 +1346,7 @@ describe("Common Components", () => {
       getWorkouts.mockImplementation((success) => success([]));
       getUserNotifications
         .mockImplementationOnce((success) => success(mockNotifications))
-        .mockImplementationOnce((success) => success([])); // After refresh
+        .mockImplementationOnce((success) => success([]));
       getFollowers.mockImplementation((userId, success) => success([]));
 
       render(
@@ -1365,11 +1359,9 @@ describe("Common Components", () => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
       });
 
-      // Simulate routine deletion event
       window.dispatchEvent(new CustomEvent("routineDeleted"));
 
       await waitFor(() => {
-        // Should have called refreshNotifications (second call to getUserNotifications)
         expect(getUserNotifications).toHaveBeenCalledTimes(3);
       });
     });
@@ -1401,11 +1393,9 @@ describe("Common Components", () => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
       });
 
-      // Trigger refreshNotifications by dispatching routineDeleted event
       window.dispatchEvent(new CustomEvent("routineDeleted"));
 
       await waitFor(() => {
-        // Should handle error gracefully without crashing
         expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
       });
     });
@@ -1439,7 +1429,6 @@ describe("Common Components", () => {
         expect(screen.getByText("Notificaciones")).toBeInTheDocument();
       });
 
-      // Click outside to close notification popup
       fireEvent.mouseDown(document.body);
 
       await waitFor(() => {
@@ -1477,12 +1466,10 @@ describe("Common Components", () => {
         expect(screen.getByText("Test notification")).toBeInTheDocument();
       });
 
-      // Click delete button (✕)
       const deleteButton = screen.getByText("✕");
       fireEvent.click(deleteButton);
 
       await waitFor(() => {
-        // Notification should be removed from state
         expect(screen.queryByText("Test notification")).not.toBeInTheDocument();
         expect(deleteNotification).toHaveBeenCalledWith(
           1,
@@ -1522,7 +1509,6 @@ describe("Common Components", () => {
         expect(screen.getByText("Test notification")).toBeInTheDocument();
       });
 
-      // Click on notification to mark as read
       fireEvent.click(screen.getByText("Test notification"));
 
       await waitFor(() => {
@@ -1647,7 +1633,6 @@ describe("Common Components", () => {
     });
 
     test("conditionally renders trainer followers link only for trainers", async () => {
-      // Test with CLIENT role - should not show followers link
       const clientUser = { id: 1, role: "CLIENT" };
 
       tryLoginFromServiceToken.mockImplementation((success) =>
@@ -1667,7 +1652,6 @@ describe("Common Components", () => {
         expect(screen.queryByText(/Seguidores/)).not.toBeInTheDocument();
       });
 
-      // Test with TRAINER role - should show followers link
       const trainerUser = { id: 1, role: "TRAINER" };
 
       tryLoginFromServiceToken.mockImplementation((success) =>
@@ -1689,7 +1673,6 @@ describe("Common Components", () => {
     });
 
     test("conditionally renders admin moderation link only for admins", async () => {
-      // Test with CLIENT role - should not show moderation link
       const clientUser = { id: 1, role: "CLIENT" };
 
       tryLoginFromServiceToken.mockImplementation((success) =>
@@ -1709,7 +1692,6 @@ describe("Common Components", () => {
         expect(screen.queryByText("Moderación")).not.toBeInTheDocument();
       });
 
-      // Test with ADMIN role - should show moderation link
       const adminUser = { id: 1, role: "ADMIN" };
 
       tryLoginFromServiceToken.mockImplementation((success) =>
