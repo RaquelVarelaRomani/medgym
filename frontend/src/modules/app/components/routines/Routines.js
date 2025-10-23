@@ -283,7 +283,7 @@ const Routines = () => {
             setRoutines(filtered);
         } else {
             setShowSearchResults(false);
-            loadRoutines();
+            setRoutines(allRoutines);
         }
     };
 
@@ -607,9 +607,9 @@ const Routines = () => {
                 </div>
             )}
 
-            <div className={styles["search-container"]} ref={searchRef}>
+            <div className={styles["search-container"]}>
                 <h3 className={styles['search-title']}>Buscar entrenamientos</h3>
-                <div className={styles['search-input-wrapper']}>
+                <div className={styles['search-input-wrapper']}  ref={searchRef}>
                     <input
                         type="text"
                         placeholder="Buscar por nombre de rutina o entrenador..."
