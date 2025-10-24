@@ -217,12 +217,16 @@ public class ExerciseServiceTest {
     @Test
     public void testFindAllExercises() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        var exercisesPrev = exerciseService.findAllExercises(user.getId()).size();
+
+        var ex1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        var ex2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+
+        exerciseService.updateExerciseStatus(ex1.getId(), ExerciseStatus.APPROVED);
+        exerciseService.updateExerciseStatus(ex2.getId(), ExerciseStatus.APPROVED);
 
         var exercises = exerciseService.findAllExercises(user.getId());
-
-        assertEquals(10, exercises.size()); // Counting data.sql entries + 2 new ones
+        assertEquals(exercisesPrev + 2, exercises.size());
     }
 
     @Test
