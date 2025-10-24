@@ -16,4 +16,6 @@ public interface RoutineExerciseDao extends JpaRepository<RoutineExercise, Long>
 
     List<RoutineExercise> findByRoutineId(long routineId);
 
+    boolean existsByExerciseId(long exerciseId);
+
 }

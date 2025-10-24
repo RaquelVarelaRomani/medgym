@@ -47,13 +47,20 @@ const handle4xxResponse = (response, onErrors) => {
     throw new NetworkError();
   }
 
-  if (onErrors) {
-    response.json().then((payload) => {
-      if (payload.globalError || payload.fieldErrors) {
-        onErrors(payload);
-      }
-    });
-  }
+  response.json().then((payload) => {
+    const message =
+      payload.message ||
+      payload.globalError ||
+      "Ha ocurrido un error inesperado.";
+
+    if (onErrors) {
+      onErrors({
+        status: response.status,
+        message: message,
+        body: payload,
+      });
+    }
+  });
 
   return true;
 };
