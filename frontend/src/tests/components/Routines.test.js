@@ -1021,7 +1021,7 @@ describe("Routines Components", () => {
 
       await waitFor(() => {
         const exerciseInput = screen.getByPlaceholderText(
-          "Buscar ejercicio o escribir el nombre...",
+          "Buscar ejercicio...",
         );
         fireEvent.change(exerciseInput, { target: { value: "Exercise" } });
         fireEvent.focus(exerciseInput);
@@ -1092,7 +1092,7 @@ describe("Routines Components", () => {
 
       await waitFor(() => {
         const exerciseInputs = screen.getAllByPlaceholderText(
-          "Buscar ejercicio o escribir el nombre...",
+          "Buscar ejercicio...",
         );
         const exerciseInput = exerciseInputs[1];
         fireEvent.click(exerciseInput);
@@ -1191,7 +1191,7 @@ describe("Routines Components", () => {
 
       await waitFor(() => {
         const exerciseInputs = screen.getAllByPlaceholderText(
-          "Buscar ejercicio o escribir el nombre...",
+          "Buscar ejercicio...",
         );
         const exerciseInput = exerciseInputs[1];
         fireEvent.change(exerciseInput, { target: { value: "Exercise 1" } });
@@ -2519,7 +2519,7 @@ describe("Routines Components", () => {
 
       await waitFor(() => {
         const exerciseInputs = screen.getAllByPlaceholderText(
-          "Buscar ejercicio o escribir el nombre...",
+          "Buscar ejercicio...",
         );
         const exerciseInput = exerciseInputs[0];
         fireEvent.change(exerciseInput, { target: { value: "Test Exercise" } });

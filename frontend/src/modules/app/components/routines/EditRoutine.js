@@ -348,7 +348,7 @@ const EditRoutine = () => {
                              ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
-                                placeholder="Buscar ejercicio o escribir el nombre..."
+                                placeholder="Buscar ejercicio..."
                                 value={exercise.nombre}
                                 disabled={originalExercises.some(oe => oe.id === exercise.id)}
                                 onChange={(e) => {
