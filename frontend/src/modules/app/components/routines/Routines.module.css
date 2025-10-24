@@ -200,7 +200,7 @@
   left: 100%;
 }
 
-/* dropdown */
+/* filter dropdown */
 .custom-select {
   position: relative;
   width: 100%;
@@ -275,6 +275,161 @@
 }
 
 .select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-orange-bright);
+}
+
+/* search bar */
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.search-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 0.4rem 0.4rem;
+  letter-spacing: 0.03em;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neon-orange);
+  pointer-events: none;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-input {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem 3.5rem;
+  background: linear-gradient(
+          135deg,
+          var(--bg-card) 0%,
+          rgba(26, 26, 36, 0.8) 100%
+  );
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--neon-orange);
+  box-shadow:
+          0 0 20px rgba(255, 107, 53, 0.2),
+          inset 0 0 20px rgba(255, 107, 53, 0.05);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.clear-search-btn:hover {
+  color: var(--neon-orange);
+}
+
+/* search dropdown */
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--neon-orange);
+  border-radius: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  margin-top: 0.5rem;
+}
+
+.search-result-item {
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.search-result-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.search-result-trainer {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.no-search-results {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.search-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-dropdown::-webkit-scrollbar-track {
+  background: rgba(19, 19, 26, 0.5);
+  border-radius: 4px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb {
+  background: var(--neon-orange);
+  border-radius: 4px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb:hover {
   background: var(--neon-orange-bright);
 }
 
@@ -553,6 +708,7 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+  margin-left: 81px;
   position: relative;
   overflow: hidden;
 }
@@ -696,4 +852,15 @@
   box-shadow:
     0 0 20px rgba(255, 107, 53, 0.6),
     0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+.no-results {
+  width: 100%;
+  max-width: 1400px;
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: white;
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styles from "./ExerciseDetails.module.css";
 import * as exerciseService from "../../../../backend/exerciseService";
 import LoadingMessage from "../common/LoadingMessage";
+import { h3 } from "framer-motion/client";
 
 const ExerciseDetails = () => {
     const { id } = useParams();
@@ -36,6 +37,9 @@ const ExerciseDetails = () => {
             </button>
 
             <h2 className={styles["titulo-ejercicio"]}>{exercise.name}</h2>
+            {exercise.status === 'BLOCKED' &&
+                <h3 className={styles["titulo-bloqueado"]}>EJERCICIO BLOQUEADO</h3>
+            }
 
             <div className={styles["info-ejercicio"]}>
             <div className={styles["detalles-ejercicio"]}>
