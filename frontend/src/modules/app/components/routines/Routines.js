@@ -609,7 +609,12 @@ const Routines = () => {
 
             <div className={styles["search-container"]}>
                 <h3 className={styles['search-title']}>Buscar entrenamientos</h3>
-                <div className={styles['search-input-wrapper']}  ref={searchRef}>
+                <div className={styles['search-input-wrapper']} ref={searchRef}>
+                    <svg className={styles['search-icon']} width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
                     <input
                         type="text"
                         placeholder="Buscar por nombre de rutina o entrenador..."
