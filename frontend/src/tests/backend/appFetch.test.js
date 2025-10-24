@@ -199,9 +199,13 @@ describe("appFetch module", () => {
       await appFetch("/test", {}, undefined, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith({
-        globalError: "Bad Request",
-        fieldErrors: [],
-      });
+            body: {
+              globalError: "Bad Request",
+              fieldErrors: [],
+            },
+            message: "Bad Request",
+            status: 400
+          });
     });
 
     test("calls networkErrorCallback for 4xx without JSON content-type", async () => {

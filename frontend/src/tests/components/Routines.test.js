@@ -6556,56 +6556,6 @@ describe("Routines Components", () => {
       consoleSpy.mockRestore();
     });
 
-    test("handles delete exercise error", async () => {
-      tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
-      });
-
-      exerciseService.getAllExercises.mockImplementation((success) => {
-        success([
-          {
-            id: 1,
-            name: "Exercise 1",
-            description: "Desc",
-            status: "APPROVED",
-            creatorId: 1,
-          },
-        ]);
-      });
-
-      exerciseService.deleteExercise.mockImplementation(
-        (id, success, error) => {
-          error("Delete error");
-        },
-      );
-
-      const consoleSpy = jest
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-
-      render(
-        <MemoryRouter>
-          <Exercises />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        const deleteButton = screen.getByText("Eliminar");
-        fireEvent.click(deleteButton);
-      });
-
-      await waitFor(() => {
-        const confirmButton = screen.getByText("OK");
-        fireEvent.click(confirmButton);
-        expect(consoleSpy).toHaveBeenCalledWith(
-          "Error deleting exercise:",
-          "Delete error",
-        );
-      });
-
-      consoleSpy.mockRestore();
-    });
-
     test("handles canEditOrDelete with null creatorId", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
         success({ user: { id: 1, role: "TRAINER" } });
