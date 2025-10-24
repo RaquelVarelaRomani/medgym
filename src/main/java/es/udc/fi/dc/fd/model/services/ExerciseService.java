@@ -15,4 +15,5 @@ public interface ExerciseService {
     List<Exercise> findAllExercises(Long userId) throws InstanceNotFoundException;
     List<Exercise> findExercisesWithPendingStatus();
     void deleteExercise(Long exerciseId) throws InstanceNotFoundException;
+
 }

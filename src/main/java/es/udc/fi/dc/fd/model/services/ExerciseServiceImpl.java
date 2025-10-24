@@ -91,9 +91,15 @@ public class ExerciseServiceImpl implements ExerciseService {
         if (user.getRole() == User.RoleType.ADMIN) {
             return exerciseDao.findAll();
         } else if (user.getRole() == User.RoleType.TRAINER) {
-            return exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+            List<Exercise> exercises1 = exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+            List<Exercise> exercises2 = exerciseDao.findByStatus(ExerciseStatus.BLOCKED);
+            exercises2.addAll(exercises1);
+            return exercises2;
         } else {
-            return exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+            List<Exercise> exercises1 = exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+            List<Exercise> exercises2 = exerciseDao.findByStatus(ExerciseStatus.BLOCKED);
+            exercises2.addAll(exercises1);
+            return exercises2;
         }
     }
 
