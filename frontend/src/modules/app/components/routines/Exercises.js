@@ -202,11 +202,13 @@ const Exercises = () => {
                         key={exercise.id}
                         className={styles["caja-ejercicio"]}
                     >
-                        <h3>{exercise.titulo}</h3>
+                        <h3>
+                            {exercise.titulo}
+                            {exercise.status === "BLOCKED" && (
+                                <span className={styles["blocked-badge"]}>Bloqueado</span>
+                            )}
+                        </h3>
                         <p>{exercise.descripcion}</p>
-                        {exercise.status === "BLOCKED" &&
-                            <p>Ejercicio bloqueado</p>
-                        }
 
                         {viewMode === "approved" && canEditOrDelete(exercise) && (
                             <div className={styles["action-buttons"]}>
