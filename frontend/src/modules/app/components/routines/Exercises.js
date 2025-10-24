@@ -6,6 +6,7 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
+import { p } from "framer-motion/client";
 
 
 const Exercises = () => {
@@ -79,7 +80,7 @@ const Exercises = () => {
         } else {
             exerciseService.getAllExercises(
                 (data) => {
-                    const filtered = data.filter((e) => e.status === "APPROVED");
+                    const filtered = data.filter((e) => e.status === "APPROVED" || e.status === "BLOCKED");
                     setExercises(filtered.map(mapExercise));
                     setLoading(false);
                 },
@@ -92,7 +93,7 @@ const Exercises = () => {
     };
 
     const handleDelete = (exerciseId) => {
-        exerciseService.deleteExercise(
+        exerciseService.updateExerciseStatus(
             exerciseId,
             () => {
                 console.log("✅ Exercise deleted successfully");
@@ -109,6 +110,32 @@ const Exercises = () => {
         );
     };
 
+    const handleBlock = (e, exerciseId, status) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if(status === "BLOCKED"){
+            exerciseService.updateExerciseStatus(
+                exerciseId,
+                "APPROVED",
+                () => {
+                    console.log("Exercise approved successfully");
+                    fetchExercises(currentUser);
+                },
+                (error) => console.error("Error approving exercise:", error)
+            );
+        } else {
+            exerciseService.updateExerciseStatus(
+                exerciseId,
+                "BLOCKED",
+                () => {
+                    console.log("Exercise approved successfully");
+                    fetchExercises(currentUser);
+                },
+                (error) => console.error("Error approving exercise:", error)
+            );           
+        }
+
+    };
 
     const handleEdit = (exerciseId) => {
         navigate(`/exercises/edit/${exerciseId}`);
@@ -151,7 +178,7 @@ const Exercises = () => {
                 <div className={styles["view-toggle-buttons"]}>
                     <button
                         className={`${styles["toggle-button"]} ${
-                            viewMode === "approved" ? styles.active : ""
+                            viewMode === "approved"? styles.active : ""
                         }`}
                         onClick={() => setViewMode("approved")}
                     >
@@ -177,6 +204,9 @@ const Exercises = () => {
                     >
                         <h3>{exercise.titulo}</h3>
                         <p>{exercise.descripcion}</p>
+                        {exercise.status === "BLOCKED" &&
+                            <p>Ejercicio bloqueado</p>
+                        }
 
                         {viewMode === "approved" && canEditOrDelete(exercise) && (
                             <div className={styles["action-buttons"]}>
@@ -201,6 +231,16 @@ const Exercises = () => {
                                 >
                                     Eliminar
                                 </button>
+                                {isAdmin() && 
+                                    <button
+                                        className={styles["boton-eliminar"]}
+                                        onClick={(e) => {
+                                            handleBlock(e, exercise.id, exercise.status)
+                                        }}
+                                    >
+                                        {exercise.status === "BLOCKED" ? "Desbloquear" : "Bloquear"}
+                                    </button>                                
+                                }
                             </div>
                         )}
 
