@@ -222,14 +222,16 @@ const Exercises = () => {
                                 >
                                     Eliminar
                                 </button>
-                                <button
-                                    className={styles["boton-eliminar"]}
-                                    onClick={(e) => {
-                                        handleBlock(e, exercise.id, exercise.status)
-                                    }}
-                                >
-                                    {exercise.status === "BLOCKED" ? "Desbloquear" : "Bloquear"}
-                                </button>
+                                {isAdmin() && 
+                                    <button
+                                        className={styles["boton-eliminar"]}
+                                        onClick={(e) => {
+                                            handleBlock(e, exercise.id, exercise.status)
+                                        }}
+                                    >
+                                        {exercise.status === "BLOCKED" ? "Desbloquear" : "Bloquear"}
+                                    </button>                                
+                                }
                             </div>
                         )}
 
