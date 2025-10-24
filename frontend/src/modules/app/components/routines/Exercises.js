@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
 import { p } from "framer-motion/client";
 
@@ -16,6 +17,7 @@ const Exercises = () => {
     const [exerciseToReject, setExerciseToReject] = useState(null);
     const [viewMode, setViewMode] = useState("approved");
     const [loading, setLoading] = useState(true);
+    const [deleteError, setDeleteError] = useState(null);
 
 
     useEffect(() => {
@@ -94,10 +96,17 @@ const Exercises = () => {
         exerciseService.updateExerciseStatus(
             exerciseId,
             () => {
-                console.log("Exercise deleted successfully");
+                console.log("✅ Exercise deleted successfully");
                 fetchExercises(currentUser);
             },
-            (error) => console.error("Error deleting exercise:", error)
+            (error) => {
+                console.error("Error al eliminar el ejercicio.", error);
+                const backendMessage =
+                    error?.message ||
+                    error?.response?.data?.message ||
+                    "No se pudo eliminar el ejercicio.";
+                setDeleteError(backendMessage);
+            }
         );
     };
 
@@ -284,6 +293,15 @@ const Exercises = () => {
                 }}
                 onCancel={() => setExerciseToReject(null)}
             />
+
+            {deleteError && (
+                <Popup
+                    show={true}
+                    text={deleteError}
+                    onOk={() => setDeleteError(null)}
+                />
+            )}
+
         </div>
     );
 };

@@ -1,12 +1,13 @@
 
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.server.ResponseStatusException;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -15,7 +16,13 @@ import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.RoutineExercise;
+import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import jakarta.transaction.Transactional;
+import java.util.Objects;
+
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -27,6 +34,12 @@ public class ExerciseServiceTest {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private RoutineDao routineDao;
+
+    @Autowired
+    private RoutineExerciseDao routineExerciseDao;
 
     private User createUser(String userName) {
         User user = new User(userName, "password", "name", "lastName", "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
@@ -107,6 +120,32 @@ public class ExerciseServiceTest {
         assertThrows(InstanceNotFoundException.class, () -> {
             exerciseService.deleteExercise(999L);
         });
+    }
+
+    @Test
+    public void testDeleteExerciseInUse() throws Exception {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(RoleType.TRAINER);
+        userDao.save(trainer);
+        Exercise exercise = exerciseService.createExercise(
+            "Sentadillas_", "Desc", "Piernas", "Ninguno", new byte[]{1,2,3}, trainer
+        );
+        Routine routine = new Routine("Rutina Piernas", "Fuerza", 
+            Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
+        routineDao.save(routine);
+
+        RoutineExercise re = new RoutineExercise(routine, exercise, 1);
+        routineExerciseDao.save(re);
+
+        ResponseStatusException exception = assertThrows(
+            ResponseStatusException.class,
+            () -> exerciseService.deleteExercise(exercise.getId())
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
+        assertTrue(Objects.requireNonNull(exception.getReason())
+        .contains("No se puede borrar"));
+
     }
 
     @Test
@@ -307,4 +346,6 @@ public class ExerciseServiceTest {
         assertEquals(ExerciseStatus.PENDING, exercise.getStatus());
         assertEquals(ExerciseStatus.PENDING, exerciseService.findExerciseById(exercise.getId()).getStatus());
     }
+
+
 }
