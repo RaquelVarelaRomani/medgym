@@ -40,6 +40,10 @@ const Routines = () => {
     const [following, setFollowing] = useState([]);
     const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
     const [routineLikes, setRoutineLikes] = useState({});
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const searchRef = useRef(null);
+    const [allRoutines, setAllRoutines] = useState([]);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -83,6 +87,23 @@ const Routines = () => {
             (err) => console.error("Error cargando follows", err)
         );
     };
+
+    //close search autocomplete dropdown when clicking outside
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowSearchResults(false);
+            }
+        };
+
+        if (showSearchResults) {
+            document.addEventListener('click', handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener('click', handleOutsideClick);
+        };
+    }, [showSearchResults]);
 
     //close filter dropdown when clicking outside
     useEffect(() => {
@@ -147,6 +168,7 @@ const Routines = () => {
 
         const handleSuccess = (data) => {
             setRoutines(data);
+            setAllRoutines(data);
             setLoading(false);
         };
 
@@ -217,6 +239,7 @@ const Routines = () => {
     };
 
     const applyFilters = () => {
+        setSearchTerm("");
         loadRoutines(filters);
     };
 
@@ -228,7 +251,52 @@ const Routines = () => {
             trainerId: ""
         };
         setFilters(clearedFilters);
+        setSearchTerm("");
         loadRoutines(clearedFilters);
+    };
+
+    const searchRoutines = () => {
+        if (!searchTerm.trim()) return [];
+
+        const searchLower = searchTerm.toLowerCase();
+        return allRoutines.filter(routine => {
+            const routineName = routine.name?.toLowerCase() || "";
+            const trainerFullName = `${routine.trainerName || ""} ${routine.trainerSurname || ""}`.toLowerCase().trim();
+
+            return routineName.includes(searchLower) || trainerFullName.includes(searchLower);
+        });
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        if (value.trim()) {
+            setShowSearchResults(true);
+            const searchLower = value.toLowerCase();
+            const filtered = allRoutines.filter(routine => {
+                const routineName = routine.name?.toLowerCase() || "";
+                const trainerFullName = `${routine.trainerName || ""} ${routine.trainerSurname || ""}`.toLowerCase().trim();
+
+                return routineName.includes(searchLower) || trainerFullName.includes(searchLower);
+            });
+            setRoutines(filtered);
+        } else {
+            setShowSearchResults(false);
+            setRoutines(allRoutines);
+        }
+    };
+
+    const handleSelectSearchedRoutine = (routine) => {
+        setSearchTerm(routine.name);
+        setShowSearchResults(false);
+        setRoutines([routine]);
+    };
+
+    const handleClearSearch = () => {
+        setSearchTerm("");
+        setShowSearchResults(false);
+        loadRoutines();
     };
 
     const handleFollowToggle = (trainerId) => {
@@ -539,6 +607,59 @@ const Routines = () => {
                 </div>
             )}
 
+            <div className={styles["search-container"]}>
+                <h3 className={styles['search-title']}>Buscar entrenamientos</h3>
+                <div className={styles['search-input-wrapper']} ref={searchRef}>
+                    <svg className={styles['search-icon']} width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre de rutina o entrenador..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        onFocus={() => searchTerm && setShowSearchResults(true)}
+                        className={styles["search-input"]}
+                    />
+                    {searchTerm && (
+                        <button
+                            className={styles["clear-search-btn"]}
+                            onClick={handleClearSearch}
+                            type="button"
+                        >
+                            ✕
+                        </button>
+                    )}
+
+                    {showSearchResults && searchTerm && (
+                        <div className={styles["search-dropdown"]}>
+                            {searchRoutines().length > 0 ? (
+                                searchRoutines().slice(0, 5).map((routine) => (
+                                    <div
+                                        key={routine.id}
+                                        className={styles["search-result-item"]}
+                                        onClick={() => handleSelectSearchedRoutine(routine)}
+                                    >
+                                        <div className={styles["search-result-name"]}>
+                                            {routine.name}
+                                        </div>
+                                        <div className={styles["search-result-trainer"]}>
+                                            {`${routine.trainerName || ""} ${routine.trainerSurname || ""}`.trim() || "Entrenador desconocido"}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className={styles["no-search-results"]}>
+                                    No se encontraron resultados
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </div>
+
             <div className={styles["lista-rutinas"]}>
                 {routines.length === 0 ? (
                     <div className={styles["no-results"]}>
@@ -560,7 +681,7 @@ const Routines = () => {
                                             likeRoutine(routine.id);
                                             setRoutineLikes(prevLikes => [
                                                 ...prevLikes,
-                                                { routineId: routine.id, userId: currentUser.id }
+                                                {routineId: routine.id, userId: currentUser.id}
                                             ]);
                                         } else {
                                             unlikeRoutine(routine.id);
@@ -581,12 +702,12 @@ const Routines = () => {
                             </h3>
 
                             {isClient() && (
-                            <button
-                                className={styles["boton-empezar-redondo"]}
-                                onClick={(e) => handleStartWorkout(e, routine.id)}
-                            >
-                                Empezar
-                            </button>
+                                <button
+                                    className={styles["boton-empezar-redondo"]}
+                                    onClick={(e) => handleStartWorkout(e, routine.id)}
+                                >
+                                    Empezar
+                                </button>
                             )}
 
 
@@ -669,16 +790,16 @@ const Routines = () => {
 
 
             <ConfirmationPopup
-        show={showActiveWorkoutPopup}
-        text="Ya tienes un entrenamiento en progreso. ¿Deseas ir a él?"
-        okText="Ir al entrenamiento activo"
-        cancelText="Cancelar"
-        onOk={() => {
-          setShowActiveWorkoutPopup(false);
-          if (activeWorkout) navigate(`/workouts/session/${activeWorkout.id}`);
-        }}
-        onCancel={() => setShowActiveWorkoutPopup(false)}
-      />
+                show={showActiveWorkoutPopup}
+                text="Ya tienes un entrenamiento en progreso. ¿Deseas ir a él?"
+                okText="Ir al entrenamiento activo"
+                cancelText="Cancelar"
+                onOk={() => {
+                    setShowActiveWorkoutPopup(false);
+                    if (activeWorkout) navigate(`/workouts/session/${activeWorkout.id}`);
+                }}
+                onCancel={() => setShowActiveWorkoutPopup(false)}
+            />
 
             <ConfirmationPopup
                 text="¿Seguro que quieres dejar de seguir a este entrenador?"
