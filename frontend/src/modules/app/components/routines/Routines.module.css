@@ -315,9 +315,9 @@
 
 .search-input {
   width: 100%;
-  padding: 1.25rem 3.5rem 1.25rem 1.5rem;
   border: 1px solid var(--border-color);
   border-radius: 12px;
+  padding: 1.25rem 3.5rem;
   background: linear-gradient(
           135deg,
           var(--bg-card) 0%,
@@ -328,7 +328,7 @@
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
   transition: all 0.3s ease;
   box-sizing: border-box;
-  padding-left: 3.5rem;
+
 }
 
 .search-input::placeholder {
