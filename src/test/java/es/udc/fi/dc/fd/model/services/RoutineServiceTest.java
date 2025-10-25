@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Notification;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
 import es.udc.fi.dc.fd.model.entities.User;
@@ -17,6 +19,8 @@ import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
+
+import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -30,6 +34,15 @@ public class RoutineServiceTest {
     private UserDao userDao;
     @Autowired
     private RoutineDao routineDao;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private RoutineLikeService routineLikeService;
+
+    @Autowired
+    private UserFollowService userFollowService;
 
     private User createUser(String userName) {
         User user = new User(userName, "password", userName + "@test.com", userName, "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
@@ -114,5 +127,41 @@ public class RoutineServiceTest {
         assertThrows(PermissionException.class, () -> {
             routineService.deleteRoutine(user.getId(), routine.getId());
         });
+    }
+
+    @Test
+    public void testDeleteRoutineCascadesNotifications() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(User.RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        User client = createUser("client@test.com");
+
+        userFollowService.followTrainer(client.getId(), trainer.getId());
+
+        Routine routine = routineService.createRoutine("testRoutine", "description", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        routineLikeService.likeRoutine(client.getId(), routine.getId());
+
+        List<Notification> trainerNotifications = notificationService.getNotificationsByUser(trainer.getId());
+        List<Notification> clientNotifications = notificationService.getNotificationsByUser(client.getId());
+
+        assertEquals(2, trainerNotifications.size());
+        boolean hasFollow = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.FOLLOW);
+        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.LIKE && n.getIdToRedirect().equals(routine.getId()));
+        assertTrue(hasFollow);
+        assertTrue(hasLike);
+
+        assertEquals(1, clientNotifications.size());
+        assertEquals(Notification.NotificationType.NEW_ROUTINE, clientNotifications.get(0).getType());
+        assertEquals(routine.getId(), clientNotifications.get(0).getIdToRedirect());
+
+        routineService.deleteRoutine(trainer.getId(), routine.getId());
+
+        trainerNotifications = notificationService.getNotificationsByUser(trainer.getId());
+        clientNotifications = notificationService.getNotificationsByUser(client.getId());
+
+        assertTrue(trainerNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
+        assertTrue(clientNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
     }
 }

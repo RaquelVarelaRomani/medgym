@@ -1,6 +1,9 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +99,8 @@ public class RoutineServiceImpl implements RoutineService {
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
             throw new PermissionException();
         }
+
+        notificationService.deleteNotificationsByIdToRedirect(routineId);
 
         routineDao.delete(routine);
     }

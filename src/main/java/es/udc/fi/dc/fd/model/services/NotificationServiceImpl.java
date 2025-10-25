@@ -60,4 +60,9 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDao.deleteById(notificationId);
     }
 
+    @Override
+    public void deleteNotificationsByIdToRedirect(Long idToRedirect) {
+        notificationDao.deleteByIdToRedirect(idToRedirect);
+    }
+
 }
