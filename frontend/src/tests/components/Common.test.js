@@ -443,7 +443,8 @@ describe("Common Components", () => {
           message: "Test notification",
           date: "2023-01-01T00:00:00",
           isRead: false,
-          routineId: 1,
+          type: "NEW_ROUTINE",
+          idToRedirect: 1,
         },
       ];
 
@@ -607,6 +608,7 @@ describe("Common Components", () => {
           id: 1,
           message: "Test notification",
           date: "2023-01-01T00:00:00",
+          type: "FOLLOW",
           isRead: false,
         },
       ];
@@ -630,7 +632,7 @@ describe("Common Components", () => {
         expect.any(Function),
         expect.any(Function),
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/routines/undefined");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/followers");
     });
 
     test("handles invalid date", () => {
@@ -1482,7 +1484,7 @@ describe("Common Components", () => {
     test("notification popup onNotificationRead handler works for read action", async () => {
       const mockUser = { id: 1, role: "CLIENT" };
       const mockNotifications = [
-        { id: 1, message: "Test notification", isRead: false, routineId: 1 },
+        { id: 1, message: "Test notification", isRead: false, type: "LIKE", idToRedirect: 1 },
       ];
 
       tryLoginFromServiceToken.mockImplementation((success) =>

@@ -1,6 +1,6 @@
 import { fetchConfig } from "../../backend/appFetch";
 import {
-  createNotification,
+  createNewRoutineNotification,
   getUserNotifications,
   markNotificationAsRead,
   deleteNotification
@@ -19,7 +19,7 @@ describe("notificationService", () => {
     jest.clearAllMocks();
   });
 
-  describe("createNotification", () => {
+  describe("createNewRoutineNotification", () => {
     const routineId = 123;
 
     test("successful API call with proper parameter passing", () => {
@@ -31,7 +31,7 @@ describe("notificationService", () => {
         success(mockData);
       });
 
-      createNotification(routineId, onSuccess, onErrors);
+      createNewRoutineNotification(routineId, onSuccess, onErrors);
 
       expect(onSuccess).toHaveBeenCalledWith(mockData);
       expect(onErrors).not.toHaveBeenCalled();
@@ -46,7 +46,7 @@ describe("notificationService", () => {
         errors(mockError);
       });
 
-      createNotification(routineId, onSuccess, onErrors);
+      createNewRoutineNotification(routineId, onSuccess, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith(mockError);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -56,14 +56,14 @@ describe("notificationService", () => {
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
-      createNotification(routineId, onSuccess, onErrors);
+      createNewRoutineNotification(routineId, onSuccess, onErrors);
 
       expect(mockAppFetch).toHaveBeenCalledWith(
-        "/notifications",
-        fetchConfig("POST", { routineId }),
-        onSuccess,
-        onErrors
-      );
+              "/notifications/newRoutine",
+              fetchConfig("POST", { routineId }),
+              onSuccess,
+              onErrors
+            );
     });
   });
 
