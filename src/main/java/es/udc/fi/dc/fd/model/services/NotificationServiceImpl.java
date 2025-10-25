@@ -30,7 +30,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createFollowNotification(User client, User trainer) {
-        notificationDao.save(new Notification(client.getName() + " ha comenzado a seguirte", NotificationType.FOLLOW, null, trainer, false,
+        notificationDao.save(new Notification(client.getName() + " " + client.getSurname() + " ha comenzado a seguirte", NotificationType.FOLLOW, null, trainer, false,
                 LocalDateTime.now().withNano(0)));
     }
 
