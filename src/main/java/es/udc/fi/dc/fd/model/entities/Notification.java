@@ -9,15 +9,25 @@ import java.time.LocalDateTime;
 public class Notification {
 
     private Long id;
-    private Routine routine;
+    private String message;
+    private NotificationType type;
+    private Long idToRedirect;
     private User user;
     private boolean isRead;
     private LocalDateTime date;
 
+    public enum NotificationType {
+        NEW_ROUTINE,
+        FOLLOW,
+        LIKE
+    }
+
     public Notification() {}
 
-    public Notification(Routine routine, User user, boolean isRead, LocalDateTime date) {
-        this.routine = routine;
+    public Notification(String message, NotificationType type, Long idToRedirect, User user, boolean isRead, LocalDateTime date) {
+        this.message = message;
+        this.type = type;
+        this.idToRedirect = idToRedirect;
         this.user = user;
         this.isRead = isRead;
         this.date = date;
@@ -32,13 +42,26 @@ public class Notification {
         this.id = id;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "routine_id")
-    public Routine getRoutine() {
-        return routine;
+    public String getMessage() {
+        return message;
     }
-    public void setRoutine(Routine routine) {
-        this.routine = routine;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Long getIdToRedirect() {
+        return idToRedirect;
+    }
+    public void setIdToRedirect(Long idToRedirect) {
+        this.idToRedirect = idToRedirect;
+    }
+
+    @Enumerated(EnumType.ORDINAL)
+    public NotificationType getType() {
+        return type;
+    }
+    public void setType(NotificationType type) {
+        this.type = type;
     }
 
     @ManyToOne

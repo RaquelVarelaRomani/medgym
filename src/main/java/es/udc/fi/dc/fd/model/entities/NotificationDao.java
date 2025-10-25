@@ -9,9 +9,4 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface NotificationDao extends JpaRepository<Notification, Long> {
     List<Notification> findByUserIdOrderByDateDesc(Long userId);
-
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM Notification n WHERE n.routine.id = :routineId")
-    void deleteByRoutineId(Long routineId);
 }

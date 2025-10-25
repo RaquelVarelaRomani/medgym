@@ -110,12 +110,12 @@ VALUES
     (3, 4),
     (2, 1);
 
-INSERT INTO notifications (routine_id, user_id, is_read, date)
+INSERT INTO notifications (message, type, id_to_redirect, user_id, is_read, date)
 VALUES
-    (2, 2, TRUE, '2025-10-12 19:35:00'),
-    (1, 2, FALSE, '2025-10-12 19:30:00'),
-    (3, 2, FALSE, '2025-10-11 17:45:00'),
-    (3, 3, FALSE, '2025-10-11 17:45:00');
+    ('Hola', 0, NULL, 2, TRUE, '2025-10-12 19:35:00'),
+    ('Mundo', 0, 1, 2, FALSE, '2025-10-12 19:30:00'),
+    ('Med', 0, 3, 2, FALSE, '2025-10-11 17:45:00'),
+    ('Gym', 1, 2, 3, FALSE, '2025-10-11 17:45:00');
 
 INSERT INTO routine_likes (routine_id, user_id) VALUES
     (1, 2),

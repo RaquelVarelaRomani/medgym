@@ -41,7 +41,7 @@ public class RoutineServiceTest {
         User user = createUser("user@test.com");
         Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        Routine foundRoutine = routineService.findRoutineById(user.getId(), routine.getId());
+        Routine foundRoutine = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
 
         assertEquals(routine, foundRoutine);
     }
@@ -63,7 +63,7 @@ public class RoutineServiceTest {
 
         routineService.updateRoutine(user.getId(), routine.getId(), "new name", "new description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.INTERMEDIATE);
 
-        Routine updatedRoutine = routineService.findRoutineById(user.getId(), routine.getId());
+        Routine updatedRoutine = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
 
         assertEquals("new name", updatedRoutine.getName());
         assertEquals("new description", updatedRoutine.getDescription());
@@ -89,7 +89,7 @@ public class RoutineServiceTest {
         routineService.deleteRoutine(user.getId(), routine.getId());
 
         assertThrows(InstanceNotFoundException.class, () -> {
-            routineService.findRoutineById(user.getId(), routine.getId());
+            routineService.findRoutineByIdAuth(user.getId(), routine.getId());
         });
     }
 
@@ -109,7 +109,7 @@ public class RoutineServiceTest {
     public void testGetRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = createUser("user@test.com");
         Routine routine = routineDao.findById(1L).get();
-        assertEquals(routineService.findRoutineById(user.getId(), 1L), routine);
+        assertEquals(routineService.findRoutineByIdAuth(user.getId(), 1L), routine);
         routine.setVisibility(Routine.VisibilityType.PRIVATE);
         assertThrows(PermissionException.class, () -> {
             routineService.deleteRoutine(user.getId(), routine.getId());

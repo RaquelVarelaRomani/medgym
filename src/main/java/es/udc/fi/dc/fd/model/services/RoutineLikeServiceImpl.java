@@ -21,6 +21,8 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
 
     @Autowired
     private RoutineDao routineDao;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public void likeRoutine(Long userId, Long routineId) throws InstanceNotFoundException {
@@ -30,6 +32,14 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
                 routineDao.findById(routineId).orElseThrow(() ->
                         new InstanceNotFoundException("project.entities.routineLikeDao", routineId))
         ));
+
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routine", routineId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        notificationService.createLikeNotification(
+                user,
+                routine.getTrainer(),
+                routine
+        );
     }
 
     @Override

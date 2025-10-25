@@ -1,9 +1,7 @@
 package es.udc.fi.dc.fd.model.services;
 
 import org.junit.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +10,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Notification;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import jakarta.transaction.Transactional;
+
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,34 +37,83 @@ public class NotificationServiceTest {
     private UserDao userDao;
 
     @Test
-    public void testNotificationService() throws InstanceNotFoundException, DuplicateInstanceException {
-        User client = userDao.save(new User("client", "client", "client@client.com",
-                "666777222", "password", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User trainer = userDao.save(new User("trainer", "trainer", "trainer@trainer.com",
-                "666777223", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine", "routine", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    public void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException {
+        User client = userDao.save(new User("clientA", "clientA", "clientA@test.com",
+                "600000001", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerA", "trainerA", "trainerA@test.com",
+                "600000002", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        assertEquals(1, notificationService.getNotificationsByUser(client.getId()).size());
+        userFollowService.followTrainer(client.getId(), trainer.getId());
+
+        Routine routine = routineService.createRoutine("routineA", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        List<Notification> notifications = notificationService.getNotificationsByUser(client.getId());
+        assertEquals(1, notifications.size());
+
+        Notification n = notifications.get(0);
+        assertTrue(n.getMessage().contains("Nueva rutina: routineA"));
+        assertEquals(Notification.NotificationType.NEW_ROUTINE, n.getType());
+        assertEquals(routine.getId(), n.getIdToRedirect());
     }
 
     @Test
-    public void testMarkNotificationAsRead() throws Exception {
-        User client = userDao.save(new User("client2", "client2", "cient2@client.com",
-                "666777224", "password", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User trainer = userDao.save(new User("trainer2", "trainer2", "trainer2@trainer.com",
-                "666777225", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+    public void testCreateFollowNotification() throws InstanceNotFoundException {
+        User client = userDao.save(new User("clientB", "clientB", "clientB@test.com",
+                "600000003", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerB", "trainerB", "trainerB@test.com",
+                "600000004", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        notificationService.createFollowNotification(client, trainer);
+
+        List<Notification> notifications = notificationService.getNotificationsByUser(trainer.getId());
+        assertEquals(1, notifications.size());
+
+        Notification n = notifications.get(0);
+        assertTrue(n.getMessage().contains("ha comenzado a seguirte"));
+        assertEquals(Notification.NotificationType.FOLLOW, n.getType());
+        assertNull(n.getIdToRedirect());
+    }
+
+    @Test
+    public void testCreateLikeNotification() throws DuplicateInstanceException, InstanceNotFoundException {
+        User client = userDao.save(new User("clientC", "clientC", "clientC@test.com",
+                "600000005", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerC", "trainerC", "trainerC@test.com",
+                "600000006", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine(
+                "LikeRoutine", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        notificationService.createLikeNotification(client, trainer, routine);
+
+        List<Notification> notifications = notificationService.getNotificationsByUser(trainer.getId());
+        assertEquals(1, notifications.size());
+
+        Notification n = notifications.get(0);
+        assertTrue(n.getMessage().contains("ha dado like"));
+        assertTrue(n.getMessage().contains("LikeRoutine"));
+        assertEquals(Notification.NotificationType.LIKE, n.getType());
+        assertEquals(routine.getId(), n.getIdToRedirect());
+    }
+
+    @Test
+    public void testMarkNotificationAsRead() throws InstanceNotFoundException, DuplicateInstanceException {
+        User client = userDao.save(new User("clientD", "clientD", "clientD@test.com",
+                "600000007", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerD", "trainerD", "trainerD@test.com",
+                "600000008", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine2", "desc", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        routineService.createRoutine("routineD", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         var notifications = notificationService.getNotificationsByUser(client.getId());
         assertEquals(1, notifications.size());
-
         var notification = notifications.get(0);
         assertFalse(notification.getIsRead());
 
-        // Marcar como leída
         notificationService.markNotificationAsRead(notification.getId());
 
         var updated = notificationService.getNotificationsByUser(client.getId()).get(0);
@@ -71,27 +121,22 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testDeleteNotification() throws Exception {
-        User client = userDao.save(new User("client3", "client3", "client3@client.com",
-                "666777226", "password", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User trainer = userDao.save(new User("trainer3", "trainer3", "trainer3@trainer.com",
-                "666777227", "password", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+    public void testDeleteNotification() throws InstanceNotFoundException, DuplicateInstanceException {
+        User client = userDao.save(new User("clientE", "clientE", "clientE@test.com",
+                "600000009", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerE", "trainerE", "trainerE@test.com",
+                "600000010", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         userFollowService.followTrainer(client.getId(), trainer.getId());
-        routineService.createRoutine("routine3", "desc", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        routineService.createRoutine("routineE", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        // Verificar que hay 1 notificación generada
         var notifications = notificationService.getNotificationsByUser(client.getId());
         assertEquals(1, notifications.size());
 
-        var notificationId = notifications.get(0).getId();
+        var id = notifications.get(0).getId();
+        notificationService.deleteNotification(id);
 
-        // Eliminar la notificación
-        notificationService.deleteNotification(notificationId);
-
-        // Verificar que ya no existe
-        var afterDelete = notificationService.getNotificationsByUser(client.getId());
-        assertTrue(afterDelete.isEmpty());
+        assertTrue(notificationService.getNotificationsByUser(client.getId()).isEmpty());
     }
-
 }
