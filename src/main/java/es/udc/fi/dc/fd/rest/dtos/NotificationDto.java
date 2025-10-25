@@ -5,21 +5,23 @@ import java.time.LocalDateTime;
 public class NotificationDto {
 
     private Long id;
-    private Long routineId;
+    private String message;
+    private String type;
+    private Long idToRedirect;
     private Long userId;
     private boolean isRead;
     private LocalDateTime date;
-    private String message;
 
     public NotificationDto() {}
 
-    public NotificationDto(Long id, Long routineId, Long userId, boolean isRead, LocalDateTime date, String message) {
+    public NotificationDto(Long id, String message, String type, Long idToRedirect, Long userId, boolean isRead, LocalDateTime date) {
         this.id = id;
-        this.routineId = routineId;
+        this.message = message;
+        this.type = type;
+        this.idToRedirect = idToRedirect;
         this.userId = userId;
         this.isRead = isRead;
         this.date = date;
-        this.message = message;
     }
 
     public Long getId() {
@@ -29,11 +31,25 @@ public class NotificationDto {
         this.id = id;
     }
 
-    public Long getRoutineId() {
-        return routineId;
+    public String getMessage() {
+        return message;
     }
-    public void setRoutineId(Long routineId) {
-        this.routineId = routineId;
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Long getIdToRedirect() {
+        return idToRedirect;
+    }
+    public void setIdToRedirect(Long idToRedirect) {
+        this.idToRedirect = idToRedirect;
+    }
+
+    public String getType() {
+        return type;
+    }
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Long getUserId() {
@@ -55,12 +71,5 @@ public class NotificationDto {
     }
     public void setDate(LocalDateTime date) {
         this.date = date;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-    public void setMessage(String routineName) {
-        this.message = "Nueva rutina: " + routineName;
     }
 }
