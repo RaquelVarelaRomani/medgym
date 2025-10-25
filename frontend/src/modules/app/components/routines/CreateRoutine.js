@@ -277,7 +277,7 @@ const CreateRoutine = () => {
                              ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
-                                placeholder="Buscar ejercicio o escribir el nombre..."
+                                placeholder="Buscar ejercicio..."
                                 value={exercise.nombre}
                                 onChange={(e) => {
                                     const newValue = e.target.value;

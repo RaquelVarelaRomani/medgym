@@ -163,8 +163,8 @@ const Routines = () => {
     const loadRoutines = (filtersToUse = filters) => {
         setLoading(true);
 
-        const hasFilters = filtersToUse.difficulty || filtersToUse.muscleGroup.length > 0 ||
-            filtersToUse.equipment.length > 0 || filtersToUse.trainerId;
+        const hasFilters = filtersToUse.difficulty || (filtersToUse.muscleGroup && filtersToUse.muscleGroup.length > 0) ||
+            (filtersToUse.equipment && filtersToUse.equipment.length > 0) || filtersToUse.trainerId;
 
         const handleSuccess = (data) => {
             setRoutines(data);
@@ -191,8 +191,8 @@ const Routines = () => {
 
         if (hasFilters) {
             routineService.getFilteredRoutines(
-                filtersToUse.muscleGroup.join(',') || null,
-                filtersToUse.equipment.join(',') || null,
+                (filtersToUse.muscleGroup && filtersToUse.muscleGroup.join(',')) || null,
+                (filtersToUse.equipment && filtersToUse.equipment.join(',')) || null,
                 filtersToUse.difficulty || null,
                 filtersToUse.trainerId || null,
                 handleSuccess,
