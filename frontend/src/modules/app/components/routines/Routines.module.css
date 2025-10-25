@@ -506,6 +506,9 @@
   margin: 0 0 0.75rem 0;
   color: var(--text-primary);
   font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .caja-rutina p {

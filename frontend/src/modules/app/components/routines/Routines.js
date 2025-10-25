@@ -673,7 +673,7 @@ const Routines = () => {
                             className={styles["caja-rutina"]}
                         >
                             <h3>
-                                {routine.name}
+                                <span>{routine.name}</span>
                                 <HeartLike
                                     initialLiked={routineLikes.some(like => like.routineId === routine.id)}
                                     onChange={(liked) => {
