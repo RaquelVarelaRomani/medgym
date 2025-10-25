@@ -77,7 +77,7 @@ entity "user_follows" {
 entity "notifications" {
   * id : BIGINT [PK]
   --
-  routine_id : BIGINT [FK → routines.id]
+  message : TEXT
   user_id : BIGINT [FK → users.id]
   is_read : BOOLEAN
   date : DATETIME
@@ -100,7 +100,6 @@ users ||--o{ workouts : realiza
 workouts ||--o{ workout_exercises : incluye
 routine_exercises ||--o{ workout_exercises : referencia
 users ||--o{ notifications : recibe
-routines ||--o{ notifications : notifica
 users ||--o{ user_follows : client_id
 users ||--o{ user_follows : trainer_id
 users ||--o{ routine_likes : da_like

@@ -7,6 +7,7 @@ import es.udc.fi.dc.fd.model.entities.UserFollow;
 import es.udc.fi.dc.fd.model.entities.UserFollowDao;
 import es.udc.fi.dc.fd.model.services.exceptions.FollowException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,9 @@ public class UserFollowServiceImpl implements UserFollowService {
     private UserFollowDao userFollowDao;
     @Autowired
     private UserService userService;
+    @Autowired
+    @Lazy
+    private NotificationService notificationService;
 
     @Override
     public UserFollow followTrainer(Long userId, Long trainerId) throws InstanceNotFoundException {
@@ -35,6 +39,8 @@ public class UserFollowServiceImpl implements UserFollowService {
         if(userFollowDao.existsByUserAndTrainer(user, trainer)){
             throw new FollowException(trainerId);
         }
+
+        notificationService.createFollowNotification(user, trainer);
 
         return userFollowDao.save(new UserFollow(user, trainer));
     }
