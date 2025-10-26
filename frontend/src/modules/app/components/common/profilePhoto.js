@@ -15,7 +15,7 @@ const ProfilePhoto = ({ profilePicture, alt = "Foto de perfil", size = "large" }
             ) : (
                 <img
                     src={process.env.PUBLIC_URL + "/assets/default-profile.jpg"}
-                    alt="Foto por defecto"
+                    alt={alt}
                     className={imageClass}
                 />
             )}

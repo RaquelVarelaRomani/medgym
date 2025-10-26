@@ -9,7 +9,8 @@ public class Exercise {
     public enum ExerciseStatus {
         PENDING,
         APPROVED,
-        REJECTED
+        REJECTED,
+        BLOCKED
     }
 
     private Long id;

@@ -9,6 +9,8 @@ import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import LoadingMessage from "../common/LoadingMessage";
+import * as workoutService from "../../../../backend/workoutService";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 
 
 const RoutineDetails = () => {
@@ -20,7 +22,8 @@ const RoutineDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-
+  const [activeWorkout, setActiveWorkout] = useState(null);
+  const [showActiveWorkoutPopup, setShowActiveWorkoutPopup] = useState(false);
   //expandir/colapsar ejercicios
   const toggleExercise = (exerciseId) => {
     setExpandedExercises(prev => ({
@@ -95,12 +98,22 @@ const RoutineDetails = () => {
         );
     };
 
+    const checkActiveWorkout = () => {
+    workoutService.getWorkouts(
+      (data) => {
+        const active = data.find((w) => !w.endTime);
+        if (active) setActiveWorkout(active);
+      },
+      (error) => console.error("Error comprobando entrenamientos activos", error)
+    );
+  };
 
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 setCurrentUser(authenticatedUser.user);
                 loadRoutine();
+                if (authenticatedUser.user.role === "CLIENT") checkActiveWorkout();
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -108,6 +121,29 @@ const RoutineDetails = () => {
             }
         );
     }, [id, navigate]);
+
+    
+    const handleStartWorkout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (activeWorkout) {
+      // Mostrar popup si ya hay uno activo
+      setShowActiveWorkoutPopup(true);
+      return;
+    }
+    workoutService.startWorkout(
+      routine.id,
+      (workoutData) => {
+        console.log("Workout iniciado:", workoutData);
+        navigate(`/workouts/session/${workoutData.id}`);
+      },
+      (error) => {
+        console.error("Error al iniciar entrenamiento:", error);
+        alert("No se pudo iniciar el entrenamiento. Inténtelo de nuevo.");
+      }
+    );
+  };
 
     if (loading) return <LoadingMessage text="Cargando rutina..." />;
     if (error)
@@ -120,47 +156,83 @@ const RoutineDetails = () => {
 
     if (!routine) return null;
 
-  return (
-      <div className={styles['contenedor-routine-details']}>
-        <div className={styles['caja-routine-details']}>
-          <button className={styles['boton-atras']} onClick={handleBack}>
-            ←
-          </button>
+   return (
+    <div className={styles["contenedor-routine-details"]}>
+      <div className={styles["caja-routine-details"]}>
+        <button className={styles["boton-atras"]} onClick={handleBack}>
+          ←
+        </button>
 
-          <h1 className={styles['titulo-rutina']}>
+        <div className={styles["titulo-con-boton"]}>
+          <h1 className={styles["titulo-rutina"]}>
             {routine.name}
-            {routine.visibility === "PRIVATE" && (isRoutineCreator(routine) || isAdmin()) && (
-              <span className={stylesRoutine['private-badge']}>🔒 Privado</span>
-            )}
+            {routine.visibility === "PRIVATE" &&
+              (isRoutineCreator(routine) || isAdmin()) && (
+                <span className={stylesRoutine["private-badge"]}>
+                  🔒 Privado
+                </span>
+              )}
           </h1>
 
-          <div className={styles['descripcion-rutina']}>
-            <p>{routine.description}</p>
-          </div>
+          {isClient() && (
+            <button
+              className={stylesRoutine["boton-empezar-redondo"]}
+              onClick={handleStartWorkout}
+            >
+              Empezar
+            </button>
+          )}
         </div>
 
-          <div className={styles['lista-ejercicios']}>
-            {exercises.map((exercise, index) => (
-                <div key={exercise.id} className={styles.ejercicio}>
-                  <div
-                      className={styles['header-ejercicio']}
-                      onClick={() => toggleExercise(exercise.id)}
-                  >
-                    <h3>{index + 1}. {exercise.exerciseName}</h3>
-                    <span className={`${styles.flecha} ${expandedExercises[exercise.id] ? styles.expandida : ''}`}>
-                  &#9660; {/* flecha para desplegar */}
-                </span>
-                  </div>
-
-                  {expandedExercises[exercise.id] && (
-                      <div className={styles['ejercicio-contenido']}>
-                        <p className={styles['descripcion-ejercicio']}>{exercise.exerciseDescription}</p>
-                      </div>
-                  )}
-                </div>
-            ))}
-          </div>
+        <div className={styles["descripcion-rutina"]}>
+          <p>{routine.description}</p>
         </div>
+      </div>
+
+      <div className={styles["lista-ejercicios"]}>
+        {exercises.map((exercise, index) => (
+          <div key={exercise.id} className={styles.ejercicio}>
+            <div
+              className={styles["header-ejercicio"]}
+              onClick={() => toggleExercise(exercise.id)}
+            >
+              <h3>
+                {index + 1}. {exercise.exerciseName}
+              </h3>
+              <span
+                className={`${styles.flecha} ${
+                  expandedExercises[exercise.id] ? styles.expandida : ""
+                }`}
+              >
+                &#9660;
+              </span>
+            </div>
+
+            {expandedExercises[exercise.id] && (
+              <div className={styles["ejercicio-contenido"]}>
+                <p className={styles["descripcion-ejercicio"]}>
+                  {exercise.exerciseDescription}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <ConfirmationPopup
+        show={showActiveWorkoutPopup}
+        text="Ya tienes un entrenamiento en progreso. ¿Deseas ir a él?"
+        okText="Ir al entrenamiento activo"
+        cancelText="Cancelar"
+        onOk={() => {
+          setShowActiveWorkoutPopup(false);
+          if (activeWorkout)
+            navigate(`/workouts/session/${activeWorkout.id}`);
+        }}
+        onCancel={() => setShowActiveWorkoutPopup(false)}
+      />
+    </div>
   );
 };
+
 export default RoutineDetails;

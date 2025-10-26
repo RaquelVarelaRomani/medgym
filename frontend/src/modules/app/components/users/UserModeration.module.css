@@ -27,26 +27,31 @@
 .search-container {
     width: 100%;
     max-width: 1400px;
+    margin-top: 2rem;
     margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
     align-items: flex-start;
 }
 
 .search-title {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--text-secondary);
-    margin: 0 0 0 0.2rem;
+    margin: 0 0 0.4rem 0.4rem;
     letter-spacing: 0.03em;
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.search-input {
+.search-input-wrapper {
+    position: relative;
     width: 100%;
     max-width: 500px;
-    padding: 1rem 1.25rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1.25rem 3.5rem;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     background: linear-gradient(
@@ -55,9 +60,10 @@
             rgba(26, 26, 36, 0.8) 100%
     );
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .search-input::placeholder {
@@ -73,6 +79,15 @@
             inset 0 0 20px rgba(255, 107, 53, 0.05);
 }
 
+.search-icon {
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--neon-orange);
+    pointer-events: none;
+}
+
 /* users count */
 .users-count {
     width: 100%;
@@ -82,6 +97,26 @@
     margin-left: 0.6rem;
     font-size: 0.95rem;
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* clear search button */
+.clear-search-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.clear-search-btn:hover {
+    color: var(--neon-orange);
 }
 
 /* users list */

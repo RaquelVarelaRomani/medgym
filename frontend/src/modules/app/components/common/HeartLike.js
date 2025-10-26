@@ -38,24 +38,18 @@ export default function HeartLike({
                 e.stopPropagation();
                 toggle();
             }}
-            className={[
-                "inline-flex items-center justify-center select-none rounded-full p-0 m-0",
-                "bg-transparent border-0 shadow-none outline-none",
-                "focus:outline-none focus-visible:ring-0",
-                disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
-                className,
-            ].join(" ")}
+            className={`${styles.heartButton} ${disabled ? styles.disabled : ''} ${className}`}
         >
             <motion.span
                 initial={false}
                 animate={{ scale: currentLiked ? 1.15 : 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="relative inline-flex"
+                className={styles.heartWrapper}
             >
                 <Heart
                     width={size}
                     height={size}
-                    className={currentLiked ? "text-red-600" : "text-neutral-600 dark:text-neutral-300"}
+                    className={currentLiked ? styles.heartLiked : styles.heartUnliked}
                     fill={currentLiked ? "currentColor" : "none"}
                 />
                 <motion.span
@@ -63,7 +57,7 @@ export default function HeartLike({
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1.6, opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    className="absolute inset-0"
+                    className={styles.ripple}
                 />
             </motion.span>
         </button>

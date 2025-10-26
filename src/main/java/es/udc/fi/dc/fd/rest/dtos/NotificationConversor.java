@@ -13,13 +13,15 @@ public class NotificationConversor {
 
         NotificationDto notificationDto = new NotificationDto(
                 notification.getId(),
-                notification.getRoutine().getId(),
+                notification.getMessage().trim(),
+                notification.getType().toString().trim(),
+                notification.getIdToRedirect(),
                 notification.getUser().getId(),
                 notification.getIsRead(),
-                notification.getDate(),
-                null);
+                notification.getDate()
+        );
 
-        notificationDto.setMessage(notification.getRoutine().getName());
+        notificationDto.setMessage(notification.getMessage());
 
         return notificationDto;
     }

@@ -17,12 +17,20 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [onClose]);
 
-    const handleNotificationClick = (notificationId, routineId) => {
+    const handleNotificationClick = (notification) => {
         markNotificationAsRead(
-            notificationId,
+            notification.id,
             () => {
-                if (onNotificationRead) onNotificationRead(notificationId, "read");
-                navigate(`/routines/${routineId}`);
+                if (onNotificationRead) onNotificationRead(notification.id, "read");
+                switch (notification.type) {
+                    case "NEW_ROUTINE":
+                    case "LIKE":
+                        navigate(`/routines/${notification.idToRedirect}`);
+                        break;
+                    case "FOLLOW":
+                        navigate(`/users/followers`);
+                        break;
+                }
                 onClose();
             },
             (error) => console.error("Error marking notification as read:", error)
@@ -56,7 +64,7 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                         >
                             <div
                                 className={styles.content}
-                                onClick={() => handleNotificationClick(n.id, n.routineId)}
+                                onClick={() => handleNotificationClick(n)}
                             >
                                 <div className={styles.text}>{n.message}</div>
                                 <div className={styles.date}>
