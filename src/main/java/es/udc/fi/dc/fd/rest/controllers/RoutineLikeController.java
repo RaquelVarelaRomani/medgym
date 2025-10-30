@@ -22,6 +22,11 @@ public class RoutineLikeController {
         routineLikeService.likeRoutine(userId, routineId);
     }
 
+    @PostMapping("/routines/{routineId}/like")
+    public void saveRoutine(@RequestAttribute Long userId, @PathVariable Long routineId) throws InstanceNotFoundException {
+        routineLikeService.likeRoutine(userId, routineId);
+    }
+
     @GetMapping("/routineLikes")
     public List<RoutineLikeDto> getLikesByUser(@RequestAttribute Long userId) {
         return toRoutineLikeDtos(routineLikeService.getLikesByUser(userId));
