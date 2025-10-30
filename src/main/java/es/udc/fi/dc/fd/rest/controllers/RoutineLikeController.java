@@ -4,6 +4,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.RoutineLikeService;
 import es.udc.fi.dc.fd.rest.dtos.RoutineLikeDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static es.udc.fi.dc.fd.rest.dtos.RoutineLikeConversor.toRoutineLikeDtos;
@@ -24,6 +25,9 @@ public class RoutineLikeController {
 
     @PostMapping("/routines/{routineId}/like")
     public void saveRoutine(@RequestAttribute Long userId, @PathVariable Long routineId) throws InstanceNotFoundException {
+        if (userId == 0) {
+            ResponseEntity.ok("wrong id");
+        }
         routineLikeService.likeRoutine(userId, routineId);
     }
 
