@@ -25,8 +25,8 @@ const Login = () => {
                 navigate("/routines");
             },
             (error) => {
-                if (error.globalError === 'project.exceptions.BlockedUserException') {
-                    setError('Tu cuenta ha sido bloqueada.');
+                if (error.body.globalError === 'project.exceptions.BlockedUserException') {
+                    setError('Tu cuenta está bloqueada.');
                 } else {
                     setError('Usuario o contraseña incorrectos.');
                 }
