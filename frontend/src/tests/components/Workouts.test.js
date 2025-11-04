@@ -890,12 +890,17 @@ describe("Workout Components", () => {
 
     describe("WorkoutHistory Component", () => {
       test("renders calendar view correctly", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 
@@ -916,19 +921,24 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
           expect(screen.getByText("1")).toBeInTheDocument();
           expect(screen.getByText("Rutina 1")).toBeInTheDocument();
         });
       });
 
       test("handles month navigation in calendar view", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 
@@ -949,29 +959,36 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText(">"));
 
+        const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+        const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
         await waitFor(() => {
-          expect(screen.getByText("2025 - 11")).toBeInTheDocument();
+          expect(screen.getByText(`${nextYear} - ${String(nextMonth).padStart(2, '0')}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("<"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
         });
       });
 
       test("navigates on workout click in calendar view", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 

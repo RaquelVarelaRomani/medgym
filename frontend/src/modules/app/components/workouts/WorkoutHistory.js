@@ -172,7 +172,7 @@ const WorkoutHistory = () => {
                 <div className={styles['calendario-container']}>
                     <div className={styles['calendario-header']}>
                         <button onClick={prevMonth}>{'<'}</button>
-                        <span>{`${currentYear} - ${currentMonth + 1}`}</span>
+                        <span>{`${currentYear} - ${String(currentMonth + 1).padStart(2, '0')}`}</span>
                         <button onClick={nextMonth}>{'>'}</button>
                     </div>
 
