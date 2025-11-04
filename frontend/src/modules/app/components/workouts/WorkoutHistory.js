@@ -72,6 +72,38 @@ const WorkoutHistory = () => {
         return `${minutes} min`;
     };
 
+<<<<<<< Updated upstream
+=======
+
+    
+    const handleWorkoutClick = (workout) => {
+    if (!workout.endTime) {
+      
+      navigate(`/workouts/session/${workout.id}`);
+    } else {
+      
+      navigate(`/workouts/${workout.id}`);
+    }
+  };
+
+    const getFirstDayOfMonth = () => {
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        return firstDay === 0 ? 6 : firstDay - 1;
+    };
+
+    const getDaysInMonth = () => {
+        return new Date(currentYear, currentMonth + 1, 0).getDate();
+    };
+
+    const getMonthYearDisplay = () => {
+        const formatted = new Date(currentYear, currentMonth).toLocaleDateString('es-ES', {
+            month: 'long',
+            year: 'numeric'
+        });
+        return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    };
+
+>>>>>>> Stashed changes
     const prevMonth = () => {
     if (currentMonth === 0) {
         setCurrentMonth(11);
@@ -90,6 +122,7 @@ const WorkoutHistory = () => {
     }
     };    
 
+<<<<<<< Updated upstream
     if (loading) {
         return (
             <div className={styles.contenedor}>
@@ -97,6 +130,9 @@ const WorkoutHistory = () => {
             </div>
         );
     }
+=======
+    if (loading) return <LoadingMessage text="Cargando historial de entrenamientos..." />;
+>>>>>>> Stashed changes
 
     if (error) {
         return (
@@ -163,26 +199,40 @@ const WorkoutHistory = () => {
                 <div className={styles['calendario-container']}>
                     <div className={styles['calendario-header']}>
                         <button onClick={prevMonth}>{'<'}</button>
-                        <span>{`${currentYear} - ${currentMonth + 1}`}</span>
+                        <span>{getMonthYearDisplay()}</span>
                         <button onClick={nextMonth}>{'>'}</button>
                     </div>
 
-                {(() => {
-                    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-                    const daysInMonth = lastDay.getDate();
-                    const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+                    <div className={styles['calendario-weekdays']}>
+                        <div className={styles['weekday']}>Lun</div>
+                        <div className={styles['weekday']}>Mar</div>
+                        <div className={styles['weekday']}>Mié</div>
+                        <div className={styles['weekday']}>Jue</div>
+                        <div className={styles['weekday']}>Vie</div>
+                        <div className={styles['weekday']}>Sab</div>
+                        <div className={styles['weekday']}>Dom</div>
+                    </div>
 
-                    return (
-                    <div className={styles['calendario-grid']}>
-                        {daysArray.map((day) => {
-                        const dateString = new Date(currentYear, currentMonth, day)
-                            .toISOString()
-                            .split('T')[0];
-                        const workoutsForDay = workouts.filter(w =>
-                            w.startTime.startsWith(dateString)
-                        );
+                    {(() => {
+                        //const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                        //const daysInMonth = lastDay.getDate();
+                        //const daysArray = Array.from({length: daysInMonth}, (_, i) => i + 1);
+
+                        const firstDay = getFirstDayOfMonth();
+                        const daysInMonth = getDaysInMonth();
+                        const calendarDays = [];
+
+                        //empty cells before first day of month
+                        for (let i = 0; i < firstDay; i++) {
+                            calendarDays.push(null);
+                        }
+
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            calendarDays.push(day);
+                        }
 
                         return (
+<<<<<<< Updated upstream
                             <div key={day} className={styles['calendario-dia']}>
                             <div className={styles['calendario-dia-num']}>{day}</div>
                             {workoutsForDay.map(w => (
@@ -194,12 +244,46 @@ const WorkoutHistory = () => {
                                 {w.routineName}
                                 </Link>
                             ))}
+=======
+                            <div className={styles['calendario-grid']}>
+                                {calendarDays.map((day, index) => {
+                                    if (day === null) {
+                                        return (
+                                            <div key={`empty-${index}`} className={styles['calendario-dia-vacia']}>
+                                            </div>
+                                        );
+                                    }
+
+                                    const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                                    const workoutsForDay = workouts.filter(w => {
+                                        let workoutDateStr = w.startTime.split('T')[0];
+                                        return workoutDateStr === dateString;
+                                    });
+
+
+                                    return (
+                                        <div key={day} className={styles['calendario-dia']}>
+                                            <div className={styles['calendario-dia-num']}>{day}</div>
+                                            {workoutsForDay.map(w => {
+                                                const isInProgress = !w.endTime;
+                                                return (
+                                                    <Link
+                                                        key={w.id}
+                                                        to={isInProgress ? `/workouts/session/${w.id}` : `/workouts/${w.id}`}
+                                                        className={styles['calendario-workout']}
+                                                    >
+                                                        {w.routineName}
+                                                    </Link>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })}
+>>>>>>> Stashed changes
                             </div>
                         );
-                        })}
-                    </div>
-                    );
-                })()}
+                    })()}
                 </div>
 
             )}
