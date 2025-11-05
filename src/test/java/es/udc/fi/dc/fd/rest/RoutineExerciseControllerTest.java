@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -88,7 +90,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Exercise createExercise(String name, User user) {
-        return exerciseDao.save(new Exercise(name, name + " description", "General", "Ninguno", new byte[]{1,2,3}, ExerciseStatus.PENDING, user));
+        return exerciseDao.save(new Exercise(name, name + " description", MuscleGroup.FULL_BODY, Equipment.NONE, new byte[]{1,2,3}, ExerciseStatus.PENDING, user));
     }
 
     private Routine createRoutine(String name, User user) {
