@@ -252,4 +252,71 @@ public class RoutineExerciseControllerTest {
                         .content(objectMapper.writeValueAsBytes(dto)))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void testGetRoutineExercisesIncludesAllExerciseData() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = exerciseDao.save(new Exercise(
+                "Ejercicio 1 con barra",
+                "Ejercicio de pecho con barra",
+                "Pecho",
+                "Banco y barra",
+                new byte[]{1, 2, 3, 4, 5},
+                Exercise.ExerciseStatus.APPROVED,
+                trainer
+        ));
+
+        Routine routine = createRoutine("Rutina 1 Pecho", trainer);
+
+        routineExerciseService.addExerciseToRoutine(
+                trainerUser.getUserDto().getId(),
+                routine.getId(),
+                exercise.getId(),
+                1
+        );
+
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].exerciseId").value(exercise.getId()))
+                .andExpect(jsonPath("$.content[0].exerciseName").value("Ejercicio 1 con barra"))
+                .andExpect(jsonPath("$.content[0].exerciseDescription").value("Ejercicio de pecho con barra"))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value("Pecho"))
+                .andExpect(jsonPath("$.content[0].equipment").value("Banco y barra"))
+                .andExpect(jsonPath("$.content[0].image").isNotEmpty());
+    }
+    
+    @Test
+    public void testRoutineExerciseReturnsEmptyStringsWhenOptionalFieldsMissing() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+
+        Exercise exercise = exerciseDao.save(new Exercise(
+                "Flexiones",
+                "Ejercicio de pecho básico",
+                null,
+                null,
+                null,
+                Exercise.ExerciseStatus.APPROVED,
+                trainer
+        ));
+
+        Routine routine = createRoutine("Rutina simple", trainer);
+
+        routineExerciseService.addExerciseToRoutine(
+                trainerUser.getUserDto().getId(),
+                routine.getId(),
+                exercise.getId(),
+                1
+        );
+
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].exerciseName").value("Flexiones"))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value(""))
+                .andExpect(jsonPath("$.content[0].equipment").value(""))
+                .andExpect(jsonPath("$.content[0].image").doesNotExist());
+    }
+
+
 }

@@ -227,24 +227,60 @@
     margin-top: 0.5rem;
 }
 
-.descripcion-ejercicio {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
+.detalles-ejercicio {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     padding: 1.5rem;
     background: linear-gradient(
-            135deg,
-            rgba(26, 26, 36, 0.6) 0%,
-            rgba(26, 26, 36, 0.4) 100%
+        135deg,
+        var(--bg-card) 0%,
+        rgba(26, 26, 36, 0.8) 100%
     );
     border: 1px solid var(--border-color);
     border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.detalles-ejercicio p {
+    margin: 0;
+}
+
+.imagen-ejercicio {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.imagen-ejercicio img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.imagen-ejercicio img:hover {
+    border-color: var(--neon-orange);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(255, 107, 53, 0.2);
+}
+
+.ejercicio-contenido {
+    animation: slideDown 0.3s ease;
+}
+
 .v-middle-align {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 /* slide down animation */
@@ -293,17 +329,17 @@
 }
 
 .titulo-con-boton {
-  display: flex;
-  justify-content: space-between; 
-  align-items: center;
-  width: 100%;
-  max-width: 1400px; 
-  margin: 0 auto;
-  position: relative;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%;
+    max-width: 1400px; 
+    margin: 0 auto;
+    position: relative;
 }
 
 .titulo-con-boton .boton-empezar-redondo {
-  position: static; 
-  margin-left: auto; 
-  transform: translateY(-5px); 
+    position: static; 
+    margin-left: auto; 
+    transform: translateY(-5px); 
 }

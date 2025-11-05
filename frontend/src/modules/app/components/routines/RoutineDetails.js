@@ -210,9 +210,29 @@ const RoutineDetails = () => {
 
             {expandedExercises[exercise.id] && (
               <div className={styles["ejercicio-contenido"]}>
-                <p className={styles["descripcion-ejercicio"]}>
-                  {exercise.exerciseDescription}
-                </p>
+                <div className={styles["detalles-ejercicio"]}>
+                  <p><strong>Descripción:</strong> {exercise.exerciseDescription}</p>
+                  <p><strong>Grupo muscular:</strong> {exercise.muscleGroup || "No especificado"}</p>
+                  <p><strong>Equipamiento:</strong> {exercise.equipment || "No especificado"}</p>
+                </div>
+
+                <div className={styles["imagen-ejercicio"]}>
+                  {exercise.image ? (
+                    <img
+                      src={
+                        exercise.image.startsWith("data:")
+                          ? exercise.image
+                          : `data:image/jpeg;base64,${exercise.image}`
+                      }
+                      alt={exercise.exerciseName}
+                    />
+                  ) : (
+                    <img
+                      src={process.env.PUBLIC_URL + "/assets/default-exercise.jpg"}
+                      alt="Imagen por defecto"
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>
