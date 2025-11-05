@@ -79,7 +79,7 @@ describe("Authentication Components", () => {
       login.mockImplementation(
         (email, password, successCallback, errorCallback) => {
           errorCallback({
-            globalError: "project.exceptions.IncorrectLoginException",
+            body: { globalError: "project.exceptions.IncorrectLoginException" },
           });
         },
       );
@@ -109,7 +109,7 @@ describe("Authentication Components", () => {
       login.mockImplementation(
         (email, password, successCallback, errorCallback) => {
           errorCallback({
-            globalError: "project.exceptions.BlockedUserException",
+            body: { globalError: "project.exceptions.BlockedUserException" },
           });
         },
       );
@@ -130,7 +130,7 @@ describe("Authentication Components", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Tu cuenta ha sido bloqueada."),
+          screen.getByText("Tu cuenta está bloqueada."),
         ).toBeInTheDocument();
       });
     });
