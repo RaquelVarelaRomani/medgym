@@ -721,8 +721,9 @@ const Routines = () => {
                                 </span>
                             )}
 
-                            {((isTrainer() && isRoutineCreator(routine)) ||
-                                isAdmin()) && (
+                            {(isAdmin()) && (
+                                                            //{((isTrainer() && isRoutineCreator(routine)) ||isAdmin()) && (
+
                                 <div>
                                     <button
                                         className={styles["boton-editar"]}

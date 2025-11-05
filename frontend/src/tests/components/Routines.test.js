@@ -3184,7 +3184,7 @@ describe("Routines Components", () => {
 
     test("handles ConfirmationPopup onCancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -4320,7 +4320,7 @@ describe("Routines Components", () => {
 
     test("deletes routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -4757,7 +4757,8 @@ describe("Routines Components", () => {
         expect(routineLikeService.likeRoutine).toHaveBeenCalledWith(1);
       });
     });
-
+/*
+TEST donde admins y entrenadores (cuando son sus rutinas) pueden editar
     test("edits routine for trainer", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
         success({ user: { id: 1, role: "TRAINER" } });
@@ -4789,6 +4790,54 @@ describe("Routines Components", () => {
         },
       );
 
+      workoutService.getWorkouts.mockImplementation((success) => {
+        success([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Routines />
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => {
+        const editButton = screen.getByText("Editar");
+        fireEvent.click(editButton);
+        expect(mockNavigate).toHaveBeenCalledWith("/routines/edit/1");
+      });
+    });
+*/
+//TEST donde SOLO admins pueden editar
+test("allows admin to edit routine", async () => {
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 99, role: "ADMIN" } });
+      });
+
+      routineService.getAllRoutines.mockImplementation((success) => {
+        success([
+          {
+            id: 1,
+            name: "Routine 1",
+            trainerName: "Trainer",
+            difficulty: "BEGINNER",
+            trainerId: 1,
+          },
+        ]);
+      });
+
+      exerciseService.getAllExercises.mockImplementation((success) => {
+        success({ content: [] });
+      });
+
+      routineLikeService.getLikes.mockImplementation((success) => {
+        success([]);
+      });
+
+      userFollowService.getFollowedTrainers.mockImplementation(
+        (userId, success) => {
+          success([]);
+        },
+      );
       workoutService.getWorkouts.mockImplementation((success) => {
         success([]);
       });
@@ -5016,7 +5065,7 @@ describe("Routines Components", () => {
 
     test("handles delete routine error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -5738,7 +5787,7 @@ describe("Routines Components", () => {
 
     test("handles handleDelete error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -6029,7 +6078,7 @@ describe("Routines Components", () => {
 
     test("handles ConfirmationPopup cancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
