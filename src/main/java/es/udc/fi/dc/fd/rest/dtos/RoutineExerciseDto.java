@@ -10,6 +10,7 @@ public class RoutineExerciseDto {
     private String equipment;
     private byte[] image;
     private Integer position;
+    private boolean blocked;
 
     public RoutineExerciseDto() {}
 
@@ -17,12 +18,28 @@ public class RoutineExerciseDto {
         this.id = id;
         this.routineId = routineId;
         this.exerciseId = exerciseId;
+
         this.exerciseName = exerciseName == null ? null : exerciseName.trim();
         this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
         this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
         this.equipment = equipment == null ? "" : equipment.trim();
         this.image = image;
         this.position = position;
+        this.blocked = false;
+    }
+
+    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String muscleGroup, String equipment, byte[] image, Integer position, boolean blocked) {
+        this.id = id;
+        this.routineId = routineId;
+        this.exerciseId = exerciseId;
+
+        this.exerciseName = exerciseName == null ? null : exerciseName.trim();
+        this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
+        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
+        this.equipment = equipment == null ? "" : equipment.trim();
+        this.image = image;
+        this.position = position;
+        this.blocked = blocked;
     }
 
     public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, Integer position) {
@@ -32,7 +49,6 @@ public class RoutineExerciseDto {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -40,7 +56,6 @@ public class RoutineExerciseDto {
     public Long getRoutineId() {
         return routineId;
     }
-
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
     }
@@ -48,7 +63,6 @@ public class RoutineExerciseDto {
     public Long getExerciseId() {
         return exerciseId;
     }
-
     public void setExerciseId(Long exerciseId) {
         this.exerciseId = exerciseId;
     }
@@ -56,7 +70,6 @@ public class RoutineExerciseDto {
     public String getExerciseName() {
         return exerciseName;
     }
-
     public void setExerciseName(String exerciseName) {
         this.exerciseName = exerciseName;
     }
@@ -64,10 +77,10 @@ public class RoutineExerciseDto {
     public String getExerciseDescription() {
         return exerciseDescription;
     }
-
     public void setExerciseDescription(String exerciseDescription) {
         this.exerciseDescription = exerciseDescription;
     }
+
 
     public String getMuscleGroup() {
         return muscleGroup;
@@ -96,8 +109,14 @@ public class RoutineExerciseDto {
     public Integer getPosition() {
         return position;
     }
-
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

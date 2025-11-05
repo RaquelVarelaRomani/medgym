@@ -1,5 +1,7 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.RoutineExercise;
 
 import java.util.List;
@@ -9,14 +11,30 @@ public class RoutineExerciseConversor {
     private RoutineExerciseConversor() {}
 
     public static final RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
-        return new RoutineExerciseDto(routineExercise.getId(), routineExercise.getRoutine().getId(),
-                routineExercise.getExercise().getId(), routineExercise.getExercise().getName(), routineExercise.getExercise().getDescription(),
-                routineExercise.getExercise().getMuscleGroup().toString(), routineExercise.getExercise().getEquipment().toString(), routineExercise.getExercise().getImage(),
-                routineExercise.getPosition());
+
+        Exercise ex = routineExercise.getExercise();
+        boolean blocked = (ex != null && ex.getStatus() == ExerciseStatus.BLOCKED);
+        
+        return new RoutineExerciseDto(
+            
+            routineExercise.getId(),
+            routineExercise.getRoutine().getId(),
+
+            routineExercise.getExercise().getId(),
+            routineExercise.getExercise().getName(),
+            routineExercise.getExercise().getDescription(),
+
+            routineExercise.getExercise().getMuscleGroup().toString(),
+            routineExercise.getExercise().getEquipment().toString(),
+            routineExercise.getExercise().getImage(),
+
+            routineExercise.getPosition(),
+            blocked);
     }
 
     public static final List<RoutineExerciseDto> toRoutineExercisesDtos(List<RoutineExercise> routineExercises) {
-        return routineExercises.stream().map(RoutineExerciseConversor::toRoutineExerciseDto)
+        return routineExercises.stream()
+                .map(RoutineExerciseConversor::toRoutineExerciseDto)
                 .collect(Collectors.toList());
     }
 }
