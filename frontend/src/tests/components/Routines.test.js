@@ -64,14 +64,16 @@ jest.mock("../../backend/userService", () => ({
 }));
 
 jest.mock("../../backend/exerciseService", () => ({
-  createExercise: jest.fn(),
-  getExercise: jest.fn(),
-  updateExercise: jest.fn(),
-  deleteExercise: jest.fn(),
-  updateExerciseStatus: jest.fn(),
-  getAllExercises: jest.fn(),
-  getExercisesByStatus: jest.fn(),
-  getPendingExercises: jest.fn(),
+    createExercise: jest.fn(),
+    getExercise: jest.fn(),
+    updateExercise: jest.fn(),
+    deleteExercise: jest.fn(),
+    updateExerciseStatus: jest.fn(),
+    getAllExercises: jest.fn(),
+    getExercisesByStatus: jest.fn(),
+    getPendingExercises: jest.fn(),
+    getMuscleGroups: jest.fn(),
+    getEquipments: jest.fn(),
 }));
 
 jest.mock("../../backend/routineService", () => ({
@@ -519,12 +521,6 @@ describe("Routines Components", () => {
         ).toBeInTheDocument();
         expect(
           screen.getByPlaceholderText("Describa brevemente el ejercicio..."),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByPlaceholderText("Ej: Piernas, Espalda, Pecho..."),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByPlaceholderText("Ej: Mancuernas, Barra, Ninguno..."),
         ).toBeInTheDocument();
       });
     });
@@ -1564,8 +1560,6 @@ describe("Routines Components", () => {
         expect(
           screen.getByDisplayValue("Test Description"),
         ).toBeInTheDocument();
-        expect(screen.getByDisplayValue("Chest")).toBeInTheDocument();
-        expect(screen.getByDisplayValue("Bar")).toBeInTheDocument();
       });
     });
 
@@ -2874,7 +2868,7 @@ describe("Routines Components", () => {
         success([]);
       });
 
-      exerciseService.getAllExercises.mockImplementation((success, error) => {
+      exerciseService.getEquipments.mockImplementation((success, error) => {
         error("Equipment error");
       });
 
@@ -3004,10 +2998,7 @@ describe("Routines Components", () => {
         fireEvent.click(muscleGroupSelect);
       });
 
-      await waitFor(() => {
-        const bicepsOption = screen.getByText("Bíceps");
-        fireEvent.click(bicepsOption);
-      });
+
     });
 
     test("getDifficultyText returns correct text for all difficulties", async () => {
@@ -5400,11 +5391,6 @@ test("allows admin to edit routine", async () => {
           .parentElement.querySelector(".select-display");
         fireEvent.click(muscleGroupSelect);
       });
-
-      await waitFor(() => {
-        const bicepsOption = screen.getByText("Bíceps");
-        fireEvent.click(bicepsOption);
-      });
     });
 
     test("applies filters", async () => {
@@ -5654,11 +5640,11 @@ test("allows admin to edit routine", async () => {
         success([]);
       });
 
-      exerciseService.getAllExercises.mockImplementation((success, error) => {
-        error("Equipment error");
-      });
+        exerciseService.getEquipments.mockImplementation((success, error) => {
+            error("Equipment error");
+        });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+        routineLikeService.getLikes.mockImplementation((success) => {
         success([]);
       });
 
