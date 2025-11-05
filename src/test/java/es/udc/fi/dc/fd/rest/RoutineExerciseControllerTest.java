@@ -261,8 +261,8 @@ public class RoutineExerciseControllerTest {
         Exercise exercise = exerciseDao.save(new Exercise(
                 "Ejercicio 1 con barra",
                 "Ejercicio de pecho con barra",
-                "Pecho",
-                "Banco y barra",
+                Exercise.MuscleGroup.CHEST,
+                Exercise.Equipment.BENCH_AND_BARBELL,
                 new byte[]{1, 2, 3, 4, 5},
                 Exercise.ExerciseStatus.APPROVED,
                 trainer
@@ -283,8 +283,8 @@ public class RoutineExerciseControllerTest {
                 .andExpect(jsonPath("$.content[0].exerciseId").value(exercise.getId()))
                 .andExpect(jsonPath("$.content[0].exerciseName").value("Ejercicio 1 con barra"))
                 .andExpect(jsonPath("$.content[0].exerciseDescription").value("Ejercicio de pecho con barra"))
-                .andExpect(jsonPath("$.content[0].muscleGroup").value("Pecho"))
-                .andExpect(jsonPath("$.content[0].equipment").value("Banco y barra"))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value("CHEST"))
+                .andExpect(jsonPath("$.content[0].equipment").value("BENCH_AND_BARBELL"))
                 .andExpect(jsonPath("$.content[0].image").isNotEmpty());
     }
     
@@ -295,8 +295,8 @@ public class RoutineExerciseControllerTest {
         Exercise exercise = exerciseDao.save(new Exercise(
                 "Flexiones",
                 "Ejercicio de pecho básico",
-                null,
-                null,
+                Exercise.MuscleGroup.CHEST,
+                Exercise.Equipment.NONE,
                 null,
                 Exercise.ExerciseStatus.APPROVED,
                 trainer
@@ -315,8 +315,8 @@ public class RoutineExerciseControllerTest {
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].exerciseName").value("Flexiones"))
-                .andExpect(jsonPath("$.content[0].muscleGroup").value(""))
-                .andExpect(jsonPath("$.content[0].equipment").value(""))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value("CHEST"))
+                .andExpect(jsonPath("$.content[0].equipment").value("NONE"))
                 .andExpect(jsonPath("$.content[0].image").doesNotExist());
     }
 
