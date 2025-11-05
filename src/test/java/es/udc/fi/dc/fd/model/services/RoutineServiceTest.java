@@ -22,6 +22,9 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -95,6 +98,21 @@ public class RoutineServiceTest {
     }
 
     @Test
+    public void testUpdateRoutineWithoutPermission() throws Exception {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(User.RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        User client = createUser("client@test.com");
+
+        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        assertThrows(PermissionException.class, () -> {
+            routineService.updateRoutine(client.getId(), routine.getId(), "x", "y", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        });
+    }
+
+    @Test
     public void testDeleteRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = createUser("user@test.com");
         Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -103,6 +121,21 @@ public class RoutineServiceTest {
 
         assertThrows(InstanceNotFoundException.class, () -> {
             routineService.findRoutineByIdAuth(user.getId(), routine.getId());
+        });
+    }
+
+    @Test
+    public void testDeleteRoutineWithoutPermission() throws Exception {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(User.RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        User client = createUser("client@test.com");
+
+        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        assertThrows(PermissionException.class, () -> {
+            routineService.deleteRoutine(client.getId(), routine.getId());
         });
     }
 

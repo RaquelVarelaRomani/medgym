@@ -16,6 +16,9 @@ import es.udc.fi.dc.fd.model.entities.ExerciseDao;
 import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import es.udc.fi.dc.fd.model.entities.User;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @Service
 @Transactional
 public class ExerciseServiceImpl implements ExerciseService {
@@ -30,7 +33,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     private RoutineExerciseDao routineExerciseDao;
 
     @Override
-    public Exercise createExercise(String name, String description, String muscleGroup, String equipment, byte[] image, User user) throws DuplicateInstanceException {
+    public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException {
         if (exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
@@ -63,7 +66,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public void updateExercise(Long exerciseId, String name, String description, String muscleGroup, String equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
+    public void updateExercise(Long exerciseId, String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
         Exercise exercise = findExerciseById(exerciseId);
 
         if (!exercise.getName().equals(name) && exerciseDao.existsByName(name)) {
@@ -113,5 +116,15 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
 
         exerciseDao.delete(exercise);
+    }
+
+    @Override
+    public List<MuscleGroup> findAllMuscleGroups() {
+        return List.of(MuscleGroup.values());
+    }
+
+    @Override
+    public List<Equipment> findAllEquipments() {
+        return List.of(Equipment.values());
     }
 }

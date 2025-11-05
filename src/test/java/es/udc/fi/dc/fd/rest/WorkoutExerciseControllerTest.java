@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 
 import static es.udc.fi.dc.fd.model.entities.User.RoleType;
 import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,7 +82,7 @@ public class WorkoutExerciseControllerTest {
         routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Ejercicio básico de piernas", "Piernas", "Barra", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED,
+        exercise = new Exercise("Sentadillas", "Ejercicio básico de piernas", MuscleGroup.LEG, Equipment.BARBELL, new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);
 

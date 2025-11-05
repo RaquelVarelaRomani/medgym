@@ -23,6 +23,8 @@ import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import jakarta.transaction.Transactional;
 import java.util.Objects;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -50,8 +52,8 @@ public class ExerciseServiceTest {
         return exerciseService.createExercise(
                 name,
                 "descripcion de prueba",
-                "Piernas",
-                "Mancuernas",
+                MuscleGroup.LEG,
+                Equipment.DUMBBELL,
                 new byte[]{1, 2, 3},
                 user
         );
@@ -60,7 +62,7 @@ public class ExerciseServiceTest {
     @Test
     public void testCreateAndFindExercise() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         Exercise foundExercise = exerciseService.findExerciseById(exercise.getId());
 
@@ -70,7 +72,7 @@ public class ExerciseServiceTest {
     @Test
     public void testCreateDuplicateExercise() throws DuplicateInstanceException {
         User user = createUser("user@test.com");
-        exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         assertThrows(DuplicateInstanceException.class, () -> {
             createBasicExercise(user, "exercise");
@@ -80,33 +82,33 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExercise() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
-        exerciseService.updateExercise(exercise.getId(), "new name", "new description", "Espalda", "Barra", new byte[]{4,5,6});
+        exerciseService.updateExercise(exercise.getId(), "new name", "new description", MuscleGroup.BACK, Equipment.BARBELL, new byte[]{4,5,6});
 
         Exercise updatedExercise = exerciseService.findExerciseById(exercise.getId());
 
         assertEquals("new name", updatedExercise.getName());
         assertEquals("new description", updatedExercise.getDescription());
-        assertEquals("Espalda", updatedExercise.getMuscleGroup());
-        assertEquals("Barra", updatedExercise.getEquipment());
+        assertEquals(MuscleGroup.BACK, updatedExercise.getMuscleGroup());
+        assertEquals(Equipment.BARBELL, updatedExercise.getEquipment());
     }
 
     @Test
     public void testUpdateExerciseDuplicateName() throws DuplicateInstanceException {
         User user = createUser("user@test.com");
-        exerciseService.createExercise("exercise1", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise2 = exerciseService.createExercise("exercise2", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        exerciseService.createExercise("exercise1", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         assertThrows(DuplicateInstanceException.class, () -> {
-            exerciseService.updateExercise(exercise2.getId(), "exercise1", "new description", "Piernas", "Ninguno", new byte[]{1,2,3});
+            exerciseService.updateExercise(exercise2.getId(), "exercise1", "new description", MuscleGroup.LEG, Equipment.NONE, new byte[]{1,2,3});
         });
     }
 
     @Test
     public void testDeleteExercise() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.deleteExercise(exercise.getId());
 
@@ -128,7 +130,7 @@ public class ExerciseServiceTest {
         trainer.setRole(RoleType.TRAINER);
         userDao.save(trainer);
         Exercise exercise = exerciseService.createExercise(
-            "Sentadillas_", "Desc", "Piernas", "Ninguno", new byte[]{1,2,3}, trainer
+            "Sentadillas_", "Desc", MuscleGroup.LEG, Equipment.NONE, new byte[]{1,2,3}, trainer
         );
         Routine routine = new Routine("Rutina Piernas", "Fuerza", 
             Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
@@ -158,7 +160,7 @@ public class ExerciseServiceTest {
     @Test
     public void testCreateExerciseWithDefaultStatus() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         Exercise foundExercise = exerciseService.findExerciseById(exercise.getId());
 
@@ -168,7 +170,7 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatus() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
 
@@ -187,7 +189,7 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatusToNull() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), null);
 
@@ -199,7 +201,7 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatusToSameValue() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.PENDING);
 
@@ -211,7 +213,7 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatusMultipleTimes() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
         Exercise updatedExercise1 = exerciseService.findExerciseById(exercise.getId());
@@ -229,9 +231,9 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatusAfterNameChange() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
-        exerciseService.updateExercise(exercise.getId(), "new name", "new description", "Brazos", "Mancuernas", new byte[]{1,2,3});
+        exerciseService.updateExercise(exercise.getId(), "new name", "new description", MuscleGroup.ARM, Equipment.DUMBBELL, new byte[]{1,2,3});
         exerciseService.updateExerciseStatus(exercise.getId(), ExerciseStatus.APPROVED);
 
         Exercise updatedExercise = exerciseService.findExerciseById(exercise.getId());
@@ -244,7 +246,7 @@ public class ExerciseServiceTest {
     @Test
     public void testUpdateExerciseStatusAfterDeletion() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.deleteExercise(exercise.getId());
 
@@ -258,8 +260,8 @@ public class ExerciseServiceTest {
         User user = createUser("user@test.com");
         var exercisesPrev = exerciseService.findAllExercises(user.getId()).size();
 
-        var ex1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        var ex2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        var ex1 = exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        var ex2 = exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(ex1.getId(), ExerciseStatus.APPROVED);
         exerciseService.updateExerciseStatus(ex2.getId(), ExerciseStatus.APPROVED);
@@ -271,9 +273,9 @@ public class ExerciseServiceTest {
     @Test
     public void testFindExercisesWithPendingStatus() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise3 = exerciseService.createExercise("exercise3", "description3", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise3 = exerciseService.createExercise("exercise3", "description3", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise2.getId(), ExerciseStatus.APPROVED);
         exerciseService.updateExerciseStatus(exercise3.getId(), ExerciseStatus.REJECTED);
@@ -287,8 +289,8 @@ public class ExerciseServiceTest {
     @Test
     public void testFindExercisesWithPendingStatusWhenNone() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise1.getId(), ExerciseStatus.APPROVED);
         exerciseService.updateExerciseStatus(exercise2.getId(), ExerciseStatus.REJECTED);
@@ -301,8 +303,8 @@ public class ExerciseServiceTest {
     @Test
     public void testFindExercisesWithPendingStatusWhenAll() throws DuplicateInstanceException {
         User user = createUser("user@test.com");
-        exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         var pendingExercises = exerciseService.findExercisesWithPendingStatus();
 
@@ -312,8 +314,8 @@ public class ExerciseServiceTest {
     @Test
     public void testFindExercisesWithPendingStatusAfterDeletion() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.deleteExercise(exercise1.getId());
 
@@ -327,8 +329,8 @@ public class ExerciseServiceTest {
     @Test
     public void testFindExercisesWithPendingStatusAfterStatusUpdate() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
-        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise1 = exerciseService.createExercise("exercise1", "description1", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        Exercise exercise2 = exerciseService.createExercise("exercise2", "description2", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
 
         exerciseService.updateExerciseStatus(exercise1.getId(), ExerciseStatus.APPROVED);
 
@@ -342,10 +344,28 @@ public class ExerciseServiceTest {
     @Test
     public void testCreateExerciseSetsDefaultStatus() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("user@test.com");
-        Exercise exercise = exerciseService.createExercise("exercise", "description", "Piernas", "Mancuernas", new byte[]{1,2,3}, user);
+        Exercise exercise = exerciseService.createExercise("exercise", "description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
         assertEquals(ExerciseStatus.PENDING, exercise.getStatus());
         assertEquals(ExerciseStatus.PENDING, exerciseService.findExerciseById(exercise.getId()).getStatus());
     }
 
+    @Test
+    public void testFindAllMuscleGroups() {
+        var groups = exerciseService.findAllMuscleGroups();
+        assertNotNull(groups);
+        assertEquals(MuscleGroup.values().length, groups.size());
+        for (MuscleGroup g : MuscleGroup.values()) {
+            assertTrue(groups.contains(g));
+        }
+    }
 
+    @Test
+    public void testFindAllEquipments() {
+        var equipments = exerciseService.findAllEquipments();
+        assertNotNull(equipments);
+        assertEquals(Equipment.values().length, equipments.size());
+        for (Equipment e : Equipment.values()) {
+            assertTrue(equipments.contains(e));
+        }
+    }
 }
