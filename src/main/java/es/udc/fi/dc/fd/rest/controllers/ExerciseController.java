@@ -4,6 +4,7 @@ package es.udc.fi.dc.fd.rest.controllers;
 import java.net.URI;
 import java.util.List;
 
+import es.udc.fi.dc.fd.rest.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,11 @@ import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.ExerciseService;
 import es.udc.fi.dc.fd.model.services.UserService;
-import es.udc.fi.dc.fd.rest.dtos.ExerciseConversor;
+
 import static es.udc.fi.dc.fd.rest.dtos.ExerciseConversor.toExerciseDto;
-import es.udc.fi.dc.fd.rest.dtos.ExerciseDto;
+
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 @RestController
 @RequestMapping("/api/exercises")
@@ -42,7 +45,7 @@ public class ExerciseController {
     @PostMapping
     public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException {
         User user = userService.loginFromId(userId);
-        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), exerciseDto.getMuscleGroup(), exerciseDto.getEquipment(), exerciseDto.getImage(), user);
+        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), MuscleGroup.valueOf(exerciseDto.getMuscleGroup()), Equipment.valueOf(exerciseDto.getEquipment()), exerciseDto.getImage(), user);
         URI location = URI.create("/api/exercises/" + exercise.getId());
         return ResponseEntity.created(location).body(toExerciseDto(exercise));
     }
@@ -72,8 +75,8 @@ public class ExerciseController {
                 id,
                 exerciseDto.getName(),
                 exerciseDto.getDescription(),
-                exerciseDto.getMuscleGroup(),
-                exerciseDto.getEquipment(),
+                exerciseDto.getMuscleGroup() != null ? MuscleGroup.valueOf(exerciseDto.getMuscleGroup()) : null,
+                exerciseDto.getEquipment() != null ? Equipment.valueOf(exerciseDto.getEquipment()) : null,
                 exerciseDto.getImage()
         );
 
@@ -103,4 +106,13 @@ public class ExerciseController {
         exerciseService.deleteExercise(id);
     }
 
+    @GetMapping("/muscleGroups")
+    public List<MuscleGroupDto> getMuscleGroups() {
+        return MuscleGroupConversor.toMuscleGroupDtos(exerciseService.findAllMuscleGroups());
+    }
+
+    @GetMapping("/equipments")
+    public List<EquipmentDto> getEquipments() {
+        return EquipmentConversor.toEquipmentDtos(exerciseService.findAllEquipments());
+    }
 }

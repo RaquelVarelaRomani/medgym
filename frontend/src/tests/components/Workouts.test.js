@@ -893,6 +893,10 @@ describe("Workout Components", () => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
+        const monthNames = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
         const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
         const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
@@ -921,7 +925,7 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
           expect(screen.getByText("1")).toBeInTheDocument();
           expect(screen.getByText("Rutina 1")).toBeInTheDocument();
         });
@@ -931,6 +935,10 @@ describe("Workout Components", () => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
+        const monthNames = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
         const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
         const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
@@ -959,7 +967,7 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText(">"));
@@ -967,13 +975,13 @@ describe("Workout Components", () => {
         const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
         const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
         await waitFor(() => {
-          expect(screen.getByText(`${nextYear} - ${String(nextMonth).padStart(2, '0')}`)).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[nextMonth - 1]} de ${nextYear}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("<"));
 
         await waitFor(() => {
-          expect(screen.getByText(`${currentYear} - ${String(currentMonth).padStart(2, '0')}`)).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
         });
       });
 

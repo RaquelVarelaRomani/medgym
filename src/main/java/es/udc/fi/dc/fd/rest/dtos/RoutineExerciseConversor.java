@@ -11,18 +11,25 @@ public class RoutineExerciseConversor {
     private RoutineExerciseConversor() {}
 
     public static final RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
+
         Exercise ex = routineExercise.getExercise();
         boolean blocked = (ex != null && ex.getStatus() == ExerciseStatus.BLOCKED);
         
-         return new RoutineExerciseDto(
-                routineExercise.getId(),
-                routineExercise.getRoutine().getId(),
-                ex != null ? ex.getId() : null,
-                ex != null ? ex.getName() : null,
-                ex != null ? ex.getDescription() : null,
-                routineExercise.getPosition(),
-                blocked
-        );
+        return new RoutineExerciseDto(
+            
+            routineExercise.getId(),
+            routineExercise.getRoutine().getId(),
+
+            routineExercise.getExercise().getId(),
+            routineExercise.getExercise().getName(),
+            routineExercise.getExercise().getDescription(),
+
+            routineExercise.getExercise().getMuscleGroup().toString(),
+            routineExercise.getExercise().getEquipment().toString(),
+            routineExercise.getExercise().getImage(),
+
+            routineExercise.getPosition(),
+            blocked);
     }
 
     public static final List<RoutineExerciseDto> toRoutineExercisesDtos(List<RoutineExercise> routineExercises) {
