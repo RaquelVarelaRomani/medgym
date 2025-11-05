@@ -3193,7 +3193,7 @@ describe("Routines Components", () => {
 
     test("handles ConfirmationPopup onCancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -4329,7 +4329,7 @@ describe("Routines Components", () => {
 
     test("deletes routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -5074,7 +5074,7 @@ test("allows admin to edit routine", async () => {
 
     test("handles delete routine error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -5801,7 +5801,7 @@ test("allows admin to edit routine", async () => {
 
     test("handles handleDelete error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -6092,7 +6092,7 @@ test("allows admin to edit routine", async () => {
 
     test("handles ConfirmationPopup cancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
