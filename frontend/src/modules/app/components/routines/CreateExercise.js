@@ -15,7 +15,9 @@ const CreateExercise = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [titleError, setTitleError] = useState("");
+    const [nameError, setNameError] = useState("");
+    const [muscleGroupError, setMuscleGroupError] = useState("");
+    const [equipmentError, setEquipmentError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [popupText, setPopupText] = useState("");
     const [availableEquipment, setAvailableEquipment] = useState([]);
@@ -66,10 +68,17 @@ const CreateExercise = () => {
         const { name, value } = e.target;
         setExerciseData((prev) => ({ ...prev, [name]: value }));
 
-        if (name === "name" && value.length > 50) {
-            setTitleError("El nombre es demasiado largo");
-        } else {
-            setTitleError("");
+        if (name === "name") {
+            if (value.length > 50) setNameError("El nombre es demasiado largo");
+            else setNameError("");
+        }
+
+        if (name === "muscleGroup") {
+            setMuscleGroupError("");
+        }
+
+        if (name === "equipment") {
+            setEquipmentError("");
         }
     };
 
@@ -79,7 +88,17 @@ const CreateExercise = () => {
 
     const handleSave = () => {
         if (!exerciseData.name.trim()) {
-            setTitleError("El nombre es obligatorio");
+            setNameError("El nombre es obligatorio");
+            return;
+        }
+
+        if (!exerciseData.muscleGroup.trim()) {
+            setMuscleGroupError("El grupo muscular es obligatorio");
+            return;
+        }
+
+        if (!exerciseData.equipment.trim()) {
+            setEquipmentError("El equipamiento es obligatorio");
             return;
         }
 
@@ -168,9 +187,9 @@ const CreateExercise = () => {
                         placeholder="Escriba aquí el nombre del ejercicio..."
                         value={exerciseData.name}
                         onChange={handleChange}
-                        className={titleError ? styles['input-error'] : ""}
+                        className={nameError ? styles['input-error'] : ""}
                     />
-                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
+                    {nameError && <span className={styles['error-message']}>{nameError}</span>}
                 </div>
 
                 <div className={styles['form-div']}>
@@ -199,6 +218,7 @@ const CreateExercise = () => {
                                 <option key={m.name} value={m.name}>{getMuscleGroupsText(m.name)}</option>
                             ))}
                         </select>
+                        {muscleGroupError && <span className={styles['error-message']}>{muscleGroupError}</span>}
                     </div>
 
                 </div>
@@ -217,6 +237,7 @@ const CreateExercise = () => {
                                 <option key={e.name} value={e.name}>{getEquipmentText(e.name)}</option>
                             ))}
                         </select>
+                        {equipmentError && <span className={styles['error-message']}>{equipmentError}</span>}
                     </div>
 
                 </div>
