@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
-
+import LoadingMessage from "../common/LoadingMessage";
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
@@ -190,7 +190,8 @@ const CreateRoutine = () => {
         );
     };
 
-    if (loading) return <div>Cargando ejercicios...</div>;
+    if (loading) return <LoadingMessage text="Cargando ejercicios..." />;
+
     if (error)
         return (
             <div>
@@ -276,7 +277,7 @@ const CreateRoutine = () => {
                              ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
-                                placeholder="Buscar ejercicio o escribir el nombre..."
+                                placeholder="Buscar ejercicio..."
                                 value={exercise.nombre}
                                 onChange={(e) => {
                                     const newValue = e.target.value;

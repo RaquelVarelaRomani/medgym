@@ -291,3 +291,19 @@
             0 0 20px rgba(255, 107, 53, 0.6),
             0 0 40px rgba(255, 107, 53, 0.4);
 }
+
+.titulo-con-boton {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  width: 100%;
+  max-width: 1400px; 
+  margin: 0 auto;
+  position: relative;
+}
+
+.titulo-con-boton .boton-empezar-redondo {
+  position: static; 
+  margin-left: auto; 
+  transform: translateY(-5px); 
+}

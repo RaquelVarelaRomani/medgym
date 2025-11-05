@@ -4,6 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import Popup from "../common/popup/Popup";
+import LoadingMessage from "../common/LoadingMessage";
+import { p } from "framer-motion/client";
+
 
 const Exercises = () => {
     const navigate = useNavigate();
@@ -13,6 +17,7 @@ const Exercises = () => {
     const [exerciseToReject, setExerciseToReject] = useState(null);
     const [viewMode, setViewMode] = useState("approved");
     const [loading, setLoading] = useState(true);
+    const [deleteError, setDeleteError] = useState(null);
 
 
     useEffect(() => {
@@ -75,7 +80,7 @@ const Exercises = () => {
         } else {
             exerciseService.getAllExercises(
                 (data) => {
-                    const filtered = data.filter((e) => e.status === "APPROVED");
+                    const filtered = data.filter((e) => e.status === "APPROVED" || e.status === "BLOCKED");
                     setExercises(filtered.map(mapExercise));
                     setLoading(false);
                 },
@@ -88,14 +93,48 @@ const Exercises = () => {
     };
 
     const handleDelete = (exerciseId) => {
-        exerciseService.deleteExercise(
+        exerciseService.updateExerciseStatus(
             exerciseId,
             () => {
-                console.log("Exercise deleted successfully");
+                console.log("✅ Exercise deleted successfully");
                 fetchExercises(currentUser);
             },
-            (error) => console.error("Error deleting exercise:", error)
+            (error) => {
+                console.error("Error al eliminar el ejercicio.", error);
+                const backendMessage =
+                    error?.message ||
+                    error?.response?.data?.message ||
+                    "No se pudo eliminar el ejercicio.";
+                setDeleteError(backendMessage);
+            }
         );
+    };
+
+    const handleBlock = (e, exerciseId, status) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if(status === "BLOCKED"){
+            exerciseService.updateExerciseStatus(
+                exerciseId,
+                "APPROVED",
+                () => {
+                    console.log("Exercise approved successfully");
+                    fetchExercises(currentUser);
+                },
+                (error) => console.error("Error approving exercise:", error)
+            );
+        } else {
+            exerciseService.updateExerciseStatus(
+                exerciseId,
+                "BLOCKED",
+                () => {
+                    console.log("Exercise approved successfully");
+                    fetchExercises(currentUser);
+                },
+                (error) => console.error("Error approving exercise:", error)
+            );           
+        }
+
     };
 
     const handleEdit = (exerciseId) => {
@@ -132,15 +171,14 @@ const Exercises = () => {
         navigate("/exercises/new");
     };
 
-    if (loading) return <div className={styles.contenedor}>Cargando...</div>;
-
+    if (loading) return <LoadingMessage text="Cargando ejercicios..." />;
     return (
         <div className={styles.contenedor}>
             {isAdmin() && (
                 <div className={styles["view-toggle-buttons"]}>
                     <button
                         className={`${styles["toggle-button"]} ${
-                            viewMode === "approved" ? styles.active : ""
+                            viewMode === "approved"? styles.active : ""
                         }`}
                         onClick={() => setViewMode("approved")}
                     >
@@ -164,7 +202,12 @@ const Exercises = () => {
                         key={exercise.id}
                         className={styles["caja-ejercicio"]}
                     >
-                        <h3>{exercise.titulo}</h3>
+                        <h3>
+                            {exercise.titulo}
+                            {exercise.status === "BLOCKED" && (
+                                <span className={styles["blocked-badge"]}>Bloqueado</span>
+                            )}
+                        </h3>
                         <p>{exercise.descripcion}</p>
 
                         {viewMode === "approved" && canEditOrDelete(exercise) && (
@@ -190,6 +233,16 @@ const Exercises = () => {
                                 >
                                     Eliminar
                                 </button>
+                                {isAdmin() && 
+                                    <button
+                                        className={styles["boton-eliminar"]}
+                                        onClick={(e) => {
+                                            handleBlock(e, exercise.id, exercise.status)
+                                        }}
+                                    >
+                                        {exercise.status === "BLOCKED" ? "Desbloquear" : "Bloquear"}
+                                    </button>                                
+                                }
                             </div>
                         )}
 
@@ -242,6 +295,15 @@ const Exercises = () => {
                 }}
                 onCancel={() => setExerciseToReject(null)}
             />
+
+            {deleteError && (
+                <Popup
+                    show={true}
+                    text={deleteError}
+                    onOk={() => setDeleteError(null)}
+                />
+            )}
+
         </div>
     );
 };

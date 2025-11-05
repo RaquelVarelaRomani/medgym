@@ -32,7 +32,16 @@ const Register = () => {
         setPasswordError("");
         setPhoneError("");
 
-        if (!validatePhoneNumber(phoneNumber)) {
+        if (!name.trim() || !surname.trim() || !email.trim() || !phoneNumber.trim() || !password || !confirmPassword) {
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+            return;
+        }
+
+        if (!validatePhoneNumber(phoneNumber.trim())) {
             setPhoneError("El número de teléfono no es válido. Debe contener entre 9 y 15 dígitos.");
             return;
         }
@@ -60,7 +69,7 @@ const Register = () => {
                 navigate("/routines");
             },
             (errorResponse) => {
-                console.error("Error en el registro:", errorResponse);
+                console.log("Error en el registro:", errorResponse);
                 let errorMessage = errorResponse.globalError || "Error en el registro";
                 if (errorMessage.includes("DuplicateInstanceException")) {
                     errorMessage = "El email o teléfono ya existe";

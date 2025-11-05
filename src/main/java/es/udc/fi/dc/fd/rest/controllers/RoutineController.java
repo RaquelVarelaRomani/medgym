@@ -53,7 +53,7 @@ public class RoutineController {
     @GetMapping("/{id}")
     public RoutineDto getRoutine(@RequestAttribute Long userId, @PathVariable Long id)
             throws InstanceNotFoundException, PermissionException {
-        return toRoutineDto(routineService.findRoutineById(userId, id));
+        return toRoutineDto(routineService.findRoutineByIdAuth(userId, id));
     }
 
     @PutMapping("/{id}")
@@ -62,7 +62,7 @@ public class RoutineController {
         Routine.DifficultyType difficulty = routineDto.getDifficulty() != null ? Routine.DifficultyType.valueOf(routineDto.getDifficulty().toUpperCase()) : Routine.DifficultyType.BEGINNER;
         routineService.updateRoutine(userId, id, routineDto.getName(), routineDto.getDescription(),
                 Routine.VisibilityType.valueOf(routineDto.getVisibility()), difficulty);
-        return toRoutineDto(routineService.findRoutineById(userId,id));
+        return toRoutineDto(routineService.findRoutineByIdAuth(userId,id));
     }
 
     @DeleteMapping("/{id}")
@@ -78,6 +78,7 @@ public class RoutineController {
 
     @GetMapping("/filter")
     public List<RoutineDto> findRoutinesByFilters(@RequestAttribute Long userId,
+                                                  @RequestParam(required = false) String equipment,
                                                   @RequestParam(required = false) String muscleGroup,
                                                   @RequestParam(required = false) String difficulty,
                                                   @RequestParam(required = false) Long trainerId) throws InstanceNotFoundException {
@@ -89,6 +90,6 @@ public class RoutineController {
                 // Invalid difficulty, ignore filter
             }
         }
-        return RoutineConversor.toRoutineDtos(routineService.findRoutinesByFilters(userId, muscleGroup, difficultyType, trainerId));
+        return RoutineConversor.toRoutineDtos(routineService.findRoutinesByFilters(userId, equipment, muscleGroup, difficultyType, trainerId));
     }
 }

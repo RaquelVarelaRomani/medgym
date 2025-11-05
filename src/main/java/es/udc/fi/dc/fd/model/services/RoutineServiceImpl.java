@@ -1,7 +1,9 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +38,22 @@ public class RoutineServiceImpl implements RoutineService {
 
         Routine routine = new Routine(name, description, visibility, difficulty, trainer);
 
-        notificationService.createNotification(routine);
-        return routineDao.save(routine);
+        routine = routineDao.save(routine);
+
+        notificationService.createNewRoutineNotification(routine);
+
+        return routine;
+    }
+
+    @Override
+    public Routine findRoutineById(Long routineId) throws InstanceNotFoundException {
+        return routineDao.findById(routineId)
+                .orElseThrow(() -> new InstanceNotFoundException("project.entities.routine", routineId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Routine findRoutineById(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
+    public Routine findRoutineByIdAuth(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
         Optional<Routine> opRoutine = routineDao.findById(routineId);
 
         if (opRoutine.isEmpty()) {
@@ -63,7 +74,7 @@ public class RoutineServiceImpl implements RoutineService {
     @Override
     public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        Routine routine = findRoutineById(userId, routineId);
+        Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -82,15 +93,14 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
-        Routine routine = findRoutineById(userId, routineId);
+        Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
             throw new PermissionException();
         }
 
-        // Delete related notifications before deleting the routine
-        notificationService.deleteNotificationsByRoutine(routineId);
+        notificationService.deleteNotificationsByIdToRedirect(routineId);
 
         routineDao.delete(routine);
     }
@@ -111,7 +121,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Routine> findRoutinesByFilters(Long userId, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 
@@ -122,9 +132,29 @@ public class RoutineServiceImpl implements RoutineService {
                     .collect(Collectors.toList());
         }
 
+        // Filter by equipment if provided (multi-select)
+        if (equipment != null && !equipment.trim().isEmpty()) {
+            String[] equipmentList = equipment.split(",");
+            Set<Routine> equipmentRoutines = new HashSet<>();
+
+            for (String equip : equipmentList) {
+                equipmentRoutines.addAll(routineDao.findByEquipment(equip.trim()));
+            }
+
+            routines = routines.stream()
+                    .filter(equipmentRoutines::contains)
+                    .collect(Collectors.toList());
+        }
+
         // Filter by muscle group if provided
         if (muscleGroup != null && !muscleGroup.trim().isEmpty()) {
-            List<Routine> muscleGroupRoutines = routineDao.findByMuscleGroup(muscleGroup);
+            String[] muscleGroupList = muscleGroup.split(",");
+            Set<Routine> muscleGroupRoutines = new HashSet<>();
+
+            for (String group : muscleGroupList) {
+                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(group.trim()));
+            }
+
             routines = routines.stream()
                     .filter(muscleGroupRoutines::contains)
                     .collect(Collectors.toList());

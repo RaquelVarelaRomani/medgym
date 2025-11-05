@@ -63,7 +63,14 @@ const Header = () => {
         }
     };
 
-    //close dropdown when clicking outside
+    useEffect(() => {
+    const handleWorkoutFinish = () => checkActiveWorkout();
+    window.addEventListener("workoutFinished", handleWorkoutFinish);
+    return () => {
+      window.removeEventListener("workoutFinished", handleWorkoutFinish);
+    };
+  }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
@@ -129,7 +136,7 @@ const Header = () => {
 
     const handleActiveWorkoutClick = () => {
         if (activeWorkout) {
-            navigate(`/workouts/${activeWorkout.id}`);
+            navigate(`/workouts/session/${activeWorkout.id}`);
         }
     }
 
@@ -177,29 +184,31 @@ const Header = () => {
                     {profile?.role === "TRAINER" && (
                         <Link
                             to="/users/followers"
-                            className={location.pathname.includes('/followers')
+                            className={location.pathname === '/users/followers'
                                 ? `${styles['nav-link']} ${styles['active']}`
                                 : styles['nav-link']}
                         >
                             Seguidores ({followersCount})
                         </Link>
                     )}
-                    {isAdmin() && (
-                        <Link
-                            to="/users/moderation"
-                            className={location.pathname.includes('/users/moderation')
-                                ? `${styles['nav-link']} ${styles['admin-link']} ${styles['active']}`
-                                : `${styles['nav-link']} ${styles['admin-link']}`}
-                        >
-                            Moderación
-                        </Link>
-                    )}
+
                     <Link
                         to="/workouts/history"
                         className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Historial
                     </Link>
+
+                    {isAdmin() && (
+                        <Link
+                            to="/users/moderation"
+                            className={location.pathname === '/users/moderation'
+                                ? `${styles['nav-link']} ${styles['admin-link']} ${styles['active']}`
+                                : `${styles['nav-link']} ${styles['admin-link']}`}
+                        >
+                            Moderación
+                        </Link>
+                    )}
                 </nav>
 
                 {/* right section - profile */}
@@ -217,8 +226,8 @@ const Header = () => {
                                         setNotifications(prev =>
                                             prev.map(n => n.id === id ? { ...n, isRead: true } : n)
                                         );
+                                        refreshNotifications();
                                     }
-                                    refreshNotifications();
                                 }}
                             />
                         )}

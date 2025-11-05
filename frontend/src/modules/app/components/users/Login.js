@@ -12,6 +12,11 @@ const Login = () => {
     const navigate = useNavigate();
 
     const handleSubmit = () => {
+        if (!email.trim() || !password) return;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) return;
+
         login(
             email.trim(),
             password,

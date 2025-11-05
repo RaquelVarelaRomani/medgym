@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.ExerciseDao;
+import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import es.udc.fi.dc.fd.model.entities.User;
 
 @Service
@@ -22,6 +25,9 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Autowired
     private PermissionChecker permissionChecker;
+
+    @Autowired
+    private RoutineExerciseDao routineExerciseDao;
 
     @Override
     public Exercise createExercise(String name, String description, String muscleGroup, String equipment, byte[] image, User user) throws DuplicateInstanceException {
@@ -85,15 +91,27 @@ public class ExerciseServiceImpl implements ExerciseService {
         if (user.getRole() == User.RoleType.ADMIN) {
             return exerciseDao.findAll();
         } else if (user.getRole() == User.RoleType.TRAINER) {
-            return exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+            List<Exercise> exercises1 = exerciseDao.findByStatusOrCreatorId(ExerciseStatus.APPROVED, userId);
+            List<Exercise> exercises2 = exerciseDao.findByStatus(ExerciseStatus.BLOCKED);
+            exercises2.addAll(exercises1);
+            return exercises2;
         } else {
-            return exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+            List<Exercise> exercises1 = exerciseDao.findByStatus(ExerciseStatus.APPROVED);
+            List<Exercise> exercises2 = exerciseDao.findByStatus(ExerciseStatus.BLOCKED);
+            exercises2.addAll(exercises1);
+            return exercises2;
         }
     }
 
     @Override
     public void deleteExercise(Long exerciseId) throws InstanceNotFoundException {
         Exercise exercise = findExerciseById(exerciseId);
+        if (routineExerciseDao.existsByExerciseId(exerciseId)){
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,"No se puede borrar: el ejercicio está asociado a una o más rutinas."
+            );
+        }
+
         exerciseDao.delete(exercise);
     }
 }

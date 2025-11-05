@@ -4,6 +4,7 @@ import {tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as adminService from "../../../../backend/adminService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import styles from "./UserModeration.module.css";
+import LoadingMessage from "../common/LoadingMessage";
 
 const UserModeration = () => {
     const navigate = useNavigate();
@@ -83,9 +84,7 @@ const UserModeration = () => {
         );
     });
 
-    if (loading) {
-        return <div className={styles.contenedor}>Cargando usuarios...</div>;
-    }
+    if (loading) return <LoadingMessage text="Cargando usuarios..." />;
 
     return (
         <div className={styles.contenedor}>
@@ -93,13 +92,29 @@ const UserModeration = () => {
 
             <div className={styles['search-container']}>
                 <h3 className={styles['search-title']}>Buscar usuarios</h3>
-                <input
-                    type="text"
-                    placeholder="Buscar por nombre, email o usuario..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={styles['search-input']}
-                />
+                <div className={styles['search-input-wrapper']}>
+                    <svg className={styles['search-icon']} width="20" height="20" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre, correo electrónico o usuario..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={styles['search-input']}
+                    />
+                    {searchTerm && (
+                        <button
+                            className={styles["clear-search-btn"]}
+                            onClick={() => setSearchTerm('')}
+                            type="button"
+                        >
+                            ✕
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className={styles['users-count']}>
@@ -120,8 +135,12 @@ const UserModeration = () => {
                                 <p className={styles['user-email']}>{user.email}</p>
                                 {user.role && (
                                     <span className={`${styles['user-role']} ${styles[user.role.toLowerCase()]}`}>
-            {user.role}
-        </span>
+                                        {{
+                                            ADMIN: "Administrador",
+                                            TRAINER: "Entrenador",
+                                            CLIENT: "Cliente"
+                                        }[user.role] || user.role}
+                                    </span>
                                 )}
                             </div>
                             <div className={styles['user-actions']}>
@@ -173,4 +192,4 @@ const UserModeration = () => {
     );
 };
 
-export  default UserModeration;
+export default UserModeration;

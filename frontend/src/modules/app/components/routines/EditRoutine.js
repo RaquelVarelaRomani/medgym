@@ -5,13 +5,15 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import Popup from "../common/popup/Popup";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const EditRoutine = () => {
     const navigate = useNavigate();
     const { id } = useParams(); // routine ID from URL
     const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
     const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
-    const [exercises, setExercises] = useState([{ id: null, nombre: "", position: null }]);
+    const [exercises, setExercises] = useState([]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
@@ -55,7 +57,7 @@ const EditRoutine = () => {
                             nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
                             position: re.position || null,
                         })).sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
-                        setExercises(mappedExercises.length ? mappedExercises : [{ id: null, nombre: "", position: null }]);
+                        setExercises(mappedExercises);
                         setOriginalExercises(JSON.parse(JSON.stringify(mappedExercises)));
                         setLoading(false);
                     },
@@ -271,7 +273,7 @@ const EditRoutine = () => {
         }
     };
 
-    if (loading) return <div>Cargando rutina...</div>;
+    if (loading) return <LoadingMessage text="Cargando rutina..." />;
     if (error) return <div>{error}</div>;
 
     return (
@@ -346,6 +348,7 @@ const EditRoutine = () => {
                              ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
+                                placeholder="Buscar ejercicio..."
                                 value={exercise.nombre}
                                 disabled={originalExercises.some(oe => oe.id === exercise.id)}
                                 onChange={(e) => {
@@ -413,7 +416,7 @@ const EditRoutine = () => {
             </div>
             <Popup text={popupMessage} show={popupMessage !== null} onOk={() => {
                 setPopupMessage(null);
-                if (popupMessage.startsWith("S") /*chapuza épica, lo sé*/) {
+                if (popupMessage.includes("guardados") || popupMessage.includes("Cambios")) {
                     navigate(`/routines`);
                 }
             }}/>
