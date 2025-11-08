@@ -103,7 +103,7 @@ INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routi
     (10, 45, 38, 2, 6),
     (9, 50, 52, 3, 2);
 
-INSERT INTO user_follows (client_id, trainer_id)
+INSERT INTO user_follows (client_id, follow_user_id)
 VALUES
     (3, 1),
     (3, 4),

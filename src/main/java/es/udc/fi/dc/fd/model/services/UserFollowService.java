@@ -1,14 +1,13 @@
 package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserFollow;
 
 import java.util.List;
 
 public interface UserFollowService {
-    UserFollow followTrainer(Long userId, Long trainerId) throws InstanceNotFoundException;
-    void unfollowTrainer(Long userId, Long trainerId) throws InstanceNotFoundException;
-    List<UserFollow> getFollowers(Long trainerId) throws InstanceNotFoundException;
-    List<UserFollow> getFollowedTrainers(Long userId) throws InstanceNotFoundException;
+    UserFollow followUser(Long userId, Long followUserId) throws InstanceNotFoundException;
+    void unfollowUser(Long userId, Long followUserId) throws InstanceNotFoundException;
+    List<UserFollow> getFollowers(Long userId) throws InstanceNotFoundException;
+    List<UserFollow> getFollowedUsers(Long userId) throws InstanceNotFoundException;
 }

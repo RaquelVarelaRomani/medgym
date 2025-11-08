@@ -27,17 +27,17 @@ public class UserFollowServiceImpl implements UserFollowService {
     private NotificationService notificationService;
 
     @Override
-    public UserFollow followTrainer(Long userId, Long trainerId) throws InstanceNotFoundException {
-        User trainer = userService.findUserById(trainerId);
+    public UserFollow followUser(Long userId, Long followUserId) throws InstanceNotFoundException {
+        User trainer = userService.findUserById(followUserId);
 
-        if (trainer.getRole() != User.RoleType.TRAINER || Objects.equals(userId, trainerId)){
-            throw new FollowException(trainerId);
+        if (Objects.equals(userId, followUserId)){
+            throw new FollowException(followUserId);
         }
 
         User user = userService.loginFromId(userId);
 
-        if(userFollowDao.existsByUserAndTrainer(user, trainer)){
-            throw new FollowException(trainerId);
+        if(userFollowDao.existsByUserAndFollowUser(user, trainer)){
+            throw new FollowException(followUserId);
         }
 
         notificationService.createFollowNotification(user, trainer);
@@ -46,26 +46,26 @@ public class UserFollowServiceImpl implements UserFollowService {
     }
 
     @Override
-    public void unfollowTrainer(Long userId, Long trainerId) throws InstanceNotFoundException {
+    public void unfollowUser(Long userId, Long followUserId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
-        User trainer = userService.findUserById(trainerId);
+        User trainer = userService.findUserById(followUserId);
 
-        Optional<UserFollow> userFollow = userFollowDao.findByUserAndTrainer(user, trainer);
+        Optional<UserFollow> userFollow = userFollowDao.findByUserAndFollowUser(user, trainer);
 
         if(userFollow.isEmpty()){
-            throw new FollowException(trainerId);
+            throw new FollowException(followUserId);
         }
 
         userFollowDao.delete(userFollow.get());
     }
 
     @Override
-    public List<UserFollow> getFollowers(Long trainerId) throws InstanceNotFoundException {
-        return userFollowDao.findByTrainer(userService.findUserById(trainerId));
+    public List<UserFollow> getFollowers(Long userId) throws InstanceNotFoundException {
+        return userFollowDao.findByFollowUser(userService.findUserById(userId));
     }
 
     @Override
-    public List<UserFollow> getFollowedTrainers(Long userId) throws InstanceNotFoundException {
+    public List<UserFollow> getFollowedUsers(Long userId) throws InstanceNotFoundException {
         return userFollowDao.findByUser(userService.loginFromId(userId));
     }
 }

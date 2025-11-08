@@ -18,13 +18,13 @@ public class UserFollowController {
 
     @PostMapping("/{trainerId}")
     public UserFollowDto followTrainer(@PathVariable Long trainerId, @RequestAttribute Long userId) throws InstanceNotFoundException {
-        return toUserFollowDto(userFollowService.followTrainer(userId, trainerId));
+        return toUserFollowDto(userFollowService.followUser(userId, trainerId));
     }
 
     @DeleteMapping("/{trainerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void unfollowTrainer(@PathVariable Long trainerId, @RequestAttribute Long userId) throws InstanceNotFoundException {
-        userFollowService.unfollowTrainer(userId, trainerId);
+        userFollowService.unfollowUser(userId, trainerId);
     }
 
     @GetMapping("/followers/{trainerId}")
@@ -34,7 +34,7 @@ public class UserFollowController {
 
     @GetMapping("/client/{userId}/following")
     public List<UserFollowDto> getFollowedTrainers(@PathVariable Long userId) throws InstanceNotFoundException {
-        return UserFollowConversor.toUserFollowDtos(userFollowService.getFollowedTrainers(userId));
+        return UserFollowConversor.toUserFollowDtos(userFollowService.getFollowedUsers(userId));
     }
 
 }
