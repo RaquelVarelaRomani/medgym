@@ -36,7 +36,7 @@ public class UserFollowServiceImpl implements UserFollowService {
 
         User user = userService.loginFromId(userId);
 
-        if(userFollowDao.existsByUserAndFollowUser(user, trainer)){
+        if(userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)){
             throw new FollowException(followUserId);
         }
 

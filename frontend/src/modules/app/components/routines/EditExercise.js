@@ -39,7 +39,6 @@ const EditExercise = () => {
                 loadExercise();
             },
             () => {
-                console.error("Token inválido o expirado");
                 navigate("/users/login");
             }
         );
