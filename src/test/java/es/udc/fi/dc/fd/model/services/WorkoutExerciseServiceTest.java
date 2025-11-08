@@ -153,4 +153,28 @@ public class WorkoutExerciseServiceTest {
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutExerciseService.findWorkoutExercisesByWorkoutId(999L));
     }
+
+    @Test
+    public void testFindWorkoutExercisesByWorkoutIdsReturnsExercises(){
+        Workout workout1 = workoutDao.save(new Workout(LocalDateTime.now().minusHours(1), null, routine, client));
+        Workout workout2 = workoutDao.save(new Workout(LocalDateTime.now().minusHours(2), null, routine, client));
+
+        assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise((short) 10, (short) 50, (short) 60, workout1.getId(), routineExercise.getId()));
+        assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise((short) 8, (short) 40, (short) 45, workout2.getId(), routineExercise.getId()));
+
+        List<WorkoutExercise> exercises = assertDoesNotThrow(() ->
+                workoutExerciseService.findWorkoutExercisesByWorkoutIds(List.of(workout1.getId(), workout2.getId())));
+
+        assertEquals(2, exercises.size());
+        assertTrue(exercises.stream().allMatch(we ->
+                we.getWorkout().getId().equals(workout1.getId()) || we.getWorkout().getId().equals(workout2.getId())));
+    }
+
+    @Test
+    public void testFindWorkoutExercisesByWorkoutIdsEmptyList(){
+        List<WorkoutExercise> exercises = assertDoesNotThrow(() ->
+                workoutExerciseService.findWorkoutExercisesByWorkoutIds(List.of()));
+
+        assertTrue(exercises.isEmpty());
+    }
 }
