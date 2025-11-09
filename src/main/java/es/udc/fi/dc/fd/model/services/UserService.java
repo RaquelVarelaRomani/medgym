@@ -5,10 +5,10 @@ import java.util.List;
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 
 public interface UserService {
 	void signUp(User user) throws DuplicateInstanceException;
@@ -21,4 +21,5 @@ public interface UserService {
 	void deleteUser(Long id);
 	void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
 	void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
+	List<User> searchUsers(Long currentUserId, String query);
 }

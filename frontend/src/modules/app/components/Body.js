@@ -45,6 +45,7 @@ const Body = () => {
                     <Route path="exercises/:id" element={<Layout><ExerciseDetails /></Layout>} />
                     <Route path="users/followers" element={<Layout><FollowersPage /></Layout>} />
                     <Route path="users/profile" element={<Layout><Profile /></Layout>} />
+                    <Route path="users/:userId/profile" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
                     <Route path="users/moderation" element={<Layout><UserModeration /></Layout>} />

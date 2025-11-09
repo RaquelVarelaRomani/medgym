@@ -12,11 +12,10 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
-
 import es.udc.fi.dc.fd.util.EmailValidation;
 
 @Service
@@ -155,5 +154,14 @@ public class UserServiceImpl implements UserService {
 		}
 
 		user.setStatus(User.StatusType.ACTIVE);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<User> searchUsers(Long currentUserId, String query) {
+		List<User> users = userDao.findByNameAndSurnameContainingIgnoreCase(query);
+		return users.stream()
+			.filter(user -> !user.getId().equals(currentUserId))
+			.toList();
 	}
 }

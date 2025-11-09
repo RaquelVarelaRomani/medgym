@@ -86,3 +86,10 @@ export const deleteUser = (id, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 );
+
+export const searchUsers = (query, onSuccess, onErrors) => appFetch(
+    `/users/search?q=${encodeURIComponent(query)}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

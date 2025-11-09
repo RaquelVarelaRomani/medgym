@@ -8,6 +8,7 @@ import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
 import NotificationPopup from "./common/notifications/NotificationPopup";
+import UserSearch from "./users/UserSearch";
 import { getFollowers } from '../../../backend/userFollowService';
 
 const Header = () => {
@@ -19,10 +20,18 @@ const Header = () => {
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [followersCount, setFollowersCount] = useState(0);
+    const [showUserSearch, setShowUserSearch] = useState(false);
     const dropdownComponent = useRef(null);
 
     const handleToggleNotifications = () => {
         setShowNotifications(prev => !prev);
+        setIsDropdownOpen(false);
+        setShowUserSearch(false);
+    };
+
+    const handleToggleUserSearch = () => {
+        setShowUserSearch(prev => !prev);
+        setShowNotifications(false);
         setIsDropdownOpen(false);
     };
 
@@ -76,6 +85,7 @@ const Header = () => {
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
                 setIsDropdownOpen(false);
                 setShowNotifications(false);
+                setShowUserSearch(false);
             }
         };
 
@@ -122,6 +132,7 @@ const Header = () => {
     const handleProfileClick = () => {
         setIsDropdownOpen(prev => !prev);
         setShowNotifications(false);
+        setShowUserSearch(false);
     };
 
     const handleViewProfile = () => {
@@ -213,6 +224,13 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
+                    <button
+                        className={styles['search-button']}
+                        onClick={handleToggleUserSearch}
+                        title="Buscar usuarios"
+                    >
+                        🔍
+                    </button>
                     <div className={styles['notification-wrapper']}>
                         <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />
                         {showNotifications && (
@@ -264,6 +282,10 @@ const Header = () => {
                         )}
                     </div>
                 </div>
+                <UserSearch
+                    isOpen={showUserSearch}
+                    onClose={() => setShowUserSearch(false)}
+                />
             </div>
         </header>
     );
