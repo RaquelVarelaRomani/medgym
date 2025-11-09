@@ -4,6 +4,7 @@ import styles from "./ExerciseDetails.module.css";
 import * as exerciseService from "../../../../backend/exerciseService";
 import LoadingMessage from "../common/LoadingMessage";
 import { h3 } from "framer-motion/client";
+import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
 const ExerciseDetails = () => {
     const { id } = useParams();
@@ -44,8 +45,8 @@ const ExerciseDetails = () => {
             <div className={styles["info-ejercicio"]}>
             <div className={styles["detalles-ejercicio"]}>
                 <p><strong>Descripción:</strong> {exercise.description}</p>
-                <p><strong>Grupo muscular:</strong> {exercise.muscleGroup || "No especificado"}</p>
-                <p><strong>Equipamiento:</strong> {exercise.equipment || "No especificado"}</p>
+                <p><strong>Grupo muscular:</strong> {getMuscleGroupsText(exercise.muscleGroup) || "No especificado"}</p>
+                <p><strong>Equipamiento:</strong> {getEquipmentText(exercise.equipment) || "No especificado"}</p>
             </div>
 
             <div className={styles["imagen-ejercicio"]}>

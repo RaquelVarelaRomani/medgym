@@ -1484,7 +1484,7 @@ describe("Common Components", () => {
     test("notification popup onNotificationRead handler works for read action", async () => {
       const mockUser = { id: 1, role: "CLIENT" };
       const mockNotifications = [
-        { id: 1, message: "Test notification", isRead: false, type: "LIKE", idToRedirect: 1 },
+        { id: 1, message: "Test notification", isRead: false, type: "ROUTINE_LIKE", idToRedirect: 1 },
       ];
 
       tryLoginFromServiceToken.mockImplementation((success) =>
