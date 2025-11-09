@@ -11,6 +11,7 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import LoadingMessage from "../common/LoadingMessage";
 import * as workoutService from "../../../../backend/workoutService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
 
 const RoutineDetails = () => {
@@ -233,8 +234,8 @@ const RoutineDetails = () => {
               <div className={styles["ejercicio-contenido"]}>
                 <div className={styles["detalles-ejercicio"]}>
                   <p><strong>Descripción:</strong> {exercise.exerciseDescription}</p>
-                  <p><strong>Grupo muscular:</strong> {exercise.muscleGroup || "No especificado"}</p>
-                  <p><strong>Equipamiento:</strong> {exercise.equipment || "No especificado"}</p>
+                  <p><strong>Grupo muscular:</strong> {getMuscleGroupsText(exercise.muscleGroup) || "No especificado"}</p>
+                  <p><strong>Equipamiento:</strong> {getEquipmentText(exercise.equipment) || "No especificado"}</p>
                 </div>
 
                 <div className={styles["imagen-ejercicio"]}>

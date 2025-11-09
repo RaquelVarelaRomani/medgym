@@ -7,7 +7,7 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import {getMuscleGroups, getEquipments} from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
 import HeartLike from "../common/HeartLike";
-import {getLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
+import {getRoutineLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
 import * as workoutService from "../../../../backend/workoutService";
 import {getDifficultyText, getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
@@ -195,7 +195,7 @@ const Routines = () => {
     };
 
     const loadRoutineLikes = () => {
-        getLikes(
+        getRoutineLikes(
             data => setRoutineLikes(data),
             error => console.error("Error loading routine likes:", error)
         )

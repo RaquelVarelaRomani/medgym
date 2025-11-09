@@ -10,4 +10,6 @@ public interface UserFollowDao extends JpaRepository<UserFollow, Long> {
     Optional<UserFollow> findByUserAndTrainer(User user, User trainer);
     List<UserFollow> findByTrainer(User trainer);
     List<UserFollow> findByUser(User user);
+
+    List<UserFollow> findByTrainerId(Long trainerId);
 }

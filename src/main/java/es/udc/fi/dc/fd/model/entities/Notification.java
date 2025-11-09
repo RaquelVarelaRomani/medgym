@@ -19,7 +19,9 @@ public class Notification {
     public enum NotificationType {
         NEW_ROUTINE,
         FOLLOW,
-        LIKE
+        ROUTINE_LIKE,
+        WORKOUT_LIKE,
+        WORKOUT_COMMENT
     }
 
     public Notification() {}
