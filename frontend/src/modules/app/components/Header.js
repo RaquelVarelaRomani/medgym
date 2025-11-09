@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
+import notificationStyles from './common/notifications/NotificationIcon.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import * as workoutService from "../../../backend/workoutService";
 import {markNotificationAsRead} from "../../../backend/notificationService";
@@ -225,11 +226,15 @@ const Header = () => {
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
                     <button
-                        className={styles['search-button']}
+                        className={notificationStyles['search-button']}
                         onClick={handleToggleUserSearch}
                         title="Buscar usuarios"
                     >
-                        🔍
+                        <img
+                            src={process.env.PUBLIC_URL + "/assets/search-icon.svg"}
+                            alt="Buscar usuarios"
+                            className={notificationStyles['notification-icon']}
+                        />
                     </button>
                     <div className={styles['notification-wrapper']}>
                         <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />

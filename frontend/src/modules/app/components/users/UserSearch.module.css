@@ -1,14 +1,16 @@
 .overlay {
     position: fixed;
-    top: 0;
+    top: 100px;
     left: 0;
     right: 0;
+    width: 100vw;
+    height: 100vh;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 100px;
+    padding-top: 20px;
     z-index: 2000;
 }
 
@@ -86,7 +88,7 @@
 .userItem {
     display: flex;
     align-items: center;
-    padding: 16px 20px;
+    padding: 16px 20px 16px 30px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.3s ease;
 }
@@ -109,11 +111,9 @@
     color: var(--text-primary);
     font-size: 16px;
     margin-bottom: 4px;
-}
-
-.userEmail {
-    color: var(--text-secondary);
-    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .userActions {

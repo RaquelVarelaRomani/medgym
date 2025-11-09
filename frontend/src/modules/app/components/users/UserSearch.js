@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { searchUsers, tryLoginFromServiceToken } from '../../../../backend/userService';
 import { followTrainer, unfollowTrainer, getFollowedTrainers } from '../../../../backend/userFollowService';
 import ProfilePhoto from '../common/profilePhoto';
-import LoadingMessage from '../common/LoadingMessage';
 import styles from './UserSearch.module.css';
 
 const UserSearch = ({ isOpen, onClose }) => {
@@ -125,7 +124,6 @@ const UserSearch = ({ isOpen, onClose }) => {
                                     <div className={styles.userName}>
                                         {user.name} {user.surname}
                                     </div>
-                                    <div className={styles.userEmail}>{user.email}</div>
                                 </div>
                                 <div className={styles.userActions}>
                                     <button
