@@ -23,12 +23,12 @@ public class RoutineLikeController {
     }
 
     @GetMapping("/routineLikes")
-    public List<RoutineLikeDto> getLikesByUser(@RequestAttribute Long userId) {
-        return toRoutineLikeDtos(routineLikeService.getLikesByUser(userId));
+    public List<RoutineLikeDto> getRoutineLikesByUser(@RequestAttribute Long userId) {
+        return toRoutineLikeDtos(routineLikeService.getRoutineLikesByUser(userId));
     }
 
     @DeleteMapping("/routines/{routineId}/unlike")
-    public void deleteLike(@RequestAttribute Long userId, @PathVariable Long routineId) {
+    public void unlikeRoutine(@RequestAttribute Long userId, @PathVariable Long routineId) {
         routineLikeService.unlikeRoutine(userId, routineId);
     }
 

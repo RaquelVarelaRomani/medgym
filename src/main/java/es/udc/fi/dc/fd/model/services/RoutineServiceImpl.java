@@ -41,7 +41,7 @@ public class RoutineServiceImpl implements RoutineService {
 
         routine = routineDao.save(routine);
 
-        notificationService.createNewRoutineNotification(routine);
+        notificationService.createNewRoutineNotification(routine.getId());
 
         return routine;
     }

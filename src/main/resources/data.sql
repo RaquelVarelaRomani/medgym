@@ -135,3 +135,35 @@ INSERT INTO routine_likes (routine_id, user_id) VALUES
     (3, 5),
     (4, 1),
     (2, 4);
+
+
+-- Likes
+INSERT INTO workout_likes (workout_id, user_id) VALUES
+    (1, 2),  -- Laura sobre entrenamiento de Carlos
+    (1, 3),  -- Miguel sobre entrenamiento de Carlos
+    (3, 1),  -- Carlos sobre entrenamiento de Laura
+    (4, 3),  -- Miguel sobre entrenamiento de Laura
+    (5, 2),  -- Laura sobre entrenamiento de Miguel
+    (7, 5),  -- Ana sobre entrenamiento de Sofía
+    (8, 3),  -- Miguel sobre entrenamiento de Ana
+    (10, 4); -- Sofía sobre entrenamiento de Miguel
+
+-- Comentarios: el autor nunca comenta su propio workout
+INSERT INTO workout_comments (text, workout_id, user_id) VALUES
+    ('Buena ejecución en sentadillas. Ritmo estable.', 1, 2),
+    ('Se ve mejora respecto a la sesión pasada.', 1, 3),
+
+    ('Progresión sólida. Mantén técnica en press banca.', 3, 1),
+    ('Buen control respiratorio en esta sesión.', 3, 4),
+
+    ('Cardio intenso. Buen cierre de series.', 5, 2),
+    ('Notable resistencia, ritmo constante.', 5, 1),
+
+    ('Sesión muy equilibrada y relajante.', 7, 5),
+    ('Transiciones limpias. Flujo constante.', 7, 2),
+
+    ('Buen enfoque en espalda. Repetir configuración.', 8, 3),
+    ('Movimiento controlado en cargas medias.', 8, 4),
+
+    ('Progresión clara. Ajustar peso en próxima sesión.', 10, 2),
+    ('Buena técnica en fases finales.', 10, 5);
