@@ -1,17 +1,15 @@
 package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import es.udc.fi.dc.fd.model.entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import es.udc.fi.dc.fd.model.entities.Workout;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -53,7 +51,10 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public void deleteWorkoutsByRoutine(Long routineId) {
-        workoutDao.deleteByRoutineId(routineId);
+    public List<Workout> findWorkoutsFromFollowing(Long userId) {
+        return workoutDao.findAll().stream()
+                .filter(w -> !Objects.equals(w.getUser().getId(), userId))
+                .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
+                .toList();
     }
 }

@@ -10,5 +10,5 @@ public interface WorkoutService {
     void finishWorkout(Long id) throws InstanceNotFoundException;
     Workout findWorkoutById(Long id) throws InstanceNotFoundException;
     List<Workout> findWorkoutsFromUser(Long userId);
-    void deleteWorkoutsByRoutine(Long routineId);
+    List<Workout> findWorkoutsFromFollowing(Long userId);
 }

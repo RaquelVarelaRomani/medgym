@@ -8,7 +8,7 @@ INSERT INTO users (name, surname, email, phone_number, password, profile_picture
 
 -- Insertar rutinas (entrenadores: Carlos id=1, Sofía id=4)
 INSERT INTO routines (name, description, trainer_id, visibility) VALUES
-    ('Rutina fuerza inicial', 'Entrenamiento básico de fuerza con pesas libres. Incluye:\n- Sentadillas (3 series de 10 reps)\n- Flexiones (3 series de 12 reps)\n- Peso muerto (3 series de 8 reps)\n- Press banca (3 series de 10 reps).', 1, 0),
+    ('Rutina fuerza inicial', 'Rutina básica de fuerza con pesas libres. Incluye:\n- Sentadillas (3 series de 10 reps)\n- Flexiones (3 series de 12 reps)\n- Peso muerto (3 series de 8 reps)\n- Press banca (3 series de 10 reps).', 1, 0),
     ('Rutina cardio avanzado', 'Sesión intensiva de cardio de alta intensidad. Incluye:\n- Burpees (3 series de 30 segundos)\n- Saltos de comba (3 series de 1 minuto)\n- Mountain climbers (3 series de 45 segundos).', 1, 0),
     ('Rutina cuerpo completo', 'Ejercicios generales para trabajar todo el cuerpo. Incluye:\n- Sentadillas (3 series de 10 reps)\n- Flexiones (3 series de 12 reps)\n- Zancadas (3 series de 10 reps por pierna)\n- Dominadas (3 series de 8 reps).', 4, 0),
     ('Rutina yoga relajación', 'Rutina de yoga y estiramientos para relajación. Incluye:\n- Plancha abdominal (mantener 3 series de 30 segundos).', 4, 0),
@@ -149,21 +149,49 @@ INSERT INTO workout_likes (workout_id, user_id) VALUES
     (10, 4); -- Sofía sobre entrenamiento de Miguel
 
 -- Comentarios: el autor nunca comenta su propio workout
-INSERT INTO workout_comments (text, workout_id, user_id) VALUES
-    ('Buena ejecución en sentadillas. Ritmo estable.', 1, 2),
-    ('Se ve mejora respecto a la sesión pasada.', 1, 3),
+INSERT INTO workout_comments (text, date, workout_id, user_id) VALUES
+    ('Buena sesión, ritmo suave pero constante.', '2025-02-01 19:42:00', 3, 4),
+    ('Postura controlada y estable durante todo el entrenamiento.', '2025-02-01 19:45:00', 3, 2),
 
-    ('Progresión sólida. Mantén técnica en press banca.', 3, 1),
-    ('Buen control respiratorio en esta sesión.', 3, 4),
+    ('Trabajo sólido, especialmente en la fase final.', '2025-01-28 18:03:00', 5, 3),
 
-    ('Cardio intenso. Buen cierre de series.', 5, 2),
-    ('Notable resistencia, ritmo constante.', 5, 1),
+    ('Respiración muy bien acompañada del movimiento.', '2025-02-04 07:55:00', 9, 5),
+    ('Mejora visible respecto a la semana pasada.', '2025-02-04 08:00:00', 9, 1),
+    ('Fluidez general muy buena en los cambios.', '2025-02-04 08:04:00', 9, 5),
 
-    ('Sesión muy equilibrada y relajante.', 7, 5),
-    ('Transiciones limpias. Flujo constante.', 7, 2),
+    ('Buena activación desde el calentamiento.', '2025-01-30 17:12:00', 4, 1),
+    ('Control de tempo adecuado.', '2025-01-30 17:14:00', 4, 3),
+    ('Buen enfoque en técnica más que en peso. Correcto.', '2025-01-30 17:16:00', 4, 5),
+    ('La estabilidad lumbar destaca.', '2025-01-30 17:19:00', 4, 2),
+    ('Buen cierre, sin aceleraciones innecesarias.', '2025-01-30 17:22:00', 4, 5),
 
-    ('Buen enfoque en espalda. Repetir configuración.', 8, 3),
-    ('Movimiento controlado en cargas medias.', 8, 4),
+    ('Sesión eficiente y sin derroches energéticos.', '2025-02-06 20:31:00', 7, 2),
+    ('Transiciones muy limpias.', '2025-02-06 20:33:00', 7, 4),
+    ('Respiración acompasada todo el tiempo.', '2025-02-06 20:35:00', 7, 3),
+    ('Tono muscular estable durante todo el bloque.', '2025-02-06 20:36:00', 7, 5),
+    ('Muy buena combinación de ejercicios en cadena posterior.', '2025-02-06 20:38:00', 7, 1),
+    ('Se nota disciplina en progresión.', '2025-02-06 20:41:00', 7, 5),
 
-    ('Progresión clara. Ajustar peso en próxima sesión.', 10, 2),
-    ('Buena técnica en fases finales.', 10, 5);
+    ('Intensidad bien distribuida.', '2025-01-22 10:11:00', 1, 3),
+    ('Muy buen control postural.', '2025-01-22 10:13:00', 1, 5),
+    ('Entrada en calor progresiva y eficaz.', '2025-01-22 10:15:00', 1, 5),
+    ('Transiciones estables entre ejercicios.', '2025-01-22 10:18:00', 1, 2),
+    ('Rango de movimiento completo.', '2025-01-22 10:21:00', 1, 4),
+    ('Técnica priorizada sobre carga. Correcto.', '2025-01-22 10:24:00', 1, 1),
+    ('Buen manejo del esfuerzo en el último bloque.', '2025-01-22 10:26:00', 1, 3),
+    ('Respiración diafragmática bien aplicada.', '2025-01-22 10:29:00', 1, 2),
+    ('Fase excéntrica controlada.', '2025-01-22 10:32:00', 1, 5),
+    ('Trabajo muy equilibrado en empuje y tracción.', '2025-01-22 10:35:00', 1, 5),
+    ('Coherencia entre intención y ejecución.', '2025-01-22 10:37:00', 1, 4),
+    ('Se nota experiencia.', '2025-01-22 10:40:00', 1, 3),
+
+    ('Ritmo sostenido en movimientos complejos.', '2025-02-02 21:45:00', 10, 2),
+    ('Técnica más pulida que la semana pasada.', '2025-02-02 21:48:00', 10, 4),
+    ('Buen autoajuste de carga sin perder forma.', '2025-02-02 21:50:00', 10, 5),
+    ('Concentración constante.', '2025-02-02 21:52:00', 10, 1),
+    ('Estabilidad de cadera notable.', '2025-02-02 21:55:00', 10, 5),
+    ('Control respiratorio ejemplar.', '2025-02-02 21:58:00', 10, 3),
+    ('La sesión se ve muy bien estructurada.', '2025-02-02 22:00:00', 10, 2),
+    ('Buen foco en movilidad en las transiciones.', '2025-02-02 22:02:00', 10, 4),
+    ('Fluidez y calma en la ejecución.', '2025-02-02 22:05:00', 10, 5),
+    ('Nada de compensaciones, muy limpio.', '2025-02-02 22:08:00', 10, 1);

@@ -59,3 +59,10 @@ export const getWorkoutExercisesByWorkoutId = (workoutId, onSuccess, onErrors) =
     onSuccess,
     onErrors
   );
+
+export const getWorkoutsFromFollowing = (onSuccess, onErrors) => appFetch(
+    `/workouts/following`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

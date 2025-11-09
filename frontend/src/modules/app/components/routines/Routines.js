@@ -176,7 +176,7 @@ const Routines = () => {
 
         const handleError = (errors) => {
             console.error("Error loading routines:", errors);
-            setError(errors.globalError || "Error al cargar los entrenamientos");
+            setError(errors.globalError || "Error al cargar las rutinas");
             setLoading(false);
         };
 
@@ -346,7 +346,7 @@ const Routines = () => {
         return (
             <div className={styles.contenedor}>
                 <div className={styles["loading-message"]}>
-                    Cargando entrenamientos...
+                    Cargando rutinas...
                 </div>
             </div>
         );
@@ -371,7 +371,7 @@ const Routines = () => {
     return (
         <div className={styles.contenedor}>
             <div className={styles["routines-header"]}>
-                <h2>Entrenamientos</h2>
+                <h2>Rutinas</h2>
                 <button
                     className={styles["filter-toggle-button"]}
                     onClick={() => setShowFilters(!showFilters)}
@@ -586,7 +586,7 @@ const Routines = () => {
             )}
 
             <div className={styles["search-container"]}>
-                <h3 className={styles['search-title']}>Buscar entrenamientos</h3>
+                <h3 className={styles['search-title']}>Buscar rutinas</h3>
                 <div className={styles['search-input-wrapper']} ref={searchRef}>
                     <svg className={styles['search-icon']} width="20" height="20" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor">

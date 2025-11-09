@@ -75,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
         notificationDao.save(new Notification(
-                user.getName() + " ha dado like a tu entrenamiento de " + workout.getRoutine().getName(),
+                user.getName() + " ha dado like a tu entrenamiento de '" + workout.getRoutine().getName() + "'",
                 NotificationType.WORKOUT_LIKE,
                 workout.getId(),
                 workout.getUser(),

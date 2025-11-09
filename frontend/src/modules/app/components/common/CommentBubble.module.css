@@ -1,0 +1,34 @@
+.commentButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.commentButton.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.commentWrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.commentIcon {
+    color: rgba(255,255,255,0.5);
+    transition: color 0.25s ease;
+}
+
+.commentButton:hover .commentIcon {
+    color: var(--neon-orange);
+}
+
+.count {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.75);
+}

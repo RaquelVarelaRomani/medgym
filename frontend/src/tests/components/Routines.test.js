@@ -754,7 +754,7 @@ describe("Routines Components", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Estás creando un nuevo entrenamiento..."),
+          screen.getByText("Estás creando una nueva rutina..."),
         ).toBeInTheDocument();
         expect(
           screen.getByPlaceholderText("Escriba aquí el título de la rutina."),
@@ -4201,7 +4201,7 @@ describe("Routines Components", () => {
       );
 
       expect(
-        screen.getByText("Cargando entrenamientos..."),
+        screen.getByText("Cargando rutinas..."),
       ).toBeInTheDocument();
     });
 
@@ -6338,7 +6338,7 @@ test("allows admin to edit routine", async () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Error al cargar los entrenamientos"),
+          screen.getByText("Error al cargar las rutinas"),
         ).toBeInTheDocument();
         expect(screen.getByText("Intentar de nuevo")).toBeInTheDocument();
       });

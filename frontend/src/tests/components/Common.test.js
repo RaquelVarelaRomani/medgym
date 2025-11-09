@@ -980,7 +980,7 @@ describe("Common Components", () => {
       );
 
       expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-      expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+      expect(screen.getByText("Rutinas")).toBeInTheDocument();
       expect(screen.getByText("Ejercicios")).toBeInTheDocument();
       expect(screen.getByText("Historial")).toBeInTheDocument();
     });
@@ -1332,7 +1332,7 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1398,7 +1398,7 @@ describe("Common Components", () => {
       window.dispatchEvent(new CustomEvent("routineDeleted"));
 
       await waitFor(() => {
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1540,7 +1540,7 @@ describe("Common Components", () => {
       );
 
       await waitFor(() => {
-        const routinesLink = screen.getByText("Entrenamientos").closest("a");
+        const routinesLink = screen.getByText("Rutinas").closest("a");
         expect(routinesLink).toHaveClass("active");
       });
     });

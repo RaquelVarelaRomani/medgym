@@ -3,13 +3,13 @@ package es.udc.fi.dc.fd.rest.controllers;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutForFeedDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDto;
-import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDtos;
+import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.*;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -36,5 +36,10 @@ public class WorkoutController {
     @GetMapping
     public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+    }
+
+    @GetMapping("/following")
+    public List<WorkoutForFeedDto> getWorkoutsFromFollowing(@RequestAttribute Long userId) {
+        return toWorkoutForFeedDtos(workoutService.findWorkoutsFromFollowing(userId));
     }
 }

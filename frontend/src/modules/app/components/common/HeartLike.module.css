@@ -83,3 +83,9 @@
     border: 2px solid var(--neon-orange);
     border-radius: 50%;
 }
+
+.workout-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
