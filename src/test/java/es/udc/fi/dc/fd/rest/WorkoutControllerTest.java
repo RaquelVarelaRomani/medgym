@@ -83,7 +83,7 @@ public class WorkoutControllerTest {
         routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
         routineDao.save(routine);
 
-        Exercise exercise = new Exercise("Sentadillas", "Ejercicio para piernas", "Piernas", "Ninguno", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
+        Exercise exercise = new Exercise("Sentadillas", "Ejercicio para piernas", Exercise.MuscleGroup.LEG, Exercise.Equipment.NONE, new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exerciseDao.save(exercise);
 
         routineExercise = new RoutineExercise(routine, exercise, 1);

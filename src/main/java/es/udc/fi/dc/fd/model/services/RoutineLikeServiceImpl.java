@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +20,7 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
 
     @Autowired
     private RoutineDao routineDao;
+
     @Autowired
     private NotificationService notificationService;
 
@@ -35,15 +35,14 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
 
         Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routine", routineId));
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
-        notificationService.createLikeNotification(
-                user,
-                routine.getTrainer(),
-                routine
+        notificationService.createRoutineLikeNotification(
+                user.getId(),
+                routine.getId()
         );
     }
 
     @Override
-    public List<RoutineLike> getLikesByUser(Long userId) {
+    public List<RoutineLike> getRoutineLikesByUser(Long userId) {
         return routineLikeDao.findByUserId(userId);
     }
 

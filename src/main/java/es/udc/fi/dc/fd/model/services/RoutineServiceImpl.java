@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import es.udc.fi.dc.fd.model.entities.Exercise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class RoutineServiceImpl implements RoutineService {
 
         routine = routineDao.save(routine);
 
-        notificationService.createNewRoutineNotification(routine);
+        notificationService.createNewRoutineNotification(routine.getId());
 
         return routine;
     }
@@ -138,7 +139,7 @@ public class RoutineServiceImpl implements RoutineService {
             Set<Routine> equipmentRoutines = new HashSet<>();
 
             for (String equip : equipmentList) {
-                equipmentRoutines.addAll(routineDao.findByEquipment(equip.trim()));
+                equipmentRoutines.addAll(routineDao.findByEquipment(Exercise.Equipment.valueOf(equip.trim())));
             }
 
             routines = routines.stream()
@@ -152,7 +153,7 @@ public class RoutineServiceImpl implements RoutineService {
             Set<Routine> muscleGroupRoutines = new HashSet<>();
 
             for (String group : muscleGroupList) {
-                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(group.trim()));
+                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(Exercise.MuscleGroup.valueOf(group.trim())));
             }
 
             routines = routines.stream()

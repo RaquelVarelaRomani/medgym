@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -86,12 +85,12 @@ public class RoutineLikeControllerTest {
                         .requestAttr("userId", clientUser.getUserDto().getId()))
                 .andExpect(status().isOk());
 
-        List<?> likes = routineLikeService.getLikesByUser(clientUser.getUserDto().getId());
+        List<?> likes = routineLikeService.getRoutineLikesByUser(clientUser.getUserDto().getId());
         org.junit.Assert.assertEquals(1, likes.size());
     }
 
     @Test
-    public void testGetLikesByUser() throws Exception {
+    public void testGetRoutineLikesByUser() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
                 "Rutina consultar likes", "Descripción", trainer,
@@ -120,7 +119,7 @@ public class RoutineLikeControllerTest {
                         .requestAttr("userId", clientUser.getUserDto().getId()))
                 .andExpect(status().isOk());
 
-        List<?> likes = routineLikeService.getLikesByUser(clientUser.getUserDto().getId());
+        List<?> likes = routineLikeService.getRoutineLikesByUser(clientUser.getUserDto().getId());
         org.junit.Assert.assertTrue(likes.isEmpty());
     }
 }

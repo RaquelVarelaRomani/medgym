@@ -14,8 +14,8 @@ public interface RoutineDao extends JpaRepository<Routine, Long> {
     Optional<Routine> findByName(String name);
 
     @Query("SELECT DISTINCT r FROM Routine r JOIN FETCH r.routineExercises re JOIN FETCH re.exercise e WHERE e.muscleGroup = :muscleGroup")
-    List<Routine> findByMuscleGroup(@Param("muscleGroup") String muscleGroup);
+    List<Routine> findByMuscleGroup(@Param("muscleGroup") Exercise.MuscleGroup muscleGroup);
 
     @Query("SELECT DISTINCT r FROM Routine r JOIN FETCH r.routineExercises re JOIN FETCH re.exercise e WHERE e.equipment = :equipment")
-    List<Routine> findByEquipment(@Param("equipment") String equipment);
+    List<Routine> findByEquipment(@Param("equipment") Exercise.Equipment equipment);
 }

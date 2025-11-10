@@ -27,6 +27,9 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -51,7 +54,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user){
-        Exercise exercise = new Exercise(exerciseName, "The description", "Piernas", "Mancuernas", new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
+        Exercise exercise = new Exercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 

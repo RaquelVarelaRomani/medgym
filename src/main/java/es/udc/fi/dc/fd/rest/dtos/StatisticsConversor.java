@@ -33,7 +33,8 @@ public class StatisticsConversor {
         performedExercises.forEach(we -> {
             String muscleGroup = we.getRoutineExercise()
                     .getExercise()
-                    .getMuscleGroup();
+                    .getMuscleGroup()
+                    .name();
             stats.put(muscleGroup, stats.getOrDefault(muscleGroup, 0) + 1);
         });
 

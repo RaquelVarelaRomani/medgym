@@ -11,6 +11,7 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import LoadingMessage from "../common/LoadingMessage";
 import * as workoutService from "../../../../backend/workoutService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
 
 const RoutineDetails = () => {
@@ -199,6 +200,27 @@ const RoutineDetails = () => {
               <h3>
                 {index + 1}. {exercise.exerciseName}
               </h3>
+
+              {/*Warning*/}
+              {exercise.blocked && (
+                <div
+                  className={styles["warning-badge"]}
+                  onClick={(e) => e.stopPropagation()}
+                  title={
+                    isAdmin()
+                      ? "Has bloqueado este ejercicio."
+                      : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."
+                  }
+                >
+                  <span aria-hidden className={styles["warning-icon"]}>⚠️</span>
+                  <span className={styles["warning-text"]}>
+                    {isAdmin()
+                      ? "Has bloqueado este ejercicio."
+                      : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."}
+                  </span>
+                </div>
+              )}
+
               <span
                 className={`${styles.flecha} ${
                   expandedExercises[exercise.id] ? styles.expandida : ""
@@ -210,9 +232,29 @@ const RoutineDetails = () => {
 
             {expandedExercises[exercise.id] && (
               <div className={styles["ejercicio-contenido"]}>
-                <p className={styles["descripcion-ejercicio"]}>
-                  {exercise.exerciseDescription}
-                </p>
+                <div className={styles["detalles-ejercicio"]}>
+                  <p><strong>Descripción:</strong> {exercise.exerciseDescription}</p>
+                  <p><strong>Grupo muscular:</strong> {getMuscleGroupsText(exercise.muscleGroup) || "No especificado"}</p>
+                  <p><strong>Equipamiento:</strong> {getEquipmentText(exercise.equipment) || "No especificado"}</p>
+                </div>
+
+                <div className={styles["imagen-ejercicio"]}>
+                  {exercise.image ? (
+                    <img
+                      src={
+                        exercise.image.startsWith("data:")
+                          ? exercise.image
+                          : `data:image/jpeg;base64,${exercise.image}`
+                      }
+                      alt={exercise.exerciseName}
+                    />
+                  ) : (
+                    <img
+                      src={process.env.PUBLIC_URL + "/assets/default-exercise.jpg"}
+                      alt="Imagen por defecto"
+                    />
+                  )}
+                </div>
               </div>
             )}
           </div>

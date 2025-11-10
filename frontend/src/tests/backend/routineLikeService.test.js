@@ -1,7 +1,7 @@
 import { fetchConfig } from "../../backend/appFetch";
 import {
   likeRoutine,
-  getLikes,
+  getRoutineLikes,
   unlikeRoutine
 } from "../../backend/routineLikeService";
 
@@ -76,7 +76,7 @@ describe("routineLikeService", () => {
         success(mockData);
       });
 
-      getLikes(onSuccess, onErrors);
+      getRoutineLikes(onSuccess, onErrors);
 
       expect(onSuccess).toHaveBeenCalledWith(mockData);
       expect(onErrors).not.toHaveBeenCalled();
@@ -91,7 +91,7 @@ describe("routineLikeService", () => {
         errors(mockError);
       });
 
-      getLikes(onSuccess, onErrors);
+      getRoutineLikes(onSuccess, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith(mockError);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe("routineLikeService", () => {
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
-      getLikes(onSuccess, onErrors);
+      getRoutineLikes(onSuccess, onErrors);
 
       expect(mockAppFetch).toHaveBeenCalledWith(
         `/routineLikes`,

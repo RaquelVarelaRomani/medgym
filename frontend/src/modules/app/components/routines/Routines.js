@@ -4,11 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import * as exerciseService from "../../../../backend/exerciseService";
+import {getMuscleGroups, getEquipments} from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
 import HeartLike from "../common/HeartLike";
-import {getLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
+import {getRoutineLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
 import * as workoutService from "../../../../backend/workoutService";
+import {getDifficultyText, getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
 
 const Routines = () => {
@@ -26,21 +27,12 @@ const Routines = () => {
     const [showFilters, setShowFilters] = useState(false);
     const filterRefs = useRef({});
     const [availableTrainers, setAvailableTrainers] = useState([]);
-    const [availableMuscleGroups] = useState([
-        "Bíceps",
-        "Core",
-        "Espalda",
-        "Full body",
-        "Hombros",
-        "Pectorales",
-        "Piernas",
-        "Tríceps",
-    ]);
+    const [availableMuscleGroups, setAvailableMuscleGroups] = useState([]);
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const [following, setFollowing] = useState([]);
     const [trainerToUnfollow, setTrainerToUnfollow] = useState(null);
     const [routineLikes, setRoutineLikes] = useState({});
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm]  = useState("");
     const [showSearchResults, setShowSearchResults] = useState(false);
     const searchRef = useRef(null);
     const [allRoutines, setAllRoutines] = useState([]);
@@ -51,7 +43,6 @@ const Routines = () => {
                 const user = authenticatedUser.user;
                 setCurrentUser(user);
                 loadAllTrainers();
-                loadAllEquipment();
                 loadRoutines();
                 loadRoutineLikes();
                 if (user.role === "CLIENT") {
@@ -87,6 +78,22 @@ const Routines = () => {
             (err) => console.error("Error cargando follows", err)
         );
     };
+
+    useEffect(() => {
+        getMuscleGroups(
+            (data) => {
+                setAvailableMuscleGroups(data)
+            },
+            (errors) => console.error("Error loading muscle groups:", errors)
+        )
+
+        getEquipments(
+            (data) => {
+                setAvailableEquipment(data)
+            },
+            (errors) => console.error("Error loading equipment:", errors)
+        )
+    }, [])
 
     //close search autocomplete dropdown when clicking outside
     useEffect(() => {
@@ -144,22 +151,6 @@ const Routines = () => {
         );
     };
 
-    const loadAllEquipment = () => {
-        exerciseService.getAllExercises(
-            (data) => {
-                const exercisesArray = data.content ? data.content : data;
-                const equipment = [...new Set(exercisesArray
-                    .filter(exercise => exercise.equipment)
-                    .map(exercise => exercise.equipment)
-                )].sort();
-                setAvailableEquipment(equipment);
-            },
-            (errors) => {
-                console.error("Error loading equipment:", errors);
-            }
-        );
-    };
-
     const loadRoutines = (filtersToUse = filters) => {
         setLoading(true);
 
@@ -194,7 +185,7 @@ const Routines = () => {
                 (filtersToUse.muscleGroup && filtersToUse.muscleGroup.join(',')) || null,
                 (filtersToUse.equipment && filtersToUse.equipment.join(',')) || null,
                 filtersToUse.difficulty || null,
-                filtersToUse.trainerId || null,
+                filtersToUse.trainerId ? Number(filtersToUse.trainerId) : null,
                 handleSuccess,
                 handleError
             );
@@ -204,24 +195,11 @@ const Routines = () => {
     };
 
     const loadRoutineLikes = () => {
-        getLikes(
+        getRoutineLikes(
             data => setRoutineLikes(data),
             error => console.error("Error loading routine likes:", error)
         )
     }
-
-    const getDifficultyText = (difficulty) => {
-        switch (difficulty) {
-            case "BEGINNER":
-                return "Principiante";
-            case "INTERMEDIATE":
-                return "Intermedia";
-            case "ADVANCED":
-                return "Avanzada";
-            default:
-                return difficulty;
-        }
-    };
 
     const handleMultiSelectChange = (filterName, value) => {
         setFilters(prev => ({
@@ -480,21 +458,21 @@ const Routines = () => {
                                 <div className={styles['select-dropdown']}>
                                     {availableMuscleGroups.map(group => (
                                         <div
-                                            key={group}
+                                            key={group.name}
                                             className={styles['select-option-multi']}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleMultiSelectChange('muscleGroup', group);  // Singular
+                                                handleMultiSelectChange('muscleGroup', group.name);
                                             }}
                                         >
                                             <input
                                                 type="checkbox"
-                                                checked={filters.muscleGroup.includes(group)}  // Singular
+                                                checked={filters.muscleGroup.includes(group.name)}
                                                 onChange={() => {
                                                 }}
                                                 className={styles['checkbox']}
                                             />
-                                            <span>{group}</span>
+                                            <span>{getMuscleGroupsText(group.name)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -523,21 +501,21 @@ const Routines = () => {
                                 <div className={styles['select-dropdown']}>
                                     {availableEquipment.map(equip => (
                                         <div
-                                            key={equip}
+                                            key={equip.name}
                                             className={styles['select-option-multi']}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleMultiSelectChange('equipment', equip);
+                                                handleMultiSelectChange('equipment', equip.name);
                                             }}
                                         >
                                             <input
                                                 type="checkbox"
-                                                checked={filters.equipment.includes(equip)}
+                                                checked={filters.equipment.includes(equip.name)}
                                                 onChange={() => {
                                                 }}
                                                 className={styles['checkbox']}
                                             />
-                                            <span>{equip}</span>
+                                            <span>{getEquipmentText(equip.name)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -743,8 +721,9 @@ const Routines = () => {
                                 </span>
                             )}
 
-                            {((isTrainer() && isRoutineCreator(routine)) ||
-                                isAdmin()) && (
+                            {(isAdmin()) && (
+                                                            //{((isTrainer() && isRoutineCreator(routine)) ||isAdmin()) && (
+
                                 <div>
                                     <button
                                         className={styles["boton-editar"]}

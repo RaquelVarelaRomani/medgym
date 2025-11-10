@@ -31,6 +31,9 @@ import es.udc.fi.dc.fd.model.entities.WorkoutExercise;
 import es.udc.fi.dc.fd.model.entities.WorkoutExerciseDao;
 import jakarta.transaction.Transactional;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -79,7 +82,7 @@ public class WorkoutExerciseServiceTest {
         routine = routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", "Piernas", "Ninguno", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
+        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", MuscleGroup.LEG, Equipment.NONE, new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exercise = exerciseDao.save(exercise);
 
         // Asignar ejercicio a la rutina

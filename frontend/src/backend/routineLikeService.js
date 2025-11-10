@@ -10,7 +10,7 @@ export const likeRoutine = (routineId, onSuccess, onErrors) => appFetch(
     onErrors
 )
 
-export const getLikes = (onSuccess, onErrors) => appFetch(
+export const getRoutineLikes = (onSuccess, onErrors) => appFetch(
     `/routineLikes`,
     fetchConfig("GET"),
     onSuccess,

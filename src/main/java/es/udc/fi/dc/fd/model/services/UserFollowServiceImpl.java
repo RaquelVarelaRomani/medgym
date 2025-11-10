@@ -20,10 +20,11 @@ import java.util.Optional;
 public class UserFollowServiceImpl implements UserFollowService {
     @Autowired
     private UserFollowDao userFollowDao;
+
     @Autowired
     private UserService userService;
+
     @Autowired
-    @Lazy
     private NotificationService notificationService;
 
     @Override
@@ -40,7 +41,7 @@ public class UserFollowServiceImpl implements UserFollowService {
             throw new FollowException(trainerId);
         }
 
-        notificationService.createFollowNotification(user, trainer);
+        notificationService.createFollowNotification(user.getId(), trainer.getId());
 
         return userFollowDao.save(new UserFollow(user, trainer));
     }

@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -88,7 +90,7 @@ public class RoutineExerciseControllerTest {
     }
 
     private Exercise createExercise(String name, User user) {
-        return exerciseDao.save(new Exercise(name, name + " description", "General", "Ninguno", new byte[]{1,2,3}, ExerciseStatus.PENDING, user));
+        return exerciseDao.save(new Exercise(name, name + " description", MuscleGroup.FULL_BODY, Equipment.NONE, new byte[]{1,2,3}, ExerciseStatus.PENDING, user));
     }
 
     private Routine createRoutine(String name, User user) {
@@ -252,4 +254,71 @@ public class RoutineExerciseControllerTest {
                         .content(objectMapper.writeValueAsBytes(dto)))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    public void testGetRoutineExercisesIncludesAllExerciseData() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = exerciseDao.save(new Exercise(
+                "Ejercicio 1 con barra",
+                "Ejercicio de pecho con barra",
+                Exercise.MuscleGroup.CHEST,
+                Exercise.Equipment.BENCH_AND_BARBELL,
+                new byte[]{1, 2, 3, 4, 5},
+                Exercise.ExerciseStatus.APPROVED,
+                trainer
+        ));
+
+        Routine routine = createRoutine("Rutina 1 Pecho", trainer);
+
+        routineExerciseService.addExerciseToRoutine(
+                trainerUser.getUserDto().getId(),
+                routine.getId(),
+                exercise.getId(),
+                1
+        );
+
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].exerciseId").value(exercise.getId()))
+                .andExpect(jsonPath("$.content[0].exerciseName").value("Ejercicio 1 con barra"))
+                .andExpect(jsonPath("$.content[0].exerciseDescription").value("Ejercicio de pecho con barra"))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value("CHEST"))
+                .andExpect(jsonPath("$.content[0].equipment").value("BENCH_AND_BARBELL"))
+                .andExpect(jsonPath("$.content[0].image").isNotEmpty());
+    }
+    
+    @Test
+    public void testRoutineExerciseReturnsEmptyStringsWhenOptionalFieldsMissing() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+
+        Exercise exercise = exerciseDao.save(new Exercise(
+                "Flexiones",
+                "Ejercicio de pecho básico",
+                Exercise.MuscleGroup.CHEST,
+                Exercise.Equipment.NONE,
+                null,
+                Exercise.ExerciseStatus.APPROVED,
+                trainer
+        ));
+
+        Routine routine = createRoutine("Rutina simple", trainer);
+
+        routineExerciseService.addExerciseToRoutine(
+                trainerUser.getUserDto().getId(),
+                routine.getId(),
+                exercise.getId(),
+                1
+        );
+
+        mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].exerciseName").value("Flexiones"))
+                .andExpect(jsonPath("$.content[0].muscleGroup").value("CHEST"))
+                .andExpect(jsonPath("$.content[0].equipment").value("NONE"))
+                .andExpect(jsonPath("$.content[0].image").doesNotExist());
+    }
+
+
 }
