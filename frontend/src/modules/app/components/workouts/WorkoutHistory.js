@@ -321,7 +321,7 @@ const WorkoutHistory = () => {
                     </div>
                 ) : stats ? (
                     <div className={styles["statistics-view"]}>
-                        <h3 className={styles["stats-title"]}>Estadísticas del Último Mes</h3>
+                        <h3 className={styles["stats-title"]}>Estadísticas del último mes</h3>
                         <StatisticMetrics
                             lastMonthWorkouts={stats.lastMonthWorkouts}
                             totalDuration={formatDuration(stats.totalDurationSeconds)}

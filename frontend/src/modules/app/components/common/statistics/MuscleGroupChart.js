@@ -36,7 +36,7 @@ export default function MuscleGroupChart({ data }) {
 
     return (
         <div className={styles['chart-container']}>
-            <h3 className={styles['chart-title']}>Ejercicios por Grupo Muscular</h3>
+            <h3 className={styles['chart-title']}>Ejercicios por grupo muscular</h3>
 
             <div className={styles['chart-wrapper']}>
                 <ResponsiveContainer width="100%" height={450}>
