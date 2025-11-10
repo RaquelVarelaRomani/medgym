@@ -4,6 +4,9 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutHistory.module.css";
 import LoadingMessage from "../common/LoadingMessage";
+import StatisticMetrics from '../common/statistics/Metrics';
+import MuscleGroupChart from '../common/statistics/MuscleGroupChart';
+import { formatDuration, transformMuscleGroupData } from '../common/statistics/utils/formatters';
 
 const WorkoutHistory = () => {
     const navigate = useNavigate();
@@ -11,9 +14,12 @@ const WorkoutHistory = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
-    const [isList, setIsList] = useState(true);
+    const [viewMode, setViewMode] = useState('list');
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(false);
+    const [statsError, setStatsError] = useState(null);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -117,6 +123,24 @@ const WorkoutHistory = () => {
         }
     };
 
+    const loadStatistics = () => {
+        setStatsLoading(true);
+        setStatsError(null);
+
+        workoutService.getLastMonthStats(
+            (data) => {
+                console.log("Statistics loaded:", data);
+                setStats(data);
+                setStatsLoading(false);
+            },
+            (errors) => {
+                console.error("Error loading statistics:", errors);
+                setStatsError(errors.globalError || "Error al cargar estadísticas");
+                setStatsLoading(false);
+            }
+        );
+    };
+
     if (loading) return <LoadingMessage text="Cargando historial de entrenamientos..." />;
 
     if (error) {
@@ -138,28 +162,39 @@ const WorkoutHistory = () => {
                 <h2>Historial de entrenamientos</h2>
                 <div className={styles["button-mode"]}>
                     <button
-                        className={`${styles["start-button"]} ${isList ? styles["active"] : ""}`}
-                        onClick={() => setIsList(true)}
+                        className={`${styles["start-button"]} ${viewMode === 'list' ? styles["active"] : ""}`}
+                        onClick={() => setViewMode('list')}
                     >
                         Lista
                     </button>
                     <button
-                        className={`${styles["start-button"]} ${!isList ? styles["active"] : ""}`}
-                        onClick={() => setIsList(false)}
+                        className={`${styles["start-button"]} ${viewMode === 'calendar' ? styles["active"] : ""}`}
+                        onClick={() => setViewMode('calendar')}
                     >
                         Calendario
+                    </button>
+                    <button
+                        className={`${styles["start-button"]} ${viewMode === 'stats' ? styles["active"] : ""}`}
+                        onClick={() => {
+                            setViewMode('stats');
+                            if (!stats) {
+                                loadStatistics();
+                            }
+                        }}
+                    >
+                        Estadísticas
                     </button>
                 </div>
             </div>
 
-            {workouts.length === 0 ? (
+            {workouts.length === 0 && viewMode !== 'stats' ? (
                 <div className={styles["empty-message"]}>
                     <p>No has realizado ningún entrenamiento todavía.</p>
                     <button className={styles["start-button"]} onClick={() => navigate("/routines")}>
                         Ver entrenamientos disponibles
                     </button>
                 </div>
-            ) : isList ? (
+            ) : viewMode === 'list' ? (
                 <div className={styles["lista-workouts"]}>
                     {workouts.map((workout) => {
                         const duration = calculateDuration(workout.startTime, workout.endTime);
@@ -198,7 +233,7 @@ const WorkoutHistory = () => {
                         );
                     })}
                 </div>
-            ) : (
+            ) : viewMode === 'calendar' ? (
                 <div className={styles["calendario-container"]}>
                     <div className={styles["calendario-header"]}>
                         <button onClick={prevMonth}>{"<"}</button>
@@ -274,7 +309,34 @@ const WorkoutHistory = () => {
                         })()}
                     </div>
                 </div>
-            )}
+            ) : viewMode === 'stats' ? (
+                statsLoading ? (
+                    <LoadingMessage text="Cargando estadísticas..." />
+                ) : statsError ? (
+                    <div className={styles["error-message"]}>
+                        {statsError}
+                        <button onClick={loadStatistics} className={styles["retry-button"]}>
+                            Intentar de nuevo
+                        </button>
+                    </div>
+                ) : stats ? (
+                    <div className={styles["statistics-view"]}>
+                        <h3 className={styles["stats-title"]}>Estadísticas del Último Mes</h3>
+                        <StatisticMetrics
+                            lastMonthWorkouts={stats.lastMonthWorkouts}
+                            totalDuration={formatDuration(stats.totalDurationSeconds)}
+                            averageDuration={formatDuration(Math.round(stats.averageDurationSeconds))}
+                        />
+                        <MuscleGroupChart
+                            data={transformMuscleGroupData(stats.exercisesByMuscleGroup)}
+                        />
+                    </div>
+                ) : (
+                    <div className={styles["empty-message"]}>
+                        <p>No hay datos de estadísticas disponibles</p>
+                    </div>
+                )
+            ) : null}
         </div>
     );
 };
