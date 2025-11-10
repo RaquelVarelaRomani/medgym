@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { logout, tryLoginFromServiceToken, getUser } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
 import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
+import { getWorkoutsByUser } from "../../../../backend/workoutService";
+import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
+
 
 const Profile = () => {
     const { id } = useParams()
@@ -14,6 +17,8 @@ const Profile = () => {
     const [followers, setFollowers] = useState(0)
     const [following, setFollowing] = useState(0)
     const [isFollowing, setIsFollowing] = useState(false)
+    const [workouts, setWorkouts] = useState([]);
+
 
     useEffect(() => {
         getUser(id, (user) => setProfile(user));
@@ -39,6 +44,16 @@ const Profile = () => {
             }
         )
     }, [me, profile, isFollowing]);
+
+    useEffect(() => {
+        if (!profile) return;
+        getWorkoutsByUser(
+            profile.id,
+            (data) => setWorkouts(data.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))),
+            (err) => console.error("Error cargando entrenamientos del usuario:", err)
+        );
+    }, [profile]);
+
 
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
@@ -136,6 +151,9 @@ const Profile = () => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />
+
+            <UserWorkoutHistory id={profile.id}/>
+
         </div>
     );
 };

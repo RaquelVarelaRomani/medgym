@@ -31,6 +31,13 @@ export const getWorkouts = (onSuccess, onErrors) => appFetch(
     onErrors
 )
 
+export const getWorkoutsByUser = (userId, onSuccess, onErrors) => appFetch(
+    `/workouts/user/${userId}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
+
 export const addWorkoutExercise = (
   workoutId,
   routineExerciseId,

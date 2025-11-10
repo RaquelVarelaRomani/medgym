@@ -37,4 +37,9 @@ public class WorkoutController {
     public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
     }
+
+    @GetMapping("/user/{userId}")
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId) {
+        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+    }
 }
