@@ -252,7 +252,7 @@ public class WorkoutControllerTest {
                 .andExpect(jsonPath("$.lastMonthWorkouts").value(2))
                 .andExpect(jsonPath("$.totalDurationSeconds").value(10800))
                 .andExpect(jsonPath("$.averageDurationSeconds").value(5400.0))
-                .andExpect(jsonPath("$.exercisesByMuscleGroup['Piernas']").value(2));
+                .andExpect(jsonPath("$.exercisesByMuscleGroup['LEG']").value(2));
     }
 
     @Test

@@ -96,6 +96,7 @@ public class WorkoutExerciseServiceTest {
 
     @Test
     public void testAddWorkoutExerciseCreatesRecord() {
+        List<WorkoutExercise> preAll = workoutExerciseDao.findAll();
         WorkoutExercise we = assertDoesNotThrow(() ->
                 workoutExerciseService.addWorkoutExercise(
                         (short) 10,
@@ -113,7 +114,7 @@ public class WorkoutExerciseServiceTest {
         assertEquals(routineExercise.getId(), we.getRoutineExercise().getId());
 
         List<WorkoutExercise> all = workoutExerciseDao.findAll();
-        assertEquals(14, all.size());
+        assertEquals(preAll.size() + 1, all.size());
     }
 
     @Test
