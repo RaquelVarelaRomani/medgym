@@ -152,7 +152,7 @@ const Profile = () => {
                 navigate("/users/login");
             }} />
 
-            <UserWorkoutHistory id={profile.id}/>
+            {profile && <UserWorkoutHistory id={profile.id}/>}
 
         </div>
     );
