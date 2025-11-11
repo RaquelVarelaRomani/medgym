@@ -1108,7 +1108,7 @@ describe("Common Components", () => {
           .closest("button");
         fireEvent.click(profileButton);
         fireEvent.click(screen.getByText("Ver Perfil"));
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
