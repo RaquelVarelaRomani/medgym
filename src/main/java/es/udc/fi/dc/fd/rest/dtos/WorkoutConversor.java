@@ -37,12 +37,30 @@ public class WorkoutConversor {
         );
     }
 
+    public static WorkoutForHistoryDto toWorkoutForHistoryDto(Workout workout) {
+        return new WorkoutForHistoryDto(
+                workout.getId(),
+                workout.getStartTime(),
+                workout.getEndTime(),
+                workout.getRoutine().getId(),
+                workout.getRoutine().getName(),
+                workout.getUser().getId(),
+                workout.getUser().getName(),
+                workout.getUser().getSurname(),
+                toWorkoutCommentDtos(workout.getComments())
+        );
+    }
+
     public static List<WorkoutDto> toWorkoutDtos(List<Workout> workouts) {
         return workouts.stream().map(WorkoutConversor::toWorkoutDto).toList();
     }
 
     public static List<WorkoutForFeedDto> toWorkoutForFeedDtos(List<Workout> workouts) {
         return workouts.stream().map(WorkoutConversor::toWorkoutForFeedDto).toList();
+    }
+
+    public static List<WorkoutForHistoryDto> toWorkoutForHistoryDtos(List<Workout> workouts) {
+        return workouts.stream().map(WorkoutConversor::toWorkoutForHistoryDto).toList();
     }
 
 }

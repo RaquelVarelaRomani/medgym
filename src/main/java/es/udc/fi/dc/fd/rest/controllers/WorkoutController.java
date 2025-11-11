@@ -4,6 +4,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutForFeedDto;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutForHistoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,8 +35,8 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
-        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+    public List<WorkoutForHistoryDto> getWorkouts(@RequestAttribute Long userId) {
+        return toWorkoutForHistoryDtos(workoutService.findWorkoutsFromUser(userId));
     }
 
     @GetMapping("/following")

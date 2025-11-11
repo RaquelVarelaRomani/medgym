@@ -4,6 +4,10 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutHistory.module.css";
 import LoadingMessage from "../common/LoadingMessage";
+import CommentBubble from "../common/CommentBubble";
+import CommentModal from "../common/CommentModal";
+import { commentWorkout } from "../../../../backend/workoutCommentService";
+
 
 const WorkoutHistory = () => {
     const navigate = useNavigate();
@@ -14,6 +18,8 @@ const WorkoutHistory = () => {
     const [isList, setIsList] = useState(true);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+    const [commentModalOpen, setCommentModalOpen] = useState(false);
+    const [selectedWorkout, setSelectedWorkout] = useState(null);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -72,14 +78,6 @@ const WorkoutHistory = () => {
             return `${hours}h ${minutes}min`;
         }
         return `${minutes} min`;
-    };
-
-    const handleWorkoutClick = (workout) => {
-        if (!workout.endTime) {
-            navigate(`/workouts/session/${workout.id}`);
-        } else {
-            navigate(`/workouts/${workout.id}`);
-        }
     };
 
     const getFirstDayOfMonth = () => {
@@ -170,7 +168,7 @@ const WorkoutHistory = () => {
                                 to={
                                     isInProgress
                                         ? `/workouts/session/${workout.id}`
-                                        : `/workouts/${workout.id}`
+                                        : `/workouts/${workout.id}?returnTo=history`
                                 }
                                 key={workout.id}
                                 className={`${styles["caja-workout"]} ${
@@ -178,7 +176,18 @@ const WorkoutHistory = () => {
                                 }`}
                             >
                                 <div className={styles["workout-info"]}>
-                                    <h3>{workout.routineName}</h3>
+                                    <div className={styles["workout-title-line"]}>
+                                        <h3>{workout.routineName}</h3>
+
+                                        <CommentBubble
+                                            count={(workout.comments || []).length}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedWorkout(workout);
+                                                setCommentModalOpen(true);
+                                            }}
+                                        />
+                                    </div>
                                     <p className={styles["workout-date"]}>
                                         {formatDate(workout.startTime)}
                                     </p>
@@ -274,6 +283,34 @@ const WorkoutHistory = () => {
                         })()}
                     </div>
                 </div>
+            )}
+            {commentModalOpen && (
+                <CommentModal
+                    open={commentModalOpen}
+                    onSend={(text) => {
+                        commentWorkout(
+                            selectedWorkout.id,
+                            text,
+                            (addedComment) => {
+                                setSelectedWorkout(prev => ({
+                                    ...prev,
+                                    comments: [...(prev.comments || []), addedComment]
+                                }));
+
+                                setWorkouts(prev =>
+                                    prev.map(w =>
+                                        w.id === selectedWorkout.id
+                                            ? { ...w, comments: [...(w.comments || []), addedComment] }
+                                            : w
+                                    )
+                                );
+                            }
+                        );
+                    }}
+                    onClose={() => setCommentModalOpen(false)}
+                    workoutId={selectedWorkout?.id}
+                    comments={selectedWorkout?.comments || []}
+                />
             )}
         </div>
     );

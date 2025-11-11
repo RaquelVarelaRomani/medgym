@@ -34,20 +34,21 @@ public class WorkoutCommentServiceImpl implements WorkoutCommentService {
     }
 
     @Override
-    public void commentWorkout(Long userId, String text, Long workoutId) throws InstanceNotFoundException {
+    public WorkoutComment commentWorkout(Long userId, String text, Long workoutId) throws InstanceNotFoundException {
         WorkoutComment workoutComment = new WorkoutComment(
                 text,
                 LocalDateTime.now(),
                 workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId)),
                 userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId))
         );
-        workoutCommentDao.save(workoutComment);
 
         notificationService.createWorkoutCommentNotification(
                 userId,
                 text,
                 workoutId
         );
+
+        return workoutCommentDao.save(workoutComment);
     }
 
     @Override

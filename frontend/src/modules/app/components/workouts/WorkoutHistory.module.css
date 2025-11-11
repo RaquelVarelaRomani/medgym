@@ -451,3 +451,9 @@
   text-align: center;
   color: white;
 }
+
+.workout-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

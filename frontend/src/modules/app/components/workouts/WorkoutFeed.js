@@ -8,6 +8,8 @@ import LoadingMessage from "../common/LoadingMessage";
 import HeartLike from "../common/HeartLike";
 import CommentBubble from "../common/CommentBubble";
 import CommentModal from "../common/CommentModal";
+import {commentWorkout} from "../../../../backend/workoutCommentService";
+import {likeWorkout} from "../../../../backend/workoutLikeService";
 
 const WorkoutFeed = () => {
     const navigate = useNavigate();
@@ -114,18 +116,14 @@ const WorkoutFeed = () => {
                 <div className={styles["lista-workouts"]}>
                     {workouts.map((workout) => {
                         const duration = calculateDuration(workout.startTime, workout.endTime);
-                        const isInProgress = !workout.endTime;
-                        const message = isInProgress
-                            ? `${workout.userName} ${workout.userSurname} ha comenzado`
-                            : `${workout.userName} ${workout.userSurname} ha terminado`;
 
                         const liked = !!likes[workout.id];
 
                         return (
                             <Link
-                                to={isInProgress ? `/workouts/session/${workout.id}` : `/workouts/${workout.id}`}
+                                to={`/workouts/${workout.id}?returnTo=feed`}
                                 key={workout.id}
-                                className={`${styles["caja-workout"]} ${isInProgress ? styles["active-workout"] : ""}`}
+                                className={styles["caja-workout"]}
                             >
                                 <div className={styles["workout-info"]}>
                                     <div className={styles["workout-user-line"]}>
@@ -134,13 +132,20 @@ const WorkoutFeed = () => {
                                             alt="Profile"
                                             className={styles["workout-user-avatar"]}
                                         />
-                                        <span>{message}</span>
+                                        <span>{`${workout.userName} ${workout.userSurname} ha terminado`}</span>
                                     </div>
                                     <div className={styles["workout-title-line"]}>
                                         <h3>{workout.routineName}</h3>
                                         <HeartLike
                                             liked={liked}
-                                            onChange={(next) => toggleLike(workout.id, next)}
+                                            onChange={(next) => {
+                                                toggleLike(workout.id, next);
+                                                likeWorkout(
+                                                    workout.id,
+                                                    () => {},
+                                                    () => console.error("Error al marcar como favorito")
+                                                );
+                                            }}
                                             size={22}
                                         />
                                         <CommentBubble
@@ -156,8 +161,8 @@ const WorkoutFeed = () => {
                                 </div>
 
                                 <div className={styles["workout-stats"]}>
-                <span className={isInProgress ? styles["in-progress"] : styles["duration"]}>
-                    {isInProgress ? "En progreso" : duration}
+                <span className={styles["duration"]}>
+                    {duration}
                 </span>
                                 </div>
 
@@ -169,6 +174,20 @@ const WorkoutFeed = () => {
             {commentModalOpen && (
                 <CommentModal
                     open={commentModalOpen}
+                    onSend={(comment) => {
+                        commentWorkout(
+                            selectedWorkout.id,
+                            comment,
+                            (addedComment) => {
+                                console.log("Added comment:", addedComment);
+                                setSelectedWorkout(prev => ({
+                                    ...prev,
+                                    comments: [...(prev.comments || []), addedComment]
+                                }));
+                            },
+                            () => console.error("Error al enviar el comentario")
+                        );
+                    }}
                     onClose={() => setCommentModalOpen(false)}
                     workoutId={selectedWorkout?.id}
                     comments={selectedWorkout?.comments || []}

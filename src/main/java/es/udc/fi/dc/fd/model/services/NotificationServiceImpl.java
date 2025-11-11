@@ -59,8 +59,12 @@ public class NotificationServiceImpl implements NotificationService {
         User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException("entities.user", clientId));
         Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
 
+        if (client.getId().equals(routine.getTrainer().getId())) {
+            return;
+        }
+
         notificationDao.save(new Notification(
-                client.getName() + " ha dado like a tu rutina '" + routine.getName() + "'",
+                client.getName() + " " + client.getSurname() + " ha dado like a tu rutina '" + routine.getName() + "'",
                 NotificationType.ROUTINE_LIKE,
                 routine.getId(),
                 routine.getTrainer(),
@@ -74,8 +78,12 @@ public class NotificationServiceImpl implements NotificationService {
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
+        if (user.getId().equals(workout.getUser().getId())) {
+            return;
+        }
+
         notificationDao.save(new Notification(
-                user.getName() + " ha dado like a tu entrenamiento de '" + workout.getRoutine().getName() + "'",
+                user.getName() + " " + user.getSurname() + " ha dado like a tu entrenamiento de '" + workout.getRoutine().getName() + "'",
                 NotificationType.WORKOUT_LIKE,
                 workout.getId(),
                 workout.getUser(),
@@ -89,8 +97,12 @@ public class NotificationServiceImpl implements NotificationService {
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
+        if (user.getId().equals(workout.getUser().getId())) {
+            return;
+        }
+
         notificationDao.save(new Notification(
-                user.getName() + " ha comentado en tu rutina: " + text,
+                user.getName() + " " + user.getSurname() + " ha comentado tu entrenamiento de '" + workout.getRoutine().getName() + "': " + text,
                 NotificationType.WORKOUT_COMMENT,
                 workout.getId(),
                 workout.getUser(),

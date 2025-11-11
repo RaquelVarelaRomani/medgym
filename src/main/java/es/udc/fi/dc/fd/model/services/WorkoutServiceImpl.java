@@ -55,6 +55,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutDao.findAll().stream()
                 .filter(w -> !Objects.equals(w.getUser().getId(), userId))
                 .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
+                .filter(w -> w.getEndTime() != null)
                 .toList();
     }
 }

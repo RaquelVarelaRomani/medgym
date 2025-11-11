@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./WorkoutDetails.module.css";
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate, useLocation} from "react-router-dom";
 import * as workoutService from "../../../../backend/workoutService";
 import * as workoutExerciseService from "../../../../backend/workoutExerciseService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
@@ -10,6 +10,8 @@ import LoadingMessage from "../common/LoadingMessage";
 const WorkoutDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const query = new URLSearchParams(useLocation().search);
+    const returnTo = query.get("returnTo") || "/";
     const [workout, setWorkout] = useState(null);
     const [routineExercises, setRoutineExercises] = useState([]);
     const [workoutExercises, setWorkoutExercises] = useState([]);
@@ -26,7 +28,7 @@ const WorkoutDetails = () => {
     };
 
     const handleBack = () => {
-        navigate("/workouts/history");
+        navigate("/workouts/" + returnTo);
     };
 
     const formatDate = (dateString) => {
