@@ -654,7 +654,7 @@ const Routines = () => {
                                 <span>{routine.name}</span>
                                 <HeartLike
                                     count={(routine.likes || []).length}
-                                    liked={routine.likes.some(like => like.userId === currentUser?.id) || false}
+                                    liked={routine.likes && (routine.likes.some(like => like.userId === currentUser?.id) || false)}
                                     onChange={(next) => {
                                         if (next) {
                                             // Actualiza la lista local de likes

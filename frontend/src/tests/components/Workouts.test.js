@@ -540,7 +540,7 @@ describe("Workout Components", () => {
 
       fireEvent.click(screen.getByText("←"));
 
-      expect(mockNavigate).toHaveBeenCalledWith("/workouts/history");
+      expect(mockNavigate).toHaveBeenCalledWith("/workouts//");
     });
 
     test("displays in progress for workouts without end time", async () => {

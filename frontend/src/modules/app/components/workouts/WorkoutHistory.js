@@ -202,7 +202,7 @@ const WorkoutHistory = () => {
                                         <h3>{workout.routineName}</h3>
                                         <HeartLike
                                             count={(workout.likes || []).length}
-                                            liked={workout.likes.some(like => like.userId === currentUser?.id) || false}
+                                            liked={workout.likes && (workout.likes.some(like => like.userId === currentUser?.id) || false)}
                                             onChange={(next) => {
                                                 if (next) {
                                                     setWorkouts(prev =>

@@ -610,6 +610,7 @@ describe("Common Components", () => {
           date: "2023-01-01T00:00:00",
           type: "FOLLOW",
           isRead: false,
+          idToRedirect: 1,
         },
       ];
 
@@ -632,7 +633,7 @@ describe("Common Components", () => {
         expect.any(Function),
         expect.any(Function),
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/users/followers");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
 
     test("handles invalid date", () => {
