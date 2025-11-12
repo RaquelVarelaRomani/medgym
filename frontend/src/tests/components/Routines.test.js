@@ -105,6 +105,7 @@ jest.mock("../../backend/userFollowService", () => ({
 
 jest.mock("../../backend/routineLikeService", () => ({
   getRoutineLikes: jest.fn(),
+  getLikes: jest.fn(),
   likeRoutine: jest.fn(),
   unlikeRoutine: jest.fn(),
 }));
@@ -4778,7 +4779,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
