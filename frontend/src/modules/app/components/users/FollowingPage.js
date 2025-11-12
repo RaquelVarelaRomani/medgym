@@ -59,7 +59,7 @@ const FollowingPage = () => {
         ) : (
             <div className={styles["followers-list"]}>
             {followers.map((follower) => (
-                <div key={follower.id} className={styles["follower-card"]}>
+                <div key={follower.id} className={styles["follower-card"]} onClick={() => navigate(`/users/profile/${follower.trainerId}`)}>
                 <h3>
                     {follower.trainerUserName} {follower.trainerUserSurname}
                 </h3>
