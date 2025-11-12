@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserFollowDao extends JpaRepository<UserFollow, Long> {
-    boolean existsByUserAndTrainer(User user, User trainer);
-    Optional<UserFollow> findByUserAndTrainer(User user, User trainer);
-    List<UserFollow> findByTrainer(User trainer);
+    boolean existsByUserAndFollowUser(User user, User followUser);
+    Optional<UserFollow> findByUserAndFollowUser(User user, User followUser);
+    List<UserFollow> findByFollowUser(User followUser);
     List<UserFollow> findByUser(User user);
 
     List<UserFollow> findByTrainerId(Long trainerId);

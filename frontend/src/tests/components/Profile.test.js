@@ -7,6 +7,7 @@ import EditProfile from "../../modules/app/components/users/EditProfile";
 
 import {
   tryLoginFromServiceToken,
+  getUser,
   updateProfile,
   changePassword,
 } from "../../backend/userService";
@@ -16,10 +17,12 @@ const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
+  useParams: () => ({ id: "1" }),
 }));
 
 jest.mock("../../backend/userService", () => ({
   tryLoginFromServiceToken: jest.fn(),
+  getUser: jest.fn(),
   updateProfile: jest.fn(),
   changePassword: jest.fn(),
 }));
@@ -57,6 +60,10 @@ describe("Profile Components", () => {
         successCallback({ user: mockUser });
       });
 
+      getUser.mockImplementation((id, successCallback) => {
+        successCallback(mockUser);
+      });
+
       render(
         <MemoryRouter>
           <Profile />
@@ -86,6 +93,10 @@ describe("Profile Components", () => {
         successCallback({ user: mockUser });
       });
 
+      getUser.mockImplementation((id, successCallback) => {
+        successCallback(mockUser);
+      });
+
       render(
         <MemoryRouter>
           <Profile />
@@ -111,6 +122,10 @@ describe("Profile Components", () => {
 
       tryLoginFromServiceToken.mockImplementation((successCallback) => {
         successCallback({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, successCallback) => {
+        successCallback(mockUser);
       });
 
       render(
@@ -143,6 +158,10 @@ describe("Profile Components", () => {
         successCallback({ user: mockUser });
       });
 
+      getUser.mockImplementation((id, successCallback) => {
+        successCallback(mockUser);
+      });
+
       render(
         <MemoryRouter>
           <Profile />
@@ -170,6 +189,10 @@ describe("Profile Components", () => {
 
       tryLoginFromServiceToken.mockImplementation((successCallback) => {
         successCallback({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, successCallback) => {
+        successCallback(mockUser);
       });
 
       render(
@@ -227,6 +250,10 @@ describe("Profile Components", () => {
 
         tryLoginFromServiceToken.mockImplementation((successCallback) => {
           successCallback({ user: mockUser });
+        });
+
+        getUser.mockImplementation((id, successCallback) => {
+          successCallback(mockUser);
         });
 
         render(
@@ -333,7 +360,7 @@ describe("Profile Components", () => {
           expect.any(Function),
           expect.any(Function),
         );
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -383,7 +410,7 @@ describe("Profile Components", () => {
       });
 
       fireEvent.click(screen.getByText("Cancelar"));
-      expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
   });
 
@@ -467,7 +494,7 @@ describe("Profile Components", () => {
           expect.any(Function),
         );
         expect(updateProfile).toHaveBeenCalled();
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -656,7 +683,7 @@ describe("Profile Components", () => {
       });
 
       fireEvent.click(screen.getByText("Cancelar"));
-      expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
   });
 });

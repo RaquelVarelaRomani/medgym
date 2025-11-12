@@ -48,6 +48,10 @@ public class WorkoutController {
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
     }
 
+    @GetMapping("/user/{userId}")
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId) {
+        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+
     @GetMapping("/stats")
     public StatisticsDto getLastMonthStats(@RequestAttribute Long userId){
         YearMonth lastMonth = YearMonth.now().minusMonths(1);

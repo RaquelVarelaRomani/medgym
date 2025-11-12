@@ -115,7 +115,7 @@ const CreateExercise = () => {
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Foto de perfil"
                     className={styles['foto-perfil']}
-                    onClick={() => navigate("/users/profile")}
+                    onClick={() => navigate("/users/profile/" + currentUser.id)}
                 />
             </div>
 
