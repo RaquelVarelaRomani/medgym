@@ -5,13 +5,15 @@ import { followTrainer, unfollowTrainer, getFollowedTrainers } from '../../../..
 import ProfilePhoto from '../common/profilePhoto';
 import styles from './UserSearch.module.css';
 
-const UserSearch = ({ isOpen, onClose }) => {
+const UserSearch = ({ isOpen }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [followedTrainers, setFollowedTrainers] = useState([]);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loadingFollow, setLoadingFollow] = useState(new Set());
     const navigate = useNavigate();
 
     const performSearch = useCallback((searchQuery) => {
@@ -67,37 +69,61 @@ const UserSearch = ({ isOpen, onClose }) => {
 
     const handleViewProfile = (userId) => {
         navigate(`/users/${userId}/profile`);
-        onClose();
     };
 
     const handleFollow = (userId) => {
-        const isFollowing = followedTrainers.some(trainer => trainer.id === userId);
+        if (!currentUser) return;
 
-        if (isFollowing) {
-            unfollowTrainer(userId, () => {
-                setFollowedTrainers(prev => prev.filter(trainer => trainer.id !== userId));
-            }, (error) => {
-                console.error('Error unfollowing trainer:', error);
-            });
-        } else {
-            followTrainer(userId, () => {
+        const isFollowing = followedTrainers.some(trainer => trainer.id === userId);
+        console.log(`Before action: isFollowing = ${isFollowing}, followedTrainers =`, followedTrainers);
+        const newLoadingFollow = new Set(loadingFollow);
+        newLoadingFollow.add(userId);
+        setLoadingFollow(newLoadingFollow);
+        setErrorMessage('');
+
+
+        const onSuccess = () => {
+            console.log(`Success callback for ${isFollowing ? 'unfollow' : 'follow'}`);
+            const updatedLoadingFollow = new Set(loadingFollow);
+            updatedLoadingFollow.delete(userId);
+            setLoadingFollow(updatedLoadingFollow);
+            if (isFollowing) {
                 getFollowedTrainers(currentUser.id, (followed) => {
                     setFollowedTrainers(followed);
                 }, (error) => {
-                    console.error('Error fetching followed trainers after follow:', error);
+                    console.error('Error fetching followed trainers after unfollow:', error);
                 });
-            }, (error) => {
-                console.error('Error following trainer:', error);
-            });
+            }
+            console.log(`After success: followedTrainers =`, followedTrainers);
+        };
+
+        const onError = (error) => {
+            console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} trainer:`, error);
+            setErrorMessage(`Error al ${isFollowing ? 'dejar de seguir' : 'seguir'} al usuario. Inténtalo de nuevo.`);
+            if (isFollowing) {
+                setFollowedTrainers(prev => [...prev, { id: userId }]);
+            } else {
+                setFollowedTrainers(prev => prev.filter(trainer => trainer.id !== userId));
+            }
+            const updatedLoadingFollow = new Set(loadingFollow);
+            updatedLoadingFollow.delete(userId);
+            setLoadingFollow(updatedLoadingFollow);
+            console.log(`After error rollback: followedTrainers =`, followedTrainers);
+        };
+
+        if (isFollowing) {
+            unfollowTrainer(userId, onSuccess, onError);
+        } else {
+            followTrainer(userId, onSuccess, onError);
         }
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className={styles.overlay}>
-            <div className={styles.container} onClick={onClose}>
-                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div className={styles.overlay} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+            <div className={styles.container} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+                <div className={styles.modal}>
                     <div className={styles.searchContainer}>
                         <input
                             type="text"
@@ -107,6 +133,7 @@ const UserSearch = ({ isOpen, onClose }) => {
                             className={styles.searchInput}
                             autoFocus
                         />
+                        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                     </div>
                     <div className={styles.resultsContainer}>
                         {loading && <div className={styles.noResults}>Buscando...</div>}
@@ -132,12 +159,15 @@ const UserSearch = ({ isOpen, onClose }) => {
                                     >
                                         Ver Perfil
                                     </button>
-                                    <button
-                                        className={styles.followBtn}
-                                        onClick={() => handleFollow(user.id)}
-                                    >
-                                        {followedTrainers.some(trainer => trainer.id === user.id) ? 'Siguiendo' : 'Seguir'}
-                                    </button>
+                                    {currentUser && (
+                                        <button
+                                            className={styles.followBtn}
+                                            onClick={() => handleFollow(user.id)}
+                                            disabled={loadingFollow.has(user.id)}
+                                        >
+                                            {loadingFollow.has(user.id) ? 'Cargando...' : (followedTrainers.some(trainer => trainer.id === user.id) ? 'Siguiendo' : 'Seguir')}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -47,6 +47,7 @@
 
 .searchContainer {
     padding: 20px;
+    margin-right: 35px;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -70,6 +71,13 @@
 
 .searchInput::placeholder {
     color: var(--text-secondary);
+}
+
+.errorMessage {
+    margin-top: 10px;
+    color: #ff6b35;
+    font-size: 14px;
+    text-align: center;
 }
 
 .resultsContainer {
@@ -150,7 +158,12 @@
     border: 1px solid var(--border-color);
 }
 
-.followBtn:hover {
+.followBtn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
+}
+
+.followBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
