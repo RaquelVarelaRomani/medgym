@@ -156,4 +156,34 @@ public class UserServiceImpl implements UserService {
 
 		user.setStatus(User.StatusType.ACTIVE);
 	}
+
+
+	@Override
+    public User updateBodyMetrics(Long id, Double weightKg, Double heightCm, User.GenderType gender)
+            throws InstanceNotFoundException {
+
+        User user = permissionChecker.checkUser(id);
+
+        if (weightKg != null && weightKg <= 0) {
+            throw new IllegalArgumentException("El peso debe ser mayor que 0");
+        }
+        if (heightCm != null && heightCm <= 0) {
+            throw new IllegalArgumentException("La altura debe ser mayor que 0");
+        }
+
+        user.setWeightKg(weightKg);
+        user.setHeightCm(heightCm);
+        user.setGender(gender);
+
+        return user;
+    }
+
+    @Override
+    public User clearBodyMetrics(Long id) throws InstanceNotFoundException {
+        User user = permissionChecker.checkUser(id);
+        user.setWeightKg(null);
+        user.setHeightCm(null);
+        user.setGender(null);
+        return user;
+    }
 }

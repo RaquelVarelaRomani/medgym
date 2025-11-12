@@ -1,10 +1,6 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name= "users")
@@ -21,6 +17,13 @@ public class User {
 		BLOCKED
 	}
 
+	public enum GenderType { 
+		MALE, 
+		FEMALE, 
+		OTHER, 
+		UNSPECIFIED 
+	}
+
 	private Long id;
 	private String name;
 	private String surname;
@@ -30,6 +33,10 @@ public class User {
 	private byte[] profilePicture;
 	private RoleType role;
 	private StatusType status;
+
+	private Double weightKg;
+    private Double heightCm;
+    private GenderType gender;
 
 	public User() {
 	}
@@ -111,5 +118,27 @@ public class User {
 		this.status = status;
 	}
 
+
+    public Double getWeightKg() { 
+		return weightKg; 
+	}
+    public void setWeightKg(Double weightKg) { 
+		this.weightKg = weightKg; 
+	}
+
+	
+    public Double getHeightCm() { 
+		return heightCm; 
+	}
+    public void setHeightCm(Double heightCm) { 
+		this.heightCm = heightCm; 
+	}
+
+    public GenderType getGender() {
+		 return gender; 
+		}
+    public void setGender(GenderType gender) { 
+		this.gender = gender; 
+	}
 
 }

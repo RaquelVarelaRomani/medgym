@@ -21,4 +21,7 @@ public interface UserService {
 	void deleteUser(Long id);
 	void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
 	void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
+
+	User updateBodyMetrics(Long id, Double weightKg, Double heightCm, User.GenderType gender) throws InstanceNotFoundException;
+    User clearBodyMetrics(Long id) throws InstanceNotFoundException;
 }

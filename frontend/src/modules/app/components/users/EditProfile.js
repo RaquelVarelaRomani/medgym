@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./EditProfile.module.css";
 import { useNavigate } from "react-router-dom";
-import { changePassword, updateProfile, tryLoginFromServiceToken } from "../../../../backend/userService";
+import { changePassword, updateProfile, tryLoginFromServiceToken, updateBodyMetrics, clearBodyMetrics } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
@@ -26,6 +26,11 @@ const EditProfile = ({ isPasswordMode = false }) => {
     const [error, setError] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
+    const [weightKg, setWeightKg] = useState("");
+    const [heightCm, setHeightCm] = useState("");
+    const [gender, setGender] = useState("");
+    const [bmi, setBmi] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,6 +42,11 @@ const EditProfile = ({ isPasswordMode = false }) => {
                 setEmail(authenticatedUser.user.email);
                 setPhoneNumber(authenticatedUser.user.phoneNumber);
                 setProfilePicture(authenticatedUser.user.profilePicture);
+            
+                setWeightKg(authenticatedUser.user.weightKg ?? "");
+                setHeightCm(authenticatedUser.user.heightCm ?? "");
+                setGender(authenticatedUser.user.gender ?? "");
+                setBmi(authenticatedUser.user.bmi ?? null);
             },
             () => {
                 console.error("Token inválido o expirado");
@@ -45,33 +55,93 @@ const EditProfile = ({ isPasswordMode = false }) => {
         );
     }, [navigate]);
 
+    const handleCalculateBmi = () => {
+        const w = parseFloat(weightKg);
+        const hCm = parseFloat(heightCm);
+        if (!w || !hCm || hCm <= 0) {
+        setError("Para calcular el IMC, introduce peso (kg) y altura (cm) válidos.");
+        return;
+        }
+        const h = hCm / 100;
+        const value = w / (h * h);
+        setBmi(Number(value.toFixed(2)));
+        setError("");
+    };
+
+    const handleClearMetrics = () => {
+        if (!profile?.id) return;
+        clearBodyMetrics(
+        profile.id,
+        () => {
+            setWeightKg("");
+            setHeightCm("");
+            setGender("");
+            setBmi(null);
+        },
+        (err) => {
+            console.error("Error al eliminar métricas:", err);
+            setError("No se pudieron eliminar las métricas corporales.");
+        }
+        );
+    };
+
 
     const handleSave = (e) => {
         e.preventDefault();
         const updatedUser = { id: profile.id, name, surname, email, phoneNumber, profilePicture };
 
-        const updateProfileData = () => {
-            updateProfile(
-                updatedUser,
-                () => {
-                    const newUser = { ...profile, name, surname, email, phoneNumber, profilePicture };
-                    setProfile(newUser);
-                    if (isPasswordMode) {
-                        setPopupMessage("Contraseña actualizada con éxito");
-                    } else {
-                        setPopupMessage("Perfil actualizado con éxito");
-                    }
-                    setError("");
-                    setShowPopup(true);
-                },
-                (errorResponse) => {
-                    console.error("Error al actualizar el perfil:", errorResponse);
+        const finishOk = () => {
+      const newUser = {
+        ...profile,
+        name,
+        surname,
+        email,
+        phoneNumber,
+        profilePicture,
 
-                    const backendMessage = errorResponse?.response?.data?.globalError || "No se pudo actualizar el perfil";
-                    setError(backendMessage);
-                }
+        weightKg: weightKg === "" ? null : parseFloat(weightKg),
+        heightCm: heightCm === "" ? null : parseFloat(heightCm),
+        gender: gender || null,
+        bmi,
+      };
+      setProfile(newUser);
+      setPopupMessage(isPasswordMode ? "Contraseña actualizada con éxito" : "Perfil actualizado con éxito");
+      setError("");
+      setShowPopup(true);
+    };
+
+    const updateProfileData = () => {
+      updateProfile(
+        updatedUser,
+        //al terminar perfil, guardamos métricas:
+        () => {
+          //Si hay algún dato, actualizamos; si no, borramos.
+          const hasAnyMetric = !!weightKg || !!heightCm || !!gender;
+          if (hasAnyMetric) {
+            updateBodyMetrics(
+              profile.id,
+              {
+                weightKg: weightKg === "" ? null : parseFloat(weightKg),
+                heightCm: heightCm === "" ? null : parseFloat(heightCm),
+                gender: gender || null,
+              },
+              finishOk,
+              (err) => {
+                console.error("Error al actualizar métricas:", err);
+                setError("No se pudieron guardar las métricas corporales.");
+              }
             );
-        };
+          } else {
+            clearBodyMetrics(profile.id, finishOk, () => finishOk()); // si falla, no bloquea la actualización general
+          }
+        },
+        (errorResponse) => {
+          console.error("Error al actualizar el perfil:", errorResponse);
+          const backendMessage = errorResponse?.response?.data?.globalError || "No se pudo actualizar el perfil";
+          setError(backendMessage);
+        }
+      );
+    };
 
         if (isPasswordMode) {
             setError("");
@@ -193,6 +263,70 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 placeholder="Escribe tu teléfono..."
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                             />
+
+                            <div className={styles.metricsCard}>
+                                <h3 className={styles.metricsTitle}>Métricas corporales</h3>
+
+                                <label htmlFor="weightKg">Peso (kg)</label>
+                                <input
+                                type="number"
+                                id="weightKg"
+                                inputMode="decimal"
+                                step="0.1"
+                                min="0"
+                                value={weightKg}
+                                placeholder="Ej. 72.5"
+                                onChange={(e) => setWeightKg(e.target.value)}
+                                />
+
+                                <label htmlFor="heightCm">Altura (cm)</label>
+                                <input
+                                type="number"
+                                id="heightCm"
+                                inputMode="decimal"
+                                step="0.1"
+                                min="0"
+                                value={heightCm}
+                                placeholder="Ej. 175"
+                                onChange={(e) => setHeightCm(e.target.value)}
+                                />
+
+                                <label htmlFor="gender">Género</label>
+                                <select
+                                id="gender"
+                                className={styles.select}
+                                value={gender || ""}
+                                onChange={(e) => setGender(e.target.value)}
+                                >
+                                <option value="">— Sin especificar —</option>
+                                <option value="MALE">Hombre</option>
+                                <option value="FEMALE">Mujer</option>
+                                <option value="OTHER">Otro</option>
+                                <option value="UNSPECIFIED">No especificar</option>
+                                </select>
+
+                                <div className={styles.metricsRow}>
+                                <button
+                                    type="button"
+                                    className={styles.calcBtn}
+                                    onClick={handleCalculateBmi}
+                                >
+                                    Calcular IMC
+                                </button>
+                                <button
+                                    type="button"
+                                    className={styles.clearBtn}
+                                    onClick={handleClearMetrics}
+                                >
+                                    Eliminar métricas
+                                </button>
+                                </div>
+
+                                <div className={styles.bmiLine}>
+                                <strong>IMC: </strong>
+                                <span>{bmi != null ? bmi : "—"}</span>
+                                </div>
+                            </div>
 
                             <div className={styles['form-actions']}>
                                 <button type="submit" className={styles['save-btn']}>Guardar</button>
