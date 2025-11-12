@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void createNewRoutineNotification(Long routineId) throws InstanceNotFoundException {
         Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
 
-        List<UserFollow> userFollows = userFollowDao.findByTrainerId(routine.getTrainer().getId());
+        List<UserFollow> userFollows = userFollowDao.findByFollowUser(routine.getTrainer());
 
         userFollows.forEach(userFollow ->
                 notificationDao.save(new Notification("Nueva rutina: " + routine.getName(), NotificationType.NEW_ROUTINE, routine.getId(), userFollow.getUser(), false,
