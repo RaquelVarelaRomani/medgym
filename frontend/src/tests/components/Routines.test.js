@@ -104,7 +104,7 @@ jest.mock("../../backend/userFollowService", () => ({
 }));
 
 jest.mock("../../backend/routineLikeService", () => ({
-  getLikes: jest.fn(),
+  getRoutineLikes: jest.fn(),
   likeRoutine: jest.fn(),
   unlikeRoutine: jest.fn(),
 }));
@@ -2685,7 +2685,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2735,7 +2735,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2787,7 +2787,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2825,7 +2825,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2872,7 +2872,7 @@ describe("Routines Components", () => {
         error("Equipment error");
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2919,7 +2919,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success, error) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
         error("Likes error");
       });
 
@@ -2966,7 +2966,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3033,7 +3033,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3080,7 +3080,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3119,7 +3119,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3157,7 +3157,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3203,7 +3203,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3258,7 +3258,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3314,7 +3314,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4225,7 +4225,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4264,7 +4264,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4339,7 +4339,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4400,7 +4400,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4455,7 +4455,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4503,7 +4503,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4552,7 +4552,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4606,7 +4606,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4659,7 +4659,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4728,7 +4728,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4824,7 +4824,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4863,7 +4863,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4903,7 +4903,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4941,7 +4941,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4986,7 +4986,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5033,7 +5033,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5079,7 +5079,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5135,7 +5135,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5186,7 +5186,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5240,7 +5240,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5293,7 +5293,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5355,7 +5355,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5401,7 +5401,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5453,7 +5453,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5498,7 +5498,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5545,7 +5545,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5592,7 +5592,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5639,7 +5639,7 @@ test("allows admin to edit routine", async () => {
             error("Equipment error");
         });
 
-        routineLikeService.getLikes.mockImplementation((success) => {
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5686,7 +5686,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success, error) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
         error("Likes error");
       });
 
@@ -5741,7 +5741,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5801,7 +5801,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5863,7 +5863,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5921,7 +5921,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5980,7 +5980,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6035,7 +6035,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6092,7 +6092,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6146,7 +6146,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6203,7 +6203,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6263,7 +6263,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6311,7 +6311,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6352,7 +6352,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6399,7 +6399,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6448,7 +6448,7 @@ test("allows admin to edit routine", async () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([{ routineId: 1 }]);
       });
 

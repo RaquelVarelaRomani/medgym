@@ -24,7 +24,7 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                 if (onNotificationRead) onNotificationRead(notification.id, "read");
                 switch (notification.type) {
                     case "NEW_ROUTINE":
-                    case "LIKE":
+                    case "ROUTINE_LIKE":
                         navigate(`/routines/${notification.idToRedirect}`);
                         break;
                     case "FOLLOW":

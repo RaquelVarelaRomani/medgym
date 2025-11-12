@@ -22,9 +22,6 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
-import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
-
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -181,7 +178,7 @@ public class RoutineServiceTest {
 
         assertEquals(2, trainerNotifications.size());
         boolean hasFollow = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.FOLLOW);
-        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.LIKE && n.getIdToRedirect().equals(routine.getId()));
+        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.ROUTINE_LIKE && n.getIdToRedirect().equals(routine.getId()));
         assertTrue(hasFollow);
         assertTrue(hasLike);
 

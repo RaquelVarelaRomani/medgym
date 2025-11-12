@@ -66,3 +66,10 @@ export const getWorkoutExercisesByWorkoutId = (workoutId, onSuccess, onErrors) =
     onSuccess,
     onErrors
   );
+
+export const getLastMonthStats = (onSuccess, onErrors) => appFetch(
+    `/workouts/stats`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
