@@ -7,16 +7,20 @@ import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
 import LoadingMessage from "../common/LoadingMessage";
+import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 
 
 const EditExercise = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [titleError, setTitleError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [popupText, setPopupText] = useState("");
+    const [availableEquipment, setAvailableEquipment] = useState([]);
+    const [availableMuscleGroups, setAvailableMuscleGroups] = useState([]);
 
     const [exerciseData, setExerciseData] = useState({
         name: "",
@@ -33,10 +37,10 @@ const EditExercise = () => {
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
                 loadExercise();
             },
             () => {
-                console.error("Token inválido o expirado");
                 navigate("/users/login");
             }
         );
@@ -64,6 +68,22 @@ const EditExercise = () => {
             }
         );
     };
+
+    useEffect(() => {
+        exerciseService.getMuscleGroups(
+            (data) => {
+                setAvailableMuscleGroups(data)
+            },
+            (errors) => console.error("Error loading muscle groups:", errors)
+        )
+
+        exerciseService.getEquipments(
+            (data) => {
+                setAvailableEquipment(data)
+            },
+            (errors) => console.error("Error loading equipment:", errors)
+        )
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -114,7 +134,7 @@ const EditExercise = () => {
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Logo"
                     className={styles["foto-perfil"]}
-                    onClick={() => navigate("/users/profile")}
+                    onClick={() => navigate("/users/profile/" + currentUser.id)}
                 />
             </div>
 
@@ -183,25 +203,35 @@ const EditExercise = () => {
                 </div>
 
                 <div className={styles["form-div"]}>
-                    <label htmlFor="muscleGroup">Grupo muscular:</label>
-                    <input
-                        type="text"
-                        id="muscleGroup"
-                        name="muscleGroup"
-                        value={exerciseData.muscleGroup}
-                        onChange={handleChange}
-                    />
+                    <div className={styles["form-div"]}>
+                        <label htmlFor="muscleGroup">Grupo muscular:</label>
+                        <select
+                            id="muscleGroup"
+                            name="muscleGroup"
+                            value={exerciseData.muscleGroup}
+                            onChange={handleChange}
+                        >
+                            {availableMuscleGroups.map(m => (
+                                <option key={m.name} value={m.name}>{getMuscleGroupsText(m.name)}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 <div className={styles["form-div"]}>
                     <label htmlFor="equipment">Equipamiento:</label>
-                    <input
-                        type="text"
-                        id="equipment"
-                        name="equipment"
-                        value={exerciseData.equipment}
-                        onChange={handleChange}
-                    />
+                    <div className={styles["form-div select-dropdown"]}>
+                        <select
+                            id="equipment"
+                            name="equipment"
+                            value={exerciseData.equipment}
+                            onChange={handleChange}
+                        >
+                            {availableEquipment.map(e => (
+                                <option key={e.name} value={e.name}>{getEquipmentText(e.name)}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {error && <div className={styles["error-message"]}>{error}</div>}

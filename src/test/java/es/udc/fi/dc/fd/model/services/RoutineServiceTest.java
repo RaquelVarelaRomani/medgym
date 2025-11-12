@@ -95,6 +95,21 @@ public class RoutineServiceTest {
     }
 
     @Test
+    public void testUpdateRoutineWithoutPermission() throws Exception {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(User.RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        User client = createUser("client@test.com");
+
+        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        assertThrows(PermissionException.class, () -> {
+            routineService.updateRoutine(client.getId(), routine.getId(), "x", "y", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        });
+    }
+
+    @Test
     public void testDeleteRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = createUser("user@test.com");
         Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -103,6 +118,21 @@ public class RoutineServiceTest {
 
         assertThrows(InstanceNotFoundException.class, () -> {
             routineService.findRoutineByIdAuth(user.getId(), routine.getId());
+        });
+    }
+
+    @Test
+    public void testDeleteRoutineWithoutPermission() throws Exception {
+        User trainer = createUser("trainer@test.com");
+        trainer.setRole(User.RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        User client = createUser("client@test.com");
+
+        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        assertThrows(PermissionException.class, () -> {
+            routineService.deleteRoutine(client.getId(), routine.getId());
         });
     }
 
@@ -137,7 +167,7 @@ public class RoutineServiceTest {
 
         User client = createUser("client@test.com");
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
 
         Routine routine = routineService.createRoutine("testRoutine", "description", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -148,7 +178,7 @@ public class RoutineServiceTest {
 
         assertEquals(2, trainerNotifications.size());
         boolean hasFollow = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.FOLLOW);
-        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.LIKE && n.getIdToRedirect().equals(routine.getId()));
+        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.ROUTINE_LIKE && n.getIdToRedirect().equals(routine.getId()));
         assertTrue(hasFollow);
         assertTrue(hasLike);
 

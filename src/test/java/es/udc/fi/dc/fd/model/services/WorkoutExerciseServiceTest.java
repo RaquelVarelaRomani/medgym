@@ -31,6 +31,9 @@ import es.udc.fi.dc.fd.model.entities.WorkoutExercise;
 import es.udc.fi.dc.fd.model.entities.WorkoutExerciseDao;
 import jakarta.transaction.Transactional;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
@@ -79,7 +82,7 @@ public class WorkoutExerciseServiceTest {
         routine = routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", "Piernas", "Ninguno", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
+        exercise = new Exercise("Sentadillas", "Ejercicio para piernas", MuscleGroup.LEG, Equipment.NONE, new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exercise = exerciseDao.save(exercise);
 
         // Asignar ejercicio a la rutina
@@ -93,6 +96,7 @@ public class WorkoutExerciseServiceTest {
 
     @Test
     public void testAddWorkoutExerciseCreatesRecord() {
+        List<WorkoutExercise> preAll = workoutExerciseDao.findAll();
         WorkoutExercise we = assertDoesNotThrow(() ->
                 workoutExerciseService.addWorkoutExercise(
                         (short) 10,
@@ -110,7 +114,7 @@ public class WorkoutExerciseServiceTest {
         assertEquals(routineExercise.getId(), we.getRoutineExercise().getId());
 
         List<WorkoutExercise> all = workoutExerciseDao.findAll();
-        assertEquals(14, all.size());
+        assertEquals(preAll.size() + 1, all.size());
     }
 
     @Test
@@ -152,5 +156,29 @@ public class WorkoutExerciseServiceTest {
     public void testFindWorkoutExercisesByWorkoutIdThrowsIfWorkoutNotFound() {
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutExerciseService.findWorkoutExercisesByWorkoutId(999L));
+    }
+
+    @Test
+    public void testFindWorkoutExercisesByWorkoutIdsReturnsExercises(){
+        Workout workout1 = workoutDao.save(new Workout(LocalDateTime.now().minusHours(1), null, routine, client));
+        Workout workout2 = workoutDao.save(new Workout(LocalDateTime.now().minusHours(2), null, routine, client));
+
+        assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise((short) 10, (short) 50, (short) 60, workout1.getId(), routineExercise.getId()));
+        assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise((short) 8, (short) 40, (short) 45, workout2.getId(), routineExercise.getId()));
+
+        List<WorkoutExercise> exercises = assertDoesNotThrow(() ->
+                workoutExerciseService.findWorkoutExercisesByWorkoutIds(List.of(workout1.getId(), workout2.getId())));
+
+        assertEquals(2, exercises.size());
+        assertTrue(exercises.stream().allMatch(we ->
+                we.getWorkout().getId().equals(workout1.getId()) || we.getWorkout().getId().equals(workout2.getId())));
+    }
+
+    @Test
+    public void testFindWorkoutExercisesByWorkoutIdsEmptyList(){
+        List<WorkoutExercise> exercises = assertDoesNotThrow(() ->
+                workoutExerciseService.findWorkoutExercisesByWorkoutIds(List.of()));
+
+        assertTrue(exercises.isEmpty());
     }
 }

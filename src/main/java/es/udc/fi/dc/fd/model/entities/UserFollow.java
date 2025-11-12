@@ -8,13 +8,13 @@ public class UserFollow {
 
     private Long id;
     private User user;
-    private User trainer;
+    private User followUser;
 
     public UserFollow() {}
 
     public UserFollow(User user, User trainer) {
         this.user = user;
-        this.trainer = trainer;
+        this.followUser = trainer;
     }
 
     @Id
@@ -36,11 +36,11 @@ public class UserFollow {
     }
 
     @ManyToOne
-    @JoinColumn(name = "trainer_id")
-    public User getTrainer() {
-        return trainer;
+    @JoinColumn(name = "follow_user_id")
+    public User getFollowUser() {
+        return followUser;
     }
-    public void setTrainer(User trainer) {
-        this.trainer = trainer;
+    public void setFollowUser(User followUser) {
+        this.followUser = followUser;
     }
 }

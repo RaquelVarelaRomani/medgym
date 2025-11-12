@@ -26,6 +26,8 @@ body {
   --accent-red-dark: #c82333;
   --accent-green: #88B625;
   --accent-green-glow: rgba(136, 182, 37, 0.5);
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #06b6d4;
 
   /* text colors */
   --text-primary: #ffffff;

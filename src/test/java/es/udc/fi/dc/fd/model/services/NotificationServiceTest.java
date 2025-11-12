@@ -43,7 +43,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerA", "trainerA", "trainerA@test.com",
                 "600000002", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
 
         Routine routine = routineService.createRoutine("routineA", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -64,7 +64,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerB", "trainerB", "trainerB@test.com",
                 "600000004", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        notificationService.createFollowNotification(client, trainer);
+        notificationService.createFollowNotification(client.getId(), trainer.getId());
 
         List<Notification> notifications = notificationService.getNotificationsByUser(trainer.getId());
         assertEquals(1, notifications.size());
@@ -76,7 +76,7 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testCreateLikeNotification() throws DuplicateInstanceException, InstanceNotFoundException {
+    public void testCreateRoutineLikeNotification() throws DuplicateInstanceException, InstanceNotFoundException {
         User client = userDao.save(new User("clientC", "clientC", "clientC@test.com",
                 "600000005", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("trainerC", "trainerC", "trainerC@test.com",
@@ -86,7 +86,7 @@ public class NotificationServiceTest {
                 "LikeRoutine", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        notificationService.createLikeNotification(client, trainer, routine);
+        notificationService.createRoutineLikeNotification(client.getId(), routine.getId());
 
         List<Notification> notifications = notificationService.getNotificationsByUser(trainer.getId());
         assertEquals(1, notifications.size());
@@ -94,7 +94,7 @@ public class NotificationServiceTest {
         Notification n = notifications.get(0);
         assertTrue(n.getMessage().contains("ha dado like"));
         assertTrue(n.getMessage().contains("LikeRoutine"));
-        assertEquals(Notification.NotificationType.LIKE, n.getType());
+        assertEquals(Notification.NotificationType.ROUTINE_LIKE, n.getType());
         assertEquals(routine.getId(), n.getIdToRedirect());
     }
 
@@ -105,7 +105,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerD", "trainerD", "trainerD@test.com",
                 "600000008", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineD", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -127,7 +127,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerE", "trainerE", "trainerE@test.com",
                 "600000010", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineE", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 

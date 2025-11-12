@@ -64,14 +64,16 @@ jest.mock("../../backend/userService", () => ({
 }));
 
 jest.mock("../../backend/exerciseService", () => ({
-  createExercise: jest.fn(),
-  getExercise: jest.fn(),
-  updateExercise: jest.fn(),
-  deleteExercise: jest.fn(),
-  updateExerciseStatus: jest.fn(),
-  getAllExercises: jest.fn(),
-  getExercisesByStatus: jest.fn(),
-  getPendingExercises: jest.fn(),
+    createExercise: jest.fn(),
+    getExercise: jest.fn(),
+    updateExercise: jest.fn(),
+    deleteExercise: jest.fn(),
+    updateExerciseStatus: jest.fn(),
+    getAllExercises: jest.fn(),
+    getExercisesByStatus: jest.fn(),
+    getPendingExercises: jest.fn(),
+    getMuscleGroups: jest.fn(),
+    getEquipments: jest.fn(),
 }));
 
 jest.mock("../../backend/routineService", () => ({
@@ -102,6 +104,7 @@ jest.mock("../../backend/userFollowService", () => ({
 }));
 
 jest.mock("../../backend/routineLikeService", () => ({
+  getRoutineLikes: jest.fn(),
   getLikes: jest.fn(),
   likeRoutine: jest.fn(),
   unlikeRoutine: jest.fn(),
@@ -417,7 +420,7 @@ describe("Routines Components", () => {
         const logo = screen.getByAltText("Foto de perfil");
         expect(logo).toBeInTheDocument();
         fireEvent.click(logo);
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -519,12 +522,6 @@ describe("Routines Components", () => {
         ).toBeInTheDocument();
         expect(
           screen.getByPlaceholderText("Describa brevemente el ejercicio..."),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByPlaceholderText("Ej: Piernas, Espalda, Pecho..."),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByPlaceholderText("Ej: Mancuernas, Barra, Ninguno..."),
         ).toBeInTheDocument();
       });
     });
@@ -1503,7 +1500,7 @@ describe("Routines Components", () => {
       await waitFor(() => {
         const logo = screen.getByAltText("Logo");
         fireEvent.click(logo);
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -1564,8 +1561,6 @@ describe("Routines Components", () => {
         expect(
           screen.getByDisplayValue("Test Description"),
         ).toBeInTheDocument();
-        expect(screen.getByDisplayValue("Chest")).toBeInTheDocument();
-        expect(screen.getByDisplayValue("Bar")).toBeInTheDocument();
       });
     });
 
@@ -2691,7 +2686,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2741,7 +2736,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2793,7 +2788,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2831,7 +2826,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2874,11 +2869,11 @@ describe("Routines Components", () => {
         success([]);
       });
 
-      exerciseService.getAllExercises.mockImplementation((success, error) => {
+      exerciseService.getEquipments.mockImplementation((success, error) => {
         error("Equipment error");
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -2925,7 +2920,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success, error) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
         error("Likes error");
       });
 
@@ -2972,7 +2967,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3004,10 +2999,7 @@ describe("Routines Components", () => {
         fireEvent.click(muscleGroupSelect);
       });
 
-      await waitFor(() => {
-        const bicepsOption = screen.getByText("Bíceps");
-        fireEvent.click(bicepsOption);
-      });
+
     });
 
     test("getDifficultyText returns correct text for all difficulties", async () => {
@@ -3042,7 +3034,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3089,7 +3081,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3128,7 +3120,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3166,7 +3158,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3193,7 +3185,7 @@ describe("Routines Components", () => {
 
     test("handles ConfirmationPopup onCancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -3212,7 +3204,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3267,7 +3259,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -3323,7 +3315,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4234,7 +4226,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4273,7 +4265,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4329,7 +4321,7 @@ describe("Routines Components", () => {
 
     test("deletes routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -4348,7 +4340,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4409,7 +4401,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4464,7 +4456,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4512,7 +4504,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4561,7 +4553,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4615,7 +4607,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4668,7 +4660,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4737,7 +4729,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4766,8 +4758,7 @@ describe("Routines Components", () => {
         expect(routineLikeService.likeRoutine).toHaveBeenCalledWith(1);
       });
     });
-
-    test("edits routine for trainer", async () => {
+    test("does not allow trainer to edit routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
         success({ user: { id: 1, role: "TRAINER" } });
       });
@@ -4788,7 +4779,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4798,6 +4789,51 @@ describe("Routines Components", () => {
         },
       );
 
+      workoutService.getWorkouts.mockImplementation((success) => {
+        success([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Routines />
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => {
+        expect(screen.queryByText("Editar")).not.toBeInTheDocument();
+      });
+    });
+//TEST donde SOLO admins pueden editar
+test("allows admin to edit routine", async () => {
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 99, role: "ADMIN" } });
+      });
+
+      routineService.getAllRoutines.mockImplementation((success) => {
+        success([
+          {
+            id: 1,
+            name: "Routine 1",
+            trainerName: "Trainer",
+            difficulty: "BEGINNER",
+            trainerId: 1,
+          },
+        ]);
+      });
+
+      exerciseService.getAllExercises.mockImplementation((success) => {
+        success({ content: [] });
+      });
+
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
+        success([]);
+      });
+
+      userFollowService.getFollowedTrainers.mockImplementation(
+        (userId, success) => {
+          success([]);
+        },
+      );
       workoutService.getWorkouts.mockImplementation((success) => {
         success([]);
       });
@@ -4828,7 +4864,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4868,7 +4904,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4906,7 +4942,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4951,7 +4987,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -4998,7 +5034,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5025,7 +5061,7 @@ describe("Routines Components", () => {
 
     test("handles delete routine error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -5044,7 +5080,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5100,7 +5136,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5151,7 +5187,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5205,7 +5241,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5258,7 +5294,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5320,7 +5356,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5351,11 +5387,6 @@ describe("Routines Components", () => {
           .parentElement.querySelector(".select-display");
         fireEvent.click(muscleGroupSelect);
       });
-
-      await waitFor(() => {
-        const bicepsOption = screen.getByText("Bíceps");
-        fireEvent.click(bicepsOption);
-      });
     });
 
     test("applies filters", async () => {
@@ -5371,7 +5402,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5423,7 +5454,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5468,7 +5499,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5515,7 +5546,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5562,7 +5593,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5605,11 +5636,11 @@ describe("Routines Components", () => {
         success([]);
       });
 
-      exerciseService.getAllExercises.mockImplementation((success, error) => {
-        error("Equipment error");
-      });
+        exerciseService.getEquipments.mockImplementation((success, error) => {
+            error("Equipment error");
+        });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5656,7 +5687,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success, error) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
         error("Likes error");
       });
 
@@ -5711,7 +5742,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5752,7 +5783,7 @@ describe("Routines Components", () => {
 
     test("handles handleDelete error", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -5771,7 +5802,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5833,7 +5864,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5891,7 +5922,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -5950,7 +5981,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6005,7 +6036,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6043,7 +6074,7 @@ describe("Routines Components", () => {
 
     test("handles ConfirmationPopup cancel for delete", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
-        success({ user: { id: 1, role: "TRAINER" } });
+        success({ user: { id: 1, role: "ADMIN" } });
       });
 
       routineService.getAllRoutines.mockImplementation((success) => {
@@ -6062,7 +6093,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6116,7 +6147,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6173,7 +6204,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6233,7 +6264,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6281,7 +6312,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6322,7 +6353,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6369,7 +6400,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([]);
       });
 
@@ -6418,7 +6449,7 @@ describe("Routines Components", () => {
         success({ content: [] });
       });
 
-      routineLikeService.getLikes.mockImplementation((success) => {
+      routineLikeService.getRoutineLikes.mockImplementation((success) => {
         success([{ routineId: 1 }]);
       });
 

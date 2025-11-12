@@ -16,9 +16,9 @@ export const createFollowNotification = (clientId, trainerId, onSuccess, onError
         onErrors
     );
 
-export const createLikeNotification = (clientId, trainerId, onSuccess, onErrors) =>
+export const createRoutineLikeNotification = (clientId, trainerId, onSuccess, onErrors) =>
     appFetch(
-        `/notifications/like`,
+        `/notifications/routineLike`,
         fetchConfig("POST", { clientId, trainerId }),
         onSuccess,
         onErrors

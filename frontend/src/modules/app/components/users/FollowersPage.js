@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import styles from "./FollowersPage.module.css";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import { getFollowers } from "../../../../backend/userFollowService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LoadingMessage from "../common/LoadingMessage";
 
 const FollowersPage = () => {
+    const {id} = useParams()
     const navigate = useNavigate();
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
+    const [me, setMe] = useState(null)
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -18,14 +20,8 @@ const FollowersPage = () => {
             const user = data.user;
             setCurrentUser(user);
 
-            if (user.role !== "TRAINER") {
-            setError("Solo los entrenadores pueden ver sus seguidores.");
-            setLoading(false);
-            return;
-            }
-
             getFollowers(
-            user.id,
+            id,
             (followersData) => {
                 setFollowers(followersData);
                 setLoading(false);
@@ -63,7 +59,7 @@ const FollowersPage = () => {
         ) : (
             <div className={styles["followers-list"]}>
             {followers.map((follower) => (
-                <div key={follower.id} className={styles["follower-card"]}>
+                <div key={follower.id} className={styles["follower-card"]} onClick={() => navigate(`/users/profile/${follower.userId}`)}>
                 <h3>
                     {follower.userName} {follower.userSurname}
                 </h3>

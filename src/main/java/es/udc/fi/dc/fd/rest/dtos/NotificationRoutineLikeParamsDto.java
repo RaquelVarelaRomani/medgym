@@ -2,22 +2,13 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 import jakarta.validation.constraints.NotNull;
 
-public class NotificationLikeParamsDto {
+public class NotificationRoutineLikeParamsDto {
 
     private Long clientId;
-    private Long trainerId;
     private Long routineId;
 
-    public NotificationLikeParamsDto() {
+    public NotificationRoutineLikeParamsDto() {
         super();
-    }
-
-    @NotNull
-    public Long getTrainerId() {
-        return trainerId;
-    }
-    public void setTrainerId(Long trainerId) {
-        this.trainerId = trainerId;
     }
 
     @NotNull
