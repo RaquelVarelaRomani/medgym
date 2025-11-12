@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "routines")
@@ -25,7 +26,8 @@ public class Routine {
     private VisibilityType visibility;
     private DifficultyType difficulty;
     private User trainer;
-    private java.util.List<RoutineExercise> routineExercises;
+    private List<RoutineExercise> routineExercises;
+    private List<RoutineLike> routineLikes;
 
     public Routine() {}
 
@@ -103,12 +105,20 @@ public class Routine {
     }
 
     @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
-    public java.util.List<RoutineExercise> getRoutineExercises() {
+    public List<RoutineExercise> getRoutineExercises() {
         return routineExercises;
     }
 
     public void setRoutineExercises(java.util.List<RoutineExercise> routineExercises) {
         this.routineExercises = routineExercises;
+    }
+
+    @OneToMany(mappedBy = "routine", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<RoutineLike> getRoutineLikes() {
+        return routineLikes;
+    }
+    public void setRoutineLikes(List<RoutineLike> likes) {
+        this.routineLikes = likes;
     }
 
     @Transient

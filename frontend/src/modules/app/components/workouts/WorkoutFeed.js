@@ -102,10 +102,7 @@ const WorkoutFeed = () => {
 
             {workouts.length === 0 ? (
                 <div className={styles["empty-message"]}>
-                    <p>No has realizado ningún entrenamiento todavía.</p>
-                    <button className={styles["start-button"]} onClick={() => navigate("/routines")}>
-                        Ver entrenamientos disponibles
-                    </button>
+                    <p>No se han encontrado entrenamientos.</p>
                 </div>
             ) : (
                 <div className={styles["lista-workouts"]}>
