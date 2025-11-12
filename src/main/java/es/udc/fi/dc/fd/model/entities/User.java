@@ -17,13 +17,15 @@ public class User {
 		BLOCKED
 	}
 
-	public enum GenderType { 
-		MALE, 
-		FEMALE, 
-		OTHER, 
-		UNSPECIFIED 
+	public enum GenderType {
+		MALE,
+		FEMALE,
+		OTHER,
+		UNSPECIFIED
 	}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
 	private String surname;
@@ -35,8 +37,9 @@ public class User {
 	private StatusType status;
 
 	private Double weightKg;
-    private Double heightCm;
-    private GenderType gender;
+	private Double heightCm;
+	@Enumerated(EnumType.STRING)
+	private GenderType gender;
 
 	public User() {
 	}
@@ -52,8 +55,6 @@ public class User {
 		this.status = status;
 	}
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getId() {
 		return id;
 	}
