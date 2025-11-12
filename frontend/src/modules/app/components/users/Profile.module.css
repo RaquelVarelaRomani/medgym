@@ -242,3 +242,8 @@
     color: var(--text-primary);
     font-weight: 600;
 }
+
+.follow-side{
+    color: white;
+    cursor: pointer;
+}

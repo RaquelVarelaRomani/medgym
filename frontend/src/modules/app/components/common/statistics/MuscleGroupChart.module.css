@@ -1,0 +1,50 @@
+.chart-container {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: all 0.3s ease;
+    min-height: 500px;
+}
+
+.chart-container:hover {
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            0 0 40px rgba(255, 107, 53, 0.15);
+}
+
+.chart-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    letter-spacing: 0.05em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.chart-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.empty-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    text-align: center;
+}

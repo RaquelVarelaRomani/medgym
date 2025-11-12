@@ -13,6 +13,7 @@ import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 const EditExercise = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [titleError, setTitleError] = useState("");
@@ -36,10 +37,10 @@ const EditExercise = () => {
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
+                setCurrentUser(authenticatedUser.user);
                 loadExercise();
             },
             () => {
-                console.error("Token inválido o expirado");
                 navigate("/users/login");
             }
         );
@@ -133,7 +134,7 @@ const EditExercise = () => {
                     src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                     alt="Logo"
                     className={styles["foto-perfil"]}
-                    onClick={() => navigate("/users/profile")}
+                    onClick={() => navigate("/users/profile/" + currentUser.id)}
                 />
             </div>
 

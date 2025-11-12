@@ -120,11 +120,11 @@ CREATE TABLE workout_exercises (
 CREATE TABLE user_follows (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     client_id BIGINT NOT NULL,
-    trainer_id BIGINT NOT NULL,
+    follow_user_id BIGINT NOT NULL,
 
     CONSTRAINT fk_user_follow_client FOREIGN KEY (client_id) REFERENCES users(id)
          ON DELETE CASCADE,
-    CONSTRAINT fk_user_follow_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
+    CONSTRAINT fk_user_follow_user FOREIGN KEY (follow_user_id) REFERENCES users(id)
          ON DELETE CASCADE
 );
 
