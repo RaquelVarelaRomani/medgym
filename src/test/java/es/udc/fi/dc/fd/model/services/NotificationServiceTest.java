@@ -45,7 +45,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerA", "trainerA", "trainerA@test.com",
                 "600000002", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
 
         Routine routine = routineService.createRoutine("routineA", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -107,7 +107,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerD", "trainerD", "trainerD@test.com",
                 "600000008", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineD", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -129,7 +129,7 @@ public class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerE", "trainerE", "trainerE@test.com",
                 "600000010", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineE", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -181,7 +181,7 @@ public class NotificationServiceTest {
         User u = userDao.save(new User("uX","uX","uX@test.com","600000015","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User t = userDao.save(new User("tX","tX","tX@test.com","600000016","pass",null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(u.getId(), t.getId());
+        userFollowService.followUser(u.getId(), t.getId());
         Routine r = routineService.createRoutine("R3","d",t,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 

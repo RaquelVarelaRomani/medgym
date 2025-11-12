@@ -167,7 +167,7 @@ public class RoutineServiceTest {
 
         User client = createUser("client@test.com");
 
-        userFollowService.followTrainer(client.getId(), trainer.getId());
+        userFollowService.followUser(client.getId(), trainer.getId());
 
         Routine routine = routineService.createRoutine("testRoutine", "description", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 

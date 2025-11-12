@@ -419,7 +419,7 @@ describe("Routines Components", () => {
         const logo = screen.getByAltText("Foto de perfil");
         expect(logo).toBeInTheDocument();
         fireEvent.click(logo);
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -1499,7 +1499,7 @@ describe("Routines Components", () => {
       await waitFor(() => {
         const logo = screen.getByAltText("Logo");
         fireEvent.click(logo);
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -4757,9 +4757,7 @@ describe("Routines Components", () => {
         expect(routineLikeService.likeRoutine).toHaveBeenCalledWith(1);
       });
     });
-/*
-TEST donde admins y entrenadores (cuando son sus rutinas) pueden editar
-    test("edits routine for trainer", async () => {
+    test("does not allow trainer to edit routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {
         success({ user: { id: 1, role: "TRAINER" } });
       });
@@ -4801,12 +4799,9 @@ TEST donde admins y entrenadores (cuando son sus rutinas) pueden editar
       );
 
       await waitFor(() => {
-        const editButton = screen.getByText("Editar");
-        fireEvent.click(editButton);
-        expect(mockNavigate).toHaveBeenCalledWith("/routines/edit/1");
+        expect(screen.queryByText("Editar")).not.toBeInTheDocument();
       });
     });
-*/
 //TEST donde SOLO admins pueden editar
 test("allows admin to edit routine", async () => {
       tryLoginFromServiceToken.mockImplementation((success) => {

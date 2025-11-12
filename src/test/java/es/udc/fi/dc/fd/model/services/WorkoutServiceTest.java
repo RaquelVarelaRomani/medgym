@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -132,6 +133,61 @@ public class WorkoutServiceTest {
     }
 
     @Test
+    public void testFindWorkoutsByUserAndDateRangeReturnsWorkouts(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threeHoursAgo = now.minusHours(3);
+        LocalDateTime twoHoursAgo = now.minusHours(2);
+        LocalDateTime oneHourAgo = now.minusHours(1);
+
+
+        Workout w1 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        w1.setStartTime(twoHoursAgo);
+        w1.setEndTime(oneHourAgo);
+        assertDoesNotThrow(() -> workoutService.finishWorkout(w1.getId()));
+
+        Workout w2 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        w2.setStartTime(oneHourAgo);
+        w2.setEndTime(now);
+        assertDoesNotThrow(() -> workoutService.finishWorkout(w2.getId()));
+
+        LocalDateTime startRange = threeHoursAgo.plusMinutes(1);
+        LocalDateTime endRange = now.minusSeconds(1);
+
+        List<Workout> workouts = workoutService.findWorkoutsByUserAndDateRange(user.getId(), startRange, endRange);
+        assertEquals(2, workouts.size());
+        assertTrue(workouts.stream().allMatch(w -> w.getUser().getId().equals(user.getId())));
+        assertTrue(workouts.stream().allMatch(w -> w.getEndTime() != null));
+    }
+
+    @Test
+    public void testFindWorkoutsByUserAndDateRangeEmptyList(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startRange = now.minusHours(2);
+        LocalDateTime endRange = now.minusHours(1);
+
+        List<Workout> workouts = workoutService.findWorkoutsByUserAndDateRange(user.getId(), startRange, endRange);
+        assertTrue(workouts.isEmpty());
+    }
+
+    @Test
+    public void testFindWorkoutsByUserAndDateRangeExcludesIncompleteWorkouts(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startRange = now.minusHours(3);
+
+        Workout completedWorkout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        completedWorkout.setStartTime(now.minusHours(1));
+        completedWorkout.setEndTime(now);
+        assertDoesNotThrow(() -> workoutService.finishWorkout(completedWorkout.getId()));
+
+        Workout incompleteWorkout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        incompleteWorkout.setStartTime(now.minusHours(2));
+
+        List<Workout> workouts = workoutService.findWorkoutsByUserAndDateRange(user.getId(), startRange, now);
+        assertEquals(1, workouts.size());
+        assertNotNull(workouts.get(0).getEndTime());
+    }
+
+    @Test
     public void testFinishWorkoutnonexistentIdthrows() {
         assertThrows(InstanceNotFoundException.class,
                 () -> workoutService.finishWorkout(999L));
@@ -212,14 +268,13 @@ public class WorkoutServiceTest {
         User client1 = userDao.save(new User("cf1", "n", "cf1@test.com", "608", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User client2 = userDao.save(new User("cf2", "n", "cf2@test.com", "609", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
-        userFollowService.followTrainer(client1.getId(), trainer.getId());
+        userFollowService.followUser(client1.getId(), trainer.getId());
 
         Routine routine = routineService.createRoutine("RF", "dF", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         workoutService.startWorkout(routine.getId(), client2.getId());
 
         List<Workout> list = workoutService.findWorkoutsFromFollowing(client1.getId());
 
-        assertEquals(10, list.size());
+        assertEquals(0, list.size());
     }
-
 }
