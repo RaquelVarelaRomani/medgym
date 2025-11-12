@@ -19,11 +19,12 @@ public class WorkoutForFeedDto {
     private String userSurname;
     private byte[] userProfilePicture;
     private List<WorkoutCommentDto> comments;
+    private List<WorkoutLikeDto> likes;
 
     public WorkoutForFeedDto() {
     }
 
-    public WorkoutForFeedDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, byte[] userProfilePicture, List<WorkoutCommentDto> comments) {
+    public WorkoutForFeedDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, byte[] userProfilePicture, List<WorkoutCommentDto> comments, List<WorkoutLikeDto> likes) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -34,6 +35,7 @@ public class WorkoutForFeedDto {
         this.userSurname = userSurname;
         this.userProfilePicture = userProfilePicture;
         this.comments = comments;
+        this.likes = likes;
     }
 
     public Long getId() {
@@ -105,5 +107,12 @@ public class WorkoutForFeedDto {
     }
     public void setComments(List<WorkoutCommentDto> comments) {
         this.comments = comments;
+    }
+
+    public List<WorkoutLikeDto> getLikes() {
+        return likes;
+    }
+    public void setLikes(List<WorkoutLikeDto> likes) {
+        this.likes = likes;
     }
 }

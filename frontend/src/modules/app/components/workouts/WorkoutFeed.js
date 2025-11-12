@@ -9,7 +9,7 @@ import HeartLike from "../common/HeartLike";
 import CommentBubble from "../common/CommentBubble";
 import CommentModal from "../common/CommentModal";
 import {commentWorkout} from "../../../../backend/workoutCommentService";
-import {likeWorkout} from "../../../../backend/workoutLikeService";
+import {likeWorkout, unlikeWorkout} from "../../../../backend/workoutLikeService";
 
 const WorkoutFeed = () => {
     const navigate = useNavigate();
@@ -17,7 +17,6 @@ const WorkoutFeed = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
-    const [likes, setLikes] = useState({});
     const [commentModalOpen, setCommentModalOpen] = useState(false);
     const [selectedWorkout, setSelectedWorkout] = useState(null);
 
@@ -94,10 +93,6 @@ const WorkoutFeed = () => {
         );
     }
 
-    const toggleLike = (id, next) => {
-        setLikes(prev => ({ ...prev, [id]: next }));
-    };
-
     return (
         <div className={styles.contenedor}>
 
@@ -117,8 +112,6 @@ const WorkoutFeed = () => {
                     {workouts.map((workout) => {
                         const duration = calculateDuration(workout.startTime, workout.endTime);
 
-                        const liked = !!likes[workout.id];
-
                         return (
                             <Link
                                 to={`/workouts/${workout.id}?returnTo=feed`}
@@ -137,15 +130,44 @@ const WorkoutFeed = () => {
                                     <div className={styles["workout-title-line"]}>
                                         <h3>{workout.routineName}</h3>
                                         <HeartLike
-                                            liked={liked}
+                                            count={(workout.likes || []).length}
+                                            liked={workout.likes.some(like => like.userId === currentUser?.id) || false}
                                             onChange={(next) => {
-                                                toggleLike(workout.id, next);
-                                                likeWorkout(
-                                                    workout.id,
-                                                    () => {},
-                                                    () => console.error("Error al marcar como favorito")
-                                                );
-                                            }}
+                                                if (next) {
+                                                    setWorkouts(prev =>
+                                                        prev.map(w =>
+                                                            w.id === workout.id
+                                                                ? {
+                                                                    ...w,
+                                                                    likes: [...w.likes, { userId: currentUser.id }]
+                                                                }
+                                                                : w
+                                                        )
+                                                    );
+                                                    likeWorkout(
+                                                        workout.id,
+                                                        () => {
+                                                        },
+                                                        () => console.error("Error al marcar como favorito")
+                                                    );
+                                                } else {
+                                                    setWorkouts(prev =>
+                                                        prev.map(w =>
+                                                            w.id === workout.id
+                                                                ? {
+                                                                    ...w,
+                                                                    likes: w.likes.filter(like => like.userId !== currentUser.id)
+                                                                }
+                                                                : w
+                                                        )
+                                                    );
+                                                    unlikeWorkout(
+                                                        workout.id,
+                                                        () => {
+                                                        },
+                                                        () => console.error("Error al desmarcar como favorito")
+                                                    );
+                                            }}}
                                             size={22}
                                         />
                                         <CommentBubble
@@ -184,6 +206,13 @@ const WorkoutFeed = () => {
                                     ...prev,
                                     comments: [...(prev.comments || []), addedComment]
                                 }));
+                                setWorkouts(prev =>
+                                    prev.map(w =>
+                                        w.id === selectedWorkout.id
+                                            ? { ...w, comments: [...(w.comments || []), addedComment] }
+                                            : w
+                                    )
+                                );
                             },
                             () => console.error("Error al enviar el comentario")
                         );

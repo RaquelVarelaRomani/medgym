@@ -18,11 +18,12 @@ public class WorkoutForHistoryDto {
     private String userName;
     private String userSurname;
     private List<WorkoutCommentDto> comments;
+    private List<WorkoutLikeDto> likes;
 
     public WorkoutForHistoryDto() {
     }
 
-    public WorkoutForHistoryDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, List<WorkoutCommentDto> comments) {
+    public WorkoutForHistoryDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, List<WorkoutCommentDto> comments, List<WorkoutLikeDto> likes) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -32,6 +33,7 @@ public class WorkoutForHistoryDto {
         this.userName = userName;
         this.userSurname = userSurname;
         this.comments = comments;
+        this.likes = likes;
     }
 
     public Long getId() {
@@ -96,5 +98,12 @@ public class WorkoutForHistoryDto {
     }
     public void setComments(List<WorkoutCommentDto> comments) {
         this.comments = comments;
+    }
+
+    public List<WorkoutLikeDto> getLikes() {
+        return likes;
+    }
+    public void setLikes(List<WorkoutLikeDto> likes) {
+        this.likes = likes;
     }
 }

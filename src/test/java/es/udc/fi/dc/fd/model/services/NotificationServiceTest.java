@@ -74,7 +74,7 @@ public class NotificationServiceTest {
         Notification n = notifications.get(0);
         assertTrue(n.getMessage().contains("ha comenzado a seguirte"));
         assertEquals(Notification.NotificationType.FOLLOW, n.getType());
-        assertNull(n.getIdToRedirect());
+        assertEquals(client.getId(), n.getIdToRedirect());
     }
 
     @Test

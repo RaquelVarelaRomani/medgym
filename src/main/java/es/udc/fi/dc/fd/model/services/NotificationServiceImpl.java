@@ -47,7 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDao.save(new Notification(
                 client.getName() + " " + client.getSurname() + " ha comenzado a seguirte",
                 NotificationType.FOLLOW,
-                null,
+                clientId,
                 trainer,
                 false,
                 LocalDateTime.now().withNano(0)
@@ -66,7 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDao.save(new Notification(
                 client.getName() + " " + client.getSurname() + " ha dado like a tu rutina '" + routine.getName() + "'",
                 NotificationType.ROUTINE_LIKE,
-                routine.getId(),
+                routineId,
                 routine.getTrainer(),
                 false,
                 LocalDateTime.now().withNano(0)
@@ -85,7 +85,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDao.save(new Notification(
                 user.getName() + " " + user.getSurname() + " ha dado like a tu entrenamiento de '" + workout.getRoutine().getName() + "'",
                 NotificationType.WORKOUT_LIKE,
-                workout.getId(),
+                workoutId,
                 workout.getUser(),
                 false,
                 LocalDateTime.now().withNano(0)
@@ -97,14 +97,14 @@ public class NotificationServiceImpl implements NotificationService {
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
-        if (user.getId().equals(workout.getUser().getId())) {
+        if (userId.equals(workout.getUser().getId())) {
             return;
         }
 
         notificationDao.save(new Notification(
                 user.getName() + " " + user.getSurname() + " ha comentado tu entrenamiento de '" + workout.getRoutine().getName() + "': " + text,
                 NotificationType.WORKOUT_COMMENT,
-                workout.getId(),
+                workoutId,
                 workout.getUser(),
                 false,
                 LocalDateTime.now().withNano(0)

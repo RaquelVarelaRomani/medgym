@@ -10,6 +10,8 @@ import { commentWorkout } from "../../../../backend/workoutCommentService";
 import StatisticMetrics from '../common/statistics/Metrics';
 import MuscleGroupChart from '../common/statistics/MuscleGroupChart';
 import { formatDuration, transformMuscleGroupData } from '../common/statistics/utils/formatters';
+import {likeWorkout, unlikeWorkout} from "../../../../backend/workoutLikeService";
+import HeartLike from "../common/HeartLike";
 
 const WorkoutHistory = () => {
     const navigate = useNavigate();
@@ -198,6 +200,47 @@ const WorkoutHistory = () => {
                                 <div className={styles["workout-info"]}>
                                     <div className={styles["workout-title-line"]}>
                                         <h3>{workout.routineName}</h3>
+                                        <HeartLike
+                                            count={(workout.likes || []).length}
+                                            liked={workout.likes.some(like => like.userId === currentUser?.id) || false}
+                                            onChange={(next) => {
+                                                if (next) {
+                                                    setWorkouts(prev =>
+                                                        prev.map(w =>
+                                                            w.id === workout.id
+                                                                ? {
+                                                                    ...w,
+                                                                    likes: [...w.likes, { userId: currentUser.id }]
+                                                                }
+                                                                : w
+                                                        )
+                                                    );
+                                                    likeWorkout(
+                                                        workout.id,
+                                                        () => {
+                                                        },
+                                                        () => console.error("Error al marcar como favorito")
+                                                    );
+                                                } else {
+                                                    setWorkouts(prev =>
+                                                        prev.map(w =>
+                                                            w.id === workout.id
+                                                                ? {
+                                                                    ...w,
+                                                                    likes: w.likes.filter(like => like.userId !== currentUser.id)
+                                                                }
+                                                                : w
+                                                        )
+                                                    );
+                                                    unlikeWorkout(
+                                                        workout.id,
+                                                        () => {
+                                                        },
+                                                        () => console.error("Error al desmarcar como favorito")
+                                                    );
+                                                }}}
+                                            size={22}
+                                        />
                                         <CommentBubble
                                             count={(workout.comments || []).length}
                                             onClick={(e) => {
