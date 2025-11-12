@@ -203,7 +203,7 @@ const CreateRoutine = () => {
     return (
         <div className={styles['contenedor-create-routine']}>
             <div className={styles['header-crear-rutina']}>
-                <h2>Estás creando un nuevo entrenamiento...</h2>
+                <h2>Estás creando una nueva rutina...</h2>
             </div>
 
             <div className={styles['form-crear-rutina']}>

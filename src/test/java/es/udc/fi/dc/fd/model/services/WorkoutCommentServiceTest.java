@@ -120,4 +120,31 @@ public class WorkoutCommentServiceTest {
 
         assertTrue(workoutCommentService.getWorkoutComments(workout.getId()).isEmpty());
     }
+
+    @Test
+    public void testFindWorkoutCommentById() throws Exception {
+        User user = userDao.save(new User("uX", "nX", "ux@test.com", "600000111",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
+        User trainer = userDao.save(new User("tX", "nY", "tx@test.com", "600000222",
+                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine("RX", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        Workout workout = workoutDao.save(new Workout(LocalDateTime.now(), null, routine, user));
+
+        WorkoutComment created = workoutCommentService.commentWorkout(user.getId(), "Hola", workout.getId());
+
+        WorkoutComment found = workoutCommentService.findWorkoutCommentById(created.getId());
+        assertEquals(created.getId(), found.getId());
+        assertEquals("Hola", found.getText());
+    }
+
+    @Test
+    public void testFindWorkoutCommentByIdNotFound() {
+        assertThrows(InstanceNotFoundException.class, () ->
+                workoutCommentService.findWorkoutCommentById(-1L)
+        );
+    }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RoutineDto {
     public interface AllValidations {}
@@ -19,10 +20,11 @@ public class RoutineDto {
     private String trainerSurname;
     private String visibility;
     private String difficulty;
+    private List<RoutineLikeDto> likes;
 
     public RoutineDto() {}
 
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility, String difficulty) {
+    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility, String difficulty, List<RoutineLikeDto> likes) {
         this.id = id;
         this.name = name.trim();
         this.description = description.trim();
@@ -33,6 +35,7 @@ public class RoutineDto {
         this.trainerSurname = trainerSurname;
         this.visibility = visibility;
         this.difficulty = difficulty;
+        this.likes = likes;
     }
 
     public Long getId() {
@@ -117,6 +120,13 @@ public class RoutineDto {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public List<RoutineLikeDto> getLikes() {
+        return likes;
+    }
+    public void setLikes(List<RoutineLikeDto> likes) {
+        this.likes = likes;
     }
 
 }

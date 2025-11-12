@@ -320,5 +320,46 @@ public class RoutineExerciseControllerTest {
                 .andExpect(jsonPath("$.content[0].image").doesNotExist());
     }
 
+    @Test
+    public void testUpdateExerciseInRoutinePermissionDenied() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
+
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
+
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, "", "", 2);
+
+        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(dto)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testUpdateExerciseInNonExistentRoutine() throws Exception {
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, "", "", 2);
+
+        mockMvc.perform(put("/api/routines/-1/exercises/999")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdateNonExistentExerciseInRoutine() throws Exception {
+        Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
+
+        RoutineExerciseDto dto = new RoutineExerciseDto(null, null, null, "", "", 2);
+
+        mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/-123")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(dto)))
+                .andExpect(status().isNotFound());
+    }
+
 
 }
