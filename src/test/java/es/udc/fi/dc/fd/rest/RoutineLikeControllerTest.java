@@ -122,4 +122,30 @@ public class RoutineLikeControllerTest {
         List<?> likes = routineLikeService.getRoutineLikesByUser(clientUser.getUserDto().getId());
         org.junit.Assert.assertTrue(likes.isEmpty());
     }
+
+    @Test
+    public void testLikeRoutine_Unauthenticated() throws Exception {
+        mockMvc.perform(post("/api/routines/1/like"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testLikeRoutine_RoutineNotFound() throws Exception {
+        mockMvc.perform(post("/api/routines/-1/like")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .requestAttr("userId", clientUser.getUserDto().getId()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUnlikeRoutine_WhenNotLiked_NoError() throws Exception {
+        User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
+        Routine routine = routineService.createRoutine("R", "D", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        mockMvc.perform(delete("/api/routines/" + routine.getId() + "/unlike")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .requestAttr("userId", clientUser.getUserDto().getId()))
+                .andExpect(status().isOk());
+    }
 }

@@ -194,4 +194,39 @@ public class RoutineServiceTest {
         assertTrue(trainerNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
         assertTrue(clientNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
     }
+
+    @Test
+    public void testFindRoutineByIdNonExistent() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            routineService.findRoutineById(999L);
+        });
+    }
+
+    @Test
+    public void testFindRoutinesByFilters() throws DuplicateInstanceException, InstanceNotFoundException {
+        User trainer = createUser("trainerX@test.com");
+        trainer.setRole(RoleType.TRAINER);
+        trainer = userDao.save(trainer);
+
+        // Rutinas distintas para filtrar
+        Routine r1 = routineService.createRoutine("FX1", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Routine r2 = routineService.createRoutine("FX2", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.INTERMEDIATE);
+
+        // client para ejecutar filtros
+        User client = createUser("clientX@test.com");
+
+        List<Routine> filtered = routineService.findRoutinesByFilters(
+                client.getId(),
+                null,                     // equipment
+                null,                     // muscleGroup
+                Routine.DifficultyType.INTERMEDIATE,
+                trainer.getId()
+        );
+
+        assertEquals(1, filtered.size());
+        assertEquals(r2.getId(), filtered.get(0).getId());
+    }
+
 }
