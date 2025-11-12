@@ -8,6 +8,8 @@ import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.rest.dtos.StatisticsConversor;
 import es.udc.fi.dc.fd.rest.dtos.StatisticsDto;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutForFeedDto;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutForHistoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +17,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
-import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDto;
-import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.toWorkoutDtos;
+import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.*;
 
 @RestController
 @RequestMapping("/api/workouts")
@@ -44,8 +45,13 @@ public class WorkoutController {
     }
 
     @GetMapping
-    public List<WorkoutDto> getWorkouts(@RequestAttribute Long userId) {
-        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+    public List<WorkoutForHistoryDto> getWorkouts(@RequestAttribute Long userId) {
+        return toWorkoutForHistoryDtos(workoutService.findWorkoutsFromUser(userId));
+    }
+
+    @GetMapping("/following")
+    public List<WorkoutForFeedDto> getWorkoutsFromFollowing(@RequestAttribute Long userId) throws InstanceNotFoundException {
+        return toWorkoutForFeedDtos(workoutService.findWorkoutsFromFollowing(userId));
     }
 
     @GetMapping("/user/{userId}")
@@ -54,7 +60,7 @@ public class WorkoutController {
     }
 
     @GetMapping("/stats")
-    public StatisticsDto getLastMonthStats(@RequestAttribute Long userId){
+    public StatisticsDto getLastMonthStats(@RequestAttribute Long userId) {
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
         LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
         LocalDateTime endOfLastMonth = lastMonth.atEndOfMonth().atTime(23, 59, 59);

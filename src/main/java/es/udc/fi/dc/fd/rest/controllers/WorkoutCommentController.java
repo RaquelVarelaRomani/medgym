@@ -3,11 +3,13 @@ package es.udc.fi.dc.fd.rest.controllers;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutCommentService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutCommentDto;
+import es.udc.fi.dc.fd.rest.dtos.WorkoutCommentParamsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static es.udc.fi.dc.fd.rest.dtos.WorkoutCommentConversor.toWorkoutCommentDto;
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutCommentConversor.toWorkoutCommentDtos;
 
 @RestController
@@ -18,9 +20,9 @@ public class WorkoutCommentController {
     private WorkoutCommentService workoutCommentService;
 
     @PostMapping("/workouts/{workoutId}/comments")
-    public void commentWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId, @RequestBody String text)
+    public WorkoutCommentDto commentWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId, @RequestBody WorkoutCommentParamsDto workoutCommentParamsDto)
             throws InstanceNotFoundException {
-        workoutCommentService.commentWorkout(userId, text, workoutId);
+        return toWorkoutCommentDto(workoutCommentService.commentWorkout(userId, workoutCommentParamsDto.getText(), workoutId));
     }
 
     @GetMapping("/workouts/{workoutId}/comments")

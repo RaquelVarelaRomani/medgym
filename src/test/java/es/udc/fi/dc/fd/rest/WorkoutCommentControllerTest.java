@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -95,8 +96,8 @@ public class WorkoutCommentControllerTest {
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/comments")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .requestAttr("userId", clientUser.getUserDto().getId())
-                        .contentType("text/plain")
-                        .content("Comentario test"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\": \"Comentario test\"}"))
                 .andExpect(status().isOk());
 
         org.junit.Assert.assertEquals(1, workoutCommentService.getWorkoutComments(workout.getId()).size());
@@ -122,9 +123,21 @@ public class WorkoutCommentControllerTest {
         Long id = workoutCommentService.getWorkoutComments(workout.getId()).get(0).getId();
 
         mockMvc.perform(delete("/api/workoutComments/" + id)
-                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+
         org.junit.Assert.assertTrue(workoutCommentService.getWorkoutComments(workout.getId()).isEmpty());
+    }
+
+    @Test
+    public void testCommentWorkoutNotFound() throws Exception {
+        mockMvc.perform(post("/api/workouts/9999/comments")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .requestAttr("userId", clientUser.getUserDto().getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"text\": \"texto\"}"))
+                .andExpect(status().isNotFound());
     }
 }

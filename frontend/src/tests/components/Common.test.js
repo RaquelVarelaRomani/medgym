@@ -611,6 +611,7 @@ describe("Common Components", () => {
           date: "2023-01-01T00:00:00",
           type: "FOLLOW",
           isRead: false,
+          idToRedirect: 1,
         },
       ];
 
@@ -633,7 +634,7 @@ describe("Common Components", () => {
         expect.any(Function),
         expect.any(Function),
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/users/followers");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
 
     test("handles invalid date", () => {
@@ -964,7 +965,7 @@ describe("Common Components", () => {
       );
 
       expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-      expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+      expect(screen.getByText("Rutinas")).toBeInTheDocument();
       expect(screen.getByText("Ejercicios")).toBeInTheDocument();
       expect(screen.getByText("Historial")).toBeInTheDocument();
     });
@@ -1316,7 +1317,7 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1382,7 +1383,7 @@ describe("Common Components", () => {
       window.dispatchEvent(new CustomEvent("routineDeleted"));
 
       await waitFor(() => {
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1524,7 +1525,7 @@ describe("Common Components", () => {
       );
 
       await waitFor(() => {
-        const routinesLink = screen.getByText("Entrenamientos").closest("a");
+        const routinesLink = screen.getByText("Rutinas").closest("a");
         expect(routinesLink).toHaveClass("active");
       });
     });

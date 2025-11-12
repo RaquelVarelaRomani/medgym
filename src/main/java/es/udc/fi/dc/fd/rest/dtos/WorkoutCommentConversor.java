@@ -14,7 +14,10 @@ public class WorkoutCommentConversor {
                 workoutComment.getText(),
                 workoutComment.getDate(),
                 workoutComment.getUser().getId(),
-                workoutComment.getWorkout().getId()
+                workoutComment.getWorkout().getId(),
+                workoutComment.getUser().getName(),
+                workoutComment.getUser().getSurname(),
+                workoutComment.getUser().getProfilePicture()
         );
     }
 

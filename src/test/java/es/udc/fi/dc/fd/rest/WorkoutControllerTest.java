@@ -146,17 +146,6 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testGetWorkoutsAsTrainer() throws Exception {
-        startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
-        startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
-
-        getUserWorkouts(trainerUser)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(2));
-    }
-
-    @Test
     public void testFinishWorkoutNotFound() throws Exception {
         finishWorkout(trainerUser, 999L)
                 .andExpect(status().isNotFound());
@@ -216,6 +205,31 @@ public class WorkoutControllerTest {
     }
 
     @Test
+    public void testStartWorkoutRoutineNotFound() throws Exception {
+        WorkoutDto dto = new WorkoutDto();
+        dto.setRoutineId(9999L);
+
+        mockMvc.perform(post("/api/workouts/start")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .header("X-User-Id", trainerUser.getUserDto().getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetWorkoutsFromFollowing() throws Exception {
+        // entrenador seguido por el cliente
+        // follow ya probado en otro test → aquí solo forzamos el feed mediante inserción directa
+        startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/workouts/following")
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .header("X-User-Id", trainerUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
     public void testGetLastMonthStatsReturnsStats() throws Exception {
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
         LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();

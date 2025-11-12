@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Profile.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { logout, tryLoginFromServiceToken, getUser } from "../../../../backend/userService";
@@ -6,6 +6,7 @@ import Popup from "../common/popup/Popup";
 import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
 import { getWorkoutsByUser } from "../../../../backend/workoutService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
+import LoadingMessage from "../common/LoadingMessage";
 
 
 const Profile = () => {
@@ -18,32 +19,34 @@ const Profile = () => {
     const [following, setFollowing] = useState(0)
     const [isFollowing, setIsFollowing] = useState(false)
     const [workouts, setWorkouts] = useState([]);
-
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getUser(id, (user) => setProfile(user));
+        let meTemp = null;
+        let profileTemp = null;
+
         tryLoginFromServiceToken(
-            (authenticatedUser) => setMe(authenticatedUser.user),
+            (authenticatedUser) => {
+                meTemp = authenticatedUser.user;
+                setMe(meTemp);
+
+                getUser(id, (user) => {
+                    profileTemp = user;
+                    setProfile(profileTemp);
+
+                    Promise.all([
+                        new Promise(resolve => getFollowers(profileTemp.id, (f) => { setFollowers(f.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(profileTemp.id, (t) => { setFollowing(t.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(meTemp.id, (trainers) => {
+                            setIsFollowing(trainers.some(t => t.trainerId === profileTemp.id));
+                            resolve();
+                        }))
+                    ]).then(() => setLoading(false));
+                });
+            },
             () => navigate("/users/login")
         );
     }, [id, navigate]);
-
-    useEffect(() => {
-        if (!me || !profile) return;
-
-        getFollowers(profile.id, (f) => setFollowers(f.length));
-        
-        getFollowedTrainers(profile.id, (trainers) => {
-            setFollowing(trainers.length);
-        });
-
-        getFollowedTrainers(me.id,
-            (trainers) => {
-                const following = trainers.some(t => t.trainerId === profile.id);
-                setIsFollowing(following);
-            }
-        )
-    }, [me, profile, isFollowing]);
 
     useEffect(() => {
         if (!profile) return;
@@ -86,6 +89,7 @@ const Profile = () => {
         return "Indefinido";
     }
 
+    if (loading) return <LoadingMessage text="Cargando perfil..." />;
     return (
         <div className={styles.profile}>
             <div className={styles['profile-container']}>
@@ -111,9 +115,17 @@ const Profile = () => {
                                 {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                             </h2>
                             <div className={styles['profile-info']}>
-                                {profile && <p className={styles['follow-side']} onClick={() => navigate(`/users/followers/${profile.id}`)}>Seguidores: {followers}</p>}
-                                {profile && <p className={styles['follow-side']} onClick={() => navigate(`/users/following/${profile.id}`)}>Siguiendo: {following}</p>}
-                            </div>                      
+                                {!loading && (
+                                    <>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/followers/${profile.id}`)}>
+                                            Seguidores: {followers}
+                                        </p>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/following/${profile.id}`)}>
+                                            Siguiendo: {following}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div> 
 
                     </div>

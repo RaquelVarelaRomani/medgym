@@ -37,7 +37,10 @@
 .heartWrapper {
     position: relative;
     display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
+
 
 .heartUnliked {
     color: rgba(255, 255, 255, 0.4);
@@ -82,4 +85,17 @@
     pointer-events: none;
     border: 2px solid var(--neon-orange);
     border-radius: 50%;
+}
+
+.workout-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.count {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1;
+    user-select: none;
 }
