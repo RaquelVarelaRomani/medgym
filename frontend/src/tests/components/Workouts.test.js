@@ -12,7 +12,7 @@ import {
   getWorkouts,
   getWorkout,
   addWorkoutActivity,
-  finishWorkout,
+  finishWorkout, getLastMonthStats,
 } from "../../backend/workoutService";
 import {
   getWorkoutExercisesByWorkoutId,
@@ -37,6 +37,7 @@ jest.mock("../../backend/workoutService", () => ({
   getWorkout: jest.fn(),
   addWorkoutActivity: jest.fn(),
   finishWorkout: jest.fn(),
+  getLastMonthStats: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutExerciseService", () => ({
@@ -1026,8 +1027,14 @@ describe("Workout Components", () => {
         });
       });
 
-      test("toggles between list and calendar view", async () => {
+      test("toggles between list, calendar and statistics view", async () => {
         const mockWorkouts = [];
+        const mockStats = {
+          lastMonthWorkouts: 0,
+          totalDurationSeconds: 0,
+          averageDurationSeconds: 0,
+          exercisesByMuscleGroup: {},
+        };
 
         tryLoginFromServiceToken.mockImplementation((success) => {
           success({ user: { id: 1 } });
@@ -1035,6 +1042,10 @@ describe("Workout Components", () => {
 
         getWorkouts.mockImplementation((success) => {
           success(mockWorkouts);
+        });
+
+        getLastMonthStats.mockImplementation((success) => {
+          success(mockStats);
         });
 
         render(
@@ -1045,20 +1056,164 @@ describe("Workout Components", () => {
 
         expect(screen.getByText("Lista")).toHaveClass("active");
         expect(screen.getByText("Calendario")).not.toHaveClass("active");
+        expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
 
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
           expect(screen.getByText("Calendario")).toHaveClass("active");
           expect(screen.getByText("Lista")).not.toHaveClass("active");
+          expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
+        });
+
+        fireEvent.click(screen.getByText("Estadísticas"));
+        await waitFor(() => {
+          expect(screen.getByText("Estadísticas")).toHaveClass("active");
+          expect(screen.getByText("Lista")).not.toHaveClass("active");
+          expect(screen.getByText("Calendario")).not.toHaveClass("active");
         });
 
         fireEvent.click(screen.getByText("Lista"));
 
         await waitFor(() => {
           expect(screen.getByText("Lista")).toHaveClass("active");
+          expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
           expect(screen.getByText("Calendario")).not.toHaveClass("active");
         });
+      });
+    });
+
+    test("renders statistics view correctly", async () => {
+      const mockWorkouts = [
+        {
+          id: 1,
+          routineName: "Rutina 1",
+          startTime: "2025-10-01T19:30:00Z",
+          endTime: "2025-10-01T20:15:00Z",
+        },
+        {
+          id: 2,
+          routineName: "Rutina 2",
+          startTime: "2025-10-05T19:00:00Z",
+          endTime: "2025-10-05T19:50:00Z",
+        },
+      ];
+
+      const mockStats = {
+        lastMonthWorkouts: 2,
+        totalDurationSeconds: 3300,
+        averageDurationSeconds: 1650,
+        exercisesByMuscleGroup: {
+          'CHEST': 5,
+          'BACK': 8,
+        },
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Estadísticas del último mes")).toBeInTheDocument();
+        expect(screen.getByText("Entrenamientos completados")).toBeInTheDocument();
+        expect(screen.getByText("Duración total")).toBeInTheDocument();
+        expect(screen.getByText("Duración promedio")).toBeInTheDocument();
+        expect(screen.getByText("Ejercicios por grupo muscular")).toBeInTheDocument();
+      });
+    });
+
+    test('displays statistics metrics correctly', async () => {
+      const mockWorkouts = [
+        {
+          id: 1,
+          routineName: "Rutina 1",
+          startTime: "2025-10-01T19:30:00Z",
+          endTime: "2025-10-01T20:15:00Z",
+        },
+      ];
+
+      const mockStats = {
+        lastMonthWorkouts: 1,
+        totalDurationSeconds: 2700,
+        averageDurationSeconds: 2700,
+        exercisesByMuscleGroup: {
+          'CHEST': 5,
+        },
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        const metricLabels = screen.getAllByText(/Entrenamientos completados|Duración total|Duración promedio/);
+        expect(metricLabels.length).toBe(3);
+      });
+    });
+
+    test('displays empty statistics message when no workouts exist', async () => {
+      const mockWorkouts = [];
+      const mockStats = {
+        lastMonthWorkouts: 0,
+        totalDurationSeconds: 0,
+        averageDurationSeconds: 0,
+        exercisesByMuscleGroup: {},
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Estadísticas del último mes")).toBeInTheDocument();
       });
     });
 

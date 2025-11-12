@@ -56,4 +56,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     public void deleteWorkoutsByRoutine(Long routineId) {
         workoutDao.deleteByRoutineId(routineId);
     }
+
+    @Override
+    public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate){
+        return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startDate, endDate);
+    }
 }
