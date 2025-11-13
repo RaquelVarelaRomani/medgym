@@ -22,6 +22,9 @@ CREATE TABLE users (
     profile_picture MEDIUMBLOB,
     role TINYINT NOT NULL DEFAULT 0,
     status TINYINT NOT NULL DEFAULT 0,
+    weight_kg DOUBLE NULL,
+    height_cm DOUBLE NULL,
+    gender    VARCHAR(20) NULL,
 
     CONSTRAINT pk_user PRIMARY KEY (id),
     CONSTRAINT uk_user_email UNIQUE (email),
