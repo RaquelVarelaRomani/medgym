@@ -74,4 +74,13 @@ public class Workout {
     public void setComments(List<WorkoutComment> comments) {
         this.comments = comments;
     }
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<WorkoutLike> getLikes() {
+        return likes;
+    }
+    public void setLikes(List<WorkoutLike> likes) {
+        this.likes = likes;
+    }
+    private List<WorkoutLike> likes;
 }

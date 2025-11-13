@@ -1,246 +1,203 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import Profile from "../../modules/app/components/users/Profile";
 import EditProfile from "../../modules/app/components/users/EditProfile";
 
 import {
-  tryLoginFromServiceToken,
-  updateProfile,
-  changePassword,
+    tryLoginFromServiceToken,
+    getUser,
+    updateProfile,
+    changePassword,
 } from "../../backend/userService";
+import {
+    getFollowers,
+    getFollowedTrainers,
+} from "../../backend/userFollowService";
+import { getWorkoutsByUser } from "../../backend/workoutService";
 
 const mockNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockNavigate,
+    ...jest.requireActual("react-router-dom"),
+    useNavigate: () => mockNavigate,
+    useParams: () => ({ id: "1" }),
 }));
 
 jest.mock("../../backend/userService", () => ({
-  tryLoginFromServiceToken: jest.fn(),
-  updateProfile: jest.fn(),
-  changePassword: jest.fn(),
+    tryLoginFromServiceToken: jest.fn(),
+    getUser: jest.fn(),
+    updateProfile: jest.fn(),
+    changePassword: jest.fn(),
 }));
 
-describe("Profile Components", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+jest.mock("../../backend/userFollowService", () => ({
+    getFollowers: jest.fn(),
+    getFollowedTrainers: jest.fn(),
+    followTrainer: jest.fn(),
+    unfollowTrainer: jest.fn(),
+}));
 
-  describe("Profile Component", () => {
-    test("renders loading state initially", () => {
-      tryLoginFromServiceToken.mockImplementation(() => {});
+jest.mock("../../backend/workoutService", () => ({
+    getWorkoutsByUser: jest.fn(),
+}));
 
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      expect(screen.getByText("Cargando...")).toBeInTheDocument();
+describe("Profile and EditProfile Components", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
-    test("renders profile data correctly when authenticated", async () => {
-      const mockUser = {
-        id: 1,
-        name: "John",
-        surname: "Doe",
-        email: "john@example.com",
-        phoneNumber: "123456789",
-        role: "CLIENT",
-        profilePicture: null,
-      };
-
-      tryLoginFromServiceToken.mockImplementation((successCallback) => {
-        successCallback({ user: mockUser });
-      });
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("John Doe")).toBeInTheDocument();
-        expect(screen.getByText("john@example.com")).toBeInTheDocument();
-        expect(screen.getByText("123456789")).toBeInTheDocument();
-        expect(screen.getByText("Cliente")).toBeInTheDocument();
-      });
-    });
-
-    test("renders default profile image when no profile picture", async () => {
-      const mockUser = {
-        id: 1,
-        name: "John",
-        surname: "Doe",
-        email: "john@example.com",
-        phoneNumber: "123456789",
-        role: "CLIENT",
-        profilePicture: null,
-      };
-
-      tryLoginFromServiceToken.mockImplementation((successCallback) => {
-        successCallback({ user: mockUser });
-      });
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        const img = screen.getByAltText("Foto por defecto");
-        expect(img).toHaveAttribute("src", "./assets/default-profile.jpg");
-      });
-    });
-
-    test("renders profile picture when available", async () => {
-      const mockUser = {
-        id: 1,
-        name: "John",
-        surname: "Doe",
-        email: "john@example.com",
-        phoneNumber: "123456789",
-        role: "CLIENT",
-        profilePicture: "base64encodedimage",
-      };
-
-      tryLoginFromServiceToken.mockImplementation((successCallback) => {
-        successCallback({ user: mockUser });
-      });
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        const img = screen.getByAltText("Foto de perfil");
-        expect(img).toHaveAttribute(
-          "src",
-          "data:image/jpeg;base64,base64encodedimage",
-        );
-      });
-    });
-
-    test("navigates to edit profile on button click", async () => {
-      const mockUser = {
-        id: 1,
-        name: "John",
-        surname: "Doe",
-        email: "john@example.com",
-        phoneNumber: "123456789",
-        role: "CLIENT",
-        profilePicture: null,
-      };
-
-      tryLoginFromServiceToken.mockImplementation((successCallback) => {
-        successCallback({ user: mockUser });
-      });
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("John Doe")).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText("Editar perfil"));
-      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/edit-profile");
-    });
-
-    test("navigates to change password on button click", async () => {
-      const mockUser = {
-        id: 1,
-        name: "John",
-        surname: "Doe",
-        email: "john@example.com",
-        phoneNumber: "123456789",
-        role: "CLIENT",
-        profilePicture: null,
-      };
-
-      tryLoginFromServiceToken.mockImplementation((successCallback) => {
-        successCallback({ user: mockUser });
-      });
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("John Doe")).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText("Cambiar contraseña"));
-      expect(mockNavigate).toHaveBeenCalledWith(
-        "/users/profile/change-password",
-      );
-    });
-
-    test("redirects to login on authentication failure", async () => {
-      tryLoginFromServiceToken.mockImplementation(
-        (successCallback, errorCallback) => {
-          errorCallback();
-        },
-      );
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith("/users/login");
-      });
-    });
-
-    test("displays correct role strings", async () => {
-      const roles = [
-        { role: "CLIENT", expected: "Cliente" },
-        { role: "TRAINER", expected: "Entrenador" },
-        { role: "ADMIN", expected: "Administrador" },
-        { role: "UNKNOWN", expected: "Indefinido" },
-      ];
-
-      for (const { role, expected } of roles) {
+    describe("Profile Component", () => {
         const mockUser = {
-          id: 1,
-          name: "John",
-          surname: "Doe",
-          email: "john@example.com",
-          phoneNumber: "123456789",
-          role,
-          profilePicture: null,
+            id: 1,
+            name: "John",
+            surname: "Doe",
+            email: "john@example.com",
+            phoneNumber: "123456789",
+            role: "CLIENT",
+            profilePicture: null,
         };
 
-        tryLoginFromServiceToken.mockImplementation((successCallback) => {
-          successCallback({ user: mockUser });
+        const setupProfileMocks = () => {
+            tryLoginFromServiceToken.mockImplementation((cb) => cb({ user: mockUser }));
+            getUser.mockImplementation((id, cb) => cb(mockUser));
+            getFollowers.mockImplementation((id, cb) => cb([]));
+            getFollowedTrainers.mockImplementation((id, cb) => cb([]));
+            getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+        };
+
+        test("renders loading state initially", () => {
+            tryLoginFromServiceToken.mockImplementation(() => {});
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+            expect(screen.getByText("Cargando perfil...")).toBeInTheDocument();
         });
 
-        render(
-          <MemoryRouter key={role}>
-            <Profile />
-          </MemoryRouter>,
-        );
+        test("renders profile data correctly when authenticated", async () => {
+            setupProfileMocks();
 
-        await waitFor(() => {
-          expect(screen.getByText(expected)).toBeInTheDocument();
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("John Doe")).toBeInTheDocument();
+                expect(screen.getByText("john@example.com")).toBeInTheDocument();
+                expect(screen.getByText("123456789")).toBeInTheDocument();
+                expect(screen.getByText("Cliente")).toBeInTheDocument();
+            });
         });
-      }
+
+        test("renders default profile image when no profile picture", async () => {
+            setupProfileMocks();
+
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                const img = screen.getByAltText("Foto por defecto");
+                expect(img).toHaveAttribute("src", "./assets/default-profile.jpg");
+            });
+        });
+
+        test("renders profile picture when available", async () => {
+            const userWithPic = { ...mockUser, profilePicture: "base64encodedimage" };
+            tryLoginFromServiceToken.mockImplementation((cb) => cb({ user: userWithPic }));
+            getUser.mockImplementation((id, cb) => cb(userWithPic));
+            getFollowers.mockImplementation((id, cb) => cb([]));
+            getFollowedTrainers.mockImplementation((id, cb) => cb([]));
+            getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                const img = screen.getByAltText("Foto de perfil");
+                expect(img).toHaveAttribute("src", "data:image/jpeg;base64,base64encodedimage");
+            });
+        });
+
+        test("navigates to edit profile on button click", async () => {
+            setupProfileMocks();
+
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => screen.getByText("John Doe"));
+            fireEvent.click(screen.getByText("Editar perfil"));
+            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/edit-profile");
+        });
+
+        test("navigates to change password on button click", async () => {
+            setupProfileMocks();
+
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => screen.getByText("John Doe"));
+            fireEvent.click(screen.getByText("Cambiar contraseña"));
+            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/change-password");
+        });
+
+        test("redirects to login on authentication failure", async () => {
+            tryLoginFromServiceToken.mockImplementation((ok, fail) => fail());
+            render(
+                <MemoryRouter>
+                    <Profile />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith("/users/login");
+            });
+        });
+
+        test("displays correct role strings", async () => {
+            const roles = [
+                { role: "CLIENT", expected: "Cliente" },
+                { role: "TRAINER", expected: "Entrenador" },
+                { role: "ADMIN", expected: "Administrador" },
+                { role: "UNKNOWN", expected: "Indefinido" },
+            ];
+
+            for (const { role, expected } of roles) {
+                const user = { ...mockUser, role };
+                tryLoginFromServiceToken.mockImplementation((cb) => cb({ user }));
+                getUser.mockImplementation((id, cb) => cb(user));
+                getFollowers.mockImplementation((id, cb) => cb([]));
+                getFollowedTrainers.mockImplementation((id, cb) => cb([]));
+                getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+
+                render(
+                    <MemoryRouter key={role}>
+                        <Profile />
+                    </MemoryRouter>
+                );
+
+                await waitFor(() => {
+                    expect(screen.getByText(expected)).toBeInTheDocument();
+                });
+            }
+        });
     });
-  });
 
   describe("EditProfile Component - Profile Editing", () => {
     const mockUser = {
@@ -333,7 +290,7 @@ describe("Profile Components", () => {
           expect.any(Function),
           expect.any(Function),
         );
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -383,7 +340,7 @@ describe("Profile Components", () => {
       });
 
       fireEvent.click(screen.getByText("Cancelar"));
-      expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
   });
 
@@ -467,7 +424,7 @@ describe("Profile Components", () => {
           expect.any(Function),
         );
         expect(updateProfile).toHaveBeenCalled();
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -656,7 +613,7 @@ describe("Profile Components", () => {
       });
 
       fireEvent.click(screen.getByText("Cancelar"));
-      expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
   });
 });

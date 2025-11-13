@@ -451,3 +451,27 @@
   text-align: center;
   color: white;
 }
+
+.workout-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statistics-view {
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.stats-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-align: center;
+    margin: 0;
+    letter-spacing: 0.05em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}

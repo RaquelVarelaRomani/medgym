@@ -6,7 +6,7 @@ import {
 export const commentWorkout = (workoutId, text, onSuccess, onErrors) =>
     appFetch(
         `/workouts/${workoutId}/comments`,
-        fetchConfig("POST", text),
+        fetchConfig("POST", { text }),
         onSuccess,
         onErrors
     );

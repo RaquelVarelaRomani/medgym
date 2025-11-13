@@ -99,4 +99,47 @@ public class WorkoutLikeServiceTest {
         workoutLikeService.unlikeWorkout(user.getId(), workout.getId());
         assertTrue(workoutLikeService.getLikesByUser(user.getId()).isEmpty());
     }
+
+    @Test
+    public void testLikeWorkoutNonExistentWorkout() {
+        User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
+        assertThrows(InstanceNotFoundException.class, () -> {
+            workoutLikeService.likeWorkout(user.getId(), 999L);
+        });
+    }
+
+    @Test
+    public void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
+        User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
+                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine("R", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Workout workout = workoutDao.save(new Workout(LocalDateTime.now(), null, routine, user));
+
+        workoutLikeService.likeWorkout(user.getId(), workout.getId());
+        workoutLikeService.likeWorkout(user.getId(), workout.getId()); // segunda llamada
+
+        List<WorkoutLike> likes = workoutLikeService.getLikesByUser(user.getId());
+        assertEquals(2, likes.size());
+    }
+
+    @Test
+    public void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException {
+        User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
+                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine("R", "desc", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Workout workout = workoutDao.save(new Workout(LocalDateTime.now(), null, routine, user));
+
+        assertDoesNotThrow(() -> workoutLikeService.unlikeWorkout(user.getId(), workout.getId()));
+        assertTrue(workoutLikeService.getLikesByUser(user.getId()).isEmpty());
+    }
 }

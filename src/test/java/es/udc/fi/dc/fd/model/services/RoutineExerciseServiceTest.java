@@ -150,4 +150,24 @@ public class RoutineExerciseServiceTest {
         assertFalse(page2.hasNext());
         assertTrue(page2.isLast());
     }
+
+    @Test
+    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException {
+        User trainer = createTrainer("trainer@udc.es");
+        User otherUser = userDao.save(new User("X","Y","other@udc.es","600","p",null,RoleType.CLIENT, User.StatusType.ACTIVE));
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
+
+        assertThrows(PermissionException.class,
+                () -> routineExerciseService.addExerciseToRoutine(otherUser.getId(), routine.getId(), exercise.getId(), 1));
+    }
+
+    @Test
+    public void testAddExerciseToRoutineNonExistingRoutine() {
+        User trainer = createTrainer("trainer@udc.es");
+        Exercise exercise = createExercise("Ejercicio", trainer);
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), 999L, exercise.getId(), 1));
+    }
 }

@@ -34,7 +34,7 @@ export default function CommentBubble({
                     height={size}
                     className={styles.commentIcon}
                 />
-                {count > 0 && <span className={styles.count}>{count}</span>}
+                <span className={styles.count}>{count}</span>
             </motion.span>
         </button>
     );

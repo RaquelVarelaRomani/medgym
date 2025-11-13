@@ -653,24 +653,51 @@ const Routines = () => {
                             <h3>
                                 <span>{routine.name}</span>
                                 <HeartLike
-                                    initialLiked={routineLikes.some(like => like.routineId === routine.id)}
-                                    onChange={(liked) => {
-                                        if (liked) {
-                                            likeRoutine(routine.id);
-                                            setRoutineLikes(prevLikes => [
-                                                ...prevLikes,
-                                                {routineId: routine.id, userId: currentUser.id}
-                                            ]);
+                                    count={(routine.likes || []).length}
+                                    liked={routine.likes && (routine.likes.some(like => like.userId === currentUser?.id) || false)}
+                                    onChange={(next) => {
+                                        if (next) {
+                                            // Actualiza la lista local de likes
+                                            setRoutines(prev =>
+                                                prev.map(r =>
+                                                    r.id === routine.id
+                                                        ? {
+                                                            ...r,
+                                                            likes: [...(r.likes || []), { userId: currentUser.id }],
+                                                        }
+                                                        : r
+                                                )
+                                            );
+
+                                            // Llama al backend
+                                            likeRoutine(
+                                                routine.id,
+                                                () => {},
+                                                () => console.error("Error al marcar como favorito")
+                                            );
                                         } else {
-                                            unlikeRoutine(routine.id);
-                                            setRoutineLikes(prevLikes =>
-                                                prevLikes.filter(like => like.routineId !== routine.id)
+                                            // Quita el like localmente
+                                            setRoutines(prev =>
+                                                prev.map(r =>
+                                                    r.id === routine.id
+                                                        ? {
+                                                            ...r,
+                                                            likes: r.likes.filter(like => like.userId !== currentUser.id),
+                                                        }
+                                                        : r
+                                                )
+                                            );
+
+                                            // Llama al backend
+                                            unlikeRoutine(
+                                                routine.id,
+                                                () => {},
+                                                () => console.error("Error al desmarcar como favorito")
                                             );
                                         }
                                     }}
+                                    size={22}
                                 />
-
-
                                 {routine.visibility === "PRIVATE" &&
                                     (isRoutineCreator(routine) || isAdmin()) && (
                                         <span className={styles["private-badge"]}>

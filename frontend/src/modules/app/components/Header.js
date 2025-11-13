@@ -125,7 +125,7 @@ const Header = () => {
     };
 
     const handleViewProfile = () => {
-        navigate("/users/profile");
+        navigate(`/users/profile/${profile.id}`);
         setIsDropdownOpen(false);
     };
 
@@ -183,7 +183,7 @@ const Header = () => {
                     </Link>
                     {profile?.role === "TRAINER" && (
                         <Link
-                            to="/users/followers"
+                            to={`/users/followers/${profile.id}`}
                             className={location.pathname === '/users/followers'
                                 ? `${styles['nav-link']} ${styles['active']}`
                                 : styles['nav-link']}

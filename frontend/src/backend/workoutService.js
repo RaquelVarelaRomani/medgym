@@ -31,6 +31,13 @@ export const getWorkouts = (onSuccess, onErrors) => appFetch(
     onErrors
 )
 
+export const getWorkoutsByUser = (userId, onSuccess, onErrors) => appFetch(
+    `/workouts/user/${userId}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+)
+
 export const addWorkoutExercise = (
   workoutId,
   routineExerciseId,
@@ -62,6 +69,13 @@ export const getWorkoutExercisesByWorkoutId = (workoutId, onSuccess, onErrors) =
 
 export const getWorkoutsFromFollowing = (onSuccess, onErrors) => appFetch(
     `/workouts/following`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);
+
+export const getLastMonthStats = (onSuccess, onErrors) => appFetch(
+    `/workouts/stats`,
     fetchConfig("GET"),
     onSuccess,
     onErrors

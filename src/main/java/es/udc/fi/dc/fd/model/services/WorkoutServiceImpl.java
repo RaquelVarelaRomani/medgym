@@ -23,6 +23,8 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserFollowDao userFollowDao;
 
     @Override
     public Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException {
@@ -51,10 +53,20 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<Workout> findWorkoutsFromFollowing(Long userId) {
+    public List<Workout> findWorkoutsFromFollowing(Long userId) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        List<Long> userFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList(); // mis seguidos
+
         return workoutDao.findAll().stream()
+                .filter(w ->  userFollowIds.contains(w.getUser().getId()))
                 .filter(w -> !Objects.equals(w.getUser().getId(), userId))
                 .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
+                .filter(w -> w.getEndTime() != null)
                 .toList();
+    }
+
+    @Override
+    public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate){
+        return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startDate, endDate);
     }
 }

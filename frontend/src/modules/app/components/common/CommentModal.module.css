@@ -38,7 +38,6 @@
 .list {
     flex: 1;
     overflow-y: auto;
-    padding-top: 1rem;
     padding-bottom: 0;
     margin-bottom: 0;
     border-top: 1px solid var(--border-color);
@@ -152,4 +151,9 @@
     font-size: .9rem;
     margin-left: 3.15rem;
     white-space: pre-wrap;
+}
+
+.send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }

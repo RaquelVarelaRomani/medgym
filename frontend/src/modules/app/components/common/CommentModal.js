@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./CommentModal.module.css";
 
-export default function CommentModal({ open, onClose, comments }) {
+export default function CommentModal({ open, onSend, onClose, comments }) {
     const [text, setText] = useState("");
     const listRef = useRef(null);
 
@@ -67,7 +67,9 @@ export default function CommentModal({ open, onClose, comments }) {
                     </button>
                     <button
                         className={styles.send}
+                        disabled={text.trim().length === 0}
                         onClick={() => {
+                            onSend(text);
                             setText("");
                         }}
                     >

@@ -1,26 +1,62 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Profile.module.css";
-import { useNavigate } from "react-router-dom";
-import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
+import { useNavigate, useParams } from "react-router-dom";
+import { logout, tryLoginFromServiceToken, getUser } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
+import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
+import { getWorkoutsByUser } from "../../../../backend/workoutService";
+import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
+import LoadingMessage from "../common/LoadingMessage";
+
 
 const Profile = () => {
+    const { id } = useParams()
     const navigate = useNavigate();
+    const [me, setMe] = useState(null)
     const [profile, setProfile] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
+    const [followers, setFollowers] = useState(0)
+    const [following, setFollowing] = useState(0)
+    const [isFollowing, setIsFollowing] = useState(false)
+    const [workouts, setWorkouts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let meTemp = null;
+        let profileTemp = null;
+
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                console.log("Respuesta loginFromServiceToken:", authenticatedUser.user);
-                setProfile(authenticatedUser.user); // ya tienes name, surname, email, profilePicture, etc.
+                meTemp = authenticatedUser.user;
+                setMe(meTemp);
+
+                getUser(id, (user) => {
+                    profileTemp = user;
+                    setProfile(profileTemp);
+
+                    Promise.all([
+                        new Promise(resolve => getFollowers(profileTemp.id, (f) => { setFollowers(f.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(profileTemp.id, (t) => { setFollowing(t.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(meTemp.id, (trainers) => {
+                            setIsFollowing(trainers.some(t => t.trainerId === profileTemp.id));
+                            resolve();
+                        }))
+                    ]).then(() => setLoading(false));
+                });
             },
-            () => {
-                console.error("Token inválido o expirado");
-                navigate("/users/login");
-            }
+            () => navigate("/users/login")
         );
-    }, [navigate]);
+    }, [id, navigate]);
+
+    useEffect(() => {
+        if (!profile) return;
+        getWorkoutsByUser(
+            profile.id,
+            (data) => setWorkouts(data.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))),
+            (err) => console.error("Error cargando entrenamientos del usuario:", err)
+        );
+    }, [profile]);
+
 
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
@@ -30,6 +66,22 @@ const Profile = () => {
         navigate("/users/profile/change-password");
     }
 
+    const handleFollowToggle = () => {
+        if (!profile) return;
+
+        if (isFollowing) {
+            unfollowTrainer(profile.id,
+                () => setIsFollowing(false),
+                (err) => console.error(err)
+            );
+        } else {
+            followTrainer(profile.id,
+                () => setIsFollowing(true),
+                (err) => console.error(err)
+            );
+        }
+    };
+
     const roleString = () => {
         if (profile.role === "CLIENT") return "Cliente";
         if (profile.role === "TRAINER") return "Entrenador";
@@ -37,6 +89,7 @@ const Profile = () => {
         return "Indefinido";
     }
 
+    if (loading) return <LoadingMessage text="Cargando perfil..." />;
     return (
         <div className={styles.profile}>
             <div className={styles['profile-container']}>
@@ -56,15 +109,39 @@ const Profile = () => {
                                     className={styles['profile-image']}
                                 />
                             )}
+                        </div>
+                        <div>
+                            <h2 className={styles['profile-name']}>
+                                {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
+                            </h2>
+                            <div className={styles['profile-info']}>
+                                {!loading && (
+                                    <>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/followers/${profile.id}`)}>
+                                            Seguidores: {followers}
+                                        </p>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/following/${profile.id}`)}>
+                                            Siguiendo: {following}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div> 
-                        <h2 className={styles['profile-name']}>
-                            {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
-                        </h2>
+
                     </div>
                 
                     <div className={styles['profile-actions']}>
-                        <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
-                        <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
+                        {me && profile && me.id === profile.id && (
+                            <>
+                                <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
+                                <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
+                            </>
+                        )}
+                        {me && profile && me.id !== profile.id && (
+                            <>
+                                <button className={styles['edit-profile-button']} onClick={handleFollowToggle}>{isFollowing ? "Dejar de seguir" : "Seguir"}</button>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -86,6 +163,9 @@ const Profile = () => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />
+
+            {profile && <UserWorkoutHistory id={profile.id}/>}
+
         </div>
     );
 };

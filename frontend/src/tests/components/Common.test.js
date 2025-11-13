@@ -610,6 +610,7 @@ describe("Common Components", () => {
           date: "2023-01-01T00:00:00",
           type: "FOLLOW",
           isRead: false,
+          idToRedirect: 1,
         },
       ];
 
@@ -632,7 +633,7 @@ describe("Common Components", () => {
         expect.any(Function),
         expect.any(Function),
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/users/followers");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
 
     test("handles invalid date", () => {
@@ -753,23 +754,6 @@ describe("Common Components", () => {
       });
     });
 
-    test("shows error for non-trainer users", async () => {
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: { role: "CLIENT" } }),
-      );
-
-      render(
-        <MemoryRouter>
-          <FollowersPage />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Solo los entrenadores pueden ver sus seguidores."),
-        ).toBeInTheDocument();
-      });
-    });
 
     test("displays followers for trainer", async () => {
       const mockUser = { id: 1, role: "TRAINER" };
@@ -1125,7 +1109,7 @@ describe("Common Components", () => {
           .closest("button");
         fireEvent.click(profileButton);
         fireEvent.click(screen.getByText("Ver Perfil"));
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 

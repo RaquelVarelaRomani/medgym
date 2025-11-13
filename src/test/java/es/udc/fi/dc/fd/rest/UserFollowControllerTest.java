@@ -38,9 +38,6 @@ public class UserFollowControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
@@ -88,5 +85,25 @@ public class UserFollowControllerTest {
                     .get("/api/users/follow/followers/" + trainerUser.getUserDto().getId())
                     .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetFollowedTrainers() throws Exception {
+        // client sigue a trainer
+        mockMvc.perform(post("/api/users/follow/" + trainerUser.getUserDto().getId())
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .get("/api/users/follow/client/" + clientUser.getUserDto().getId() + "/following")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFollowTrainer_NotFound() throws Exception {
+        mockMvc.perform(post("/api/users/follow/" + 999999)
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                .andExpect(status().isNotFound());
     }
 }

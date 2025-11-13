@@ -160,4 +160,34 @@ public class AdminControllerTest {
 
     }
 
+    @Test
+    public void testBlockUser_NonExistentUser_NotFound() throws Exception {
+
+        AuthenticatedUserDto admin = createAuthenticatedUser("admin404@email.com", RoleType.ADMIN);
+
+        mockMvc.perform(put("/api/admin/users/999999/block")
+                        .header("Authorization", "Bearer " + admin.getServiceToken()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUnblockUser_NonExistentUser_NotFound() throws Exception {
+
+        AuthenticatedUserDto admin = createAuthenticatedUser("admin405@email.com", RoleType.ADMIN);
+
+        mockMvc.perform(put("/api/admin/users/999999/unblock")
+                        .header("Authorization", "Bearer " + admin.getServiceToken()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testBlockUser_Self_Forbidden() throws Exception {
+
+        AuthenticatedUserDto admin = createAuthenticatedUser("adminSelf@email.com", RoleType.ADMIN);
+
+        mockMvc.perform(put("/api/admin/users/" + admin.getUserDto().getId() + "/block")
+                        .header("Authorization", "Bearer " + admin.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
 }
