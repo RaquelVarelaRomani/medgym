@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS user_follows;
+DROP TABLE IF EXISTS user_block;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
 DROP TABLE IF EXISTS users;
@@ -22,6 +23,9 @@ CREATE TABLE users (
     profile_picture MEDIUMBLOB,
     role TINYINT NOT NULL DEFAULT 0,
     status TINYINT NOT NULL DEFAULT 0,
+    weight_kg DOUBLE NULL,
+    height_cm DOUBLE NULL,
+    gender    VARCHAR(20) NULL,
 
     CONSTRAINT pk_user PRIMARY KEY (id),
     CONSTRAINT uk_user_email UNIQUE (email),
@@ -126,6 +130,16 @@ CREATE TABLE user_follows (
          ON DELETE CASCADE,
     CONSTRAINT fk_user_follow_user FOREIGN KEY (follow_user_id) REFERENCES users(id)
          ON DELETE CASCADE
+);
+
+CREATE TABLE user_block (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    blocker_id BIGINT NOT NULL,
+    blocked_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (blocker_id, blocked_id),
+    FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE notifications (

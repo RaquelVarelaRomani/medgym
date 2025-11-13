@@ -37,12 +37,12 @@ public class UserBlockController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/is-blocked/{otherUserId}")
+    @GetMapping("/has-blocked/{otherUserId}")
     public ResponseEntity<Boolean> isBlocked(
             @PathVariable Long otherUserId,
             @AuthenticationPrincipal JwtInfo jwtInfo) {
 
-        boolean blocked = userBlockService.isBlocked(jwtInfo.getUserId(), otherUserId);
+        boolean blocked = userBlockService.hasBlocked(jwtInfo.getUserId(), otherUserId);
         return ResponseEntity.ok(blocked);
     }
 }

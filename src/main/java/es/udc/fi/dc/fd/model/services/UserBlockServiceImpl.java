@@ -11,7 +11,7 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.entities.UserBlock;
 import es.udc.fi.dc.fd.model.entities.UserBlockDao;
-//import es.udc.fi.dc.fd.model.entities.UserFollowDao;
+import es.udc.fi.dc.fd.model.entities.UserFollowDao;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 @Service
 @Transactional
@@ -20,8 +20,8 @@ public class UserBlockServiceImpl implements UserBlockService {
     @Autowired
     private UserDao userDao;
 
-    //@Autowired
-    //private UserFollowDao userFollowDao;
+    @Autowired
+    private UserFollowDao userFollowDao;
 
     @Autowired
     private UserBlockDao userBlockDao;
@@ -37,9 +37,8 @@ public class UserBlockServiceImpl implements UserBlockService {
         User blocked = userDao.findById(blockedId)
                 .orElseThrow(() -> new InstanceNotFoundException("Usuario a bloquear no encontrado.", blockedId));
 
-        if (!userBlockDao.existsByBlockerAndBlocked(blocker, blocked)) {
-            //userFollowDao.deleteByFollowerAndFollowed(blocker, blocked);
-            //userFollowDao.deleteByFollowerAndFollowed(blocked, blocker);
+        if (!userBlockDao.existsByBlockerIdAndBlockedId(blockerId, blockedId)) {
+            userFollowDao.deleteByUserAndFollowUser(blocked, blocker);
 
             UserBlock block = new UserBlock();
             block.setBlocker(blocker);
@@ -61,10 +60,14 @@ public class UserBlockServiceImpl implements UserBlockService {
     }
 
     @Override
+    public boolean hasBlocked(Long blockerId, Long blockedId) {
+        return userBlockDao.existsByBlockerIdAndBlockedId(blockerId, blockedId);
+    }
+
+
+    //Bidireccional (para proteger acceso a perfil/workouts/feed)
+    @Override
     public boolean isBlocked(Long userAId, Long userBId) {
-        User userA = userDao.getReferenceById(userAId);
-        User userB = userDao.getReferenceById(userBId);
-        return userBlockDao.existsByBlockerAndBlocked(userA, userB)
-            || userBlockDao.existsByBlockerAndBlocked(userB, userA);
+        return hasBlocked(userAId, userBId) || hasBlocked(userBId, userAId);
     }
 }

@@ -9,5 +9,9 @@ public interface UserBlockService {
 
     void unblockUser(Long blockerId, Long blockedId) throws InstanceNotFoundException;
 
+    //Unidirectional: el blocker ha bloqueado al blocked
+    boolean hasBlocked(Long blockerId, Long blockedId);
+
+    //Bidirectional: hay un bloqueo en cualquier dirección
     boolean isBlocked(Long userAId, Long userBId);
 }
