@@ -6,9 +6,8 @@ import Popup from "../common/popup/Popup";
 import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
 import { getWorkoutsByUser } from "../../../../backend/workoutService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
+import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
-
-
 const Profile = () => {
     const { id } = useParams()
     const navigate = useNavigate();
@@ -19,6 +18,7 @@ const Profile = () => {
     const [following, setFollowing] = useState(0)
     const [isFollowing, setIsFollowing] = useState(false)
     const [workouts, setWorkouts] = useState([]);
+    const [showMetrics, setShowMetrics] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -135,8 +135,14 @@ const Profile = () => {
                             <>
                                 <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
                                 <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
-                            </>
-                        )}
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={() => setShowMetrics(true)}
+                                    >
+                                    Métricas corporales
+                                    </button>
+                                </>
+                                )}
                         {me && profile && me.id !== profile.id && (
                             <>
                                 <button className={styles['edit-profile-button']} onClick={handleFollowToggle}>{isFollowing ? "Dejar de seguir" : "Seguir"}</button>
@@ -151,6 +157,12 @@ const Profile = () => {
                             <p><strong>Correo electrónico:</strong> {profile.email}</p>
                             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
                             <p><strong>Rol:</strong> {roleString()}</p>
+                        
+                            <p><strong>Peso:</strong> {profile.weightKg ?? "—"} kg</p>
+                            <p><strong>Altura:</strong> {profile.heightCm ?? "—"} cm</p>
+                            <p><strong>Género:</strong> {profile.gender ?? "—"}</p>
+                            <p><strong>IMC:</strong> {profile.bmi ?? "—"}</p>
+                        
                         </>
                     ) : (
                         <p>Cargando datos...</p>
@@ -166,8 +178,21 @@ const Profile = () => {
 
             {profile && <UserWorkoutHistory id={profile.id}/>}
 
-        </div>
-    );
+        {showMetrics && profile && (
+        <BodyMetricsCard
+          userId={profile.id}
+          initialWeightKg={profile.weightKg}
+          initialHeightCm={profile.heightCm}
+          initialGender={profile.gender}
+          initialBmi={profile.bmi}
+          onSaved={(partial) => {
+            setProfile((p) => ({ ...p, ...partial }));
+          }}
+          onClose={() => setShowMetrics(false)}
+        />
+      )}
+    </div>
+  );
 };
 
 export default Profile;

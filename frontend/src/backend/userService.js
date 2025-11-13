@@ -91,5 +91,22 @@ export const searchUsers = (query, onSuccess, onErrors) => appFetch(
     `/users/search?q=${encodeURIComponent(query)}`,
     fetchConfig("GET"),
     onSuccess,
-    onErrors
+    onErrors);
+
+export const updateBodyMetrics = (id, body, onSuccess, onErrors) => appFetch(
+  `/users/${id}/bodyMetrics`,
+  fetchConfig("PUT", {
+    weightKg: body?.weightKg ?? null,
+    heightCm: body?.heightCm ?? null,
+    gender: body?.gender ?? null
+  }),
+  onSuccess,
+  onErrors
+);
+
+export const clearBodyMetrics = (id, onSuccess, onErrors) => appFetch(
+  `/users/${id}/bodyMetrics`,
+  fetchConfig("DELETE"),
+  onSuccess,
+  onErrors
 );
