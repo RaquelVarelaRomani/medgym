@@ -1,27 +1,24 @@
 .overlay {
     position: fixed;
-    top: 100px;
+    top: 0;
     left: 0;
     right: 0;
     width: 100vw;
     height: 100vh;
-    bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 20px;
     z-index: 2000;
 }
 
 .container {
-    padding: 20px;
+    padding: 100px 20px 20px 20px;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 100px;
 }
 
 .modal {
@@ -129,41 +126,21 @@
     gap: 8px;
 }
 
-.viewProfileBtn,
-.followBtn {
+.viewProfileBtn {
     padding: 8px 16px;
-    border: none;
     border-radius: 6px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.viewProfileBtn {
     background: rgba(255, 107, 53, 0.1);
     color: var(--neon-orange-bright);
     border: 1px solid var(--neon-orange);
 }
 
+
 .viewProfileBtn:hover {
     background: rgba(255, 107, 53, 0.2);
     box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
-}
-
-.followBtn {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-}
-
-.followBtn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
-}
-
-.followBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }

@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchUsers, tryLoginFromServiceToken } from '../../../../backend/userService';
-import { followTrainer, unfollowTrainer, getFollowedTrainers } from '../../../../backend/userFollowService';
 import ProfilePhoto from '../common/profilePhoto';
 import styles from './UserSearch.module.css';
 
-const UserSearch = ({ isOpen }) => {
+const UserSearch = ({ isOpen, onClose }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
-    const [followedTrainers, setFollowedTrainers] = useState([]);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [loadingFollow, setLoadingFollow] = useState(new Set());
     const navigate = useNavigate();
 
     const performSearch = useCallback((searchQuery) => {
@@ -25,7 +20,6 @@ const UserSearch = ({ isOpen }) => {
         setLoading(true);
         searchUsers(searchQuery, (users) => {
             setResults(users);
-            console.log(users);
             setLoading(false);
         }, (error) => {
             console.error('Error searching users:', error);
@@ -35,19 +29,11 @@ const UserSearch = ({ isOpen }) => {
     }, []);
 
     useEffect(() => {
-        tryLoginFromServiceToken(
-            (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);
-                getFollowedTrainers(authenticatedUser.user.id, (followed) => {
-                    setFollowedTrainers(followed);
-                }, (error) => {
-                    console.error('Error fetching followed trainers:', error);
-                });
-            },
-            () => {
-            }
-        );
-    }, []);
+        if (isOpen) {
+            setQuery('');
+            setResults([]);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (debounceTimer) {
@@ -68,62 +54,19 @@ const UserSearch = ({ isOpen }) => {
     };
 
     const handleViewProfile = (userId) => {
-        navigate(`/users/${userId}/profile`);
+        setQuery('');
+        setResults([]);
+        navigate(`/users/profile/${userId}`);
+        onClose();
     };
 
-    const handleFollow = (userId) => {
-        if (!currentUser) return;
-
-        const isFollowing = followedTrainers.some(trainer => trainer.id === userId);
-        console.log(`Before action: isFollowing = ${isFollowing}, followedTrainers =`, followedTrainers);
-        const newLoadingFollow = new Set(loadingFollow);
-        newLoadingFollow.add(userId);
-        setLoadingFollow(newLoadingFollow);
-        setErrorMessage('');
-
-
-        const onSuccess = () => {
-            console.log(`Success callback for ${isFollowing ? 'unfollow' : 'follow'}`);
-            const updatedLoadingFollow = new Set(loadingFollow);
-            updatedLoadingFollow.delete(userId);
-            setLoadingFollow(updatedLoadingFollow);
-            if (isFollowing) {
-                getFollowedTrainers(currentUser.id, (followed) => {
-                    setFollowedTrainers(followed);
-                }, (error) => {
-                    console.error('Error fetching followed trainers after unfollow:', error);
-                });
-            }
-            console.log(`After success: followedTrainers =`, followedTrainers);
-        };
-
-        const onError = (error) => {
-            console.error(`Error ${isFollowing ? 'unfollowing' : 'following'} trainer:`, error);
-            setErrorMessage(`Error al ${isFollowing ? 'dejar de seguir' : 'seguir'} al usuario. Inténtalo de nuevo.`);
-            if (isFollowing) {
-                setFollowedTrainers(prev => [...prev, { id: userId }]);
-            } else {
-                setFollowedTrainers(prev => prev.filter(trainer => trainer.id !== userId));
-            }
-            const updatedLoadingFollow = new Set(loadingFollow);
-            updatedLoadingFollow.delete(userId);
-            setLoadingFollow(updatedLoadingFollow);
-            console.log(`After error rollback: followedTrainers =`, followedTrainers);
-        };
-
-        if (isFollowing) {
-            unfollowTrainer(userId, onSuccess, onError);
-        } else {
-            followTrainer(userId, onSuccess, onError);
-        }
-    };
 
     if (!isOpen) return null;
 
     return (
-        <div className={styles.overlay} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-            <div className={styles.container} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-                <div className={styles.modal}>
+        <div className={styles.overlay} onClick={onClose}>
+            <div className={styles.container}>
+                <div className={styles.modal} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
                     <div className={styles.searchContainer}>
                         <input
                             type="text"
@@ -133,7 +76,6 @@ const UserSearch = ({ isOpen }) => {
                             className={styles.searchInput}
                             autoFocus
                         />
-                        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                     </div>
                     <div className={styles.resultsContainer}>
                         {loading && <div className={styles.noResults}>Buscando...</div>}
@@ -159,15 +101,6 @@ const UserSearch = ({ isOpen }) => {
                                     >
                                         Ver Perfil
                                     </button>
-                                    {currentUser && (
-                                        <button
-                                            className={styles.followBtn}
-                                            onClick={() => handleFollow(user.id)}
-                                            disabled={loadingFollow.has(user.id)}
-                                        >
-                                            {loadingFollow.has(user.id) ? 'Cargando...' : (followedTrainers.some(trainer => trainer.id === user.id) ? 'Siguiendo' : 'Seguir')}
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         ))}
