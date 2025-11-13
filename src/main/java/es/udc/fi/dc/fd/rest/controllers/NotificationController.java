@@ -19,13 +19,6 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @Autowired
-    private RoutineService routineService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private WorkoutService workoutService;
-
     @PostMapping( "/newRoutine")
     public void createNewRoutineNotification(@RequestBody NotificationNewRoutineParamsDto notificationNewRoutineParamsDto) throws InstanceNotFoundException {
         notificationService.createNewRoutineNotification(notificationNewRoutineParamsDto.getRoutineId());

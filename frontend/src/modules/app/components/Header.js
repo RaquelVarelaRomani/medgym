@@ -173,7 +173,7 @@ const Header = () => {
                         to="/routines"
                         className={location.pathname.includes('/routines') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
-                        Entrenamientos
+                        Rutinas
                     </Link>
                     <Link
                         to="/exercises"
@@ -197,6 +197,12 @@ const Header = () => {
                         className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Historial
+                    </Link>
+                    <Link
+                        to="/workouts/feed"
+                        className={location.pathname.includes('/workouts/feed') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Feed
                     </Link>
 
                     {isAdmin() && (

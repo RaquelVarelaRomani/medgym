@@ -92,4 +92,33 @@ public class RoutineLikeServiceTest {
         routineLikeService.unlikeRoutine(user.getId(), routine.getId());
         assertTrue(routineLikeService.getRoutineLikesByUser(user.getId()).isEmpty());
     }
+
+    @Test
+    public void testLikeRoutineNonExistentRoutine() {
+        User user = userDao.save(new User("ux", "nx", "ux@test.com", "600000010",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
+        assertThrows(InstanceNotFoundException.class, () ->
+                routineLikeService.likeRoutine(user.getId(), 999L));
+    }
+
+    @Test
+    public void testUnlikeRoutineNotLiked() throws InstanceNotFoundException, DuplicateInstanceException {
+        User user = userDao.save(new User("uy", "ny", "uy@test.com", "600000011",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("ty", "ny2", "ty@test.com", "600000012",
+                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine(
+                "Rutina X", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        // No like previo
+        routineLikeService.unlikeRoutine(user.getId(), routine.getId());
+
+        // Sigue sin likes, no error
+        assertTrue(routineLikeService.getRoutineLikesByUser(user.getId()).isEmpty());
+    }
+
+
 }

@@ -24,6 +24,7 @@ import FollowersPage from "./users/FollowersPage";
 import FollowingPage from "./users/FollowingPage";
 
 import WorkoutSession from "./workouts/WorkoutSession"
+import WorkoutFeed from "./workouts/WorkoutFeed";
 
 const Body = () => {
     return (
@@ -53,7 +54,7 @@ const Body = () => {
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
                     <Route path="workouts/session/:sessionId" element={<Layout><WorkoutSession /></Layout>} />
-                    
+                    <Route path="workouts/feed" element={<Layout><WorkoutFeed /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

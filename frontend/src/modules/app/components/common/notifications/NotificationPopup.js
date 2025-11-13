@@ -27,8 +27,12 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                     case "ROUTINE_LIKE":
                         navigate(`/routines/${notification.idToRedirect}`);
                         break;
+                    case "WORKOUT_COMMENT":
+                    case "WORKOUT_LIKE":
+                        navigate(`/workouts/history`);
+                        break;
                     case "FOLLOW":
-                        navigate(`/users/followers`);
+                        navigate(`/users/profile/${notification.idToRedirect}`);
                         break;
                 }
                 onClose();

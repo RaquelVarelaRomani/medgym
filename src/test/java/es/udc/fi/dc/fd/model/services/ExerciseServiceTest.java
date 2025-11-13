@@ -368,4 +368,18 @@ public class ExerciseServiceTest {
             assertTrue(equipments.contains(e));
         }
     }
+
+    @Test
+    public void testUpdateExerciseNonExistent() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            exerciseService.updateExercise(999L, "x", "y", MuscleGroup.LEG, Equipment.NONE, new byte[]{1});
+        });
+    }
+
+    @Test
+    public void testFindAllExercisesUserNotFound() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            exerciseService.findAllExercises(999L);
+        });
+    }
 }

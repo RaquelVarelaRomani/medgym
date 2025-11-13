@@ -154,4 +154,23 @@ public class NotificationControllerTest {
 
         Mockito.verify(notificationService).deleteNotification(88L);
     }
+
+    @Test
+    public void testCreateWorkoutLikeNotification() throws Exception {
+        String json = """
+    {
+      "userId": 1,
+      "workoutId": 20
+    }
+    """;
+
+        mockMvc.perform(post("/api/notifications/workoutLike")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .requestAttr("userId", 1L))
+                .andExpect(status().isOk());
+
+        Mockito.verify(notificationService).createWorkoutLikeNotification(1L, 20L);
+    }
+
 }

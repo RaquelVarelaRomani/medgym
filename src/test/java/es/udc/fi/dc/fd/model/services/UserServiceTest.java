@@ -1,6 +1,8 @@
 package es.udc.fi.dc.fd.model.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,4 +81,25 @@ public class UserServiceTest {
 		assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
 
 	}
+
+    @Test
+    public void testSignUpDuplicateEmail() throws DuplicateInstanceException {
+        User user = createUser("dup@test.com", "600111111");
+        userService.signUp(user);
+
+        User user2 = createUser("dup@test.com", "600222222");
+        assertThrows(DuplicateInstanceException.class, () -> {
+            userService.signUp(user2);
+        });
+    }
+
+    @Test
+    public void testLoginIncorrectPassword() throws DuplicateInstanceException {
+        User user = createUser("login@test.com", "600333333");
+        userService.signUp(user);
+
+        assertThrows(es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException.class, () -> {
+            userService.login("login@test.com", "wrongpassword");
+        });
+    }
 }

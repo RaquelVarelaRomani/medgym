@@ -92,4 +92,18 @@ public class UserFollowServiceTest {
             userFollowService.followUser(trainer.getId(), trainer.getId());
         });
     }
+
+    @Test
+    public void testGetFollowersNonExistentTrainer() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userFollowService.getFollowers(999L);
+        });
+    }
+
+    @Test
+    public void testGetFollowedTrainersNonExistentUser() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userFollowService.getFollowedUsers(999L);
+        });
+    }
 }

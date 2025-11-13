@@ -452,6 +452,12 @@
   color: white;
 }
 
+.workout-title-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .statistics-view {
     width: 100%;
     max-width: 1400px;
