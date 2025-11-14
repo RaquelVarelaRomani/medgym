@@ -25,7 +25,7 @@ public class UserConversor {
         String genderStr = user.getGender() != null ? user.getGender().name() : null;
 
 		return new UserDto(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhoneNumber(), user.getProfilePicture(), user.getRole().toString(), user.getStatus().toString(),
-		user.getWeightKg(), user.getHeightCm(), genderStr, bmi);
+		user.getWeightKg(), user.getHeightCm(), genderStr, bmi, user.getTrainerPremium());
 	}
 
 	public static final List<UserDto> toUserDtos(List<User> users) {
@@ -61,6 +61,8 @@ public class UserConversor {
                 user.setGender(null);
             }
         }
+
+        user.setTrainerPremium(userDto.getTrainerPremium());
 
         return user;
     }

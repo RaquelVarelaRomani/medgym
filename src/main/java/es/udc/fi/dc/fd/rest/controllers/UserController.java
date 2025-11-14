@@ -250,4 +250,16 @@ public class UserController {
 
         return new BmiDto(bmi);
     }
+
+    @PutMapping("/{id}/premium")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void setTrainerPremium(@RequestAttribute Long userId, @PathVariable Long id)
+            throws PermissionException, InstanceNotFoundException {
+
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
+
+        userService.setTrainerPremium(id, true);
+    }
 }

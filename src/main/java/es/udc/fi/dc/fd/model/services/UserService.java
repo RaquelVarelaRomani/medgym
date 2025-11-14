@@ -23,5 +23,6 @@ public interface UserService {
 	void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException;
 	List<User> searchUsers(Long currentUserId, String query);
 	User updateBodyMetrics(Long id, Double weightKg, Double heightCm, User.GenderType gender) throws InstanceNotFoundException;
-    User clearBodyMetrics(Long id) throws InstanceNotFoundException;
+	   User clearBodyMetrics(Long id) throws InstanceNotFoundException;
+	   void setTrainerPremium(Long id, boolean premium) throws InstanceNotFoundException, PermissionException;
 }
