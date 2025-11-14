@@ -68,7 +68,10 @@ const Profile = () => {
 
     const handleBecomePremium = () => {
         becomePremium(me.id,
-            () => setMe(prev => ({ ...prev, trainerPremium: true })),
+            () => {
+                setMe(prev => ({ ...prev, trainerPremium: true }));
+                setProfile(prev => ({ ...prev, trainerPremium: true }));
+            },
             (err) => alert("Error becoming premium: " + err)
         );
     }
@@ -121,7 +124,7 @@ const Profile = () => {
                             <h2 className={styles['profile-name']}>
                                 {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                                 {profile && profile.role === "TRAINER" && profile.trainerPremium && (
-                                    <span className={styles['premium-badge']}>Premium</span>
+                                    <span className={styles['premium-badge']}>Entrenador premium</span>
                                 )}
                             </h2>
                             <div className={styles['profile-info']}>
@@ -153,7 +156,7 @@ const Profile = () => {
                                      </button>
                                  {me.role === "TRAINER" && !me.trainerPremium && (
                                      <button className={styles['premium-button']} onClick={handleBecomePremium}>
-                                         Hacerme Premium
+                                         Hacerme Entrenador premium
                                      </button>
                                  )}
                                 </>

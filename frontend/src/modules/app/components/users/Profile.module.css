@@ -304,6 +304,8 @@
     font-size: 0.85rem;
     font-weight: bold;
     margin-left: 1rem;
+    position: relative;
+    top: -5px;
     display: inline-block;
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
     border: 1px solid #FFD700;
