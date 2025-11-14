@@ -102,4 +102,26 @@ public class UserServiceTest {
             userService.login("login@test.com", "wrongpassword");
         });
     }
+
+    @Test
+    public void testSetTrainerPremium_Ok() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+        User trainer = createUser("trainer@test.com", "600444444");
+        userService.signUp(trainer);
+        trainer.setRole(User.RoleType.TRAINER);
+
+        userService.setTrainerPremium(trainer.getId(), true);
+
+        User updatedTrainer = userService.findUserById(trainer.getId());
+        assertEquals(true, updatedTrainer.getTrainerPremium());
+    }
+
+    @Test
+    public void testSetTrainerPremium_PermissionDenied() throws DuplicateInstanceException {
+        User client = createUser("client@test.com", "600555555");
+        userService.signUp(client);
+
+        assertThrows(PermissionException.class, () -> {
+            userService.setTrainerPremium(client.getId(), true);
+        });
+    }
 }

@@ -41,6 +41,9 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private GenderType gender;
 
+	@Column(name="trainer_premium")
+	private Boolean trainerPremium;
+
 	public User() {
 	}
 
@@ -136,10 +139,17 @@ public class User {
 	}
 
     public GenderType getGender() {
-		 return gender; 
-		}
-    public void setGender(GenderType gender) { 
-		this.gender = gender; 
-	}
+   return gender;
+  }
+    public void setGender(GenderType gender) {
+  this.gender = gender;
+ }
+
+    public Boolean getTrainerPremium() {
+        return trainerPremium;
+    }
+    public void setTrainerPremium(Boolean trainerPremium) {
+        this.trainerPremium = trainerPremium;
+    }
 
 }

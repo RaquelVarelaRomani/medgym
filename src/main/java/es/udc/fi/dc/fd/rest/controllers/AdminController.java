@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -36,6 +37,11 @@ public class AdminController {
     @PutMapping("/users/{id}/unblock")
     public void unblockUser(@RequestAttribute Long userId, @PathVariable Long id) throws InstanceNotFoundException, PermissionException {
         userService.unblockUser(userId, id);
+    }
+
+    @PutMapping("/users/{id}/premium")
+    public void setTrainerPremium(@RequestAttribute Long userId, @PathVariable Long id, @RequestParam boolean premium) throws InstanceNotFoundException, PermissionException {
+        userService.setTrainerPremium(id, premium);
     }
 
 }

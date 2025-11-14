@@ -20,9 +20,10 @@ public class UserDto {
 	private String status;
 
 	private Double weightKg;
-    private Double heightCm;
-    private String gender;
-    private Double bmi; 
+	   private Double heightCm;
+	   private String gender;
+	   private Double bmi;
+	   private Boolean trainerPremium;
 
 	public UserDto() {}
 
@@ -40,13 +41,14 @@ public class UserDto {
 	}
 
 	public UserDto(Long id, String name, String surname, String email, String phoneNumber,
-               byte[] profilePicture, String role, String status,
-               Double weightKg, Double heightCm, String gender, Double bmi) {
-    this(id, name, surname, email, phoneNumber, profilePicture, role, status);
-    this.weightKg = weightKg;
-    this.heightCm = heightCm;
-    this.gender = gender;
-    this.bmi = bmi;
+	              byte[] profilePicture, String role, String status,
+	              Double weightKg, Double heightCm, String gender, Double bmi, Boolean trainerPremium) {
+	   this(id, name, surname, email, phoneNumber, profilePicture, role, status);
+	   this.weightKg = weightKg;
+	   this.heightCm = heightCm;
+	   this.gender = gender;
+	   this.bmi = bmi;
+	   this.trainerPremium = trainerPremium;
 }
 	
 	public Long getId() {
@@ -132,6 +134,9 @@ public class UserDto {
     public void setGender(String gender) { this.gender = gender; }
 
 	public Double getBmi() { return bmi; }
-    public void setBmi(Double bmi) { this.bmi = bmi; }
+	   public void setBmi(Double bmi) { this.bmi = bmi; }
+
+	   public Boolean getTrainerPremium() { return trainerPremium; }
+	   public void setTrainerPremium(Boolean trainerPremium) { this.trainerPremium = trainerPremium; }
 }
 

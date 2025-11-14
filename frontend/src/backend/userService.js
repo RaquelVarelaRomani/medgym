@@ -104,3 +104,10 @@ export const clearBodyMetrics = (id, onSuccess, onErrors) => appFetch(
   onSuccess,
   onErrors
 );
+
+export const becomePremium = (id, onSuccess, onErrors) => appFetch(
+  `/users/${id}/premium`,
+  fetchConfig("PUT"),
+  onSuccess,
+  onErrors
+);

@@ -25,6 +25,7 @@ CREATE TABLE users (
     weight_kg DOUBLE NULL,
     height_cm DOUBLE NULL,
     gender    VARCHAR(20) NULL,
+    trainer_premium TINYINT(1) NULL DEFAULT NULL,
 
     CONSTRAINT pk_user PRIMARY KEY (id),
     CONSTRAINT uk_user_email UNIQUE (email),

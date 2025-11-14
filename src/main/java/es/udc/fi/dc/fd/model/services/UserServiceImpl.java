@@ -186,4 +186,15 @@ public class UserServiceImpl implements UserService {
         user.setGender(null);
         return user;
     }
+
+    @Override
+    public void setTrainerPremium(Long id, boolean premium) throws InstanceNotFoundException, PermissionException {
+        User user = permissionChecker.checkUser(id);
+
+        if (user.getRole() != User.RoleType.TRAINER) {
+            throw new PermissionException();
+        }
+
+        user.setTrainerPremium(premium);
+    }
 }

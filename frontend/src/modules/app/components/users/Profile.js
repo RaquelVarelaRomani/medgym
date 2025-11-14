@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Profile.module.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { logout, tryLoginFromServiceToken, getUser } from "../../../../backend/userService";
+import { logout, tryLoginFromServiceToken, getUser, becomePremium } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
 import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
 import { getWorkoutsByUser } from "../../../../backend/workoutService";
@@ -66,6 +66,13 @@ const Profile = () => {
         navigate("/users/profile/change-password");
     }
 
+    const handleBecomePremium = () => {
+        becomePremium(me.id,
+            () => setMe(prev => ({ ...prev, trainerPremium: true })),
+            (err) => alert("Error becoming premium: " + err)
+        );
+    }
+
     const handleFollowToggle = () => {
         if (!profile) return;
 
@@ -113,6 +120,9 @@ const Profile = () => {
                         <div>
                             <h2 className={styles['profile-name']}>
                                 {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
+                                {profile && profile.role === "TRAINER" && profile.trainerPremium && (
+                                    <span className={styles['premium-badge']}>Premium</span>
+                                )}
                             </h2>
                             <div className={styles['profile-info']}>
                                 {!loading && (
@@ -134,13 +144,18 @@ const Profile = () => {
                         {me && profile && me.id === profile.id && (
                             <>
                                 <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
-                                <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
-                                <button
-                                    className={styles['edit-profile-button']}
-                                    onClick={() => setShowMetrics(true)}
-                                    >
-                                    Métricas corporales
-                                    </button>
+                                 <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
+                                 <button
+                                     className={styles['edit-profile-button']}
+                                     onClick={() => setShowMetrics(true)}
+                                     >
+                                     Métricas corporales
+                                     </button>
+                                 {me.role === "TRAINER" && !me.trainerPremium && (
+                                     <button className={styles['premium-button']} onClick={handleBecomePremium}>
+                                         Hacerme Premium
+                                     </button>
+                                 )}
                                 </>
                                 )}
                         {me && profile && me.id !== profile.id && (
@@ -157,7 +172,7 @@ const Profile = () => {
                             <p><strong>Correo electrónico:</strong> {profile.email}</p>
                             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
                             <p><strong>Rol:</strong> {roleString()}</p>
-                        
+
                             <p><strong>Peso:</strong> {profile.weightKg ?? "—"} kg</p>
                             <p><strong>Altura:</strong> {profile.heightCm ?? "—"} cm</p>
                             <p><strong>Género:</strong> {profile.gender ?? "—"}</p>
