@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -178,6 +179,11 @@ public class UserController {
 	@GetMapping
 	public List<UserDto> getAllUsers() {
 		return toUserDtos(userService.findAllUsers());
+	}
+
+	@GetMapping("/search")
+	public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
+		return toUserDtos(userService.searchUsers(userId, query));
 	}
 
 	@DeleteMapping("/{id}")
