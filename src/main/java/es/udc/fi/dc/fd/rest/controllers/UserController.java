@@ -206,13 +206,10 @@ public class UserController {
 			.toList();
 	}
 
-<<<<<<< HEAD
-=======
 	@GetMapping("/search")
 	public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
 		return toUserDtos(userService.searchUsers(userId, query));
 	}
->>>>>>> origin/develop
 
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable Long id) {
