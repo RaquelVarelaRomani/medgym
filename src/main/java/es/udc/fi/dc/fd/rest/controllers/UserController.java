@@ -181,14 +181,10 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public UserDto getUser(@PathVariable Long id, @AuthenticationPrincipal JwtInfo jwtInfo) throws InstanceNotFoundException, PermissionException {
-		Long requesterId = jwtInfo.getUserId();
-		Long targetUserId = id;
+	public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
 
 		// No se aplica bloqueo cuando pides tu propio perfil
-		if (!requesterId.equals(targetUserId)
-				&& userBlockService.isBlocked(requesterId, targetUserId)) {
-			// Bloqueo en cualquier dirección → no puedes ver su perfil
+		if (!userId.equals(id) && userBlockService.hasBlocked(id, userId)) {
 			throw new PermissionException();
 		}
 
@@ -196,19 +192,20 @@ public class UserController {
 	}
 
 	@GetMapping
-	public List<UserDto> getAllUsers(@AuthenticationPrincipal JwtInfo jwtInfo) {
-
-		Long requesterId = jwtInfo.getUserId();
+	public List<UserDto> getAllUsers(@RequestAttribute Long userId) {
 
 		return userService.findAllUsers().stream()
-			.filter(u -> !userBlockService.hasBlocked(u.getId(), requesterId)) // si ELLOS me bloquearon → no los veo
+			.filter(u -> !userBlockService.hasBlocked(u.getId(), userId)) // si ELLOS me bloquearon → no los veo
 			.map(UserConversor::toUserDto)
 			.toList();
 	}
 
 	@GetMapping("/search")
 	public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
-		return toUserDtos(userService.searchUsers(userId, query));
+		return userService.searchUsers(userId, query).stream()
+            .filter(u -> !userBlockService.hasBlocked(u.getId(), userId))
+            .map(UserConversor::toUserDto)
+            .toList();
 	}
 
 	@DeleteMapping("/{id}")

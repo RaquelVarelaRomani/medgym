@@ -48,16 +48,14 @@ public class WorkoutController {
     }
 
     @GetMapping("/{id}")
-    public WorkoutDto getWorkout(@PathVariable Long id, @AuthenticationPrincipal JwtInfo jwtInfo) throws InstanceNotFoundException, PermissionException {
+    public WorkoutDto getWorkout(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
         var workout = workoutService.findWorkoutById(id);
 
-        if (jwtInfo != null) {
-            Long requesterId = jwtInfo.getUserId();
-            Long ownerId = workout.getUser().getId();
+        Long requesterId = userId;
+        Long ownerId = workout.getUser().getId();
 
-            if (userBlockService.hasBlocked(ownerId, requesterId)) {
-                throw new PermissionException();
-            }
+        if (userBlockService.hasBlocked(ownerId, requesterId)) {
+            throw new PermissionException();
         }
 
         return toWorkoutDto(workout);
@@ -74,8 +72,8 @@ public class WorkoutController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @AuthenticationPrincipal JwtInfo jwtInfo) throws InstanceNotFoundException, PermissionException {
-        Long requesterId = jwtInfo.getUserId();
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @RequestAttribute Long userIdRequester) throws InstanceNotFoundException, PermissionException {
+        Long requesterId = userIdRequester;
         Long ownerId = userId;
         // Si el dueño ha bloqueado al que hace la petición → no se permite ver
         if (userBlockService.hasBlocked(ownerId, requesterId)) {

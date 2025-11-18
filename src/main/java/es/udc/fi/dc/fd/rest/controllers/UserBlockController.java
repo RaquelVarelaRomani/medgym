@@ -20,29 +20,29 @@ public class UserBlockController {
     @PostMapping("/{blockedId}")
     public ResponseEntity<Void> blockUser(
             @PathVariable Long blockedId,
-            @AuthenticationPrincipal JwtInfo jwtInfo)
+            @RequestAttribute Long userId)
             throws InstanceNotFoundException, PermissionException {
 
-        userBlockService.blockUser(jwtInfo.getUserId(), blockedId);
+        userBlockService.blockUser(userId, blockedId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{blockedId}")
     public ResponseEntity<Void> unblockUser(
             @PathVariable Long blockedId,
-            @AuthenticationPrincipal JwtInfo jwtInfo)
+            @RequestAttribute Long userId)
             throws InstanceNotFoundException {
 
-        userBlockService.unblockUser(jwtInfo.getUserId(), blockedId);
+        userBlockService.unblockUser(userId, blockedId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/has-blocked/{otherUserId}")
     public ResponseEntity<Boolean> isBlocked(
             @PathVariable Long otherUserId,
-            @AuthenticationPrincipal JwtInfo jwtInfo) {
+            @RequestAttribute Long userId) {
 
-        boolean blocked = userBlockService.hasBlocked(jwtInfo.getUserId(), otherUserId);
+        boolean blocked = userBlockService.hasBlocked(userId, otherUserId);
         return ResponseEntity.ok(blocked);
     }
 }
