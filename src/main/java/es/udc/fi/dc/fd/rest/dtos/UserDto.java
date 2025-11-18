@@ -7,6 +7,7 @@ public class UserDto {
 
 	public interface AllValidations {}
 	public interface UpdateValidations {}
+	public interface BodyMetricsValidations {}
 
 	private Long id;
 	private String name;
@@ -17,6 +18,12 @@ public class UserDto {
 	private byte[] profilePicture;
 	private String role;
 	private String status;
+
+	private Double weightKg;
+	   private Double heightCm;
+	   private String gender;
+	   private Double bmi;
+	   private Boolean trainerPremium;
 
 	public UserDto() {}
 
@@ -33,6 +40,17 @@ public class UserDto {
 
 	}
 
+	public UserDto(Long id, String name, String surname, String email, String phoneNumber,
+	              byte[] profilePicture, String role, String status,
+	              Double weightKg, Double heightCm, String gender, Double bmi, Boolean trainerPremium) {
+	   this(id, name, surname, email, phoneNumber, profilePicture, role, status);
+	   this.weightKg = weightKg;
+	   this.heightCm = heightCm;
+	   this.gender = gender;
+	   this.bmi = bmi;
+	   this.trainerPremium = trainerPremium;
+}
+	
 	public Long getId() {
 		return id;
 	}
@@ -106,5 +124,19 @@ public class UserDto {
 		this.status = status;
 	}
 
+	public Double getWeightKg() { return weightKg; }
+    public void setWeightKg(Double weightKg) { this.weightKg = weightKg; }
+
+	public Double getHeightCm() { return heightCm; }
+    public void setHeightCm(Double heightCm) { this.heightCm = heightCm; }
+
+	public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
+
+	public Double getBmi() { return bmi; }
+	   public void setBmi(Double bmi) { this.bmi = bmi; }
+
+	   public Boolean getTrainerPremium() { return trainerPremium; }
+	   public void setTrainerPremium(Boolean trainerPremium) { this.trainerPremium = trainerPremium; }
 }
 

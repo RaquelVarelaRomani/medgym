@@ -52,6 +52,7 @@ jest.mock("../../backend/notificationService", () => ({
 
 jest.mock("../../backend/userFollowService", () => ({
   getFollowers: jest.fn(),
+  getFollowedTrainers: jest.fn(),
 }));
 
 jest.mock("../../backend/appFetch", () => ({

@@ -1,6 +1,7 @@
 package es.udc.fi.dc.fd.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -135,6 +136,24 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound()); // manejado por @ExceptionHandler
+    }
+
+    @Test
+    public void testSetTrainerPremium_Ok() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("trainer@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testSetTrainerPremium_PermissionDenied() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("trainer2@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isForbidden());
     }
 
 
