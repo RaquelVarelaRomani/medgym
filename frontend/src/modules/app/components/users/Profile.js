@@ -8,6 +8,8 @@ import { getWorkoutsByUser } from "../../../../backend/workoutService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
+import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
+
 const Profile = () => {
     const { id } = useParams()
     const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Profile = () => {
     const [showMetrics, setShowMetrics] = useState(false);
     const [loading, setLoading] = useState(true);
     const [loadingFollow, setLoadingFollow] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
 
     useEffect(() => {
         let meTemp = null;
@@ -34,6 +37,12 @@ const Profile = () => {
                 getUser(id, (user) => {
                     profileTemp = user;
                     setProfile(profileTemp);
+
+                    isBlocked(
+                        profileTemp.id,
+                        (blocked) => setIsBlockedByMe(blocked),
+                        () => setIsBlockedByMe(false)
+                    );
 
                     Promise.all([
                         new Promise(resolve => getFollowers(profileTemp.id, (f) => { setFollowers(f.length); resolve(); })),
@@ -127,6 +136,23 @@ const Profile = () => {
         }
     };
 
+    const handleBlockToggle = () => {
+        if (!profile) return;
+        if (isBlockedByMe) {
+            unblockUser(profile.id,
+                () => setIsBlockedByMe(false),
+                (err) => console.error("Error desbloqueando usuario: " + err)
+            );
+        } else {
+            blockUser(profile.id,
+                () => { setIsBlockedByMe(true);
+                        setIsFollowing(false);
+                },
+                (err) => console.error("Error bloqueando usuario: " + err)
+            );
+        }
+    };
+
     const roleString = () => {
         if (profile.role === "CLIENT") return "Cliente";
         if (profile.role === "TRAINER") return "Entrenador";
@@ -204,6 +230,12 @@ const Profile = () => {
                                     disabled={loadingFollow}
                                 >
                                     {loadingFollow ? "Cargando..." : (isFollowing ? "Dejar de seguir" : "Seguir")}
+                                </button>
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={handleBlockToggle}
+                                >
+                                    {isBlockedByMe ? "Desbloquear" : "Bloquear"}
                                 </button>
                             </>
                         )}
