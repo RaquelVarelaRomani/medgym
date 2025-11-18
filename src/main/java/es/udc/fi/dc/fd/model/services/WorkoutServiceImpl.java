@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.UserBlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     private UserDao userDao;
     @Autowired
     private UserFollowDao userFollowDao;
+
+    @Autowired
+    private UserBlockService userBlockService;
 
     @Override
     public Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException {
@@ -62,6 +66,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                 .filter(w -> !Objects.equals(w.getUser().getId(), userId))
                 .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
                 .filter(w -> w.getEndTime() != null)
+                .filter(w -> !userBlockService.hasBlocked(w.getUser().getId(), userId)) //excluir workouts cuyos dueños me han bloqueado
                 .toList();
     }
 

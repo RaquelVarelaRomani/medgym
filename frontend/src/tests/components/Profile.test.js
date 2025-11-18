@@ -43,6 +43,13 @@ jest.mock("../../backend/workoutService", () => ({
     getWorkoutsByUser: jest.fn(),
 }));
 
+jest.mock("../../backend/userBlockService", () => ({
+    isBlocked: jest.fn((otherId, onSuccess) => onSuccess(false)),
+    blockUser: jest.fn((id, onSuccess) => onSuccess()),
+    unblockUser: jest.fn((id, onSuccess) => onSuccess()),
+}));
+
+
 describe("Profile and EditProfile Components", () => {
     beforeEach(() => {
         jest.clearAllMocks();
