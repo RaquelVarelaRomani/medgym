@@ -8,6 +8,8 @@ import { getWorkoutsByUser } from "../../../../backend/workoutService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
+import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
+
 const Profile = () => {
     const { id } = useParams()
     const navigate = useNavigate();
@@ -20,6 +22,8 @@ const Profile = () => {
     const [workouts, setWorkouts] = useState([]);
     const [showMetrics, setShowMetrics] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [loadingFollow, setLoadingFollow] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
 
     useEffect(() => {
         let meTemp = null;
@@ -33,6 +37,12 @@ const Profile = () => {
                 getUser(id, (user) => {
                     profileTemp = user;
                     setProfile(profileTemp);
+
+                    isBlocked(
+                        profileTemp.id,
+                        (blocked) => setIsBlockedByMe(blocked),
+                        () => setIsBlockedByMe(false)
+                    );
 
                     Promise.all([
                         new Promise(resolve => getFollowers(profileTemp.id, (f) => { setFollowers(f.length); resolve(); })),
@@ -57,6 +67,18 @@ const Profile = () => {
         );
     }, [profile]);
 
+    useEffect(() => {
+        const handleFollowChanged = () => {
+            if (profile && me) {
+                getFollowers(profile.id, (f) => setFollowers(f.length));
+                getFollowedTrainers(profile.id, (t) => setFollowing(t.length));
+                getFollowedTrainers(me.id, (trainers) => setIsFollowing(trainers.some(t => t.trainerId === profile.id)));
+            }
+        };
+        window.addEventListener('followChanged', handleFollowChanged);
+        return () => window.removeEventListener('followChanged', handleFollowChanged);
+    }, [profile, me]);
+
 
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
@@ -77,17 +99,56 @@ const Profile = () => {
     }
 
     const handleFollowToggle = () => {
-        if (!profile) return;
+        if (!profile || loadingFollow) return;
+
+        setLoadingFollow(true);
 
         if (isFollowing) {
+            setIsFollowing(false);
+            setFollowers(prev => prev - 1);
             unfollowTrainer(profile.id,
-                () => setIsFollowing(false),
-                (err) => console.error(err)
+                () => {
+                    window.dispatchEvent(new Event('followChanged'));
+                    setTimeout(() => setLoadingFollow(false), 500);
+                },
+                (err) => {
+                    console.error(err);
+                    setIsFollowing(true);
+                    setFollowers(prev => prev + 1);
+                    setLoadingFollow(false);
+                }
             );
         } else {
+            setIsFollowing(true);
+            setFollowers(prev => prev + 1);
             followTrainer(profile.id,
-                () => setIsFollowing(true),
-                (err) => console.error(err)
+                () => {
+                    window.dispatchEvent(new Event('followChanged'));
+                    setTimeout(() => setLoadingFollow(false), 500);
+                },
+                (err) => {
+                    console.error(err);
+                    setIsFollowing(false);
+                    setFollowers(prev => prev - 1);
+                    setLoadingFollow(false);
+                }
+            );
+        }
+    };
+
+    const handleBlockToggle = () => {
+        if (!profile) return;
+        if (isBlockedByMe) {
+            unblockUser(profile.id,
+                () => setIsBlockedByMe(false),
+                (err) => console.error("Error desbloqueando usuario: " + err)
+            );
+        } else {
+            blockUser(profile.id,
+                () => { setIsBlockedByMe(true);
+                        setIsFollowing(false);
+                },
+                (err) => console.error("Error bloqueando usuario: " + err)
             );
         }
     };
@@ -163,7 +224,19 @@ const Profile = () => {
                                 )}
                         {me && profile && me.id !== profile.id && (
                             <>
-                                <button className={styles['edit-profile-button']} onClick={handleFollowToggle}>{isFollowing ? "Dejar de seguir" : "Seguir"}</button>
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={handleFollowToggle}
+                                    disabled={loadingFollow}
+                                >
+                                    {loadingFollow ? "Cargando..." : (isFollowing ? "Dejar de seguir" : "Seguir")}
+                                </button>
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={handleBlockToggle}
+                                >
+                                    {isBlockedByMe ? "Desbloquear" : "Bloquear"}
+                                </button>
                             </>
                         )}
                     </div>

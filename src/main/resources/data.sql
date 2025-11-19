@@ -131,7 +131,9 @@ INSERT INTO user_follows (client_id, follow_user_id)
 VALUES
     (3, 1),
     (3, 4),
-    (2, 1);
+    (3, 2),
+    (2, 1),
+    (2, 3);
 
 INSERT INTO notifications (message, type, id_to_redirect, user_id, is_read, date)
 VALUES
@@ -219,3 +221,7 @@ INSERT INTO workout_comments (text, date, workout_id, user_id) VALUES
     ('Buen foco en movilidad en las transiciones.', '2025-02-02 22:02:00', 10, 4),
     ('Fluidez y calma en la ejecución.', '2025-02-02 22:05:00', 10, 5),
     ('Nada de compensaciones, muy limpio.', '2025-02-02 22:08:00', 10, 1);
+
+INSERT INTO user_block (blocker_id, blocked_id) VALUES
+    (2, 3),
+    (1, 3);

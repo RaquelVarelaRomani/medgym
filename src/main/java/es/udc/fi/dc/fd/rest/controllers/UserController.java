@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.rest.controllers;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
+import java.security.Permission;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,10 +21,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -42,11 +45,15 @@ import es.udc.fi.dc.fd.rest.dtos.BmiDto;
 import es.udc.fi.dc.fd.rest.dtos.BodyMetricsParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.ChangePasswordParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.UserConversor;
+
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toAuthenticatedUserDto;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUser;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDto;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDtos;
 import es.udc.fi.dc.fd.rest.dtos.UserDto;
+import es.udc.fi.dc.fd.model.services.UserBlockService;
+
 
 @RestController
 @RequestMapping("/api/users")
@@ -64,6 +71,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private UserBlockService userBlockService;
 
 	@ExceptionHandler(IncorrectLoginException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -171,13 +181,31 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public UserDto getUser(@PathVariable Long id) throws InstanceNotFoundException {
+	public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
+
+		// No se aplica bloqueo cuando pides tu propio perfil
+		if (!userId.equals(id) && userBlockService.hasBlocked(id, userId)) {
+			throw new PermissionException();
+		}
+
 		return toUserDto(userService.findUserById(id));
 	}
 
 	@GetMapping
-	public List<UserDto> getAllUsers() {
-		return toUserDtos(userService.findAllUsers());
+	public List<UserDto> getAllUsers(@RequestAttribute Long userId) {
+
+		return userService.findAllUsers().stream()
+			.filter(u -> !userBlockService.hasBlocked(u.getId(), userId)) // si ELLOS me bloquearon → no los veo
+			.map(UserConversor::toUserDto)
+			.toList();
+	}
+
+	@GetMapping("/search")
+	public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
+		return userService.searchUsers(userId, query).stream()
+            .filter(u -> !userBlockService.hasBlocked(u.getId(), userId))
+            .map(UserConversor::toUserDto)
+            .toList();
 	}
 
 	@DeleteMapping("/{id}")

@@ -1,8 +1,11 @@
 package es.udc.fi.dc.fd.model.entities;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 public interface UserDao extends JpaRepository<User, Long> {
@@ -12,4 +15,7 @@ public interface UserDao extends JpaRepository<User, Long> {
 	Optional<User> findByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT u FROM User u WHERE LOWER(CONCAT(u.name, ' ', u.surname)) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%'))")
+    List<User> findByNameAndSurnameContainingIgnoreCase(@Param("query") String query);
 }

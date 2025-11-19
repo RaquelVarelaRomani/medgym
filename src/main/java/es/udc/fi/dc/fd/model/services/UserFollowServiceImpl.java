@@ -27,6 +27,9 @@ public class UserFollowServiceImpl implements UserFollowService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private UserBlockService userBlockService;
+
     @Override
     public UserFollow followUser(Long userId, Long followUserId) throws InstanceNotFoundException {
         User trainer = userService.findUserById(followUserId);
@@ -36,6 +39,10 @@ public class UserFollowServiceImpl implements UserFollowService {
         }
 
         User user = userService.loginFromId(userId);
+
+        if (userBlockService.hasBlocked(followUserId, userId)) {
+            throw new FollowException(followUserId);
+        }
 
         if(userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)){
             throw new FollowException(followUserId);

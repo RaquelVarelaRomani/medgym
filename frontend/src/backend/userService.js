@@ -87,6 +87,12 @@ export const deleteUser = (id, onSuccess, onErrors) => appFetch(
     onErrors
 );
 
+export const searchUsers = (query, onSuccess, onErrors) => appFetch(
+    `/users/search?q=${encodeURIComponent(query)}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors);
+
 export const updateBodyMetrics = (id, body, onSuccess, onErrors) => appFetch(
   `/users/${id}/bodyMetrics`,
   fetchConfig("PUT", {
