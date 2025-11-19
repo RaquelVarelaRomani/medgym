@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import java.util.List;
 
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     private RoutineExerciseDao routineExerciseDao;
 
     @Override
-    public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException {
+    public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException, PermissionException {
         if (exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
@@ -43,9 +44,10 @@ public class ExerciseServiceImpl implements ExerciseService {
         // Si el usuario es ADMIN → se aprueba directamente
         if (user.getRole() == User.RoleType.ADMIN) {
             status = Exercise.ExerciseStatus.APPROVED;
+        } else if (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) {
+            status = ExerciseStatus.PENDING;
         } else {
-            // Si es entrenador → pendiente de aprobación
-            status = Exercise.ExerciseStatus.PENDING;
+            throw new PermissionException();
         }
         
         Exercise exercise = new Exercise(name, description, muscleGroup, equipment, image, status, user);

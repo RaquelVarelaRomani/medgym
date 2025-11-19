@@ -146,7 +146,7 @@ public class User {
  }
 
     public Boolean getTrainerPremium() {
-        return trainerPremium;
+        return trainerPremium != null && trainerPremium;
     }
     public void setTrainerPremium(Boolean trainerPremium) {
         this.trainerPremium = trainerPremium;

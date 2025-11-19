@@ -41,7 +41,7 @@ public class RoutineController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException {
+    public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = userService.loginFromId(userId);
         Routine.DifficultyType difficulty = routineDto.getDifficulty() != null ? Routine.DifficultyType.valueOf(routineDto.getDifficulty().toUpperCase()) : Routine.DifficultyType.BEGINNER;
         Routine routine = routineService.createRoutine(routineDto.getName(), routineDto.getDescription(), user,

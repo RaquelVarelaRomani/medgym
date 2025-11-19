@@ -26,6 +26,11 @@ public class RoutineLikeServiceImpl implements RoutineLikeService {
 
     @Override
     public void likeRoutine(Long userId, Long routineId) throws InstanceNotFoundException {
+
+        if (getRoutineLikesByUser(userId).stream().anyMatch(r -> r.getRoutine().getId().equals(routineId))) {
+            return;
+        }
+
         routineLikeDao.save(new RoutineLike(
                 userDao.findById(userId).orElseThrow(() ->
                         new InstanceNotFoundException("project.entities.routineLikeDao", userId)),
