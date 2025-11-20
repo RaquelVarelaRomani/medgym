@@ -375,8 +375,8 @@ const Routines = () => {
         : [];
 
     const canCreateRoutine = () => {
+        if (isAdmin() || (isTrainer() && currentUser.trainerPremium)) return true;
         if (!isTrainer()) return false;
-        if (currentUser.trainerPremium) return true;
         return routinesByTrainer.length < 3;
     };
 
