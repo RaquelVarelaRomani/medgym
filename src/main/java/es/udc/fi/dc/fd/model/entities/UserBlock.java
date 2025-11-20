@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_block", uniqueConstraints = @UniqueConstraint(columnNames = {"blocker_id", "blocked_id"}))
+@Table(name = "user_block", uniqueConstraints = @UniqueConstraint(columnNames = { "blocker_id", "blocked_id" }))
 public class UserBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class UserBlock {
     @JoinColumn(name = "blocked_id")
     private User blocked;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {

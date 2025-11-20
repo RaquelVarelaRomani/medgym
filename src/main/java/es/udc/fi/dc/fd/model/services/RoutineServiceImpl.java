@@ -15,6 +15,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.RoutineLikeDao;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
@@ -31,8 +32,12 @@ public class RoutineServiceImpl implements RoutineService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private RoutineLikeDao routineLikeDao;
+
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility,
+            Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
@@ -54,7 +59,8 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public Routine findRoutineByIdAuth(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
+    public Routine findRoutineByIdAuth(Long userId, Long routineId)
+            throws InstanceNotFoundException, PermissionException {
         Optional<Routine> opRoutine = routineDao.findById(routineId);
 
         if (opRoutine.isEmpty()) {
@@ -73,7 +79,8 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
+    public void updateRoutine(Long userId, Long routineId, String name, String description,
+            Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
@@ -102,6 +109,7 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         notificationService.deleteNotificationsByIdToRedirect(routineId);
+        routineLikeDao.deleteByRoutineId(routineId);
 
         routineDao.delete(routine);
     }
@@ -122,7 +130,8 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup,
+            Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 
