@@ -1,26 +1,84 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Profile.module.css";
-import { useNavigate } from "react-router-dom";
-import { logout, tryLoginFromServiceToken } from "../../../../backend/userService";
+import { useNavigate, useParams } from "react-router-dom";
+import { logout, tryLoginFromServiceToken, getUser, becomePremium } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
+import { getFollowedTrainers, getFollowers, followTrainer, unfollowTrainer } from "../../../../backend/userFollowService";
+import { getWorkoutsByUser } from "../../../../backend/workoutService";
+import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
+import BodyMetricsCard from "./BodyMetricsCard";
+import LoadingMessage from "../common/LoadingMessage";
+import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
 
 const Profile = () => {
+    const { id } = useParams()
     const navigate = useNavigate();
+    const [me, setMe] = useState(null)
     const [profile, setProfile] = useState(null);
     const [showPopup, setShowPopup] = useState(false);
+    const [followers, setFollowers] = useState(0)
+    const [following, setFollowing] = useState(0)
+    const [isFollowing, setIsFollowing] = useState(false)
+    const [workouts, setWorkouts] = useState([]);
+    const [showMetrics, setShowMetrics] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [loadingFollow, setLoadingFollow] = useState(false);
+    const [isBlockedByMe, setIsBlockedByMe] = useState(false);
 
     useEffect(() => {
+        let meTemp = null;
+        let profileTemp = null;
+
         tryLoginFromServiceToken(
             (authenticatedUser) => {
-                console.log("Respuesta loginFromServiceToken:", authenticatedUser.user);
-                setProfile(authenticatedUser.user); // ya tienes name, surname, email, profilePicture, etc.
+                meTemp = authenticatedUser.user;
+                setMe(meTemp);
+
+                getUser(id, (user) => {
+                    profileTemp = user;
+                    setProfile(profileTemp);
+
+                    isBlocked(
+                        profileTemp.id,
+                        (blocked) => setIsBlockedByMe(blocked),
+                        () => setIsBlockedByMe(false)
+                    );
+
+                    Promise.all([
+                        new Promise(resolve => getFollowers(profileTemp.id, (f) => { setFollowers(f.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(profileTemp.id, (t) => { setFollowing(t.length); resolve(); })),
+                        new Promise(resolve => getFollowedTrainers(meTemp.id, (trainers) => {
+                            setIsFollowing(trainers.some(t => t.trainerId === profileTemp.id));
+                            resolve();
+                        }))
+                    ]).then(() => setLoading(false));
+                });
             },
-            () => {
-                console.error("Token inválido o expirado");
-                navigate("/users/login");
-            }
+            () => navigate("/users/login")
         );
-    }, [navigate]);
+    }, [id, navigate]);
+
+    useEffect(() => {
+        if (!profile) return;
+        getWorkoutsByUser(
+            profile.id,
+            (data) => setWorkouts(data.sort((a, b) => new Date(b.startTime) - new Date(a.startTime))),
+            (err) => console.error("Error cargando entrenamientos del usuario:", err)
+        );
+    }, [profile]);
+
+    useEffect(() => {
+        const handleFollowChanged = () => {
+            if (profile && me) {
+                getFollowers(profile.id, (f) => setFollowers(f.length));
+                getFollowedTrainers(profile.id, (t) => setFollowing(t.length));
+                getFollowedTrainers(me.id, (trainers) => setIsFollowing(trainers.some(t => t.trainerId === profile.id)));
+            }
+        };
+        window.addEventListener('followChanged', handleFollowChanged);
+        return () => window.removeEventListener('followChanged', handleFollowChanged);
+    }, [profile, me]);
+
 
     const handleEditProfile = () => {
         navigate("/users/profile/edit-profile"); // Redirige a la página de editar perfil
@@ -30,6 +88,71 @@ const Profile = () => {
         navigate("/users/profile/change-password");
     }
 
+    const handleBecomePremium = () => {
+        becomePremium(me.id,
+            () => {
+                setMe(prev => ({ ...prev, trainerPremium: true }));
+                setProfile(prev => ({ ...prev, trainerPremium: true }));
+            },
+            (err) => alert("Error becoming premium: " + err)
+        );
+    }
+
+    const handleFollowToggle = () => {
+        if (!profile || loadingFollow) return;
+
+        setLoadingFollow(true);
+
+        if (isFollowing) {
+            setIsFollowing(false);
+            setFollowers(prev => prev - 1);
+            unfollowTrainer(profile.id,
+                () => {
+                    window.dispatchEvent(new Event('followChanged'));
+                    setTimeout(() => setLoadingFollow(false), 500);
+                },
+                (err) => {
+                    console.error(err);
+                    setIsFollowing(true);
+                    setFollowers(prev => prev + 1);
+                    setLoadingFollow(false);
+                }
+            );
+        } else {
+            setIsFollowing(true);
+            setFollowers(prev => prev + 1);
+            followTrainer(profile.id,
+                () => {
+                    window.dispatchEvent(new Event('followChanged'));
+                    setTimeout(() => setLoadingFollow(false), 500);
+                },
+                (err) => {
+                    console.error(err);
+                    setIsFollowing(false);
+                    setFollowers(prev => prev - 1);
+                    setLoadingFollow(false);
+                }
+            );
+        }
+    };
+
+    const handleBlockToggle = () => {
+        if (!profile) return;
+        if (isBlockedByMe) {
+            unblockUser(profile.id,
+                () => setIsBlockedByMe(false),
+                (err) => console.error("Error desbloqueando usuario: " + err)
+            );
+        } else {
+            blockUser(profile.id,
+                () => { setIsBlockedByMe(true);
+                        setIsFollowing(false);
+                },
+                (err) => console.error("Error bloqueando usuario: " + err)
+            );
+        }
+    };
+
     const roleString = () => {
         if (profile.role === "CLIENT") return "Cliente";
         if (profile.role === "TRAINER") return "Entrenador";
@@ -37,6 +160,7 @@ const Profile = () => {
         return "Indefinido";
     }
 
+    if (loading) return <LoadingMessage text="Cargando perfil..." />;
     return (
         <div className={styles.profile}>
             <div className={styles['profile-container']}>
@@ -56,15 +180,65 @@ const Profile = () => {
                                     className={styles['profile-image']}
                                 />
                             )}
+                        </div>
+                        <div>
+                            <h2 className={styles['profile-name']}>
+                                {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
+                                {profile && profile.role === "TRAINER" && profile.trainerPremium && (
+                                    <span className={styles['premium-badge']}>Entrenador premium</span>
+                                )}
+                            </h2>
+                            <div className={styles['profile-info']}>
+                                {!loading && (
+                                    <>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/followers/${profile.id}`)}>
+                                            Seguidores: {followers}
+                                        </p>
+                                        <p className={styles['follow-side']} onClick={() => navigate(`/users/following/${profile.id}`)}>
+                                            Siguiendo: {following}
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div> 
-                        <h2 className={styles['profile-name']}>
-                            {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
-                        </h2>
+
                     </div>
                 
                     <div className={styles['profile-actions']}>
-                        <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
-                        <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
+                        {me && profile && me.id === profile.id && (
+                            <>
+                                <button className={styles['edit-profile-button']} onClick={handleEditProfile}> Editar perfil </button>
+                                 <button className={styles['edit-profile-button']} onClick={handleChangePassword}> Cambiar contraseña </button>
+                                 <button
+                                     className={styles['edit-profile-button']}
+                                     onClick={() => setShowMetrics(true)}
+                                     >
+                                     Métricas corporales
+                                     </button>
+                                 {me.role === "TRAINER" && !me.trainerPremium && (
+                                     <button className={styles['premium-button']} onClick={handleBecomePremium}>
+                                         Hacerme Entrenador premium
+                                     </button>
+                                 )}
+                                </>
+                                )}
+                        {me && profile && me.id !== profile.id && (
+                            <>
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={handleFollowToggle}
+                                    disabled={loadingFollow}
+                                >
+                                    {loadingFollow ? "Cargando..." : (isFollowing ? "Dejar de seguir" : "Seguir")}
+                                </button>
+                                <button
+                                    className={styles['edit-profile-button']}
+                                    onClick={handleBlockToggle}
+                                >
+                                    {isBlockedByMe ? "Desbloquear" : "Bloquear"}
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 
@@ -74,6 +248,12 @@ const Profile = () => {
                             <p><strong>Correo electrónico:</strong> {profile.email}</p>
                             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
                             <p><strong>Rol:</strong> {roleString()}</p>
+
+                            <p><strong>Peso:</strong> {profile.weightKg ?? "—"} kg</p>
+                            <p><strong>Altura:</strong> {profile.heightCm ?? "—"} cm</p>
+                            <p><strong>Género:</strong> {profile.gender ?? "—"}</p>
+                            <p><strong>IMC:</strong> {profile.bmi ?? "—"}</p>
+                        
                         </>
                     ) : (
                         <p>Cargando datos...</p>
@@ -86,8 +266,24 @@ const Profile = () => {
                 setShowPopup(false);
                 navigate("/users/login");
             }} />
-        </div>
-    );
+
+            {profile && <UserWorkoutHistory id={profile.id}/>}
+
+        {showMetrics && profile && (
+        <BodyMetricsCard
+          userId={profile.id}
+          initialWeightKg={profile.weightKg}
+          initialHeightCm={profile.heightCm}
+          initialGender={profile.gender}
+          initialBmi={profile.bmi}
+          onSaved={(partial) => {
+            setProfile((p) => ({ ...p, ...partial }));
+          }}
+          onClose={() => setShowMetrics(false)}
+        />
+      )}
+    </div>
+  );
 };
 
 export default Profile;

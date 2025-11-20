@@ -61,3 +61,17 @@ export const getExercisesByStatus = (status, onSuccess, onErrors) => {
         onErrors
     );
 };
+
+export const getMuscleGroups = (onSuccess, onErrors) => appFetch(
+    `/exercises/muscleGroups`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);
+
+export const getEquipments = (onSuccess, onErrors) => appFetch(
+    `/exercises/equipments`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

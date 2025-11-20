@@ -12,11 +12,10 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
-
 import es.udc.fi.dc.fd.util.EmailValidation;
 
 @Service
@@ -156,4 +155,53 @@ public class UserServiceImpl implements UserService {
 
 		user.setStatus(User.StatusType.ACTIVE);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<User> searchUsers(Long currentUserId, String query) {
+		List<User> users = userDao.findByNameAndSurnameContainingIgnoreCase(query);
+		return users.stream()
+			.filter(user -> !user.getId().equals(currentUserId))
+			.toList();
+	}
+
+	@Override
+    public User updateBodyMetrics(Long id, Double weightKg, Double heightCm, User.GenderType gender)
+            throws InstanceNotFoundException {
+
+        User user = permissionChecker.checkUser(id);
+
+        if (weightKg != null && weightKg <= 0) {
+            throw new IllegalArgumentException("El peso debe ser mayor que 0");
+        }
+        if (heightCm != null && heightCm <= 0) {
+            throw new IllegalArgumentException("La altura debe ser mayor que 0");
+        }
+
+        user.setWeightKg(weightKg);
+        user.setHeightCm(heightCm);
+        user.setGender(gender);
+
+        return user;
+    }
+
+    @Override
+    public User clearBodyMetrics(Long id) throws InstanceNotFoundException {
+        User user = permissionChecker.checkUser(id);
+        user.setWeightKg(null);
+        user.setHeightCm(null);
+        user.setGender(null);
+        return user;
+    }
+
+    @Override
+    public void setTrainerPremium(Long id, boolean premium) throws InstanceNotFoundException, PermissionException {
+        User user = permissionChecker.checkUser(id);
+
+        if (user.getRole() != User.RoleType.TRAINER) {
+            throw new PermissionException();
+        }
+
+        user.setTrainerPremium(premium);
+    }
 }

@@ -25,6 +25,8 @@ import java.time.LocalDateTime;
 
 import static es.udc.fi.dc.fd.model.entities.User.RoleType;
 import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -80,7 +82,8 @@ public class WorkoutExerciseControllerTest {
         routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas", "Ejercicio básico de piernas", "Piernas", "Barra", new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED,
+        exercise = new Exercise("Sentadillas Test", "Ejercicio básico de piernas", MuscleGroup.LEG, Equipment.BARBELL,
+                new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);
 
@@ -89,12 +92,13 @@ public class WorkoutExerciseControllerTest {
         routineExerciseDao.save(routineExercise);
 
         // Crear un workout
-        workout = new Workout(LocalDateTime.now(), null, routine, userDao.findById(trainerUser.getUserDto().getId()).get());
+        workout = new Workout(LocalDateTime.now(), null, routine,
+                userDao.findById(trainerUser.getUserDto().getId()).get());
         workoutDao.save(workout);
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
-                                                        String phoneNumber, RoleType roleType)
+            String phoneNumber, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
@@ -106,7 +110,8 @@ public class WorkoutExerciseControllerTest {
         return userController.login(loginParams);
     }
 
-    private ResultActions addWorkoutExercise(AuthenticatedUserDto user, Long workoutId, WorkoutExerciseDto dto) throws Exception {
+    private ResultActions addWorkoutExercise(AuthenticatedUserDto user, Long workoutId, WorkoutExerciseDto dto)
+            throws Exception {
         return mockMvc.perform(post("/api/workouts/" + workoutId + "/log")
                 .header("Authorization", "Bearer " + user.getServiceToken())
                 .header("X-User-Id", user.getUserDto().getId())
@@ -208,8 +213,8 @@ public class WorkoutExerciseControllerTest {
         dto.setRoutineExerciseId(routineExercise.getId());
 
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/log")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isForbidden());
     }
 }

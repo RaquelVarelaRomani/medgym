@@ -244,4 +244,17 @@ public class RoutineControllerTest {
                         .param("trainerId", trainerUser.getUserDto().getId().toString()))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testGetOwnRoutine() throws Exception {
+        // Crear rutina como trainer
+        ResultActions createActions = createRoutine(trainerUser, "My Routine").andExpect(status().isCreated());
+        RoutineDto routine = getRoutineFromResponse(createActions);
+
+        mockMvc.perform(get("/api/routines/" + routine.getId())
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .requestAttr("userId", trainerUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(routine.getId()));
+    }
 }

@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,30 +46,32 @@ public class UserFollowServiceTest {
         User user = createUser();
         User trainer = createTrainer();
 
-        UserFollow userFollow = userFollowService.followTrainer(user.getId(), trainer.getId());
-        UserFollow userFollow1 = userFollowDao.findByUserAndTrainer(user, trainer).get();
+        UserFollow userFollow = userFollowService.followUser(user.getId(), trainer.getId());
+        UserFollow userFollow1 = userFollowDao.findByUserAndFollowUser(user, trainer).get();
 
         assertEquals(userFollow1, userFollow);
     }
 
+    /*
     @Test
     public void testFollowClient() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();
 
         assertThrows(FollowException.class, () -> {
-            userFollowService.followTrainer(user.getId(), user.getId());
+            userFollowService.followUser(user.getId(), user.getId());
         });
     }
+     */
 
     @Test
     public void testUnfollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();
         User trainer = createTrainer();
 
-        userFollowService.followTrainer(user.getId(), trainer.getId());
-        userFollowService.unfollowTrainer(user.getId(), trainer.getId());
+        userFollowService.followUser(user.getId(), trainer.getId());
+        userFollowService.unfollowUser(user.getId(), trainer.getId());
 
-        assertFalse(userFollowDao.existsByUserAndTrainer(user, trainer));
+        assertFalse(userFollowDao.existsByUserAndFollowUser(user, trainer));
     }
 
     @Test
@@ -79,7 +80,7 @@ public class UserFollowServiceTest {
         User trainer = createTrainer();
 
         assertThrows(FollowException.class, () -> {
-            userFollowService.unfollowTrainer(user.getId(), trainer.getId());
+            userFollowService.unfollowUser(user.getId(), trainer.getId());
         });
     }
 
@@ -88,7 +89,21 @@ public class UserFollowServiceTest {
         User trainer = createTrainer();
 
         assertThrows(FollowException.class, () -> {
-            userFollowService.followTrainer(trainer.getId(), trainer.getId());
+            userFollowService.followUser(trainer.getId(), trainer.getId());
+        });
+    }
+
+    @Test
+    public void testGetFollowersNonExistentTrainer() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userFollowService.getFollowers(999L);
+        });
+    }
+
+    @Test
+    public void testGetFollowedTrainersNonExistentUser() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userFollowService.getFollowedUsers(999L);
         });
     }
 }

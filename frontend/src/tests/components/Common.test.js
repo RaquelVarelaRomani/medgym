@@ -52,6 +52,7 @@ jest.mock("../../backend/notificationService", () => ({
 
 jest.mock("../../backend/userFollowService", () => ({
   getFollowers: jest.fn(),
+  getFollowedTrainers: jest.fn(),
 }));
 
 jest.mock("../../backend/appFetch", () => ({
@@ -610,6 +611,7 @@ describe("Common Components", () => {
           date: "2023-01-01T00:00:00",
           type: "FOLLOW",
           isRead: false,
+          idToRedirect: 1,
         },
       ];
 
@@ -632,7 +634,7 @@ describe("Common Components", () => {
         expect.any(Function),
         expect.any(Function),
       );
-      expect(mockNavigate).toHaveBeenCalledWith("/users/followers");
+      expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
 
     test("handles invalid date", () => {
@@ -753,23 +755,6 @@ describe("Common Components", () => {
       });
     });
 
-    test("shows error for non-trainer users", async () => {
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: { role: "CLIENT" } }),
-      );
-
-      render(
-        <MemoryRouter>
-          <FollowersPage />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Solo los entrenadores pueden ver sus seguidores."),
-        ).toBeInTheDocument();
-      });
-    });
 
     test("displays followers for trainer", async () => {
       const mockUser = { id: 1, role: "TRAINER" };
@@ -980,7 +965,7 @@ describe("Common Components", () => {
       );
 
       expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-      expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+      expect(screen.getByText("Rutinas")).toBeInTheDocument();
       expect(screen.getByText("Ejercicios")).toBeInTheDocument();
       expect(screen.getByText("Historial")).toBeInTheDocument();
     });
@@ -1125,7 +1110,7 @@ describe("Common Components", () => {
           .closest("button");
         fireEvent.click(profileButton);
         fireEvent.click(screen.getByText("Ver Perfil"));
-        expect(mockNavigate).toHaveBeenCalledWith("/users/profile");
+        expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
       });
     });
 
@@ -1332,7 +1317,7 @@ describe("Common Components", () => {
 
       await waitFor(() => {
         expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1398,7 +1383,7 @@ describe("Common Components", () => {
       window.dispatchEvent(new CustomEvent("routineDeleted"));
 
       await waitFor(() => {
-        expect(screen.getByText("Entrenamientos")).toBeInTheDocument();
+        expect(screen.getByText("Rutinas")).toBeInTheDocument();
       });
     });
 
@@ -1484,7 +1469,7 @@ describe("Common Components", () => {
     test("notification popup onNotificationRead handler works for read action", async () => {
       const mockUser = { id: 1, role: "CLIENT" };
       const mockNotifications = [
-        { id: 1, message: "Test notification", isRead: false, type: "LIKE", idToRedirect: 1 },
+        { id: 1, message: "Test notification", isRead: false, type: "ROUTINE_LIKE", idToRedirect: 1 },
       ];
 
       tryLoginFromServiceToken.mockImplementation((success) =>
@@ -1540,7 +1525,7 @@ describe("Common Components", () => {
       );
 
       await waitFor(() => {
-        const routinesLink = screen.getByText("Entrenamientos").closest("a");
+        const routinesLink = screen.getByText("Rutinas").closest("a");
         expect(routinesLink).toHaveClass("active");
       });
     });

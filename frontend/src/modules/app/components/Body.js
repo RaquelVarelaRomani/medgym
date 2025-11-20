@@ -21,8 +21,10 @@ import UserModeration from "./users/UserModeration";
 import WorkoutHistory from "./workouts/WorkoutHistory";
 import WorkoutDetails from "./workouts/WorkoutDetails";
 import FollowersPage from "./users/FollowersPage";
+import FollowingPage from "./users/FollowingPage";
 
 import WorkoutSession from "./workouts/WorkoutSession"
+import WorkoutFeed from "./workouts/WorkoutFeed";
 
 const Body = () => {
     return (
@@ -43,15 +45,16 @@ const Body = () => {
                     <Route path="exercises/new" element={<Layout><CreateExercise /></Layout>} />
                     <Route path="exercises/edit/:id" element={<Layout><EditExercise/></Layout>} />
                     <Route path="exercises/:id" element={<Layout><ExerciseDetails /></Layout>} />
-                    <Route path="users/followers" element={<Layout><FollowersPage /></Layout>} />
-                    <Route path="users/profile" element={<Layout><Profile /></Layout>} />
+                    <Route path="users/followers/:id" element={<Layout><FollowersPage /></Layout>} />
+                    <Route path="users/following/:id" element={<Layout><FollowingPage /></Layout>} />
+                    <Route path="users/profile/:id" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
                     <Route path="users/moderation" element={<Layout><UserModeration /></Layout>} />
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
                     <Route path="workouts/session/:sessionId" element={<Layout><WorkoutSession /></Layout>} />
-                    
+                    <Route path="workouts/feed" element={<Layout><WorkoutFeed /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

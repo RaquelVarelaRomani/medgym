@@ -13,12 +13,35 @@ public class Exercise {
         BLOCKED
     }
 
+    public enum MuscleGroup {
+        LEG,
+        CHEST,
+        FULL_BODY,
+        CORE,
+        BACK,
+        ARM,
+        BICEPS,
+        TRICEPS,
+        SHOULDERS
+    }
+
+    public enum Equipment {
+        NONE,
+        DUMBBELL,
+        BARBELL,
+        BENCH_AND_BARBELL,
+        JUMP_ROPE,
+        MAT,
+        PULLEY,
+        PULL_UP_BAR
+    }
+
     private Long id;
     private String name;
     private String description;
     private ExerciseStatus status;
-    private String muscleGroup;
-    private String equipment;
+    private MuscleGroup muscleGroup;
+    private Equipment equipment;
     private byte[] image;
     private User creator;
 
@@ -30,7 +53,7 @@ public class Exercise {
         this.status = status;
     }
 
-    public Exercise(String name, String description, String muscleGroup, String equipment, byte[] image, ExerciseStatus status, User creator) {
+    public Exercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, ExerciseStatus status, User creator) {
         this.name = name;
         this.description = description;
         this.muscleGroup = muscleGroup;
@@ -64,19 +87,21 @@ public class Exercise {
         this.description = description;
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "muscle_group", length = 50)
-    public String getMuscleGroup() {
+    public MuscleGroup getMuscleGroup() {
         return muscleGroup;
     }
-    public void setMuscleGroup(String muscleGroup) {
+    public void setMuscleGroup(MuscleGroup muscleGroup) {
         this.muscleGroup = muscleGroup;
     }
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "equipment", length = 50)
-    public String getEquipment() {
+    public Equipment getEquipment() {
         return equipment;
     }
-    public void setEquipment(String equipment) {
+    public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
     }
 

@@ -106,7 +106,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
     };
 
     const handleCancel = () => {
-        navigate("/users/profile");
+        navigate("/users/profile/" + profile.id);
     };
 
     return (
@@ -270,7 +270,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
 
             <Popup text={popupMessage} show={showPopup} onOk={() => {
                 setShowPopup(false);
-                navigate("/users/profile");
+                navigate("/users/profile/" + profile.id);
             }} />
         </div>
     );

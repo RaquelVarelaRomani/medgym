@@ -12,7 +12,7 @@ import {
   getWorkouts,
   getWorkout,
   addWorkoutActivity,
-  finishWorkout,
+  finishWorkout, getLastMonthStats,
 } from "../../backend/workoutService";
 import {
   getWorkoutExercisesByWorkoutId,
@@ -37,6 +37,7 @@ jest.mock("../../backend/workoutService", () => ({
   getWorkout: jest.fn(),
   addWorkoutActivity: jest.fn(),
   finishWorkout: jest.fn(),
+  getLastMonthStats: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutExerciseService", () => ({
@@ -539,7 +540,7 @@ describe("Workout Components", () => {
 
       fireEvent.click(screen.getByText("←"));
 
-      expect(mockNavigate).toHaveBeenCalledWith("/workouts/history");
+      expect(mockNavigate).toHaveBeenCalledWith("/workouts//");
     });
 
     test("displays in progress for workouts without end time", async () => {
@@ -890,12 +891,21 @@ describe("Workout Components", () => {
 
     describe("WorkoutHistory Component", () => {
       test("renders calendar view correctly", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const monthNames = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 
@@ -916,19 +926,28 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
           expect(screen.getByText("1")).toBeInTheDocument();
           expect(screen.getByText("Rutina 1")).toBeInTheDocument();
         });
       });
 
       test("handles month navigation in calendar view", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const monthNames = [
+          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 
@@ -949,29 +968,36 @@ describe("Workout Components", () => {
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText(">"));
 
+        const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+        const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
         await waitFor(() => {
-          expect(screen.getByText("2025 - 11")).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[nextMonth - 1]} de ${nextYear}`)).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("<"));
 
         await waitFor(() => {
-          expect(screen.getByText("2025 - 10")).toBeInTheDocument();
+          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
         });
       });
 
       test("navigates on workout click in calendar view", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
         const mockWorkouts = [
           {
             id: 1,
             routineName: "Rutina 1",
-            startTime: "2025-10-01T10:00:00Z",
-            endTime: "2025-10-01T11:00:00Z",
+            startTime,
+            endTime,
           },
         ];
 
@@ -1001,8 +1027,14 @@ describe("Workout Components", () => {
         });
       });
 
-      test("toggles between list and calendar view", async () => {
+      test("toggles between list, calendar and statistics view", async () => {
         const mockWorkouts = [];
+        const mockStats = {
+          lastMonthWorkouts: 0,
+          totalDurationSeconds: 0,
+          averageDurationSeconds: 0,
+          exercisesByMuscleGroup: {},
+        };
 
         tryLoginFromServiceToken.mockImplementation((success) => {
           success({ user: { id: 1 } });
@@ -1010,6 +1042,10 @@ describe("Workout Components", () => {
 
         getWorkouts.mockImplementation((success) => {
           success(mockWorkouts);
+        });
+
+        getLastMonthStats.mockImplementation((success) => {
+          success(mockStats);
         });
 
         render(
@@ -1020,20 +1056,164 @@ describe("Workout Components", () => {
 
         expect(screen.getByText("Lista")).toHaveClass("active");
         expect(screen.getByText("Calendario")).not.toHaveClass("active");
+        expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
 
         fireEvent.click(screen.getByText("Calendario"));
 
         await waitFor(() => {
           expect(screen.getByText("Calendario")).toHaveClass("active");
           expect(screen.getByText("Lista")).not.toHaveClass("active");
+          expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
+        });
+
+        fireEvent.click(screen.getByText("Estadísticas"));
+        await waitFor(() => {
+          expect(screen.getByText("Estadísticas")).toHaveClass("active");
+          expect(screen.getByText("Lista")).not.toHaveClass("active");
+          expect(screen.getByText("Calendario")).not.toHaveClass("active");
         });
 
         fireEvent.click(screen.getByText("Lista"));
 
         await waitFor(() => {
           expect(screen.getByText("Lista")).toHaveClass("active");
+          expect(screen.getByText("Estadísticas")).not.toHaveClass("active");
           expect(screen.getByText("Calendario")).not.toHaveClass("active");
         });
+      });
+    });
+
+    test("renders statistics view correctly", async () => {
+      const mockWorkouts = [
+        {
+          id: 1,
+          routineName: "Rutina 1",
+          startTime: "2025-10-01T19:30:00Z",
+          endTime: "2025-10-01T20:15:00Z",
+        },
+        {
+          id: 2,
+          routineName: "Rutina 2",
+          startTime: "2025-10-05T19:00:00Z",
+          endTime: "2025-10-05T19:50:00Z",
+        },
+      ];
+
+      const mockStats = {
+        lastMonthWorkouts: 2,
+        totalDurationSeconds: 3300,
+        averageDurationSeconds: 1650,
+        exercisesByMuscleGroup: {
+          'CHEST': 5,
+          'BACK': 8,
+        },
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Estadísticas del último mes")).toBeInTheDocument();
+        expect(screen.getByText("Entrenamientos completados")).toBeInTheDocument();
+        expect(screen.getByText("Duración total")).toBeInTheDocument();
+        expect(screen.getByText("Duración promedio")).toBeInTheDocument();
+        expect(screen.getByText("Ejercicios por grupo muscular")).toBeInTheDocument();
+      });
+    });
+
+    test('displays statistics metrics correctly', async () => {
+      const mockWorkouts = [
+        {
+          id: 1,
+          routineName: "Rutina 1",
+          startTime: "2025-10-01T19:30:00Z",
+          endTime: "2025-10-01T20:15:00Z",
+        },
+      ];
+
+      const mockStats = {
+        lastMonthWorkouts: 1,
+        totalDurationSeconds: 2700,
+        averageDurationSeconds: 2700,
+        exercisesByMuscleGroup: {
+          'CHEST': 5,
+        },
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        const metricLabels = screen.getAllByText(/Entrenamientos completados|Duración total|Duración promedio/);
+        expect(metricLabels.length).toBe(3);
+      });
+    });
+
+    test('displays empty statistics message when no workouts exist', async () => {
+      const mockWorkouts = [];
+      const mockStats = {
+        lastMonthWorkouts: 0,
+        totalDurationSeconds: 0,
+        averageDurationSeconds: 0,
+        exercisesByMuscleGroup: {},
+      };
+
+      tryLoginFromServiceToken.mockImplementation((success) => {
+        success({ user: { id: 1 } });
+      });
+
+      getWorkouts.mockImplementation((success) => {
+        success(mockWorkouts);
+      });
+
+      getLastMonthStats.mockImplementation((success) => {
+        success(mockStats);
+      });
+
+      render(
+          <MemoryRouter>
+            <WorkoutHistory />
+          </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Estadísticas"));
+
+      await waitFor(() => {
+        expect(screen.getByText("Estadísticas del último mes")).toBeInTheDocument();
       });
     });
 

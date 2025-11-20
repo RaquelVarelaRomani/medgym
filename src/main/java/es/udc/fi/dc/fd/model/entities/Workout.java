@@ -1,14 +1,9 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "workouts")
@@ -19,6 +14,7 @@ public class Workout {
     private LocalDateTime endTime;
     private Routine routine;
     private User user;
+    private List<WorkoutComment> comments;
 
     public Workout() {
     }
@@ -70,4 +66,21 @@ public class Workout {
     public void setUser(User user) {
         this.user = user;
     }
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<WorkoutComment> getComments() {
+        return comments;
+    }
+    public void setComments(List<WorkoutComment> comments) {
+        this.comments = comments;
+    }
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<WorkoutLike> getLikes() {
+        return likes;
+    }
+    public void setLikes(List<WorkoutLike> likes) {
+        this.likes = likes;
+    }
+    private List<WorkoutLike> likes;
 }

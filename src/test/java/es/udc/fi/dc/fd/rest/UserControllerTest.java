@@ -1,6 +1,8 @@
 package es.udc.fi.dc.fd.rest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Test;
@@ -32,7 +34,7 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @ActiveProfiles("test")
 @Transactional
 public class UserControllerTest {
-	
+
 	private final static String PASSWORD = "password";
 
 	@Autowired
@@ -81,4 +83,78 @@ public class UserControllerTest {
 				.andExpect(status().isOk());
 
 	}
+
+    @Test
+    public void testChangePassword_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("pass@test.com", RoleType.CLIENT);
+
+        String json = """
+    {
+      "oldPassword": "password",
+      "newPassword": "newpass"
+    }
+    """;
+
+        mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/changePassword")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testChangePassword_PermissionDenied() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("user1@test.com", RoleType.CLIENT);
+
+        String json = """
+    {
+      "oldPassword": "password",
+      "newPassword": "newpass"
+    }
+    """;
+
+        mockMvc.perform(post("/api/users/" + (user.getUserDto().getId() + 1) + "/changePassword")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testChangePassword_IncorrectOldPassword() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("user2@test.com", RoleType.CLIENT);
+
+        String json = """
+    {
+      "oldPassword": "wrong",
+      "newPassword": "newpass"
+    }
+    """;
+
+        mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/changePassword")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound()); // manejado por @ExceptionHandler
+    }
+
+    @Test
+    public void testSetTrainerPremium_Ok() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("trainer@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testSetTrainerPremium_PermissionDenied() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("trainer2@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+
 }

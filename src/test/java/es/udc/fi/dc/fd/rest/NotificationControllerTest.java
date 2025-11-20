@@ -72,7 +72,7 @@ public class NotificationControllerTest {
                         .requestAttr("userId", trainer.getId()))
                 .andExpect(status().isOk());
 
-        Mockito.verify(notificationService).createNewRoutineNotification(eq(routine));
+        Mockito.verify(notificationService).createNewRoutineNotification(eq(routine.getId()));
     }
 
     @Test
@@ -93,11 +93,11 @@ public class NotificationControllerTest {
                         .requestAttr("userId", client.getId()))
                 .andExpect(status().isOk());
 
-        Mockito.verify(notificationService).createFollowNotification(client, trainer);
+        Mockito.verify(notificationService).createFollowNotification(client.getId(), trainer.getId());
     }
 
     @Test
-    public void testCreateLikeNotification() throws Exception {
+    public void testCreateRoutineLikeNotification() throws Exception {
         Mockito.when(userService.findUserById(1L)).thenReturn(client);
         Mockito.when(userService.findUserById(2L)).thenReturn(trainer);
         Mockito.when(routineService.findRoutineById(10L)).thenReturn(routine);
@@ -110,13 +110,13 @@ public class NotificationControllerTest {
         }
         """;
 
-        mockMvc.perform(post("/api/notifications/like")
+        mockMvc.perform(post("/api/notifications/routineLike")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json)
                         .requestAttr("userId", client.getId()))
                 .andExpect(status().isOk());
 
-        Mockito.verify(notificationService).createLikeNotification(client, trainer, routine);
+        Mockito.verify(notificationService).createRoutineLikeNotification(client.getId(), routine.getId());
     }
 
     @Test
@@ -154,4 +154,23 @@ public class NotificationControllerTest {
 
         Mockito.verify(notificationService).deleteNotification(88L);
     }
+
+    @Test
+    public void testCreateWorkoutLikeNotification() throws Exception {
+        String json = """
+    {
+      "userId": 1,
+      "workoutId": 20
+    }
+    """;
+
+        mockMvc.perform(post("/api/notifications/workoutLike")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json)
+                        .requestAttr("userId", 1L))
+                .andExpect(status().isOk());
+
+        Mockito.verify(notificationService).createWorkoutLikeNotification(1L, 20L);
+    }
+
 }

@@ -17,11 +17,22 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationDao notificationDao;
 
     @Autowired
-    private UserFollowService userFollowService;
+    private UserFollowDao userFollowDao;
+
+    @Autowired
+    private RoutineDao routineDao;
+
+    @Autowired
+    private UserDao userDao;
+
+    @Autowired
+    private WorkoutDao workoutDao;
 
     @Override
-    public void createNewRoutineNotification(Routine routine) throws InstanceNotFoundException {
-        List<UserFollow> userFollows = userFollowService.getFollowers(routine.getTrainer().getId());
+    public void createNewRoutineNotification(Long routineId) throws InstanceNotFoundException {
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
+
+        List<UserFollow> userFollows = userFollowDao.findByFollowUser(routine.getTrainer());
 
         userFollows.forEach(userFollow ->
                 notificationDao.save(new Notification("Nueva rutina: " + routine.getName(), NotificationType.NEW_ROUTINE, routine.getId(), userFollow.getUser(), false,
@@ -29,15 +40,75 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void createFollowNotification(User client, User trainer) {
-        notificationDao.save(new Notification(client.getName() + " " + client.getSurname() + " ha comenzado a seguirte", NotificationType.FOLLOW, null, trainer, false,
-                LocalDateTime.now().withNano(0)));
+    public void createFollowNotification(Long clientId, Long trainerId) throws InstanceNotFoundException {
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException("entities.user", clientId));
+        User trainer = userDao.findById(trainerId).orElseThrow(() -> new InstanceNotFoundException("entities.user", trainerId));
+
+        notificationDao.save(new Notification(
+                client.getName() + " " + client.getSurname() + " ha comenzado a seguirte",
+                NotificationType.FOLLOW,
+                clientId,
+                trainer,
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
     }
 
     @Override
-    public void createLikeNotification(User client, User trainer, Routine routine) {
-        notificationDao.save(new Notification(client.getName() + " ha dado like a tu rutina '" + routine.getName() + "'", NotificationType.LIKE, routine.getId(), trainer, false,
-                LocalDateTime.now().withNano(0)));
+    public void createRoutineLikeNotification(Long clientId, Long routineId) throws InstanceNotFoundException {
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException("entities.user", clientId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
+
+        if (client.getId().equals(routine.getTrainer().getId())) {
+            return;
+        }
+
+        notificationDao.save(new Notification(
+                client.getName() + " " + client.getSurname() + " ha dado like a tu rutina '" + routine.getName() + "'",
+                NotificationType.ROUTINE_LIKE,
+                routineId,
+                routine.getTrainer(),
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
+    public void createWorkoutLikeNotification(Long userId, Long workoutId) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
+
+        if (user.getId().equals(workout.getUser().getId())) {
+            return;
+        }
+
+        notificationDao.save(new Notification(
+                user.getName() + " " + user.getSurname() + " ha dado like a tu entrenamiento de '" + workout.getRoutine().getName() + "'",
+                NotificationType.WORKOUT_LIKE,
+                workoutId,
+                workout.getUser(),
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
+    public void createWorkoutCommentNotification(Long userId, String text, Long workoutId) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
+
+        if (userId.equals(workout.getUser().getId())) {
+            return;
+        }
+
+        notificationDao.save(new Notification(
+                user.getName() + " " + user.getSurname() + " ha comentado tu entrenamiento de '" + workout.getRoutine().getName() + "': " + text,
+                NotificationType.WORKOUT_COMMENT,
+                workoutId,
+                workout.getUser(),
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
     }
 
     @Override

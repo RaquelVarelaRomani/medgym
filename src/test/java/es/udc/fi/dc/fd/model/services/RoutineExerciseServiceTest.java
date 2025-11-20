@@ -27,6 +27,9 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
@@ -51,7 +54,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user){
-        Exercise exercise = new Exercise(exerciseName, "The description", "Piernas", "Mancuernas", new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
+        Exercise exercise = new Exercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
         return exerciseDao.save(exercise);
     }
 
@@ -146,5 +149,25 @@ public class RoutineExerciseServiceTest {
         assertEquals(3, page2.getTotalElements());
         assertFalse(page2.hasNext());
         assertTrue(page2.isLast());
+    }
+
+    @Test
+    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException {
+        User trainer = createTrainer("trainer@udc.es");
+        User otherUser = userDao.save(new User("X","Y","other@udc.es","600","p",null,RoleType.CLIENT, User.StatusType.ACTIVE));
+        Exercise exercise = createExercise("Ejercicio", trainer);
+        Routine routine = createRoutine("Rutina", trainer);
+
+        assertThrows(PermissionException.class,
+                () -> routineExerciseService.addExerciseToRoutine(otherUser.getId(), routine.getId(), exercise.getId(), 1));
+    }
+
+    @Test
+    public void testAddExerciseToRoutineNonExistingRoutine() {
+        User trainer = createTrainer("trainer@udc.es");
+        Exercise exercise = createExercise("Ejercicio", trainer);
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), 999L, exercise.getId(), 1));
     }
 }

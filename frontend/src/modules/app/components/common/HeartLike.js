@@ -5,6 +5,7 @@ import React from "react";
 import styles from "./HeartLike.module.css";
 
 export default function HeartLike({
+                                      count = 0,
                                       liked,
                                       onChange,
                                       initialLiked = false,
@@ -42,7 +43,7 @@ export default function HeartLike({
         >
             <motion.span
                 initial={false}
-                animate={{ scale: currentLiked ? 1.15 : 1 }}
+                animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
                 className={styles.heartWrapper}
             >
@@ -52,6 +53,7 @@ export default function HeartLike({
                     className={currentLiked ? styles.heartLiked : styles.heartUnliked}
                     fill={currentLiked ? "currentColor" : "none"}
                 />
+                <span className={styles.count}>{count}</span>
                 <motion.span
                     key={String(currentLiked)}
                     initial={{ scale: 0, opacity: 0 }}

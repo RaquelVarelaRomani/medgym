@@ -1,17 +1,16 @@
 package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.UserBlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import es.udc.fi.dc.fd.model.entities.Workout;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -25,6 +24,11 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private UserFollowDao userFollowDao;
+
+    @Autowired
+    private UserBlockService userBlockService;
 
     @Override
     public Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException {
@@ -53,7 +57,21 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public void deleteWorkoutsByRoutine(Long routineId) {
-        workoutDao.deleteByRoutineId(routineId);
+    public List<Workout> findWorkoutsFromFollowing(Long userId) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        List<Long> userFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList(); // mis seguidos
+
+        return workoutDao.findAll().stream()
+                .filter(w ->  userFollowIds.contains(w.getUser().getId()))
+                .filter(w -> !Objects.equals(w.getUser().getId(), userId))
+                .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
+                .filter(w -> w.getEndTime() != null)
+                .filter(w -> !userBlockService.hasBlocked(w.getUser().getId(), userId)) //excluir workouts cuyos dueños me han bloqueado
+                .toList();
+    }
+
+    @Override
+    public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate){
+        return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startDate, endDate);
     }
 }

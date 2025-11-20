@@ -36,4 +36,9 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
         final Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", workoutId));
         return workoutExerciseDao.findByWorkoutId(workout.getId());
     }
+
+    @Override
+    public List<WorkoutExercise> findWorkoutExercisesByWorkoutIds(List<Long> workoutIds){
+        return workoutExerciseDao.findByWorkoutIdIn(workoutIds);
+    }
 }

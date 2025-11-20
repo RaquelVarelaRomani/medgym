@@ -1,10 +1,13 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS workout_comments;
+DROP TABLE IF EXISTS workout_likes;
 DROP TABLE IF EXISTS routine_likes;
 DROP TABLE IF EXISTS workout_exercises;
 DROP TABLE IF EXISTS routine_exercises;
 DROP TABLE IF EXISTS workouts;
 DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS user_follows;
+DROP TABLE IF EXISTS user_block;
 DROP TABLE IF EXISTS exercises;
 DROP TABLE IF EXISTS routines;
 DROP TABLE IF EXISTS users;
@@ -20,10 +23,13 @@ CREATE TABLE users (
     profile_picture MEDIUMBLOB,
     role TINYINT NOT NULL DEFAULT 0,
     status TINYINT NOT NULL DEFAULT 0,
-
-    CONSTRAINT user_id_pk PRIMARY KEY (id),
-    CONSTRAINT user_email_uk UNIQUE (email),
-    CONSTRAINT user_phone_number_uk UNIQUE (phone_number)
+    weight_kg DOUBLE NULL,
+    height_cm DOUBLE NULL,
+    gender    VARCHAR(20) NULL,
+    trainer_premium TINYINT(1) NULL DEFAULT NULL,
+    CONSTRAINT pk_user PRIMARY KEY (id),
+    CONSTRAINT uk_user_email UNIQUE (email),
+    CONSTRAINT uk_user_phone_number UNIQUE (phone_number)
 );
 
 CREATE TABLE routines (
@@ -36,8 +42,8 @@ CREATE TABLE routines (
     visibility TINYINT NOT NULL,
     difficulty TINYINT NOT NULL DEFAULT 0,
 
-    CONSTRAINT routine_id_pk PRIMARY KEY (id),
-    CONSTRAINT routine_trainer_id_fk FOREIGN KEY (trainer_id)
+    CONSTRAINT pk_routine PRIMARY KEY (id),
+    CONSTRAINT fk_routine_trainer FOREIGN KEY (trainer_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
@@ -53,8 +59,8 @@ CREATE TABLE exercises (
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     creator_id BIGINT,
 
-    CONSTRAINT exercise_id_pk PRIMARY KEY (id),
-    CONSTRAINT exercise_creator_id_fk FOREIGN KEY (creator_id)
+    CONSTRAINT pk_exercise PRIMARY KEY (id),
+    CONSTRAINT fk_exercise_creator FOREIGN KEY (creator_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
@@ -66,16 +72,16 @@ CREATE TABLE routine_exercises (
     exercise_id BIGINT NOT NULL,
     position INT,
 
-    CONSTRAINT routine_exercise_id_pk PRIMARY KEY (id),
-    CONSTRAINT routine_exercise_routine_id_fk FOREIGN KEY (routine_id)
+    CONSTRAINT pk_routine_exercise PRIMARY KEY (id),
+    CONSTRAINT fk_routine_exercise_routine FOREIGN KEY (routine_id)
         REFERENCES routines(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT routine_exercise_exercise_id_fk FOREIGN KEY (exercise_id)
+    CONSTRAINT fk_routine_exercise_exercise FOREIGN KEY (exercise_id)
         REFERENCES exercises(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT routine_exercise_routine_id_exercise_id_uk UNIQUE (routine_id, exercise_id)
+    CONSTRAINT uk_routine_exercise_routine_and_exercise UNIQUE (routine_id, exercise_id)
 );
 
 CREATE TABLE workouts (
@@ -85,12 +91,12 @@ CREATE TABLE workouts (
     routine_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
 
-    CONSTRAINT workout_id_pk PRIMARY KEY (id),
-    CONSTRAINT workout_routine_id_fk FOREIGN KEY (routine_id)
+    CONSTRAINT pk_workout PRIMARY KEY (id),
+    CONSTRAINT fk_workout_routine FOREIGN KEY (routine_id)
         REFERENCES routines (id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT workout_user_id_fk FOREIGN KEY (user_id)
+    CONSTRAINT fk_workout_user FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
@@ -104,12 +110,12 @@ CREATE TABLE workout_exercises (
     workout_id BIGINT NOT NULL,
     routine_exercise_id BIGINT NOT NULL,
 
-    CONSTRAINT workout_exercise_id_pk PRIMARY KEY (id),
-    CONSTRAINT workout_exercise_workout_id_fk FOREIGN KEY (workout_id)
+    CONSTRAINT pk_workout_exercise PRIMARY KEY (id),
+    CONSTRAINT fk_workout_exercise_workout FOREIGN KEY (workout_id)
         REFERENCES workouts(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT workout_exercise_routine_exercise_id_fk FOREIGN KEY (routine_exercise_id)
+    CONSTRAINT fk_workout_exercise_routine_exercise FOREIGN KEY (routine_exercise_id)
         REFERENCES routine_exercises(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
@@ -118,12 +124,22 @@ CREATE TABLE workout_exercises (
 CREATE TABLE user_follows (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     client_id BIGINT NOT NULL,
-    trainer_id BIGINT NOT NULL,
+    follow_user_id BIGINT NOT NULL,
 
     CONSTRAINT fk_user_follow_client FOREIGN KEY (client_id) REFERENCES users(id)
          ON DELETE CASCADE,
-    CONSTRAINT fk_user_follow_trainer FOREIGN KEY (trainer_id) REFERENCES users(id)
+    CONSTRAINT fk_user_follow_user FOREIGN KEY (follow_user_id) REFERENCES users(id)
          ON DELETE CASCADE
+);
+
+CREATE TABLE user_block (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    blocker_id BIGINT NOT NULL,
+    blocked_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (blocker_id, blocked_id),
+    FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE notifications (
@@ -135,8 +151,8 @@ CREATE TABLE notifications (
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
     date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT notification_id_pk PRIMARY KEY (id),
-    CONSTRAINT notification_user_id_fk FOREIGN KEY (user_id)
+    CONSTRAINT pk_notification PRIMARY KEY (id),
+    CONSTRAINT fk_notification_user FOREIGN KEY (user_id)
       REFERENCES users(id)
       ON UPDATE CASCADE
       ON DELETE CASCADE
@@ -147,13 +163,47 @@ CREATE TABLE routine_likes (
     routine_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
 
-    CONSTRAINT routine_likes_id_pk PRIMARY KEY (id),
-    CONSTRAINT routine_likes_routine_id_fk FOREIGN KEY (routine_id)
+    CONSTRAINT pk_routine_likes PRIMARY KEY (id),
+    CONSTRAINT fk_routine_likes_routine FOREIGN KEY (routine_id)
         REFERENCES routines(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT routine_likes_user_id_fk FOREIGN KEY (user_id)
+    CONSTRAINT fk_routine_likes_user FOREIGN KEY (user_id)
         REFERENCES users(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+);
+
+CREATE TABLE workout_likes (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    workout_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+
+    CONSTRAINT pk_workout_likes PRIMARY KEY (id),
+    CONSTRAINT fk_workout_likes_workout FOREIGN KEY (workout_id)
+       REFERENCES workouts(id)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    CONSTRAINT fk_workout_likes_user FOREIGN KEY (user_id)
+       REFERENCES users(id)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
+);
+
+CREATE TABLE workout_comments (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    text TEXT NOT NULL,
+    date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    workout_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+
+    CONSTRAINT pk_workout_comments PRIMARY KEY (id),
+    CONSTRAINT fk_workout_comments_workout FOREIGN KEY (workout_id)
+       REFERENCES workouts(id)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE,
+    CONSTRAINT fk_workout_comments_user FOREIGN KEY (user_id)
+       REFERENCES users(id)
+       ON UPDATE CASCADE
+       ON DELETE CASCADE
 );

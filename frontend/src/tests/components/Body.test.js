@@ -159,14 +159,14 @@ describe("Body Component", () => {
     expect(screen.getByTestId("layout")).toBeInTheDocument();
   });
 
-  test("renders FollowersPage component for /users/followers", () => {
-    renderWithRouter(["/users/followers"]);
+  test("renders FollowersPage component for /users/followers/1", () => {
+    renderWithRouter(["/users/followers/1"]);
     expect(screen.getByTestId("followers-page")).toBeInTheDocument();
     expect(screen.getByTestId("layout")).toBeInTheDocument();
   });
 
-  test("renders Profile component for /users/profile", () => {
-    renderWithRouter(["/users/profile"]);
+  test("renders Profile component for /users/profile/1", () => {
+    renderWithRouter(["/users/profile/1"]);
     expect(screen.getByTestId("profile")).toBeInTheDocument();
     expect(screen.getByTestId("layout")).toBeInTheDocument();
   });

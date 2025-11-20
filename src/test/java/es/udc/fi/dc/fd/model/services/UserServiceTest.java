@@ -1,6 +1,8 @@
 package es.udc.fi.dc.fd.model.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,4 +81,47 @@ public class UserServiceTest {
 		assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
 
 	}
+
+    @Test
+    public void testSignUpDuplicateEmail() throws DuplicateInstanceException {
+        User user = createUser("dup@test.com", "600111111");
+        userService.signUp(user);
+
+        User user2 = createUser("dup@test.com", "600222222");
+        assertThrows(DuplicateInstanceException.class, () -> {
+            userService.signUp(user2);
+        });
+    }
+
+    @Test
+    public void testLoginIncorrectPassword() throws DuplicateInstanceException {
+        User user = createUser("login@test.com", "600333333");
+        userService.signUp(user);
+
+        assertThrows(es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException.class, () -> {
+            userService.login("login@test.com", "wrongpassword");
+        });
+    }
+
+    @Test
+    public void testSetTrainerPremium_Ok() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+        User trainer = createUser("trainer@test.com", "600444444");
+        userService.signUp(trainer);
+        trainer.setRole(User.RoleType.TRAINER);
+
+        userService.setTrainerPremium(trainer.getId(), true);
+
+        User updatedTrainer = userService.findUserById(trainer.getId());
+        assertEquals(true, updatedTrainer.getTrainerPremium());
+    }
+
+    @Test
+    public void testSetTrainerPremium_PermissionDenied() throws DuplicateInstanceException {
+        User client = createUser("client@test.com", "600555555");
+        userService.signUp(client);
+
+        assertThrows(PermissionException.class, () -> {
+            userService.setTrainerPremium(client.getId(), true);
+        });
+    }
 }

@@ -1,3 +1,19 @@
+.search-button {
+    scale: 1.2;
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.search-button:hover {
+    transform: scale(1.05);
+}
+
 .notification-button {
     position: relative;
     background: none;

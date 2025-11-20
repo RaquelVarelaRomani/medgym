@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import es.udc.fi.dc.fd.model.entities.Exercise;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.RoutineLikeDao;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 
@@ -30,8 +32,12 @@ public class RoutineServiceImpl implements RoutineService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private RoutineLikeDao routineLikeDao;
+
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
+    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility,
+            Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
@@ -40,7 +46,7 @@ public class RoutineServiceImpl implements RoutineService {
 
         routine = routineDao.save(routine);
 
-        notificationService.createNewRoutineNotification(routine);
+        notificationService.createNewRoutineNotification(routine.getId());
 
         return routine;
     }
@@ -53,7 +59,8 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public Routine findRoutineByIdAuth(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
+    public Routine findRoutineByIdAuth(Long userId, Long routineId)
+            throws InstanceNotFoundException, PermissionException {
         Optional<Routine> opRoutine = routineDao.findById(routineId);
 
         if (opRoutine.isEmpty()) {
@@ -72,7 +79,8 @@ public class RoutineServiceImpl implements RoutineService {
     }
 
     @Override
-    public void updateRoutine(Long userId, Long routineId, String name, String description, Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
+    public void updateRoutine(Long userId, Long routineId, String name, String description,
+            Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
@@ -101,6 +109,7 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         notificationService.deleteNotificationsByIdToRedirect(routineId);
+        routineLikeDao.deleteByRoutineId(routineId);
 
         routineDao.delete(routine);
     }
@@ -121,7 +130,8 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup, Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+    public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup,
+            Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 
@@ -138,7 +148,7 @@ public class RoutineServiceImpl implements RoutineService {
             Set<Routine> equipmentRoutines = new HashSet<>();
 
             for (String equip : equipmentList) {
-                equipmentRoutines.addAll(routineDao.findByEquipment(equip.trim()));
+                equipmentRoutines.addAll(routineDao.findByEquipment(Exercise.Equipment.valueOf(equip.trim())));
             }
 
             routines = routines.stream()
@@ -152,7 +162,7 @@ public class RoutineServiceImpl implements RoutineService {
             Set<Routine> muscleGroupRoutines = new HashSet<>();
 
             for (String group : muscleGroupList) {
-                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(group.trim()));
+                muscleGroupRoutines.addAll(routineDao.findByMuscleGroup(Exercise.MuscleGroup.valueOf(group.trim())));
             }
 
             routines = routines.stream()

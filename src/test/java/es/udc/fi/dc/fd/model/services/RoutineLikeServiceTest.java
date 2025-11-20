@@ -49,13 +49,13 @@ public class RoutineLikeServiceTest {
 
         routineLikeService.likeRoutine(user.getId(), routine.getId());
 
-        List<RoutineLike> likes = routineLikeService.getLikesByUser(user.getId());
+        List<RoutineLike> likes = routineLikeService.getRoutineLikesByUser(user.getId());
         assertEquals(1, likes.size());
         assertEquals(routine.getId(), likes.get(0).getRoutine().getId());
     }
 
     @Test
-    public void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException {
+    public void testGetRoutineLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException {
         User user = userDao.save(new User("u2", "n3", "u2@test.com", "600000003",
                 "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("t2", "n4", "t2@test.com", "600000004",
@@ -69,7 +69,7 @@ public class RoutineLikeServiceTest {
         routineLikeService.likeRoutine(user.getId(), r1.getId());
         routineLikeService.likeRoutine(user.getId(), r2.getId());
 
-        List<RoutineLike> likes = routineLikeService.getLikesByUser(user.getId());
+        List<RoutineLike> likes = routineLikeService.getRoutineLikesByUser(user.getId());
         assertEquals(2, likes.size());
         assertTrue(likes.stream().anyMatch(l -> l.getRoutine().getId().equals(r1.getId())));
         assertTrue(likes.stream().anyMatch(l -> l.getRoutine().getId().equals(r2.getId())));
@@ -87,9 +87,38 @@ public class RoutineLikeServiceTest {
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         routineLikeService.likeRoutine(user.getId(), routine.getId());
-        assertEquals(1, routineLikeService.getLikesByUser(user.getId()).size());
+        assertEquals(1, routineLikeService.getRoutineLikesByUser(user.getId()).size());
 
         routineLikeService.unlikeRoutine(user.getId(), routine.getId());
-        assertTrue(routineLikeService.getLikesByUser(user.getId()).isEmpty());
+        assertTrue(routineLikeService.getRoutineLikesByUser(user.getId()).isEmpty());
     }
+
+    @Test
+    public void testLikeRoutineNonExistentRoutine() {
+        User user = userDao.save(new User("ux", "nx", "ux@test.com", "600000010",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
+        assertThrows(InstanceNotFoundException.class, () ->
+                routineLikeService.likeRoutine(user.getId(), 999L));
+    }
+
+    @Test
+    public void testUnlikeRoutineNotLiked() throws InstanceNotFoundException, DuplicateInstanceException {
+        User user = userDao.save(new User("uy", "ny", "uy@test.com", "600000011",
+                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("ty", "ny2", "ty@test.com", "600000012",
+                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+
+        Routine routine = routineService.createRoutine(
+                "Rutina X", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        // No like previo
+        routineLikeService.unlikeRoutine(user.getId(), routine.getId());
+
+        // Sigue sin likes, no error
+        assertTrue(routineLikeService.getRoutineLikesByUser(user.getId()).isEmpty());
+    }
+
+
 }
