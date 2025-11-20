@@ -38,8 +38,7 @@ public class RoutineServiceImpl implements RoutineService {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        List<Routine> routines = findAllRoutines(user.getId());
-        int nRoutines = findAllRoutines(user.getId()).size();
+        int nRoutines = routineDao.findByTrainerId(user.getId()).size();
 
         if (!(
                 user.getRole() == User.RoleType.ADMIN || // admin
@@ -125,12 +124,14 @@ public class RoutineServiceImpl implements RoutineService {
     @Transactional(readOnly = true)
     public List<Routine> findAllRoutines(Long userId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
+        List<Routine> routines = routineDao.findAll();
 
         if (user.getRole() == User.RoleType.ADMIN) {
-            return routineDao.findAll();
+            return routines;
         }
 
-        return routineDao.findByTrainerId(userId);
+        return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
+                .collect(Collectors.toList());
     }
 
 
