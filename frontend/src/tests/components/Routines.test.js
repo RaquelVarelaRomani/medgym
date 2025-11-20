@@ -6534,7 +6534,7 @@ describe("Routines Components", () => {
 
             test("navigates to create exercise", async () => {
                 tryLoginFromServiceToken.mockImplementation((success) => {
-                    success({user: {id: 1, role: "TRAINER"}});
+                    success({user: {id: 1, role: "TRAINER", trainerPremium: true}});
                 });
 
                 exerciseService.getAllExercises.mockImplementation((success) => {
