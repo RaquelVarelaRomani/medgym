@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Exercises.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import {becomePremium, tryLoginFromServiceToken} from "../../../../backend/userService";
 import * as exerciseService from "../../../../backend/exerciseService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
 import { p } from "framer-motion/client";
+import GoPremiumPopup from "../common/popup/GoPremiumPopup";
 
 
 const Exercises = () => {
@@ -18,6 +19,7 @@ const Exercises = () => {
     const [viewMode, setViewMode] = useState("approved");
     const [loading, setLoading] = useState(true);
     const [deleteError, setDeleteError] = useState(null);
+    const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
 
 
     useEffect(() => {
@@ -38,10 +40,6 @@ const Exercises = () => {
     }, [viewMode, currentUser]);
 
     const isAdmin = (user = currentUser) => user?.role === "ADMIN";
-
-    const canAddExercise = () => {
-        return currentUser?.role === "ADMIN" || currentUser?.role === "TRAINER";
-    };
 
     //Determina si un usuario puede editar o eliminar un ejercicio
     const canEditOrDelete = (exercise) => {
@@ -168,6 +166,11 @@ const Exercises = () => {
     };
 
     const handleAddExercise = () => {
+        if (currentUser.role === "TRAINER" && !currentUser.trainerPremium) {
+            setShowGoPremiumPopup(true);
+            return;
+        }
+
         navigate("/exercises/new");
     };
 
@@ -270,7 +273,7 @@ const Exercises = () => {
                 ))}
             </div>
 
-            {canAddExercise() && (
+            {(currentUser?.role === "TRAINER" || currentUser?.role === "ADMIN") && (
                 <button className={styles["boton-crear"]} onClick={handleAddExercise}>
                     +
                 </button>
@@ -303,6 +306,28 @@ const Exercises = () => {
                     onOk={() => setDeleteError(null)}
                 />
             )}
+
+            <GoPremiumPopup
+                show={showGoPremiumPopup}
+                text={"La creación de ejercicios es una función premium."}
+                onOk={() => {
+                    becomePremium(
+                        currentUser.id,
+                        () => {
+                            setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
+                            setShowGoPremiumPopup(false);
+                            navigate("/users/profile/" + currentUser.id, { replace: true });
+                        },
+                        (err) => {
+                            alert("Error becoming premium: " + err);
+                        }
+                    );
+                }}
+                onCancel={() => {
+                    setShowGoPremiumPopup(false);
+                    navigate("/exercises")
+                }}
+            />
 
         </div>
     );

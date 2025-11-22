@@ -9,6 +9,7 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.entities.WorkoutDao;
 import es.udc.fi.dc.fd.model.services.WorkoutLikeService;
 import es.udc.fi.dc.fd.model.services.RoutineService;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
@@ -81,7 +82,7 @@ public class WorkoutLikeControllerTest {
         return userController.login(loginParams);
     }
 
-    private Workout createWorkoutFor(User performer) throws InstanceNotFoundException, DuplicateInstanceException {
+    private Workout createWorkoutFor(User performer) throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
                 "Rutina test", "desc", trainer,

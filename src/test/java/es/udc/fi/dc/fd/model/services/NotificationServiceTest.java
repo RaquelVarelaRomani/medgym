@@ -1,5 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.runner.RunWith;
@@ -39,11 +40,12 @@ public class NotificationServiceTest {
     private WorkoutService workoutService;
 
     @Test
-    public void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException {
+    public void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User client = userDao.save(new User("clientA", "clientA", "clientA@test.com",
                 "600000001", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("trainerA", "trainerA", "trainerA@test.com",
                 "600000002", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         userFollowService.followUser(client.getId(), trainer.getId());
 
@@ -78,11 +80,12 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testCreateRoutineLikeNotification() throws DuplicateInstanceException, InstanceNotFoundException {
+    public void testCreateRoutineLikeNotification() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User client = userDao.save(new User("clientC", "clientC", "clientC@test.com",
                 "600000005", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("trainerC", "trainerC", "trainerC@test.com",
                 "600000006", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         Routine routine = routineService.createRoutine(
                 "LikeRoutine", "desc", trainer,
@@ -101,11 +104,12 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testMarkNotificationAsRead() throws InstanceNotFoundException, DuplicateInstanceException {
+    public void testMarkNotificationAsRead() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User client = userDao.save(new User("clientD", "clientD", "clientD@test.com",
                 "600000007", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("trainerD", "trainerD", "trainerD@test.com",
                 "600000008", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineD", "desc", trainer,
@@ -123,11 +127,12 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testDeleteNotification() throws InstanceNotFoundException, DuplicateInstanceException {
+    public void testDeleteNotification() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User client = userDao.save(new User("clientE", "clientE", "clientE@test.com",
                 "600000009", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("trainerE", "trainerE", "trainerE@test.com",
                 "600000010", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         userFollowService.followUser(client.getId(), trainer.getId());
         routineService.createRoutine("routineE", "desc", trainer,
@@ -143,9 +148,10 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void testCreateWorkoutLikeNotification() throws Exception {
+    public void testCreateWorkoutLikeNotification() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User u1 = userDao.save(new User("u1","u1","u1@test.com","600000011","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User u2 = userDao.save(new User("u2","u2","u2@test.com","600000012","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User u2 = userDao.save(new User("u2","u2","u2@test.com","600000012","pass",null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        u2.setTrainerPremium(true);
 
         Routine r = routineService.createRoutine("R1","d",u2,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -162,7 +168,8 @@ public class NotificationServiceTest {
     @Test
     public void testCreateWorkoutCommentNotification() throws Exception {
         User u1 = userDao.save(new User("u1c","u1c","u1c@test.com","600000013","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User u2 = userDao.save(new User("u2c","u2c","u2c@test.com","600000014","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User u2 = userDao.save(new User("u2c","u2c","u2c@test.com","600000014","pass",null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        u2.setTrainerPremium(true);
 
         Routine r = routineService.createRoutine("R2","d",u2,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -180,6 +187,7 @@ public class NotificationServiceTest {
     public void testDeleteNotificationsByIdToRedirect() throws Exception {
         User u = userDao.save(new User("uX","uX","uX@test.com","600000015","pass",null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User t = userDao.save(new User("tX","tX","tX@test.com","600000016","pass",null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        t.setTrainerPremium(true);
 
         userFollowService.followUser(u.getId(), t.getId());
         Routine r = routineService.createRoutine("R3","d",t,
