@@ -50,7 +50,6 @@ import * as routineExerciseService from "../../backend/routineExerciseService";
 import * as workoutService from "../../backend/workoutService";
 import * as userFollowService from "../../backend/userFollowService";
 import * as routineLikeService from "../../backend/routineLikeService";
-import * as userService from "../../backend/userService";
 
 const mockNavigate = jest.fn();
 
@@ -61,10 +60,8 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../../backend/userService", () => ({
-    tryLoginFromServiceToken: jest.fn(),
-    becomePremium: jest.fn(),
+  tryLoginFromServiceToken: jest.fn(),
 }));
-
 
 jest.mock("../../backend/exerciseService", () => ({
     createExercise: jest.fn(),
@@ -729,6 +726,9 @@ describe("Routines Components", () => {
 
     describe("CreateRoutine Component", () => {
         test("renders loading state initially", () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                 },
@@ -744,36 +744,37 @@ describe("Routines Components", () => {
         });
 
         test("renders form after loading exercises", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
-            exerciseService.getExercisesByStatus.mockImplementation((status, success) => {
-                success({
-                    content: [{ id: 1, name: "Exercise 1", status: "APPROVED" }]
-                });
-            });
+            exerciseService.getExercisesByStatus.mockImplementation(
+                (status, success) => {
+                    success({
+                        content: [{id: 1, name: "Exercise 1", status: "APPROVED"}],
+                    });
+                },
+            );
 
             render(
                 <MemoryRouter>
-                    <CreateRoutine />
-                </MemoryRouter>
+                    <CreateRoutine/>
+                </MemoryRouter>,
             );
 
             await waitFor(() => {
                 expect(
-                    screen.getByText("Estás creando una nueva rutina...")
+                    screen.getByText("Estás creando una nueva rutina..."),
                 ).toBeInTheDocument();
-
                 expect(
-                    screen.getByPlaceholderText("Escriba aquí el título de la rutina.")
+                    screen.getByPlaceholderText("Escriba aquí el título de la rutina."),
                 ).toBeInTheDocument();
             });
         });
 
         test("adds and removes exercises", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -799,8 +800,8 @@ describe("Routines Components", () => {
         });
 
         test("saves routine successfully", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -846,8 +847,8 @@ describe("Routines Components", () => {
         });
 
         test("handles error in loading exercises", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -871,8 +872,8 @@ describe("Routines Components", () => {
         });
 
         test("retries loading exercises on button click", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -895,8 +896,8 @@ describe("Routines Components", () => {
         });
 
         test("shows title error for long title", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -925,8 +926,8 @@ describe("Routines Components", () => {
         });
 
         test("shows title error on save without title", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -953,8 +954,8 @@ describe("Routines Components", () => {
         });
 
         test("removes exercise", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -984,8 +985,8 @@ describe("Routines Components", () => {
         });
 
         test("moves exercise up and down", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -1017,8 +1018,8 @@ describe("Routines Components", () => {
         });
 
         test("navigates on cancel", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -1043,8 +1044,8 @@ describe("Routines Components", () => {
         });
 
         test("selects exercise from dropdown", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -1080,8 +1081,8 @@ describe("Routines Components", () => {
         });
 
         test("handles save error", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -1120,8 +1121,8 @@ describe("Routines Components", () => {
         });
 
         test("handles outside click to close exercise search dropdown", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
@@ -1160,8 +1161,8 @@ describe("Routines Components", () => {
         });
 
         test("handles trainer ID retrieval from sessionStorage", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             const mockGetItem = jest.spyOn(Storage.prototype, "getItem");
@@ -1206,8 +1207,8 @@ describe("Routines Components", () => {
         });
 
         test("handles routine exercise creation errors", async () => {
-            tryLoginFromServiceToken.mockImplementation((success, error) => {
-                success({ user: { id: 1, trainerPremium: true }});
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
             });
 
             exerciseService.getExercisesByStatus.mockImplementation(
