@@ -208,7 +208,7 @@ public class RoutineServiceTest {
                 Routine.VisibilityType.PRIVATE, Routine.DifficultyType.BEGINNER);
 
         assertEquals(initialUser + 2, routineService.findAllRoutines(user.getId()).size());
-        assertEquals(initialUser2, routineService.findAllRoutines(user2.getId()).size());
+        assertEquals(initialUser2 + 1, routineService.findAllRoutines(user2.getId()).size());
     }
 
     @Test

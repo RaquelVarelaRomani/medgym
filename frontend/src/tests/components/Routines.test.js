@@ -726,6 +726,9 @@ describe("Routines Components", () => {
 
     describe("CreateRoutine Component", () => {
         test("renders loading state initially", () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                 },
@@ -741,6 +744,10 @@ describe("Routines Components", () => {
         });
 
         test("renders form after loading exercises", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -766,6 +773,10 @@ describe("Routines Components", () => {
         });
 
         test("adds and removes exercises", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -789,6 +800,10 @@ describe("Routines Components", () => {
         });
 
         test("saves routine successfully", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -832,6 +847,10 @@ describe("Routines Components", () => {
         });
 
         test("handles error in loading exercises", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success, error) => {
                     error("Error loading exercises");
@@ -853,6 +872,10 @@ describe("Routines Components", () => {
         });
 
         test("retries loading exercises on button click", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success, error) => {
                     error("Error loading exercises");
@@ -873,6 +896,10 @@ describe("Routines Components", () => {
         });
 
         test("shows title error for long title", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -899,6 +926,10 @@ describe("Routines Components", () => {
         });
 
         test("shows title error on save without title", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -923,6 +954,10 @@ describe("Routines Components", () => {
         });
 
         test("removes exercise", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -950,6 +985,10 @@ describe("Routines Components", () => {
         });
 
         test("moves exercise up and down", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -979,6 +1018,10 @@ describe("Routines Components", () => {
         });
 
         test("navigates on cancel", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -1001,6 +1044,10 @@ describe("Routines Components", () => {
         });
 
         test("selects exercise from dropdown", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -1034,6 +1081,10 @@ describe("Routines Components", () => {
         });
 
         test("handles save error", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -1070,6 +1121,10 @@ describe("Routines Components", () => {
         });
 
         test("handles outside click to close exercise search dropdown", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
@@ -1106,6 +1161,10 @@ describe("Routines Components", () => {
         });
 
         test("handles trainer ID retrieval from sessionStorage", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             const mockGetItem = jest.spyOn(Storage.prototype, "getItem");
             mockGetItem.mockReturnValue(JSON.stringify({id: 123}));
 
@@ -1148,6 +1207,10 @@ describe("Routines Components", () => {
         });
 
         test("handles routine exercise creation errors", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: { id: 1, username: 'testuser' }});
+            });
+
             exerciseService.getExercisesByStatus.mockImplementation(
                 (status, success) => {
                     success({
