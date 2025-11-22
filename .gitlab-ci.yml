@@ -1,5 +1,18 @@
 stages:
+  - build
   - sonar
+
+build-backend:
+  stage: build
+  image: maven:3.9-eclipse-temurin-17
+  script:
+    - mvn -f pom.xml clean compile -DskipTests
+  artifacts:
+    paths:
+      - target
+    expire_in: 1h
+  only:
+    - test/manual-analysis
 
 sonarqube-check:
   stage: sonar
@@ -11,9 +24,12 @@ sonarqube-check:
   script:
     - sonar-scanner
       -Dsonar.projectKey=es.udc.fi.dc.fd:medgym
-      -Dsonar.sources=.
+      -Dsonar.sources="src/main/java,frontend/src"
+      -Dsonar.java.binaries=target/classes
       -Dsonar.host.url=https://sonar.fic.udc.es
       -Dsonar.login=$SONAR_TOKEN
       -Dsonar.branch.name=test/manual-analysis
+  dependencies:
+    - build-backend
   only:
     - test/manual-analysis
