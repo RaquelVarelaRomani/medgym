@@ -4,6 +4,8 @@ stages:
 
 build-backend:
   stage: build
+  tags:
+    - sonar
   image: maven:3.9-eclipse-temurin-17
   script:
     - mvn -f pom.xml clean compile -DskipTests
@@ -24,7 +26,7 @@ sonarqube-check:
   script:
     - sonar-scanner
       -Dsonar.projectKey=es.udc.fi.dc.fd:medgym
-      -Dsonar.sources="src/main/java,frontend/src"
+      -Dsonar.sources=src/main/java,frontend/src
       -Dsonar.java.binaries=target/classes
       -Dsonar.host.url=https://sonar.fic.udc.es
       -Dsonar.login=$SONAR_TOKEN
