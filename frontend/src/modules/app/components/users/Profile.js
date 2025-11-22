@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import styles from "./Profile.module.css";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-    logout,
     tryLoginFromServiceToken,
     getUser,
     becomePremium
@@ -15,7 +14,6 @@ import {
     followTrainer,
     unfollowTrainer
 } from "../../../../backend/userFollowService";
-import { getWorkoutsByUser } from "../../../../backend/workoutService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";

@@ -244,7 +244,7 @@ public class ExerciseServiceTest {
         Exercise e1 = createBasicExercise(t, "e1");
 
         var list = exerciseService.findExercisesWithPendingStatus();
-        assertEquals(initial + 3, list.size());
+        assertEquals(initial + 1, list.size());
         assertTrue(list.stream().anyMatch(x -> x.getId().equals(e1.getId())));
     }
 

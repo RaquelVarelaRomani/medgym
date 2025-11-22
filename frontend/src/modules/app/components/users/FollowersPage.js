@@ -14,10 +14,7 @@ const FollowersPage = () => {
 
     useEffect(() => {
         tryLoginFromServiceToken(
-        (data) => {
-            const user = data.user;
-            setCurrentUser(user);
-
+        () => {
             getFollowers(
             id,
             (followersData) => {

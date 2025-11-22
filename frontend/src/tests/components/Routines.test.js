@@ -2450,48 +2450,32 @@ describe("Routines Components", () => {
         test("handles exerciseService.getAllExercises error", async () => {
             routineService.getRoutine.mockImplementation((id, success) => {
                 success({
-                    content: [
-                        {
-                            name: "Test Routine",
-                            description: "Desc",
-                            visibility: "PUBLIC",
-                            difficulty: "INTERMEDIATE",
-                        },
-                    ],
+                    content: [{
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    }],
                 });
             });
 
-            routineExerciseService.getRoutineExercises.mockImplementation(
-                (id, success) => {
-                    success({content: []});
-                },
-            );
+            routineExerciseService.getRoutineExercises.mockImplementation((id, success) => {
+                success({ content: [] });
+            });
 
             exerciseService.getAllExercises.mockImplementation((success, error) => {
                 error("Load exercises error");
             });
 
-            const consoleSpy = jest
-                .spyOn(console, "error")
-                .mockImplementation(() => {
-                });
-
             render(
                 <MemoryRouter initialEntries={["/routines/edit/1"]}>
                     <Routes>
-                        <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                        <Route path="/routines/edit/:id" element={<EditRoutine />} />
                     </Routes>
-                </MemoryRouter>,
+                </MemoryRouter>
             );
 
-            await waitFor(() => {
-                expect(consoleSpy).toHaveBeenCalledWith(
-                    "Error loading exercises:",
-                    "Load exercises error",
-                );
-            });
-
-            consoleSpy.mockRestore();
+            await screen.findByText("Error al cargar los ejercicios disponibles: Load exercises error");
         });
 
         test("handles console.log in handleInputChange", async () => {

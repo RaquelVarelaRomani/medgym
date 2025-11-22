@@ -22,7 +22,6 @@ const UserModeration = () => {
                     navigate("/");
                     return;
                 }
-                setCurrentUser(authenticatedUser.user);
                 fetchUsers();
             },
             () => {

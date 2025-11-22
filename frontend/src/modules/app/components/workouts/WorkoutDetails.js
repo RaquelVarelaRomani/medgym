@@ -110,8 +110,7 @@ const WorkoutDetails = () => {
 
     useEffect(() => {
         tryLoginFromServiceToken(
-            (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);
+            () => {
                 loadWorkoutDetails();
             },
             () => {

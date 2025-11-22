@@ -36,7 +36,7 @@ export default function EditRoutine() {
                 const arr = data.content || data;
                 setAvailableExercises(arr.sort((a, b) => a.name.localeCompare(b.name)));
             },
-            () => setError("Error al cargar los ejercicios disponibles")
+            (err) => setError("Error al cargar los ejercicios disponibles: " + err)
         );
     };
 
@@ -112,7 +112,13 @@ export default function EditRoutine() {
 
     const changeInput = (e) => {
         const { name, value } = e.target;
-        setRoutineData(prev => ({ ...prev, [name]: value }));
+
+        setRoutineData(prev => {
+            const updated = { ...prev, [name]: value };
+            console.log("New routineData:", updated);
+            return updated;
+        });
+
         if (name === "titulo" && value.length > 50) setTitleError("El título es demasiado grande");
         else setTitleError("");
     };
@@ -122,6 +128,9 @@ export default function EditRoutine() {
         copy[index][field] = field === "position"
             ? (value === "" ? null : Number(value))
             : value;
+
+        console.log("New exercises:", copy);
+
         setExercises(copy);
     };
 
@@ -376,14 +385,15 @@ function ExerciseItem({
                 type="button"
                 className={styles["boton-eliminar-ejercicio"]}
                 onClick={() => removeExercise(index)}
+                title="Eliminar ejercicio"
+                aria-label="Eliminar ejercicio"
             >
                 <img
                     src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
-                    alt=""
+                    alt="Eliminar ejercicio"
                     className={styles["icono-papelera"]}
                 />
             </button>
-
             <div
                 className={styles["ejercicio-input-container"]}
                 ref={el => inputContainerRefs.current[index] = el}

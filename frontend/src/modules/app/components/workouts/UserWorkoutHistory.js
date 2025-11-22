@@ -17,8 +17,7 @@ const UserWorkoutHistory = ({ id }) => {
 
     useEffect(() => {
         tryLoginFromServiceToken(
-            (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);
+            () => {
                 loadWorkoutHistory();
             },
             () => navigate("/users/login")
