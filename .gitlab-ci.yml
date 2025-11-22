@@ -4,6 +4,8 @@ stages:
 
 sonarqube-check:
   stage: sonar
+  tags:
+    - sonar
   image:
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
@@ -16,5 +18,3 @@ sonarqube-check:
       -Dsonar.branch.name=test/manual-analysis
   only:
     - test/manual-analysis
-
-
