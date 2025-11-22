@@ -9,16 +9,18 @@ public class WorkoutCommentConversor {
     private WorkoutCommentConversor() {}
 
     public static WorkoutCommentDto toWorkoutCommentDto(WorkoutComment workoutComment) {
-        return new WorkoutCommentDto(
-                workoutComment.getId(),
-                workoutComment.getText(),
-                workoutComment.getDate(),
-                workoutComment.getUser().getId(),
-                workoutComment.getWorkout().getId(),
-                workoutComment.getUser().getName(),
-                workoutComment.getUser().getSurname(),
-                workoutComment.getUser().getProfilePicture()
-        );
+        WorkoutCommentDto workoutCommentDto = new WorkoutCommentDto();
+
+        workoutCommentDto.setId(workoutComment.getId());
+        workoutCommentDto.setText(workoutComment.getText());
+        workoutCommentDto.setDate(workoutComment.getDate());
+        workoutCommentDto.setUserId(workoutComment.getUser().getId());
+        workoutCommentDto.setWorkoutId(workoutComment.getWorkout().getId());
+        workoutCommentDto.setUserName(workoutComment.getUser().getName());
+        workoutCommentDto.setUserSurname(workoutComment.getUser().getSurname());
+        workoutCommentDto.setUserProfilePicture(workoutComment.getUser().getProfilePicture());
+
+        return workoutCommentDto;
     }
 
     public static List<WorkoutCommentDto> toWorkoutCommentDtos(List<WorkoutComment> workoutComments) {

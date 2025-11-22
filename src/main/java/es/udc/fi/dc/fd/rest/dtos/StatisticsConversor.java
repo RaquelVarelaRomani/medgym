@@ -7,9 +7,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class StatisticsConversor {
+
+    private StatisticsConversor() {}
 
     public static final StatisticsDto toStatisticsDto(List<Workout> workouts, List<WorkoutExercise> performedExercises){
         int workoutCount = workouts.size();

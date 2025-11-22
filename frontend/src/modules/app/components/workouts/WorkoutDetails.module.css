@@ -1,13 +1,18 @@
-/* main container */
 .contenedor-workout-details {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     min-height: 100vh;
+
     background: var(--bg-primary);
     padding: 2rem;
     box-sizing: border-box;
+
+    /* del segundo bloque */
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
 }
 
 .caja-workout-details {
@@ -369,12 +374,4 @@
     box-shadow:
             0 0 20px rgba(255, 107, 53, 0.6),
             0 0 40px rgba(255, 107, 53, 0.4);
-}
-
-/* loading section */
-.contenedor-workout-details {
-    color: var(--text-secondary);
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    text-align: center;
-    padding: 4rem 2rem;
 }

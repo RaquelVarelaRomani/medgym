@@ -34,6 +34,7 @@ spec:
         version: 0.1-SNAPSHOT
         group: es.udc.fi.dc.fd
     spec:
+      automountServiceAccountToken: false
       containers:
       - env:
         - name: KUBERNETES_NAMESPACE
@@ -49,6 +50,12 @@ spec:
         name: deploy-medgym
         securityContext:
           privileged: false
+        resources:
+          limits:
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
         ports:
         - containerPort: 8080
       imagePullSecrets:

@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./GoPremiumPopup.module.css";
+import PropTypes from "prop-types";
 
 function GoPremiumPopup({ show, text, onOk, onCancel }) {
     if (!show) return null;
@@ -26,3 +27,10 @@ function GoPremiumPopup({ show, text, onOk, onCancel }) {
 }
 
 export default GoPremiumPopup;
+
+GoPremiumPopup.propTypes = {
+    show: PropTypes.bool.isRequired,
+    text: PropTypes.string.isRequired,
+    onOk: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
+}

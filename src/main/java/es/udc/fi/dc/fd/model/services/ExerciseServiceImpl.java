@@ -44,7 +44,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         // Si el usuario es ADMIN → se aprueba directamente
         if (user.getRole() == User.RoleType.ADMIN) {
             status = Exercise.ExerciseStatus.APPROVED;
-        } else if (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) {
+        } else if (user.getRole() == User.RoleType.TRAINER && Boolean.TRUE.equals(user.getTrainerPremium())) {
             status = ExerciseStatus.PENDING;
         } else {
             throw new PermissionException();

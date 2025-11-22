@@ -8,7 +8,6 @@ import LoadingMessage from "../common/LoadingMessage";
 
 const UserModeration = () => {
     const navigate = useNavigate();
-    const [currentUser, setCurrentUser] = useState(null);
     const [users, setUsers] = useState([]);
     const [userToBlock, setUserToBlock] = useState(null);
     const [userToUnblock, setUserToUnblock] = useState(null);

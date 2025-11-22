@@ -116,8 +116,8 @@ public class WorkoutServiceTest {
 
     @Test
     public void testFindWorkoutsFromUserreturnsWorkouts() {
-        Workout w1 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
-        Workout w2 = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
+        assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
 
         List<Workout> workouts = workoutService.findWorkoutsFromUser(user.getId());
 
@@ -206,9 +206,9 @@ public class WorkoutServiceTest {
 
     @Test
     public void testStartWorkoutNonExistentRoutine() {
-        User user = userDao.save(new User("u", "n", "u@test.com", "600", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User user1 = userDao.save(new User("u", "n", "u@test.com", "600", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
         assertThrows(InstanceNotFoundException.class, () ->
-                workoutService.startWorkout(999L, user.getId())
+                workoutService.startWorkout(999L, user1.getId())
         );
     }
 
@@ -217,15 +217,15 @@ public class WorkoutServiceTest {
         User trainer = userDao.save(new User("t", "n", "t@test.com", "601", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c", "n", "c@test.com", "602", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
-        Routine routine = routineService.createRoutine("R", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Routine routine1 = routineService.createRoutine("R", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        Workout w = workoutService.startWorkout(routine.getId(), client.getId());
+        Workout w = workoutService.startWorkout(routine1.getId(), client.getId());
 
         assertNotNull(w.getId());
         assertNotNull(w.getStartTime());
         assertNull(w.getEndTime());
         assertEquals(client.getId(), w.getUser().getId());
-        assertEquals(routine.getId(), w.getRoutine().getId());
+        assertEquals(routine1.getId(), w.getRoutine().getId());
     }
 
     @Test
@@ -233,8 +233,8 @@ public class WorkoutServiceTest {
         User trainer = userDao.save(new User("t2", "n", "t2@test.com", "603", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c2", "n", "c2@test.com", "604", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
-        Routine routine = routineService.createRoutine("R2", "d2", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        Workout w = workoutService.startWorkout(routine.getId(), client.getId());
+        Routine routine1 = routineService.createRoutine("R2", "d2", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Workout w = workoutService.startWorkout(routine1.getId(), client.getId());
 
         workoutService.finishWorkout(w.getId());
 
@@ -252,9 +252,9 @@ public class WorkoutServiceTest {
         User trainer = userDao.save(new User("t3", "n", "t3@test.com", "605", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c3", "n", "c3@test.com", "606", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
-        Routine routine = routineService.createRoutine("R3", "d3", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Routine routine1 = routineService.createRoutine("R3", "d3", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        workoutService.startWorkout(routine.getId(), client.getId());
+        workoutService.startWorkout(routine1.getId(), client.getId());
         List<Workout> list = workoutService.findWorkoutsFromUser(client.getId());
 
         assertEquals(1, list.size());
@@ -269,8 +269,8 @@ public class WorkoutServiceTest {
 
         userFollowService.followUser(client1.getId(), trainer.getId());
 
-        Routine routine = routineService.createRoutine("RF", "dF", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        workoutService.startWorkout(routine.getId(), client2.getId());
+        Routine routine1 = routineService.createRoutine("RF", "dF", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        workoutService.startWorkout(routine1.getId(), client2.getId());
 
         List<Workout> list = workoutService.findWorkoutsFromFollowing(client1.getId());
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./NotificationIcon.module.css";
 import * as notificationService from "../../../../../backend/notificationService";
+import PropTypes from "prop-types";
 
 const NotificationIcon = ({ onClick, refreshTrigger }) => {
     const [count, setCount] = useState(0);
@@ -25,3 +26,8 @@ const NotificationIcon = ({ onClick, refreshTrigger }) => {
 };
 
 export default NotificationIcon;
+
+NotificationIcon.propTypes = {
+    onClick: PropTypes.func.isRequired,
+    refreshTrigger: PropTypes.any
+};

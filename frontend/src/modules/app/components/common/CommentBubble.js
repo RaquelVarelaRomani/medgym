@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { MessageCircleMore } from "lucide-react";
 import React from "react";
@@ -21,7 +22,7 @@ export default function CommentBubble({
                 e.stopPropagation();
                 onClick(e);
             }}
-            className={`${styles.commentButton} ${disabled ? styles.disabled : ''} ${className}`}
+            className={`${styles.commentButton} ${disabled ? styles.disabled : ""} ${className}`}
         >
             <motion.span
                 initial={false}
@@ -39,3 +40,12 @@ export default function CommentBubble({
         </button>
     );
 }
+
+CommentBubble.propTypes = {
+    count: PropTypes.number,
+    onClick: PropTypes.func,
+    disabled: PropTypes.bool,
+    size: PropTypes.number,
+    className: PropTypes.string,
+    ariaLabel: PropTypes.string,
+};

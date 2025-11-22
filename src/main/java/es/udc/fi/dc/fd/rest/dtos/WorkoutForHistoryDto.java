@@ -20,22 +20,10 @@ public class WorkoutForHistoryDto {
     private List<WorkoutCommentDto> comments;
     private List<WorkoutLikeDto> likes;
 
+    // No parameter constructor because of sonarqube restrictions
+
     public WorkoutForHistoryDto() {
     }
-
-    public WorkoutForHistoryDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, List<WorkoutCommentDto> comments, List<WorkoutLikeDto> likes) {
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.routineId = routineId;
-        this.routineName = routineName;
-        this.userId = userId;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.comments = comments;
-        this.likes = likes;
-    }
-
     public Long getId() {
         return id;
     }
