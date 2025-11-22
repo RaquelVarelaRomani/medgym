@@ -46,7 +46,7 @@
     "outputName": "frontend-medgym.xml",
     "includeConsoleOutput": true,
     "reportTestSuiteErrors": true,
-    "classNameTemplate": "FrontendTests",
+    "classNameTemplate": "Frontend.Tests",
     "titleTemplate": "{classname} > {title}"
   }
 }
