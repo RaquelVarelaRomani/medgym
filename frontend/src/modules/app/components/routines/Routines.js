@@ -3,13 +3,14 @@ import styles from "./Routines.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
-import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import {becomePremium, tryLoginFromServiceToken} from "../../../../backend/userService";
 import {getMuscleGroups, getEquipments} from "../../../../backend/exerciseService";
 import {followTrainer, unfollowTrainer, getFollowedTrainers} from "../../../../backend/userFollowService";
 import HeartLike from "../common/HeartLike";
 import {getRoutineLikes, likeRoutine, unlikeRoutine} from "../../../../backend/routineLikeService";
 import * as workoutService from "../../../../backend/workoutService";
 import {getDifficultyText, getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
+import GoPremiumPopup from "../common/popup/GoPremiumPopup";
 
 
 const Routines = () => {
@@ -36,6 +37,7 @@ const Routines = () => {
     const [showSearchResults, setShowSearchResults] = useState(false);
     const searchRef = useRef(null);
     const [allRoutines, setAllRoutines] = useState([]);
+    const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -367,6 +369,16 @@ const Routines = () => {
             </div>
         );
     }
+
+    const routinesByTrainer = isTrainer()
+        ? routines.filter(r => r.trainerId === currentUser.id)
+        : [];
+
+    const canCreateRoutine = () => {
+        if (isAdmin() || (isTrainer() && currentUser.trainerPremium)) return true;
+        if (!isTrainer()) return false;
+        return routinesByTrainer.length < 3;
+    };
 
     return (
         <div className={styles.contenedor}>
@@ -778,7 +790,13 @@ const Routines = () => {
             {(isTrainer() || isAdmin()) && (
                 <button
                     className={styles["boton-crear"]}
-                    onClick={handleAddRoutine}
+                    onClick={() => {
+                        if (!canCreateRoutine()) {
+                            setShowGoPremiumPopup(true);
+                            return;
+                        }
+                        navigate("/routines/new");
+                    }}
                 >
                     +
                 </button>
@@ -824,6 +842,26 @@ const Routines = () => {
                 }}
                 onCancel={() => setTrainerToUnfollow(null)}
             />
+
+            <GoPremiumPopup
+                show={showGoPremiumPopup}
+                text="Crear más de 3 rutinas es una función premium."
+                onOk={() => {
+                    becomePremium(
+                        currentUser.id,
+                        () => {
+                            setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
+                            setShowGoPremiumPopup(false);
+                            navigate("/users/profile/" + currentUser.id, { replace: true });
+                        },
+                        (err) => {
+                            alert("Error becoming premium: " + err);
+                        }
+                    );
+                }}
+                onCancel={() => setShowGoPremiumPopup(false)}
+            />
+
         </div>
     );
 };

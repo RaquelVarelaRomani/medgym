@@ -1,9 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import es.udc.fi.dc.fd.model.entities.Exercise;
@@ -36,13 +33,22 @@ public class RoutineServiceImpl implements RoutineService {
     private RoutineLikeDao routineLikeDao;
 
     @Override
-    public Routine createRoutine(String name, String description, User trainer, Routine.VisibilityType visibility,
-            Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException {
+    public Routine createRoutine(String name, String description, User user, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         if (routineDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.routine", name);
         }
 
-        Routine routine = new Routine(name, description, visibility, difficulty, trainer);
+        int nRoutines = routineDao.findByTrainerId(user.getId()).size();
+
+        if (!(
+                user.getRole() == User.RoleType.ADMIN || // admin
+                (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
+                (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nRoutines < 3) // trainer not premium with less than 3 routines
+        )) {
+            throw new PermissionException();
+        }
+
+        Routine routine = new Routine(name, description, visibility, difficulty, user);
 
         routine = routineDao.save(routine);
 
@@ -104,7 +110,7 @@ public class RoutineServiceImpl implements RoutineService {
         Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
-        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
+        if (user.getRole() != User.RoleType.ADMIN && !Objects.equals(user.getId(), routine.getTrainer().getId())) {
             throw new PermissionException();
         }
 
@@ -127,6 +133,7 @@ public class RoutineServiceImpl implements RoutineService {
         return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)

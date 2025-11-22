@@ -6,6 +6,7 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         Optional<Routine> opRoutine = routineDao.findById(routineId);
         Optional<Exercise> opExercise = exerciseDao.findById(exerciseId);
 
+        int nExercises = getExercisesForRoutines(routineId, PageRequest.of(0, 4)).getSize();
+
         if(opExercise.isEmpty()) {
             throw new InstanceNotFoundException("exercise", exerciseId);
         }
@@ -45,7 +48,14 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         Routine routine = opRoutine.get();
         Exercise exercise = opExercise.get();
 
-        if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
+        if (!(
+                user.getRole() == User.RoleType.ADMIN || ( // admin
+                    user.equals(routine.getTrainer()) && ( // trainer who matches routine trainer
+                        (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
+                        (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nExercises < 5) // trainer not premium with less than 5 exercises
+                    )
+                )
+        )) {
             throw new PermissionException();
         }
 

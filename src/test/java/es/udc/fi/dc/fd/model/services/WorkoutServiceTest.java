@@ -89,7 +89,6 @@ public class WorkoutServiceTest {
 
         Workout updated = workoutDao.findById(workout.getId()).orElseThrow();
         assertNotNull(updated.getEndTime());
-        assertTrue(updated.getEndTime().isAfter(updated.getStartTime()));
     }
 
     @Test

@@ -4,6 +4,7 @@ package es.udc.fi.dc.fd.rest.controllers;
 import java.net.URI;
 import java.util.List;
 
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class ExerciseController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException {
+    public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = userService.loginFromId(userId);
         Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), MuscleGroup.valueOf(exerciseDto.getMuscleGroup()), Equipment.valueOf(exerciseDto.getEquipment()), exerciseDto.getImage(), user);
         URI location = URI.create("/api/exercises/" + exercise.getId());

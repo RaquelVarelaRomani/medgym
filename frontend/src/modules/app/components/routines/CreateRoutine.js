@@ -5,6 +5,8 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import LoadingMessage from "../common/LoadingMessage";
+import {becomePremium, tryLoginFromServiceToken} from "../../../../backend/userService";
+import GoPremiumPopup from "../common/popup/GoPremiumPopup";
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
@@ -17,10 +19,24 @@ const CreateRoutine = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
 
     useEffect(() => {
-        loadExercises();
-    }, []);
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                const user = authenticatedUser.user;
+                setCurrentUser(user);
+                loadExercises();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+
+    }, [navigate]);
+
 
     const loadExercises = () => {
         setLoading(true);
@@ -94,6 +110,12 @@ const CreateRoutine = () => {
     const handleAddExercise = () => {
         const newId = Math.max(...exercises.map(e => e.id || 0)) + 1;
         const newPosition = exercises.length + 1;
+
+        if (currentUser.trainerPremium === false && exercises.length >= 5) {
+            setShowGoPremiumPopup(true);
+            return;
+        }
+
         setExercises([...exercises, { id: newId, nombre: "", position: newPosition }]);
     };
 
@@ -345,6 +367,25 @@ const CreateRoutine = () => {
                     </button>
                 </div>
             </div>
+
+            <GoPremiumPopup
+                show={showGoPremiumPopup}
+                text="Añadir más de 5 ejercicios a una rutina es una función premium."
+                onOk={() => {
+                    becomePremium(
+                        currentUser.id,
+                        () => {
+                            setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
+                            setShowGoPremiumPopup(false);
+                            navigate("/users/profile/" + currentUser.id, { replace: true });
+                        },
+                        (err) => {
+                            alert("Error becoming premium: " + err);
+                        }
+                    );
+                }}
+                onCancel={() => setShowGoPremiumPopup(false)}
+            />
         </div>
     );
 };

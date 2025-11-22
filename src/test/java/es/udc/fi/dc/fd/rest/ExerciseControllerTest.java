@@ -64,21 +64,24 @@ public class ExerciseControllerTest {
     private AuthenticatedUserDto adminUser;
     private AuthenticatedUserDto clientUser;
     private AuthenticatedUserDto trainerUser;
+    private AuthenticatedUserDto trainerUserPremium;
 
     @Before
     public void setUp() throws IncorrectLoginException, BlockedUserException {
-        adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
-        clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", RoleType.CLIENT);
-        trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", RoleType.TRAINER);
+        adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN, null);
+        clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", RoleType.CLIENT, null);
+        trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", RoleType.TRAINER, false);
+        trainerUserPremium = createAuthenticatedUser("TrainerP", "User", "trainerP@test.com", "600000004", RoleType.TRAINER, true);
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                         RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+                                                         RoleType roleType, Boolean premium) throws IncorrectLoginException, BlockedUserException {
 
         User user = new User(name, surname, email, phoneNumber, PASSWORD, null, null, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
+        user.setTrainerPremium(premium);
         userDao.save(user);
 
         LoginParamsDto loginParams = new LoginParamsDto();
@@ -249,8 +252,8 @@ public class ExerciseControllerTest {
 
     @Test
     public void testCreateExerciseAsTrainerSucceeds() throws Exception {
-        ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise", MuscleGroup.CORE.name(), Equipment.NONE.name(), new byte[]{1,2,3}, "PENDING", trainerUser.getUserDto().getId());
-        createExercise(trainerUser, exerciseDto).andExpect(status().isCreated());
+        ExerciseDto exerciseDto = new ExerciseDto(null, "Crunches", "Abdominal exercise", MuscleGroup.CORE.name(), Equipment.NONE.name(), new byte[]{1,2,3}, "PENDING", trainerUserPremium.getUserDto().getId());
+        createExercise(trainerUserPremium, exerciseDto).andExpect(status().isCreated());
     }
 
     @Test

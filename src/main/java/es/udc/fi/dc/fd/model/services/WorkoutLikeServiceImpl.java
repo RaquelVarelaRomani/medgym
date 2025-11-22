@@ -29,6 +29,10 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
+        if (getLikesByUser(userId).stream().anyMatch(w -> w.getWorkout().getId().equals(workoutId))) {
+            return;
+        }
+
         WorkoutLike workoutLike = new WorkoutLike(
                 workout,
                 user

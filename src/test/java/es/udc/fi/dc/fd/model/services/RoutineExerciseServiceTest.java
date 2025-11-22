@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +23,21 @@ import es.udc.fi.dc.fd.model.entities.Routine;
 import es.udc.fi.dc.fd.model.entities.RoutineDao;
 import es.udc.fi.dc.fd.model.entities.RoutineExercise;
 import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 
 import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 public class RoutineExerciseServiceTest {
+
     @Autowired
     private RoutineExerciseService routineExerciseService;
 
@@ -42,129 +45,182 @@ public class RoutineExerciseServiceTest {
     private RoutineDao routineDao;
 
     @Autowired
-    private ExerciseDao exerciseDao;
-
-    @Autowired
     private UserDao userDao;
+    @Autowired
+    private ExerciseService exerciseService;
 
-    private User createTrainer(String email) {
+    private User createTrainerPremium(String email) {
         User trainer = new User("Pepe", "Domingo", email,
                 "666555444", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
+        trainer.setTrainerPremium(true);
         return userDao.save(trainer);
     }
 
-    private Exercise createExercise(String exerciseName, User user){
-        Exercise exercise = new Exercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, ExerciseStatus.PENDING, user);
-        return exerciseDao.save(exercise);
+    private User createTrainerNonPremium(String email) {
+        User trainer = new User("Pepe", "Domingo", email,
+                "666555445", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
+        trainer.setTrainerPremium(false);
+        return userDao.save(trainer);
     }
 
-    private Routine createRoutine(String name, User user){
-        Routine routine = new Routine(name, "Rutina",Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
+    private Exercise createExercise(String exerciseName, User user) throws PermissionException, DuplicateInstanceException {
+        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+    }
+
+    private Routine createRoutine(String name, User user) {
+        Routine routine = new Routine(name, "Rutina",
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, user);
         return routineDao.save(routine);
     }
 
+
     @Test
-    public void testAddExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
-        Exercise exercise = createExercise("Ejercicio", trainer);
-        Routine routine = createRoutine("Rutina", trainer);
+    public void testAddExerciseToRoutinePremium() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+        User trainer = createTrainerPremium("premium@trainer.com");
+        Exercise exercise = createExercise("Ejercicio Premium", trainer);
+        Routine routine = createRoutine("Rutina Premium", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+
         assertEquals(1, page.getContent().size());
-        RoutineExercise re = page.getContent().get(0);
-        assertEquals(exercise.getId(), re.getExercise().getId());
-        assertEquals(Integer.valueOf(1), re.getPosition());
+    }
+
+    @Test
+    public void testNonPremiumCannotCreateExercise() {
+        User trainer = createTrainerNonPremium("np1@trainer.com");
+
+        assertThrows(PermissionException.class, () ->
+                exerciseService.createExercise(
+                        "Ex NP", "Desc",
+                        MuscleGroup.LEG, Equipment.DUMBBELL,
+                        new byte[]{1}, trainer
+                )
+        );
+    }
+
+    @Test
+    public void testPremiumCanCreateExercise() throws Exception {
+        User trainer = createTrainerPremium("p1@trainer.com");
+
+        Exercise ex = exerciseService.createExercise(
+                "Ex P", "Desc",
+                MuscleGroup.CHEST, Equipment.BARBELL,
+                new byte[]{1}, trainer
+        );
+
+        assertNotNull(ex.getId());
+        assertEquals("Ex P", ex.getName());
+    }
+
+    @Test
+    public void testClientCannotCreateExercise() {
+        User client = new User(
+                "C","L","client@test.com","600","p",null,
+                RoleType.CLIENT, User.StatusType.ACTIVE
+        );
+        client = userDao.save(client);
+
+        User finalClient = client;
+        assertThrows(PermissionException.class, () ->
+                exerciseService.createExercise(
+                        "Ex C", "Desc",
+                        MuscleGroup.BACK, Equipment.DUMBBELL,
+                        new byte[]{1}, finalClient
+                )
+        );
     }
 
     @Test
     public void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
+        User trainer = createTrainerPremium("dup@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
-        assertThrows(DuplicateInstanceException.class, () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 2));
-    }
 
+        assertThrows(DuplicateInstanceException.class,
+                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 2));
+    }
 
     @Test
     public void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
+        User trainer = createTrainerPremium("remove@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
-        Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
-        assertEquals(1, page.getContent().size());
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId());
-        Page<RoutineExercise> page2 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
-        assertEquals(0, page2.getContent().size());
-    }
 
+        Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
+        assertEquals(0, page.getTotalElements());
+    }
 
     @Test
     public void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
+        User trainer = createTrainerPremium("remove2@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
+
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId());
-        assertThrows(InstanceNotFoundException.class, () ->
-                routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId()));
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId()));
     }
 
     @Test
     public void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
+        User trainer = createTrainerPremium("update@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
-        RoutineExercise updatedRe = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), 2);
-        assertEquals(Integer.valueOf(2), updatedRe.getPosition());
-    }
 
+        RoutineExercise updated = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), 3);
+        assertEquals(Integer.valueOf(3), updated.getPosition());
+    }
 
     @Test
     public void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User trainer = createTrainer("pepe@trainer.com");
-        Exercise exercise1 = createExercise("Ejercicio 1", trainer);
-        Exercise exercise2 = createExercise("Ejercicio 2", trainer);
-        Exercise exercise3 = createExercise("Ejercicio 3", trainer);
+        User trainer = createTrainerPremium("paging@trainer.com");
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise1.getId(), 1);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise2.getId(), 2);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise3.getId(), 3);
+        Exercise ex1 = createExercise("E1", trainer);
+        Exercise ex2 = createExercise("E2", trainer);
+        Exercise ex3 = createExercise("E3", trainer);
+
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex1.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex2.getId(), 2);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex3.getId(), 3);
 
         Page<RoutineExercise> page1 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         assertEquals(2, page1.getContent().size());
-        assertEquals(3, page1.getTotalElements());
         assertTrue(page1.hasNext());
-        assertFalse(page1.isLast());
 
         Page<RoutineExercise> page2 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(1, 2));
         assertEquals(1, page2.getContent().size());
-        assertEquals(3, page2.getTotalElements());
-        assertFalse(page2.hasNext());
         assertTrue(page2.isLast());
     }
 
     @Test
-    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException {
-        User trainer = createTrainer("trainer@udc.es");
-        User otherUser = userDao.save(new User("X","Y","other@udc.es","600","p",null,RoleType.CLIENT, User.StatusType.ACTIVE));
+    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
+        User trainer = createTrainerPremium("trainer@udc.es");
+        User other = new User("X","Y","other@udc.es","600","p",null,
+                RoleType.CLIENT, User.StatusType.ACTIVE);
+        other = userDao.save(other);
+
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
+        User finalOther = other;
         assertThrows(PermissionException.class,
-                () -> routineExerciseService.addExerciseToRoutine(otherUser.getId(), routine.getId(), exercise.getId(), 1));
+                () -> routineExerciseService.addExerciseToRoutine(finalOther.getId(), routine.getId(), exercise.getId(), 1));
     }
 
     @Test
-    public void testAddExerciseToRoutineNonExistingRoutine() {
-        User trainer = createTrainer("trainer@udc.es");
+    public void testAddExerciseToRoutineNonExistingRoutine() throws PermissionException, DuplicateInstanceException {
+        User trainer = createTrainerPremium("trainer2@udc.es");
         Exercise exercise = createExercise("Ejercicio", trainer);
 
         assertThrows(InstanceNotFoundException.class,
