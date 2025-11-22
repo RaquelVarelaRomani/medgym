@@ -11,20 +11,9 @@ public class UserFollowDto {
     private String userSurname;
     private String userEmail;
 
+    // No parameter constructor because of sonarqube restrictions
+
     public UserFollowDto() {}
-
-    public UserFollowDto(Long id, Long userId, Long trainerId, String trainerUserName, String trainerUserSurname, String trainerUserEmail, String userName, String userSurname, String userEmail) {
-        this.id = id;
-        this.userId = userId;
-        this.trainerId = trainerId;
-        this.trainerUserName = trainerUserName;
-        this.trainerUserSurname = trainerUserSurname;
-        this.trainerUserEmail = trainerUserEmail;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userEmail = userEmail;
-    }
-
 
     public Long getId() {
         return id;

@@ -60,9 +60,7 @@ public class RoutineExerciseControllerTest {
     @Autowired
     private UserController userController;
 
-    // private AuthenticatedUserDto adminUser;
     private AuthenticatedUserDto trainerUser;
-    // private AuthenticatedUserDto anotherTrainerUser;
     private AuthenticatedUserDto clientUser;
 
     private final static String PASSWORD = "password";

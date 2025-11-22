@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Cropper from "react-easy-crop";
 import styles from "./CropModal.module.css";
+import PropTypes from "prop-types";
 
 const CropModal = ({ imageSrc, onCancel, onSave }) => {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -86,3 +87,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
 };
 
 export default CropModal;
+
+CropModal.propTypes = {
+    imageSrc: PropTypes.string.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+};

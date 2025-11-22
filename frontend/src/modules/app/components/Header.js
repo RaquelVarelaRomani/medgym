@@ -4,7 +4,6 @@ import styles from './Header.module.css';
 import notificationStyles from './common/notifications/NotificationIcon.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import * as workoutService from "../../../backend/workoutService";
-import {markNotificationAsRead} from "../../../backend/notificationService";
 import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";

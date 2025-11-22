@@ -890,103 +890,88 @@ describe("Workout Components", () => {
     });
 
     describe("WorkoutHistory Component", () => {
-      test("renders calendar view correctly", async () => {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        const monthNames = [
-          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-        ];
-        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
-        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
-        const mockWorkouts = [
-          {
-            id: 1,
-            routineName: "Rutina 1",
-            startTime,
-            endTime,
-          },
-        ];
+        test("renders calendar view correctly", async () => {
+            jest.useFakeTimers().setSystemTime(new Date("2025-12-01T00:00:00Z"));
 
-        tryLoginFromServiceToken.mockImplementation((success) => {
-          success({ user: { id: 1 } });
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+
+            const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
+            const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
+
+            const mockWorkouts = [{
+                id: 1,
+                routineName: "Rutina 1",
+                startTime,
+                endTime
+            }];
+
+            tryLoginFromServiceToken.mockImplementation(s => s({ user: { id: 1 } }));
+            getWorkouts.mockImplementation(s => s(mockWorkouts));
+
+            render(<MemoryRouter><WorkoutHistory /></MemoryRouter>);
+
+            fireEvent.click(screen.getByText("Calendario"));
+
+            await waitFor(() => {
+                expect(screen.getByText("diciembre de 2025")).toBeInTheDocument();
+                expect(screen.getByText("1")).toBeInTheDocument();
+                expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+            });
         });
 
-        getWorkouts.mockImplementation((success) => {
-          success(mockWorkouts);
+        test("handles month navigation in calendar view", async () => {
+            jest.useFakeTimers().setSystemTime(new Date("2025-01-15T10:00:00Z"));
+
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear(); // 2025
+            const currentMonth = currentDate.getMonth();   // 0 = enero
+
+            const startTime = `${currentYear}-01-01T00:00:00Z`;
+            const endTime   = `${currentYear}-01-01T11:00:00Z`;
+
+            const mockWorkouts = [
+                { id: 1, routineName: "Rutina 1", startTime, endTime },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkouts.mockImplementation((success) => {
+                success(mockWorkouts);
+            });
+
+            render(
+                <MemoryRouter>
+                    <WorkoutHistory />
+                </MemoryRouter>
+            );
+
+            fireEvent.click(screen.getByText("Calendario"));
+
+            // mes inicial
+            await waitFor(() => {
+                expect(screen.getByText("enero de 2025")).toBeInTheDocument();
+            });
+
+            // avanzar mes
+            fireEvent.click(screen.getByText(">"));
+
+            await waitFor(() => {
+                expect(screen.getByText("febrero de 2025")).toBeInTheDocument();
+            });
+
+            // retroceder mes
+            fireEvent.click(screen.getByText("<"));
+
+            await waitFor(() => {
+                expect(screen.getByText("enero de 2025")).toBeInTheDocument();
+            });
         });
 
-        render(
-          <MemoryRouter>
-            <WorkoutHistory />
-          </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
-          expect(screen.getByText("1")).toBeInTheDocument();
-          expect(screen.getByText("Rutina 1")).toBeInTheDocument();
-        });
-      });
-
-      test("handles month navigation in calendar view", async () => {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        const monthNames = [
-          "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-        ];
-        const startTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T00:00:00Z`;
-        const endTime = `${currentYear}-${String(currentMonth).padStart(2, '0')}-01T11:00:00Z`;
-        const mockWorkouts = [
-          {
-            id: 1,
-            routineName: "Rutina 1",
-            startTime,
-            endTime,
-          },
-        ];
-
-        tryLoginFromServiceToken.mockImplementation((success) => {
-          success({ user: { id: 1 } });
-        });
-
-        getWorkouts.mockImplementation((success) => {
-          success(mockWorkouts);
-        });
-
-        render(
-          <MemoryRouter>
-            <WorkoutHistory />
-          </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText(">"));
-
-        const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-        const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
-        await waitFor(() => {
-          expect(screen.getByText(`${monthNames[nextMonth - 1]} de ${nextYear}`)).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText("<"));
-
-        await waitFor(() => {
-          expect(screen.getByText(`${monthNames[currentMonth - 1]} de ${currentYear}`)).toBeInTheDocument();
-        });
-      });
-
-      test("navigates on workout click in calendar view", async () => {
+        test("navigates on workout click in calendar view", async () => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;

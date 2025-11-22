@@ -1,7 +1,7 @@
 package es.udc.fi.dc.fd.model.services.exceptions;
 
 public class FollowException extends RuntimeException {
-    private Long userId;
+    private final Long userId;
 
     public FollowException(Long userId) {
       this.userId = userId;
@@ -9,9 +9,5 @@ public class FollowException extends RuntimeException {
 
     public Long getUserId() {
       return userId;
-    }
-
-    public void setUserId(Long userId) {
-      this.userId = userId;
     }
 }

@@ -320,7 +320,7 @@ const CreateRoutine = () => {
                                 <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((exercise, i) => (
                                         <div
-                                            key={i}
+                                            key={exercise.id}
                                             className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, exercise)}
                                         >

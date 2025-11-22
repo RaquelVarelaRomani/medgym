@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 public class UserFollowControllerTest {
-    private final static String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;

@@ -52,17 +52,6 @@ public class UserFollowServiceTest {
         assertEquals(userFollow1, userFollow);
     }
 
-    /*
-    @Test
-    public void testFollowClient() throws InstanceNotFoundException, IncorrectLoginException {
-        User user = createUser();
-
-        assertThrows(FollowException.class, () -> {
-            userFollowService.followUser(user.getId(), user.getId());
-        });
-    }
-     */
-
     @Test
     public void testUnfollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();

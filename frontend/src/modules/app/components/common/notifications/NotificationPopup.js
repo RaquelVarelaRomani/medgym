@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./NotificationPopup.module.css";
 import {markNotificationAsRead, deleteNotification} from "../../../../../backend/notificationService";
+import PropTypes from "prop-types";
 
 const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) => {
     const popupRef = useRef(null);
@@ -61,16 +62,21 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                 {notifications.length === 0 ? (
                     <div className={styles.empty}>Sin notificaciones</div>
                 ) : (
-                    notifications.map((n, index) => (
+                    notifications.map(n => (
                         <div
-                            key={index}
+                            key={n.id}
                             className={`${styles.item} ${n.isRead ? styles.read : styles.unread}`}
                         >
                             <div
                                 className={styles.content}
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => handleNotificationClick(n)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") handleNotificationClick(n);
+                                }}
                             >
-                                <div className={styles.text}>{n.message}</div>
+                            <div className={styles.text}>{n.message}</div>
                                 <div className={styles.date}>
                                     {new Date(n.date).toLocaleString("es-ES", {
                                         day: "2-digit",
@@ -96,3 +102,22 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
 };
 
 export default NotificationPopup;
+
+NotificationPopup.propTypes = {
+    notifications: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            message: PropTypes.string.isRequired,
+            date: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+                PropTypes.instanceOf(Date)
+            ]).isRequired,
+            isRead: PropTypes.bool,
+            type: PropTypes.string.isRequired,
+            idToRedirect: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        })
+    ),
+    onClose: PropTypes.func.isRequired,
+    onNotificationRead: PropTypes.func,
+};

@@ -22,21 +22,9 @@ public class RoutineDto {
     private String difficulty;
     private List<RoutineLikeDto> likes;
 
-    public RoutineDto() {}
+    // No parameter constructor because of sonarqube restrictions
 
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility, String difficulty, List<RoutineLikeDto> likes) {
-        this.id = id;
-        this.name = name.trim();
-        this.description = description.trim();
-        this.creationDate = creationDate;
-        this.modificationDate = modificationDate;
-        this.trainerId = trainerId;
-        this.trainerName = trainerName;
-        this.trainerSurname = trainerSurname;
-        this.visibility = visibility;
-        this.difficulty = difficulty;
-        this.likes = likes;
-    }
+    public RoutineDto() {}
 
     public Long getId() {
         return id;

@@ -1,7 +1,5 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import java.time.LocalDateTime;
-
 public class RoutineLikeDto {
 
     private Long id;

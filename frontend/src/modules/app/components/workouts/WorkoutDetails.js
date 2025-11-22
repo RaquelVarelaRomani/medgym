@@ -18,7 +18,6 @@ const WorkoutDetails = () => {
     const [expandedExercises, setExpandedExercises] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
 
     const toggleExercise = (exerciseId) => {
         setExpandedExercises(prev => ({
@@ -111,8 +110,7 @@ const WorkoutDetails = () => {
 
     useEffect(() => {
         tryLoginFromServiceToken(
-            (authenticatedUser) => {
-                setCurrentUser(authenticatedUser.user);
+            () => {
                 loadWorkoutDetails();
             },
             () => {
@@ -179,7 +177,8 @@ const WorkoutDetails = () => {
 
                         return (
                             <div key={exercise.id} className={styles.ejercicio}>
-                                <div
+                                <button
+                                    type="button"
                                     className={styles['header-ejercicio']}
                                     onClick={() => toggleExercise(exercise.id)}
                                 >
@@ -192,7 +191,7 @@ const WorkoutDetails = () => {
                                     <span className={`${styles.flecha} ${expandedExercises[exercise.id] ? styles.expandida : ''}`}>
                                         &#9660;
                                     </span>
-                                </div>
+                                </button>
 
                                 {expandedExercises[exercise.id] && (
                                     <div className={styles['ejercicio-contenido']}>

@@ -264,11 +264,6 @@ public class RoutineServiceTest {
     public void testFindRoutinesByFilters() throws Exception {
         User trainer = createTrainerPremium("filterT");
 
-        Routine r1 = routineService.createRoutine(
-                "FX1", "d", trainer,
-                Routine.VisibilityType.PUBLIC,
-                Routine.DifficultyType.BEGINNER);
-
         Routine r2 = routineService.createRoutine(
                 "FX2", "d", trainer,
                 Routine.VisibilityType.PUBLIC,

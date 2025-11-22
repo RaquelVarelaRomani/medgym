@@ -1,18 +1,23 @@
 import React, { useEffect, useState, useRef } from "react";
-import styles from "./CreateRoutine.module.css"; // Reuse same CSS
 import { useNavigate, useParams } from "react-router-dom";
+import styles from "./CreateRoutine.module.css";
 import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
+import PropTypes  from "prop-types";
 
-
-const EditRoutine = () => {
+export default function EditRoutine() {
     const navigate = useNavigate();
-    const { id } = useParams(); // routine ID from URL
-    const [routineData, setRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
-    const [originalRoutineData, setOriginalRoutineData] = useState({ titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE" });
+    const { id } = useParams();
+
+    const [routineData, setRoutineData] = useState({
+        titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"
+    });
+    const [originalRoutineData, setOriginalRoutineData] = useState({
+        titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"
+    });
     const [exercises, setExercises] = useState([]);
     const [originalExercises, setOriginalExercises] = useState([]);
     const [availableExercises, setAvailableExercises] = useState([]);
@@ -21,20 +26,17 @@ const EditRoutine = () => {
     const [titleError, setTitleError] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const inputContainerRefs = useRef([]);
     const [popupMessage, setPopupMessage] = useState(null);
+
+    const inputContainerRefs = useRef([]);
 
     const loadExercises = () => {
         exerciseService.getAllExercises(
             (data) => {
-                const exercisesArray = data.content ? data.content : data;
-                const sortedAvailableExercises = exercisesArray.sort((a, b) => a.name.localeCompare(b.name));
-                setAvailableExercises(sortedAvailableExercises);
+                const arr = data.content || data;
+                setAvailableExercises(arr.sort((a, b) => a.name.localeCompare(b.name)));
             },
-            (err) => {
-                console.error("Error loading exercises:", err);
-                setError("Error al cargar los ejercicios disponibles");
-            }
+            (err) => setError("Error al cargar los ejercicios disponibles: " + err)
         );
     };
 
@@ -42,34 +44,41 @@ const EditRoutine = () => {
         routineService.getRoutine(
             id,
             (data) => {
-                const routineObj = data.content ? data.content[0] : data;
-                setRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility, difficulty: routineObj.difficulty });
-                setOriginalRoutineData({ titulo: routineObj.name, descripcion: routineObj.description, visibility: routineObj.visibility, difficulty: routineObj.difficulty });
+                const r = data.content ? data.content[0] : data;
+
+                const base = {
+                    titulo: r.name,
+                    descripcion: r.description,
+                    visibility: r.visibility,
+                    difficulty: r.difficulty
+                };
+
+                setRoutineData(base);
+                setOriginalRoutineData(base);
 
                 routineExerciseService.getRoutineExercises(
                     id,
-                    (routineExercisesPage) => {
-                        const exercisesArray = Array.isArray(routineExercisesPage.content)
-                            ? routineExercisesPage.content
-                            : [];
-                        const mappedExercises = exercisesArray.map((re) => ({
-                            id: re.exerciseId,
-                            nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
-                            position: re.position || null,
-                        })).sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
-                        setExercises(mappedExercises);
-                        setOriginalExercises(JSON.parse(JSON.stringify(mappedExercises)));
+                    (page) => {
+                        const list = Array.isArray(page.content) ? page.content : [];
+                        const mapped = list
+                            .map(re => ({
+                                id: re.exerciseId,
+                                nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
+                                position: re.position || null
+                            }))
+                            .sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
+
+                        setExercises(mapped);
+                        setOriginalExercises(JSON.parse(JSON.stringify(mapped)));
                         setLoading(false);
                     },
-                    (err) => {
-                        console.error("Error loading routine exercises:", err);
+                    () => {
                         setError("Error al cargar los ejercicios de la rutina");
                         setLoading(false);
                     }
                 );
             },
-            (err) => {
-                console.error("Error loading routine:", err);
+            () => {
                 setError("Error al cargar la rutina");
                 setLoading(false);
             }
@@ -83,19 +92,17 @@ const EditRoutine = () => {
 
     useEffect(() => {
         const handleOutsideClick = (e) => {
-            if (showExerciseSearch !== null && inputContainerRefs.current[showExerciseSearch] && !inputContainerRefs.current[showExerciseSearch].contains(e.target)) {
+            if (
+                showExerciseSearch !== null &&
+                inputContainerRefs.current[showExerciseSearch] &&
+                !inputContainerRefs.current[showExerciseSearch].contains(e.target)
+            ) {
                 setShowExerciseSearch(null);
                 setSearchTerm("");
             }
         };
-
-        if (showExerciseSearch !== null) {
-            document.addEventListener('click', handleOutsideClick);
-        }
-
-        return () => {
-            document.removeEventListener('click', handleOutsideClick);
-        };
+        if (showExerciseSearch !== null) document.addEventListener("click", handleOutsideClick);
+        return () => document.removeEventListener("click", handleOutsideClick);
     }, [showExerciseSearch]);
 
     const filteredExercises = availableExercises.filter(ex =>
@@ -103,325 +110,397 @@ const EditRoutine = () => {
         !exercises.some(e => e.id === ex.id)
     );
 
-    const handleInputChange = (e) => {
+    const changeInput = (e) => {
         const { name, value } = e.target;
+
         setRoutineData(prev => {
-            const newData = { ...prev, [name]: value };
-            console.log('New routineData:', newData);
-            return newData;
+            const updated = { ...prev, [name]: value };
+            console.log("New routineData:", updated);
+            return updated;
         });
+
         if (name === "titulo" && value.length > 50) setTitleError("El título es demasiado grande");
         else setTitleError("");
     };
 
-    const handleExerciseChange = (index, field, value) => {
-        const newExercises = [...exercises];
-        if (field === "position") {
-            newExercises[index][field] = value === "" ? null : Number(value);
-        } else {
-            newExercises[index][field] = value;
-        }
-        console.log('New exercises:', newExercises);
-        setExercises(newExercises);
+    const changeExerciseField = (index, field, value) => {
+        const copy = [...exercises];
+        copy[index][field] = field === "position"
+            ? (value === "" ? null : Number(value))
+            : value;
+
+        console.log("New exercises:", copy);
+
+        setExercises(copy);
     };
 
-    const handleAddExercise = () => {
+    const addExercise = () => {
         setShowExerciseSearch(null);
         setExercises([...exercises, { id: null, nombre: "", position: exercises.length + 1 }]);
     };
 
-    const handleRemoveExercise = (index) => {
-        const newExercises = [...exercises];
-        newExercises.splice(index, 1);
-        newExercises.forEach((ex, i) => ex.position = i + 1);
-        setExercises(newExercises);
+    const removeExercise = (index) => {
+        const arr = [...exercises];
+        arr.splice(index, 1);
+        arr.forEach((ex, i) => ex.position = i + 1);
+        setExercises(arr);
     };
 
-    const handleMoveUp = (index) => {
-        if (index > 0) {
-            const newExercises = [...exercises];
-            // Swap positions
-            const tempPos = newExercises[index].position;
-            newExercises[index].position = newExercises[index - 1].position;
-            newExercises[index - 1].position = tempPos;
-            // Sort the array by position to reflect the new order
-            newExercises.sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
-            setExercises(newExercises);
-        }
+    const moveExercise = (index, dir) => {
+        const newIndex = dir === "up" ? index - 1 : index + 1;
+        if (newIndex < 0 || newIndex >= exercises.length) return;
+
+        const arr = [...exercises];
+        const tmp = arr[index].position;
+        arr[index].position = arr[newIndex].position;
+        arr[newIndex].position = tmp;
+
+        arr.sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
+        setExercises(arr);
     };
 
-    const handleMoveDown = (index) => {
-        if (index < exercises.length - 1) {
-            const newExercises = [...exercises];
-            // Swap positions
-            const tempPos = newExercises[index].position;
-            newExercises[index].position = newExercises[index + 1].position;
-            newExercises[index + 1].position = tempPos;
-            // Sort the array by position to reflect the new order
-            newExercises.sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
-            setExercises(newExercises);
-        }
-    };
-
-    const handleSelectExercise = (index, selectedExercise) => {
-        handleExerciseChange(index, "nombre", selectedExercise.name);
-        handleExerciseChange(index, "id", selectedExercise.id);
+    const selectExercise = (index, ex) => {
+        changeExerciseField(index, "nombre", ex.name);
+        changeExerciseField(index, "id", ex.id);
         setShowExerciseSearch(null);
         setSearchTerm("");
     };
 
-    const handleCancel = () => {
-        navigate(`/routines`);
-    };
+    const cancel = () => navigate("/routines");
 
-    const handleSave = async () => {
+    const save = async () => {
+        const changedFields =
+            routineData.titulo !== originalRoutineData.titulo ||
+            routineData.descripcion !== originalRoutineData.descripcion ||
+            routineData.visibility !== originalRoutineData.visibility ||
+            routineData.difficulty !== originalRoutineData.difficulty;
 
-        const titleChanged = routineData.titulo !== originalRoutineData.titulo;
-        const descriptionChanged = routineData.descripcion !== originalRoutineData.descripcion;
-        const visibilityChanged = routineData.visibility !== originalRoutineData.visibility;
-        const difficultyChanged = routineData.difficulty !== originalRoutineData.difficulty;
-
-        const removedExercises = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
-        const addedExercises = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
-        const updatedExercises = exercises.filter(e => {
-            const original = originalExercises.find(oe => oe.id === e.id);
-            if (original) {
-                const posChanged = e.position !== original.position;
-                console.log(`Exercise ${e.id}: posChanged=${posChanged} (${e.position} !== ${original.position}, typeof e.pos: ${typeof e.position}, typeof orig.pos: ${typeof original.position})`);
-                return posChanged;
-            }
-            return false;
+        const removed = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
+        const added = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
+        const updated = exercises.filter(e => {
+            const orig = originalExercises.find(oe => oe.id === e.id);
+            return orig && e.position !== orig.position;
         });
 
-        const exercisesChanged = addedExercises.length > 0 || removedExercises.length > 0 || updatedExercises.length > 0;
+        const anyChange = changedFields || removed.length > 0 || added.length > 0 || updated.length > 0;
 
-        if (!titleChanged && !descriptionChanged && !visibilityChanged && !difficultyChanged && !exercisesChanged) {
-            setPopupMessage("¡No hay cambios para guardar!");
-            return;
-        }
+        if (!anyChange) return setPopupMessage("¡No hay cambios para guardar!");
 
-        let successMessage = "";
-        let errorMessage = "";
+        let errorMsg = "";
+        let successMsg = "";
 
-        for (const ex of removedExercises) {
-            console.log(`Deleting exercise ${ex.nombre} (id: ${ex.id})`);
+        for (const ex of removed) {
             try {
-                await new Promise((resolve, reject) => {
-                    routineExerciseService.deleteRoutineExercise(id, ex.id, resolve, reject);
-                });
-                successMessage += `Ejercicio ${ex.nombre} eliminado correctamente.\n`;
-            } catch (error) {
-                console.log(`Error deleting exercise ${ex.nombre}:`, error);
-                errorMessage += `Error al eliminar el ejercicio ${ex.nombre}: ${error.message}\n`;
+                await new Promise((res, rej) =>
+                    routineExerciseService.deleteRoutineExercise(id, ex.id, res, rej)
+                );
+                successMsg += `Ejercicio ${ex.nombre} eliminado correctamente.\n`;
+            } catch (err) {
+                errorMsg += `Error al eliminar ${ex.nombre}: ${err.message}\n`;
             }
         }
 
-        // Handle position changes
-        for (const ex of updatedExercises) {
-            const original = originalExercises.find(oe => oe.id === ex.id);
-            const posChanged = ex.position !== original.position;
-            if (posChanged) {
-                try {
-                    await new Promise((resolve, reject) => {
-                        routineExerciseService.updateRoutineExercise(id, ex.id, ex.position, resolve, reject);
-                    });
-                    successMessage += `Ejercicio ${ex.nombre} actualizado correctamente.\n`;
-                } catch (error) {
-                    console.log(`Error updating exercise:`, error);
-                    errorMessage += `Error al actualizar el ejercicio ${ex.nombre}: ${error.message}\n`;
-                }
+        for (const ex of updated) {
+            try {
+                await new Promise((res, rej) =>
+                    routineExerciseService.updateRoutineExercise(id, ex.id, ex.position, res, rej)
+                );
+                successMsg += `Ejercicio ${ex.nombre} actualizado correctamente.\n`;
+            } catch (err) {
+                errorMsg += `Error al actualizar ${ex.nombre}: ${err.message}\n`;
             }
         }
 
-        for (const ex of addedExercises) {
+        for (const ex of added) {
             try {
-                await new Promise((resolve, reject) => {
-                    routineExerciseService.createRoutineExercise(id, ex.id, ex.position, resolve, reject);
-                });
-                successMessage += `Ejercicio ${ex.nombre} agregado correctamente.\n`;
-            } catch (error) {
-                console.log(`Error adding exercise:`, error);
-                errorMessage += `Error al agregar el ejercicio ${ex.nombre}: ${error.message}\n`;
+                await new Promise((res, rej) =>
+                    routineExerciseService.createRoutineExercise(id, ex.id, ex.position, res, rej)
+                );
+                successMsg += `Ejercicio ${ex.nombre} agregado correctamente.\n`;
+            } catch (err) {
+                errorMsg += `Error al agregar ${ex.nombre}: ${err.message}\n`;
             }
         }
 
-        if (titleChanged || descriptionChanged || visibilityChanged || difficultyChanged) {
+        if (changedFields) {
             try {
-                await new Promise((resolve, reject) => {
+                await new Promise((res, rej) =>
                     routineService.updateRoutine(
                         id,
                         routineData.titulo,
                         routineData.descripcion,
                         routineData.visibility,
                         routineData.difficulty,
-                        resolve,
-                        reject
-                    );
-                });
-                successMessage += "Datos de la rutina actualizados correctamente.\n";
-            } catch (error) {
-                console.log(`Error updating routine:`, error);
-                errorMessage += `Error al actualizar los datos de la rutina: ${error.message}\n`;
+                        res, rej
+                    )
+                );
+            } catch (err) {
+                errorMsg += `Error al actualizar los datos de la rutina: ${err.message}\n`;
             }
         }
 
-        if (errorMessage) {
-            setPopupMessage("Ocurrió un error");
-        }
-        if (successMessage) {
-            setPopupMessage("Cambios guardados. ¡Gracias!")
-        }
+        if (errorMsg) setPopupMessage("Ocurrió un error");
+        else setPopupMessage("Cambios guardados. ¡Gracias!");
     };
 
     if (loading) return <LoadingMessage text="Cargando rutina..." />;
     if (error) return <div>{error}</div>;
 
     return (
-        <div className={styles['contenedor-create-routine']}>
+        <div className={styles["contenedor-create-routine"]}>
             <h2>Editar rutina</h2>
-            <div className={styles['form-crear-rutina']}>
-                <div className={styles['form-div']}>
-                    <label>Título:</label>
-                    <input
-                        type="text"
-                        name="titulo"
-                        value={routineData.titulo}
-                        onChange={handleInputChange}
-                        className={titleError ? styles['input-error'] : ""}
-                    />
-                    {titleError && <span className={styles['error-message']}>{titleError}</span>}
-                </div>
 
-                <div className={styles['form-div']}>
-                    <label>Descripción:</label>
-                    <textarea
-                        name="descripcion"
-                        value={routineData.descripcion}
-                        onChange={handleInputChange}
-                        rows={3}
-                    />
-                </div>
+            <div className={styles["form-crear-rutina"]}>
+                <RoutineTextFields
+                    routineData={routineData}
+                    titleError={titleError}
+                    changeInput={changeInput}
+                />
 
-                <div className={styles['form-div']}>
-                    <label>Dificultad:</label>
-                    <select
-                        name="difficulty"
-                        value={routineData.difficulty}
-                        onChange={handleInputChange}
-                        aria-label="Seleccionar dificultad de la rutina"
-                    >
-                        <option value="BEGINNER">Principiante</option>
-                        <option value="INTERMEDIATE">Intermedia</option>
-                        <option value="ADVANCED">Avanzada</option>
-                    </select>
-                </div>
+                <ExerciseList
+                    exercises={exercises}
+                    originalExercises={originalExercises}
+                    filteredExercises={filteredExercises}
+                    inputContainerRefs={inputContainerRefs}
+                    showExerciseSearch={showExerciseSearch}
+                    setShowExerciseSearch={setShowExerciseSearch}
+                    setSearchTerm={setSearchTerm}
+                    changeExerciseField={changeExerciseField}
+                    selectExercise={selectExercise}
+                    removeExercise={removeExercise}
+                    moveExercise={moveExercise}
+                />
 
-                <div className={styles['form-div']}>
-                    <label>Visibilidad:</label>
-                    <select
-                        name="visibility"
-                        value={routineData.visibility}
-                        onChange={handleInputChange}
-                        aria-label="Seleccionar visibilidad de la rutina"
-                    >
-                        <option value="PUBLIC">Pública</option>
-                        <option value="PRIVATE">Privada</option>
-                    </select>
-                </div>
-
-                {exercises.map((exercise, index) => (
-                    <div key={index} className={styles['ejercicio-item']}>
-                        <label>Ejercicio {index + 1}:</label>
-                        <button
-                            type="button"
-                            className={styles['boton-eliminar-ejercicio']}
-                            onClick={() => handleRemoveExercise(index)}
-                            title="Eliminar ejercicio"
-                        >
-                            <img
-                                src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
-                                alt="Eliminar"
-                                className={styles['icono-papelera']}
-                            />
-                        </button>
-                        <div className={styles['ejercicio-input-container']}
-                             ref={(el) => inputContainerRefs.current[index] = el}>
-                            <input
-                                type="text"
-                                placeholder="Buscar ejercicio..."
-                                value={exercise.nombre}
-                                disabled={originalExercises.some(oe => oe.id === exercise.id)}
-                                onChange={(e) => {
-                                    const newValue = e.target.value;
-                                    if (newValue !== exercise.nombre) {
-                                        handleExerciseChange(index, "id", null); // Clear id if changing
-                                    }
-                                    handleExerciseChange(index, "nombre", newValue);
-                                    setSearchTerm(newValue);
-                                    setShowExerciseSearch(index);
-                                }}
-                                onFocus={() => {
-                                    setShowExerciseSearch(index);
-                                    setSearchTerm(exercise.nombre);
-                                }}
-                            />
-                            {showExerciseSearch === index && (
-                                <div className={styles['ejercicio-dropdown']}>
-                                    {filteredExercises.map((ex, i) => (
-                                        <div
-                                            key={i}
-                                            className={styles['ejercicio-option']}
-                                            onClick={() => handleSelectExercise(index, ex)}
-                                        >
-                                            {ex.name}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        <div className={styles['exercise-controls']}>
-                            <button
-                                type="button"
-                                onClick={() => handleMoveUp(index)}
-                                disabled={index === 0}
-                                className={styles['move-button']}
-                            >
-                                ▲
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleMoveDown(index)}
-                                disabled={index === exercises.length - 1}
-                                className={styles['move-button']}
-                            >
-                                ▼
-                            </button>
-                        </div>
-                    </div>
-
-                ))}
-
-                <button className={styles['boton-agregar-ejercicio']} onClick={handleAddExercise}>
+                <button className={styles["boton-agregar-ejercicio"]} onClick={addExercise}>
                     +
                 </button>
 
-                <div className={styles['form-actions']}>
-                    <button className={styles['boton-guardar-rutina']} onClick={handleSave}>
+                <div className={styles["form-actions"]}>
+                    <button className={styles["boton-guardar-rutina"]} onClick={save}>
                         Guardar
                     </button>
-                    <button className={styles['boton-cancelar']} onClick={handleCancel}>
+                    <button className={styles["boton-cancelar"]} onClick={cancel}>
                         Cancelar
                     </button>
                 </div>
             </div>
-            <Popup text={popupMessage} show={popupMessage !== null} onOk={() => {
-                setPopupMessage(null);
-                if (popupMessage.includes("guardados") || popupMessage.includes("Cambios")) {
-                    navigate(`/routines`);
-                }
-            }}/>
+
+            <Popup
+                text={popupMessage}
+                show={popupMessage !== null}
+                onOk={() => {
+                    const msg = popupMessage || "";
+                    setPopupMessage(null);
+                    if (msg.includes("guardados") || msg.includes("Cambios")) navigate("/routines");
+                }}
+            />
         </div>
     );
+}
+
+function RoutineTextFields({ routineData, titleError, changeInput }) {
+    return (
+        <>
+            <div className={styles["form-div"]}>
+                <label>Título:</label>
+                <input
+                    name="titulo"
+                    value={routineData.titulo}
+                    onChange={changeInput}
+                    className={titleError ? styles["input-error"] : ""}
+                />
+                {titleError && <span className={styles["error-message"]}>{titleError}</span>}
+            </div>
+
+            <div className={styles["form-div"]}>
+                <label>Descripción:</label>
+                <textarea
+                    name="descripcion"
+                    value={routineData.descripcion}
+                    onChange={changeInput}
+                    rows={3}
+                />
+            </div>
+
+            <div className={styles["form-div"]}>
+                <label>Dificultad:</label>
+                <select name="difficulty" value={routineData.difficulty} onChange={changeInput}>
+                    <option value="BEGINNER">Principiante</option>
+                    <option value="INTERMEDIATE">Intermedia</option>
+                    <option value="ADVANCED">Avanzada</option>
+                </select>
+            </div>
+
+            <div className={styles["form-div"]}>
+                <label>Visibilidad:</label>
+                <select name="visibility" value={routineData.visibility} onChange={changeInput}>
+                    <option value="PUBLIC">Pública</option>
+                    <option value="PRIVATE">Privada</option>
+                </select>
+            </div>
+        </>
+    );
+}
+
+function ExerciseList({
+                          exercises, originalExercises, filteredExercises,
+                          inputContainerRefs, showExerciseSearch,
+                          setShowExerciseSearch, setSearchTerm,
+                          changeExerciseField, selectExercise,
+                          removeExercise, moveExercise
+                      }) {
+    return exercises.map((exercise, index) => (
+        <ExerciseItem
+            key={exercise.id ?? index}
+            index={index}
+            exercise={exercise}
+            originalExercises={originalExercises}
+            filteredExercises={filteredExercises}
+            inputContainerRefs={inputContainerRefs}
+            showExerciseSearch={showExerciseSearch}
+            setShowExerciseSearch={setShowExerciseSearch}
+            setSearchTerm={setSearchTerm}
+            changeExerciseField={changeExerciseField}
+            selectExercise={selectExercise}
+            removeExercise={removeExercise}
+            moveExercise={moveExercise}
+            total={exercises.length}
+        />
+    ));
+}
+
+function ExerciseItem({
+                          index, exercise, originalExercises, filteredExercises,
+                          inputContainerRefs, showExerciseSearch,
+                          setShowExerciseSearch, setSearchTerm,
+                          changeExerciseField, selectExercise,
+                          removeExercise, moveExercise, total
+                      }) {
+
+    return (
+        <div className={styles["ejercicio-item"]}>
+            <label>Ejercicio {index + 1}:</label>
+
+            <button
+                type="button"
+                className={styles["boton-eliminar-ejercicio"]}
+                onClick={() => removeExercise(index)}
+                title="Eliminar ejercicio"
+                aria-label="Eliminar ejercicio"
+            >
+                <img
+                    src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
+                    alt="Eliminar ejercicio"
+                    className={styles["icono-papelera"]}
+                />
+            </button>
+            <div
+                className={styles["ejercicio-input-container"]}
+                ref={el => inputContainerRefs.current[index] = el}
+            >
+                <input
+                    type="text"
+                    value={exercise.nombre}
+                    disabled={originalExercises.some(oe => oe.id === exercise.id)}
+                    placeholder="Buscar ejercicio..."
+                    onChange={(e) => {
+                        const v = e.target.value;
+                        if (v !== exercise.nombre) changeExerciseField(index, "id", null);
+                        changeExerciseField(index, "nombre", v);
+                        setSearchTerm(v);
+                        setShowExerciseSearch(index);
+                    }}
+                    onFocus={() => {
+                        setSearchTerm(exercise.nombre);
+                        setShowExerciseSearch(index);
+                    }}
+                />
+
+                {showExerciseSearch === index && (
+                    <div className={styles["ejercicio-dropdown"]}>
+                        {filteredExercises.map(ex => (
+                            <div
+                                key={ex.id}
+                                className={styles["ejercicio-option"]}
+                                onClick={() => selectExercise(index, ex)}
+                            >
+                                {ex.name}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className={styles["exercise-controls"]}>
+                <button
+                    type="button"
+                    disabled={index === 0}
+                    className={styles["move-button"]}
+                    onClick={() => moveExercise(index, "up")}
+                >
+                    ▲
+                </button>
+
+                <button
+                    type="button"
+                    disabled={index === total - 1}
+                    className={styles["move-button"]}
+                    onClick={() => moveExercise(index, "down")}
+                >
+                    ▼
+                </button>
+            </div>
+        </div>
+    );
+}
+
+EditRoutine.propTypes = {};
+
+RoutineTextFields.propTypes = {
+    routineData: PropTypes.shape({
+        titulo: PropTypes.string.isRequired,
+        descripcion: PropTypes.string.isRequired,
+        visibility: PropTypes.string.isRequired,
+        difficulty: PropTypes.string.isRequired,
+    }).isRequired,
+    titleError: PropTypes.string,
+    changeInput: PropTypes.func.isRequired,
 };
 
-export default EditRoutine;
+ExerciseList.propTypes = {
+    exercises: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        nombre: PropTypes.string.isRequired,
+        position: PropTypes.number,
+    })).isRequired,
+    originalExercises: PropTypes.array.isRequired,
+    filteredExercises: PropTypes.array.isRequired,
+    inputContainerRefs: PropTypes.object.isRequired,
+    showExerciseSearch: PropTypes.number,
+    setShowExerciseSearch: PropTypes.func.isRequired,
+    setSearchTerm: PropTypes.func.isRequired,
+    changeExerciseField: PropTypes.func.isRequired,
+    selectExercise: PropTypes.func.isRequired,
+    removeExercise: PropTypes.func.isRequired,
+    moveExercise: PropTypes.func.isRequired,
+};
+
+ExerciseItem.propTypes = {
+    index: PropTypes.number.isRequired,
+    exercise: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        nombre: PropTypes.string.isRequired,
+        position: PropTypes.number,
+    }).isRequired,
+    originalExercises: PropTypes.array.isRequired,
+    filteredExercises: PropTypes.array.isRequired,
+    inputContainerRefs: PropTypes.object.isRequired,
+    showExerciseSearch: PropTypes.number,
+    setShowExerciseSearch: PropTypes.func.isRequired,
+    setSearchTerm: PropTypes.func.isRequired,
+    changeExerciseField: PropTypes.func.isRequired,
+    selectExercise: PropTypes.func.isRequired,
+    removeExercise: PropTypes.func.isRequired,
+    moveExercise: PropTypes.func.isRequired,
+    total: PropTypes.number.isRequired,
+};

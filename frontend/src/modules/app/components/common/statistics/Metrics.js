@@ -1,4 +1,5 @@
 import styles from './Metrics.module.css';
+import PropTypes from 'prop-types';
 
 export default function Metrics({ lastMonthWorkouts, totalDuration, averageDuration }) {
     return (
@@ -20,3 +21,9 @@ export default function Metrics({ lastMonthWorkouts, totalDuration, averageDurat
         </div>
     );
 }
+
+Metrics.propTypes = {
+    lastMonthWorkouts: PropTypes.number.isRequired,
+    totalDuration: PropTypes.string.isRequired,
+    averageDuration: PropTypes.string.isRequired
+};

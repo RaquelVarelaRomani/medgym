@@ -15,17 +15,6 @@ public class WorkoutCommentDto {
 
     public WorkoutCommentDto() {}
 
-    public WorkoutCommentDto(Long id, String text, LocalDateTime date, Long userId, Long workoutId, String userName, String userSurname, byte[] userProfilePicture) {
-        this.id = id;
-        this.text = text;
-        this.date = date;
-        this.userId = userId;
-        this.workoutId = workoutId;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userProfilePicture = userProfilePicture;
-    }
-
     public Long getId() {
         return id;
     }

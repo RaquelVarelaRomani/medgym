@@ -21,21 +21,9 @@ public class WorkoutForFeedDto {
     private List<WorkoutCommentDto> comments;
     private List<WorkoutLikeDto> likes;
 
-    public WorkoutForFeedDto() {
-    }
+    // No parameter constructor because of sonarqube restrictions
 
-    public WorkoutForFeedDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, byte[] userProfilePicture, List<WorkoutCommentDto> comments, List<WorkoutLikeDto> likes) {
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.routineId = routineId;
-        this.routineName = routineName;
-        this.userId = userId;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userProfilePicture = userProfilePicture;
-        this.comments = comments;
-        this.likes = likes;
+    public WorkoutForFeedDto() {
     }
 
     public Long getId() {

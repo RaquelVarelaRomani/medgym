@@ -11,15 +11,10 @@ const FollowersPage = () => {
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
-    const [me, setMe] = useState(null)
 
     useEffect(() => {
         tryLoginFromServiceToken(
-        (data) => {
-            const user = data.user;
-            setCurrentUser(user);
-
+        () => {
             getFollowers(
             id,
             (followersData) => {
@@ -46,28 +41,33 @@ const FollowersPage = () => {
 
     return (
         <div className={styles["followers-container"]}>
-        <div className={styles["followers-header"]}>
-            <h2>Tus Seguidores</h2>
-        </div>
+            <div className={styles["followers-header"]}>
+                <h2>Tus Seguidores</h2>
+            </div>
 
-        {followers.length === 0 ? (
-            <div className={styles["followers-list"]}>
-            <div className={`${styles["follower-card"]} ${styles["empty"]}`}>
-                <p className={styles["no-followers-text"]}>Aún no tienes seguidores.</p>
-            </div>
-            </div>
-        ) : (
-            <div className={styles["followers-list"]}>
-            {followers.map((follower) => (
-                <div key={follower.id} className={styles["follower-card"]} onClick={() => navigate(`/users/profile/${follower.userId}`)}>
-                <h3>
-                    {follower.userName} {follower.userSurname}
-                </h3>
-                <p>{follower.userEmail}</p>
+            {followers.length === 0 ? (
+                <div className={styles["followers-list"]}>
+                    <div className={`${styles["follower-card"]} ${styles["empty"]}`}>
+                        <p className={styles["no-followers-text"]}>Aún no tienes seguidores.</p>
+                    </div>
                 </div>
-            ))}
-            </div>
-        )}
+            ) : (
+                <div className={styles["followers-list"]}>
+                    {followers.map((follower) => (
+                        <button
+                            key={follower.id}
+                            type="button"
+                            className={styles["follower-card"]}
+                            onClick={() => navigate(`/users/profile/${follower.userId}`)}
+                        >
+                            <h3>
+                                {follower.userName} {follower.userSurname}
+                            </h3>
+                            <p>{follower.userEmail}</p>
+                        </button>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./ConfirmationPopup.module.css";
+import PropTypes from "prop-types";
 
 function ConfirmationPopup({ show, text, onOk, onCancel }) {
     if (!show) return null;
@@ -18,3 +19,10 @@ function ConfirmationPopup({ show, text, onOk, onCancel }) {
 }
 
 export default ConfirmationPopup;
+
+ConfirmationPopup.propTypes = {
+    show: PropTypes.bool.isRequired,
+    text: PropTypes.string.isRequired,
+    onOk: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired
+}

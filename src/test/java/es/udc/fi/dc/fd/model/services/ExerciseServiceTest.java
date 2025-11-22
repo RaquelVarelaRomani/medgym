@@ -44,12 +44,6 @@ public class ExerciseServiceTest {
     @Autowired
     private RoutineExerciseDao routineExerciseDao;
 
-    private User createAdmin(String userName) {
-        User user = new User(userName, "password", "name", "lastName",
-                userName, null, RoleType.ADMIN, User.StatusType.ACTIVE);
-        return userDao.save(user);
-    }
-
     private User createPremiumTrainer(String userName) {
         User user = new User(userName, "password", "name", "lastName",
                 userName, null, RoleType.TRAINER, User.StatusType.ACTIVE);
@@ -248,11 +242,9 @@ public class ExerciseServiceTest {
         int initial = exerciseService.findExercisesWithPendingStatus().size();
 
         Exercise e1 = createBasicExercise(t, "e1");
-        Exercise e2 = createBasicExercise(t, "e2");
-        Exercise e3 = createBasicExercise(t, "e3");
 
         var list = exerciseService.findExercisesWithPendingStatus();
-        assertEquals(initial + 3, list.size());
+        assertEquals(initial + 1, list.size());
         assertTrue(list.stream().anyMatch(x -> x.getId().equals(e1.getId())));
     }
 

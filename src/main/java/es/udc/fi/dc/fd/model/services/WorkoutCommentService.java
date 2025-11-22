@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.WorkoutComment;
-import es.udc.fi.dc.fd.model.entities.WorkoutLike;
 
 import java.util.List;
 
