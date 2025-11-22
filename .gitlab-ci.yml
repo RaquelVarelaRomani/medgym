@@ -1,0 +1,20 @@
+stages:
+  - test
+  - sonar
+
+sonarqube-check:
+  stage: sonar
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  script:
+    - sonar-scanner
+      -Dsonar.projectKey=es.udc.fi.dc.fd:medgym
+      -Dsonar.sources=.
+      -Dsonar.host.url=https://sonar.fic.udc.es
+      -Dsonar.login=$SONAR_TOKEN
+      -Dsonar.branch.name=test/manual-analysis
+  only:
+    - test/manual-analysis
+
+
