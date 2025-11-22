@@ -43,8 +43,10 @@
   ],
   "jest-junit": {
     "outputDirectory": "../target/surefire-reports",
-    "outputName": "TEST-medgym.xml",
+    "outputName": "frontend-medgym.xml",
     "includeConsoleOutput": true,
-    "reportTestSuiteErrors": true
+    "reportTestSuiteErrors": true,
+    "classNameTemplate": "FrontendTests",
+    "titleTemplate": "{classname} > {title}"
   }
 }
