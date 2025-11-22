@@ -113,7 +113,6 @@ const EditExercise = () => {
             exerciseData.description,
             exerciseData.muscleGroup,
             exerciseData.equipment,
-            exerciseData.image,
             () => {
                 setPopupText("Cambios guardados correctamente.");
                 setShowPopup(true);

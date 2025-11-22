@@ -18,18 +18,11 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
         <div
             className={styles.overlay}
             onClick={onClose}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") onClose();
-            }}
         >
-            <div
+            <dialog
                 className={styles.modal}
+                open
                 onClick={(e) => e.stopPropagation()}
-                role="dialog"
-                aria-modal="true"
-                tabIndex={-1}
             >
                 <h3>Comentarios</h3>
 
@@ -47,18 +40,18 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
                                     alt=""
                                 />
                                 <div className={styles.meta}>
-                    <span className={styles.author}>
-                        {c.userName} {c.userSurname}
-                    </span>
+                                    <span className={styles.author}>
+                                        {c.userName} {c.userSurname}
+                                    </span>
                                     <span className={styles.date}>
-                        {new Date(c.date).toLocaleString("es-ES", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })}
-                    </span>
+                                        {new Date(c.date).toLocaleString("es-ES", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit"
+                                        })}
+                                    </span>
                                 </div>
                             </div>
 
@@ -91,7 +84,7 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
                         Enviar
                     </button>
                 </div>
-            </div>
+            </dialog>
         </div>
     );
 }
@@ -106,7 +99,11 @@ CommentModal.propTypes = {
             userProfilePicture: PropTypes.string,
             userName: PropTypes.string,
             userSurname: PropTypes.string,
-            date: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
+            date: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+                PropTypes.instanceOf(Date)
+            ]),
             text: PropTypes.string
         })
     )

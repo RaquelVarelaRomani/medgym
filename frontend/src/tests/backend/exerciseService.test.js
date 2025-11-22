@@ -185,7 +185,7 @@ describe("exerciseService", () => {
         success(mockData);
       });
 
-      updateExercise(id, name, description, muscleGroup, equipment, image, onSuccess, onErrors);
+      updateExercise(id, name, description, muscleGroup, equipment, onSuccess, onErrors);
 
       expect(onSuccess).toHaveBeenCalledWith(mockData);
       expect(onErrors).not.toHaveBeenCalled();
@@ -200,7 +200,7 @@ describe("exerciseService", () => {
         errors(mockError);
       });
 
-      updateExercise(id, name, description, muscleGroup, equipment, image, onSuccess, onErrors);
+      updateExercise(id, name, description, muscleGroup, equipment, onSuccess, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith(mockError);
       expect(onSuccess).not.toHaveBeenCalled();

@@ -1341,7 +1341,7 @@ describe("Routines Components", () => {
             });
 
             exerciseService.updateExercise.mockImplementation(
-                (id, name, desc, muscle, equip, image, success) => {
+                (id, name, desc, muscle, equip, success) => {
                     success();
                 },
             );
@@ -1369,7 +1369,6 @@ describe("Routines Components", () => {
                     "Desc",
                     "Chest",
                     "Bar",
-                    null,
                     expect.any(Function),
                     expect.any(Function),
                 );
@@ -1508,7 +1507,7 @@ describe("Routines Components", () => {
             });
 
             exerciseService.updateExercise.mockImplementation(
-                (id, name, desc, muscle, equip, image, success, error) => {
+                (id, name, desc, muscle, equip, success, error) => {
                     error("Update error");
                 },
             );
@@ -1708,7 +1707,7 @@ describe("Routines Components", () => {
             });
 
             exerciseService.updateExercise.mockImplementation(
-                (id, name, desc, muscle, equip, image, success) => {
+                (id, name, desc, muscle, equip, success) => {
                     success();
                 },
             );
@@ -1751,7 +1750,7 @@ describe("Routines Components", () => {
             });
 
             exerciseService.updateExercise.mockImplementation(
-                (id, name, desc, muscle, equip, image, success) => {
+                (id, name, desc, muscle, equip, success) => {
                     success();
                 },
             );
