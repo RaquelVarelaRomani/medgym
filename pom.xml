@@ -91,10 +91,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<properties>
-				<dataSource.user>root</dataSource.user>
-				<dataSource.password>root</dataSource.password>
-			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>mysql</groupId>
