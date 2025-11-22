@@ -8,7 +8,7 @@ build-backend:
     - sonar
   image: maven:3.9-eclipse-temurin-17
   script:
-    - mvn -f pom.xml clean compile -DskipTests
+    - mvn -f pom.xml -DskipTests -Dskip.yarn=true -Dskip.npm=true -Dskip.frontend=true clean compile
   artifacts:
     paths:
       - target
