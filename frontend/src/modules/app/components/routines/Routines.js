@@ -49,7 +49,6 @@ const Routines = () => {
     const [showSearchResults, setShowSearchResults] = useState(false);
 
     const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
-    const [routineLikes, setRoutineLikes] = useState([]); // aún no usado pero necesario para getRoutineLikes
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -139,13 +138,21 @@ const Routines = () => {
         routineService.getAllRoutines(
             (data) => {
                 const trainers = data
-                    .filter((r) => r.trainerId && r.trainerName)
-                    .map((r) => ({
-                        id: r.trainerId,
-                        name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
-                    }))
-                    .filter((t, i, self) => i === self.findIndex((x) => x.id === t.id));
-                setAvailableTrainers(trainers);
+                    .reduce((acc, r) => {
+                        if (!r.trainerId || !r.trainerName) return acc;
+                        const id = r.trainerId;
+                        if (!acc.has(id)) {
+                            acc.set(id, {
+                                id,
+                                name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
+                                name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
+                            });
+                        }
+                        return acc;
+                    }, new Map())
+                    .values();
+
+                setAvailableTrainers([...trainers]);
             },
             (err) => console.error("Error loading trainers:", err)
         );
@@ -587,22 +594,22 @@ function DifficultyFilter({
 
     return (
         <div className={styles["filter-group"]}>
-            <label>Dificultad:</label>
-
+            <label htmlFor="difficulty-select">Dificultad:</label>
             <div
                 className={styles["custom-select"]}
                 ref={el => { filterRefs.current["difficulty"] = el; }}
             >
                 <button
+                    id="difficulty-select"
                     type="button"
                     className={styles["select-display"]}
                     onClick={() => setOpenDropdown(isOpen ? null : "difficulty")}
                 >
-                    <span>
-                        {filters.difficulty
-                            ? getDifficultyText(filters.difficulty)
-                            : "Todas"}
-                    </span>
+            <span>
+                {filters.difficulty
+                    ? getDifficultyText(filters.difficulty)
+                    : "Todas"}
+            </span>
                     <span className={styles["select-arrow"]}>▼</span>
                 </button>
 
@@ -717,13 +724,14 @@ function TrainerFilter({
 
     return (
         <div className={styles["filter-group"]}>
-            <label>Entrenador:</label>
+            <label htmlFor="trainer-select">Entrenador:</label>
 
             <div
                 className={styles["custom-select"]}
                 ref={el => { filterRefs.current["trainer"] = el; }}
             >
                 <button
+                    id="trainer-select"
                     type="button"
                     className={styles["select-display"]}
                     onClick={() => setOpenDropdown(isOpen ? null : "trainer")}
@@ -823,11 +831,20 @@ function SearchBar({
                                     <div
                                         key={routine.id}
                                         className={styles["search-result-item"]}
+                                        role="button"
+                                        tabIndex="0"
                                         onClick={() => handleSelectSearchedRoutine(routine)}
+                                        onKeyDown={e => {
+                                            if (e.key === "Enter" || e.key === " ") {
+                                                e.preventDefault();
+                                                handleSelectSearchedRoutine(routine);
+                                            }
+                                        }}
                                     >
                                         <div className={styles["search-result-name"]}>
                                             {routine.name}
                                         </div>
+
                                         <div className={styles["search-result-trainer"]}>
                                             {trainerName}
                                         </div>
