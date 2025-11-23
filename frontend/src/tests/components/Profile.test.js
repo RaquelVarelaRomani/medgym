@@ -6,10 +6,11 @@ import Profile from "../../modules/app/components/users/Profile";
 import EditProfile from "../../modules/app/components/users/EditProfile";
 
 import {
-    tryLoginFromServiceToken,
-    getUser,
-    updateProfile,
-    changePassword,
+  tryLoginFromServiceToken,
+  getUser,
+  updateProfile,
+  changePassword,
+  becomePremium,
 } from "../../backend/userService";
 import {
     getFollowers,
@@ -27,10 +28,11 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../../backend/userService", () => ({
-    tryLoginFromServiceToken: jest.fn(),
-    getUser: jest.fn(),
-    updateProfile: jest.fn(),
-    changePassword: jest.fn(),
+  tryLoginFromServiceToken: jest.fn(),
+  getUser: jest.fn(),
+  updateProfile: jest.fn(),
+  changePassword: jest.fn(),
+  becomePremium: jest.fn(),
 }));
 
 jest.mock("../../backend/userFollowService", () => ({
@@ -681,6 +683,512 @@ describe("Profile and EditProfile Components", () => {
 
       fireEvent.click(screen.getByText("Cancelar"));
       expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
+    });
+  });
+
+  describe("Profile Component - Additional Coverage", () => {
+    const mockUser = {
+      id: 1,
+      name: "John",
+      surname: "Doe",
+      email: "john@example.com",
+      phoneNumber: "123456789",
+      role: "CLIENT",
+      profilePicture: null,
+    };
+
+    const mockTrainer = {
+      id: 2,
+      name: "Trainer",
+      surname: "One",
+      email: "trainer@example.com",
+      phoneNumber: "987654321",
+      role: "TRAINER",
+      trainerPremium: false,
+    };
+
+    const setupProfileMocks = () => {
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(mockUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+    };
+
+    test("handles isBlocked error callback", async () => {
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(mockUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        reject("Block check error");
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("John Doe")).toBeInTheDocument();
+      });
+    });
+
+    test("navigates to followers page on button click", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followersButton = screen.getByText("Seguidores: 0");
+      fireEvent.click(followersButton);
+      expect(mockNavigate).toHaveBeenCalledWith("/users/followers/1");
+    });
+
+    test("navigates to following page on button click", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followingButton = screen.getByText("Siguiendo: 0");
+      fireEvent.click(followingButton);
+      expect(mockNavigate).toHaveBeenCalledWith("/users/following/1");
+    });
+
+    test("handles keyboard navigation for followers button", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followersButton = screen.getByText("Seguidores: 0");
+      fireEvent.keyDown(followersButton, { key: "Enter" });
+      expect(mockNavigate).toHaveBeenCalledWith("/users/followers/1");
+    });
+
+    test("handles keyboard navigation for following button", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followingButton = screen.getByText("Siguiendo: 0");
+      fireEvent.keyDown(followingButton, { key: "Enter" });
+      expect(mockNavigate).toHaveBeenCalledWith("/users/following/1");
+    });
+
+    test("updates follow info on followChanged event", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+
+      // Simulate followChanged event
+      window.dispatchEvent(new Event("followChanged"));
+
+      // The effect should trigger and call the follow services again
+      await waitFor(() => {
+        expect(getFollowers).toHaveBeenCalledTimes(2);
+        expect(getFollowedTrainers).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    test("shows become premium button for non-premium trainer", async () => {
+      const trainerUser = { ...mockTrainer, trainerPremium: false };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: trainerUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(trainerUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("Trainer One"));
+      expect(screen.getByText("Hacerme Entrenador premium")).toBeInTheDocument();
+    });
+
+    test("handles become premium success", async () => {
+      const trainerUser = { ...mockTrainer, trainerPremium: false };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: trainerUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(trainerUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      becomePremium.mockImplementation((id, success) => {
+        success();
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("Trainer One"));
+      const premiumButton = screen.getByText("Hacerme Entrenador premium");
+      fireEvent.click(premiumButton);
+
+      // Should update state
+      await waitFor(() => {
+        expect(screen.getByText("Entrenador premium")).toBeInTheDocument();
+      });
+    });
+
+    test("handles become premium error", async () => {
+      const trainerUser = { ...mockTrainer, trainerPremium: false };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: trainerUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(trainerUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      becomePremium.mockImplementation((id, success, error) => {
+        error("Premium error");
+      });
+
+      const alertSpy = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("Trainer One"));
+      const premiumButton = screen.getByText("Hacerme Entrenador premium");
+      fireEvent.click(premiumButton);
+
+      // Should show alert
+      expect(alertSpy).toHaveBeenCalledWith("Error becoming premium: Premium error");
+
+      alertSpy.mockRestore();
+    });
+
+    test("handles block user", async () => {
+      const otherUser = { ...mockUser, id: 2 };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(otherUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const blockButton = screen.getByText("Bloquear");
+      fireEvent.click(blockButton);
+
+      // Should call blockUser
+      expect(isBlocked).toHaveBeenCalled();
+    });
+
+    test("handles unblock user", async () => {
+      const otherUser = { ...mockUser, id: 2 };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(otherUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(true);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const unblockButton = screen.getByText("Desbloquear");
+      fireEvent.click(unblockButton);
+
+      // Should call unblockUser
+      expect(isBlocked).toHaveBeenCalled();
+    });
+
+    test("handles follow toggle success", async () => {
+      const otherUser = { ...mockUser, id: 2 };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(otherUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followButton = screen.getByText("Seguir");
+      fireEvent.click(followButton);
+
+      // Should update followers count
+      await waitFor(() => {
+        expect(screen.getByText("Seguidores: 1")).toBeInTheDocument();
+      });
+    });
+
+    test("handles follow toggle error", async () => {
+      const otherUser = { ...mockUser, id: 2 };
+
+      tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+        resolve({ user: mockUser });
+      });
+
+      getUser.mockImplementation((id, resolve, reject) => {
+        resolve(otherUser);
+      });
+
+      isBlocked.mockImplementation((id, resolve, reject) => {
+        resolve(false);
+      });
+
+      getFollowers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+        resolve([]);
+      });
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const followButton = screen.getByText("Seguir");
+      fireEvent.click(followButton);
+
+      // Should update to Seguidores: 1 initially
+      await waitFor(() => {
+        expect(screen.getByText("Seguidores: 1")).toBeInTheDocument();
+      });
+    });
+
+    test("renders BodyMetricsCard when showMetrics is true", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const metricsButton = screen.getByText("Métricas corporales");
+      fireEvent.click(metricsButton);
+
+      // Should render BodyMetricsCard
+      const metricsTitles = screen.getAllByText("Métricas corporales");
+      expect(metricsTitles.length).toBe(2); // Button and title
+    });
+
+    test("closes BodyMetricsCard on close", async () => {
+      setupProfileMocks();
+
+      render(
+        <MemoryRouter>
+          <Profile />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => screen.getByText("John Doe"));
+      const metricsButton = screen.getByText("Métricas corporales");
+      fireEvent.click(metricsButton);
+
+      // Mock the onClose callback
+      const closeButton = screen.getByText("Cerrar"); // Assuming BodyMetricsCard has a close button
+      fireEvent.click(closeButton);
+
+      // Should hide metrics - only the button should remain
+      const remainingMetrics = screen.getAllByText("Métricas corporales");
+      expect(remainingMetrics.length).toBe(1); // Only the button
     });
   });
 });

@@ -444,7 +444,7 @@ const Profile = () => {
                 }}
             />
 
-            {profile && <UserWorkoutHistory id={profile.id} />}
+            {profile && <UserWorkoutHistory id={profile.id.toString()} />}
 
             {showMetrics && profile && (
                 <BodyMetricsCard

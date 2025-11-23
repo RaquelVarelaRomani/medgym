@@ -14,6 +14,9 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 
@@ -122,6 +125,173 @@ public class UserServiceTest {
 
         assertThrows(PermissionException.class, () -> {
             userService.setTrainerPremium(client.getId(), true);
+        });
+    }
+
+    @Test
+    public void testSignUp_InvalidEmail() {
+        User user = createUser("invalid-email", "700111111");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.signUp(user);
+        });
+    }
+
+    @Test
+    public void testSignUp_DuplicatePhone() throws DuplicateInstanceException {
+        User user1 = createUser("phone1@test.com", "700222222");
+        userService.signUp(user1);
+
+        User user2 = createUser("phone2@test.com", "700222222");
+        assertThrows(DuplicateInstanceException.class, () -> {
+            userService.signUp(user2);
+        });
+    }
+
+    @Test
+    public void testLogin_NonExistingEmail() {
+        assertThrows(IncorrectLoginException.class, () -> {
+            userService.login("nonexisting@test.com", "password");
+        });
+    }
+
+    @Test
+    public void testLogin_BlockedUser() throws DuplicateInstanceException {
+        User user = createUser("blocked@test.com", "700333333");
+        userService.signUp(user);
+        user.setStatus(User.StatusType.BLOCKED);
+
+        assertThrows(BlockedUserException.class, () -> {
+            userService.login("blocked@test.com", "password");
+        });
+    }
+
+    @Test
+    public void testUpdateProfile_InvalidEmail() throws DuplicateInstanceException {
+        User user = createUser("update@test.com", "700444444");
+        userService.signUp(user);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateProfile(user.getId(), "New", "Name", "invalid-email", "+34 555 666 777", null);
+        });
+    }
+
+    @Test
+    public void testChangePassword_IncorrectOldPassword() throws DuplicateInstanceException {
+        User user = createUser("changepass@test.com", "700555555");
+        userService.signUp(user);
+
+        assertThrows(IncorrectPasswordException.class, () -> {
+            userService.changePassword(user.getId(), "wrongold", "newpass");
+        });
+    }
+
+    @Test
+    public void testFindUserById_NotFound() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userService.findUserById(999L);
+        });
+    }
+
+    @Test
+    public void testBlockUser_Admin() throws DuplicateInstanceException {
+        User admin = createUser("adminblock@test.com", "700666666");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
+
+        assertThrows(PermissionException.class, () -> {
+            userService.blockUser(admin.getId(), admin.getId());
+        });
+    }
+
+    @Test
+    public void testUnblockUser_Admin() throws DuplicateInstanceException {
+        User admin = createUser("adminunblock@test.com", "700777777");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
+
+        assertThrows(PermissionException.class, () -> {
+            userService.unblockUser(admin.getId(), admin.getId());
+        });
+    }
+
+    @Test
+    public void testSearchUsers() throws DuplicateInstanceException {
+        User user1 = createUser("search1@test.com", "700888888");
+        userService.signUp(user1);
+
+        User user2 = createUser("search2@test.com", "700999999");
+        userService.signUp(user2);
+
+        var results = userService.searchUsers(user1.getId(), "search");
+        assertEquals(1, results.size());
+        assertEquals(user2.getId(), results.get(0).getId());
+    }
+
+    @Test
+    public void testUpdateBodyMetrics_InvalidWeight() throws DuplicateInstanceException {
+        User user = createUser("body@test.com", "701111111");
+        userService.signUp(user);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateBodyMetrics(user.getId(), -10.0, 170.0, User.GenderType.MALE);
+        });
+    }
+
+    @Test
+    public void testUpdateBodyMetrics_InvalidHeight() throws DuplicateInstanceException {
+        User user = createUser("body2@test.com", "701222222");
+        userService.signUp(user);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.updateBodyMetrics(user.getId(), 70.0, 0.0, User.GenderType.MALE);
+        });
+    }
+
+    @Test
+    public void testUpdateBodyMetrics_Ok() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("body3@test.com", "701333333");
+        userService.signUp(user);
+
+        User updated = userService.updateBodyMetrics(user.getId(), 75.0, 180.0, User.GenderType.MALE);
+        assertEquals(75.0, updated.getWeightKg(), 0.0);
+        assertEquals(180.0, updated.getHeightCm(), 0.0);
+        assertEquals(User.GenderType.MALE, updated.getGender());
+    }
+
+    @Test
+    public void testClearBodyMetrics() throws DuplicateInstanceException, InstanceNotFoundException {
+        User user = createUser("clear@test.com", "701444444");
+        userService.signUp(user);
+        userService.updateBodyMetrics(user.getId(), 70.0, 170.0, User.GenderType.FEMALE);
+
+        User cleared = userService.clearBodyMetrics(user.getId());
+        assertEquals(null, cleared.getWeightKg());
+        assertEquals(null, cleared.getHeightCm());
+        assertEquals(null, cleared.getGender());
+    }
+
+    @Test
+    public void testFindAllUsers() throws DuplicateInstanceException {
+        User user1 = createUser("all1@test.com", "701555555");
+        userService.signUp(user1);
+
+        User user2 = createUser("all2@test.com", "701666666");
+        userService.signUp(user2);
+
+        var all = userService.findAllUsers();
+        assertEquals(true, all.size() >= 2);
+    }
+
+    @Test
+    public void testDeleteUser() throws DuplicateInstanceException {
+        User user = createUser("delete@test.com", "701777777");
+        userService.signUp(user);
+
+        userService.deleteUser(user.getId());
+
+        assertThrows(InstanceNotFoundException.class, () -> {
+            userService.findUserById(user.getId());
         });
     }
 }

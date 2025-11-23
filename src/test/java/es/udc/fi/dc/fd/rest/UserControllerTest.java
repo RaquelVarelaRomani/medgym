@@ -1,5 +1,7 @@
 package es.udc.fi.dc.fd.rest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -22,11 +24,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.BmiCalculateParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.BmiDto;
+import es.udc.fi.dc.fd.rest.dtos.BodyMetricsParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.ChangePasswordParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.UserDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -45,6 +53,9 @@ public class UserControllerTest {
 
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private UserBlockService userBlockService;
 
 	@Autowired
 	private UserController userController;
@@ -154,6 +165,269 @@ public class UserControllerTest {
         mockMvc.perform(put("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
                         .header("Authorization", "Bearer " + trainer.getServiceToken()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testSignUp_Ok() throws Exception {
+        String json = """
+        {
+          "name": "John",
+          "surname": "Doe",
+          "email": "john@test.com",
+          "phoneNumber": "+34 123 456 789",
+          "password": "password"
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/signUp")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+    }
+
+    @Test
+    public void testSignUp_DuplicateEmail() throws Exception {
+        // First sign up
+        User user = new User("existing", "user", "dup@test.com", "+34 000 000 001", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDao.save(user);
+
+        String json = """
+        {
+          "name": "Jane",
+          "surname": "Doe",
+          "email": "dup@test.com",
+          "phoneNumber": "+34 987 654 321",
+          "password": "password"
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/signUp")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testLogin_IncorrectPassword() throws Exception {
+        User user = new User("test", "user", "login@test.com", "+34 000 000 002", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDao.save(user);
+
+        String json = """
+        {
+          "email": "login@test.com",
+          "password": "wrong"
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testLogin_BlockedUser() throws Exception {
+        User user = new User("blocked", "user", "blocked@test.com", "+34 000 000 003", "password", RoleType.CLIENT, User.StatusType.BLOCKED);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDao.save(user);
+
+        String json = """
+        {
+          "email": "blocked@test.com",
+          "password": "password"
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testLoginFromServiceToken_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("token@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(post("/api/users/loginFromServiceToken")
+                        .header("userId", user.getUserDto().getId().toString())
+                        .header("serviceToken", user.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateProfile_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("update@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "name": "Updated",
+          "surname": "Name",
+          "email": "updated@test.com",
+          "phoneNumber": "+34 111 222 333"
+        }
+        """;
+
+        mockMvc.perform(put("/api/users/" + user.getUserDto().getId())
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateProfile_PermissionDenied() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("update1@test.com", RoleType.CLIENT);
+        AuthenticatedUserDto other = createAuthenticatedUser("update2@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "name": "Hacked",
+          "surname": "Name",
+          "email": "hacked@test.com",
+          "phoneNumber": "+34 444 555 666"
+        }
+        """;
+
+        mockMvc.perform(put("/api/users/" + other.getUserDto().getId())
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testGetUser_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("get@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(get("/api/users/" + user.getUserDto().getId())
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetUser_Blocked() throws Exception {
+        AuthenticatedUserDto blocker = createAuthenticatedUser("blocker@test.com", RoleType.CLIENT);
+        AuthenticatedUserDto blocked = createAuthenticatedUser("blocked2@test.com", RoleType.CLIENT);
+
+        userBlockService.blockUser(blocker.getUserDto().getId(), blocked.getUserDto().getId());
+
+        mockMvc.perform(get("/api/users/" + blocked.getUserDto().getId())
+                        .header("Authorization", "Bearer " + blocker.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testGetAllUsers_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("all@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(get("/api/users")
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testSearchUsers_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("search@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(get("/api/users/search")
+                        .param("q", "test")
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteUser_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("delete@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(delete("/api/users/" + user.getUserDto().getId())
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testUpdateBodyMetrics_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("body@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "weightKg": 70.5,
+          "heightCm": 175.0,
+          "gender": "MALE"
+        }
+        """;
+
+        mockMvc.perform(put("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testUpdateBodyMetrics_InvalidGender() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("body2@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "weightKg": 70.5,
+          "heightCm": 175.0,
+          "gender": "INVALID"
+        }
+        """;
+
+        mockMvc.perform(put("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testClearBodyMetrics_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("clear@test.com", RoleType.CLIENT);
+
+        mockMvc.perform(delete("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void testCalculateBmi_Ok() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("bmi@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "weightKg": 70.0,
+          "heightCm": 170.0
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/bmi/calculate")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testCalculateBmi_InvalidParams() throws Exception {
+        AuthenticatedUserDto user = createAuthenticatedUser("bmi2@test.com", RoleType.CLIENT);
+
+        String json = """
+        {
+          "weightKg": 70.0,
+          "heightCm": 0
+        }
+        """;
+
+        mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/bmi/calculate")
+                        .header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest());
     }
 
 

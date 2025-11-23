@@ -6,6 +6,7 @@ import WorkoutHistory from "../../modules/app/components/workouts/WorkoutHistory
 import WorkoutDetails from "../../modules/app/components/workouts/WorkoutDetails";
 import ExerciseEntry from "../../modules/app/components/workouts/ExerciseEntry";
 import WorkoutSession from "../../modules/app/components/workouts/WorkoutSession";
+import UserWorkoutHistory from "../../modules/app/components/workouts/UserWorkoutHistory";
 
 import { tryLoginFromServiceToken } from "../../backend/userService";
 import {
@@ -14,6 +15,7 @@ import {
     addWorkoutActivity,
     finishWorkout,
     getLastMonthStats,
+    getWorkoutsByUser,
 } from "../../backend/workoutService";
 import {
     getWorkoutExercisesByWorkoutId,
@@ -39,6 +41,7 @@ jest.mock("../../backend/workoutService", () => ({
     addWorkoutActivity: jest.fn(),
     finishWorkout: jest.fn(),
     getLastMonthStats: jest.fn(),
+    getWorkoutsByUser: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutExerciseService", () => ({
@@ -1076,6 +1079,483 @@ describe("WorkoutDetails Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("30 min")).toBeInTheDocument();
+        });
+    });
+});
+
+describe("UserWorkoutHistory Component", () => {
+    test("renders loading state initially", () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {});
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        expect(
+            screen.getByText("Cargando historial de entrenamientos..."),
+        ).toBeInTheDocument();
+    });
+
+    test("redirects to login on authentication failure", () => {
+        tryLoginFromServiceToken.mockImplementation((success, error) => {
+            error();
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        expect(mockNavigate).toHaveBeenCalledWith("/users/login");
+    });
+
+    test("renders empty state when no workouts exist", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("No has realizado ningún entrenamiento todavía."),
+            ).toBeInTheDocument();
+            expect(
+                screen.getByText("Ver entrenamientos disponibles"),
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("renders workout list correctly", async () => {
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime: "2023-10-01T10:00:00Z",
+                endTime: "2023-10-01T11:00:00Z",
+            },
+            {
+                id: 2,
+                routineName: "Rutina 2",
+                startTime: "2023-10-02T10:00:00Z",
+                endTime: null,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Historial de entrenamientos"),
+            ).toBeInTheDocument();
+            expect(screen.getByText("Rutina 2")).toBeInTheDocument();
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+            expect(screen.getByText("En progreso")).toBeInTheDocument();
+            expect(screen.getByText("1h 0min")).toBeInTheDocument();
+        });
+    });
+
+    test("renders error state when loading workouts fails", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success, error) => {
+            error({ globalError: "Error al cargar el historial" });
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Error al cargar el historial"),
+            ).toBeInTheDocument();
+            expect(screen.getByText("Intentar de nuevo")).toBeInTheDocument();
+        });
+    });
+
+    test("handles retry button click", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser
+            .mockImplementationOnce((id, success, error) => {
+                error({ globalError: "Error" });
+            })
+            .mockImplementationOnce((id, success) => {
+                success([]);
+            });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Intentar de nuevo")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("Intentar de nuevo"));
+
+        await waitFor(() => {
+            expect(getWorkoutsByUser).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    test("navigates to routines on empty state button click", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Ver entrenamientos disponibles"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("Ver entrenamientos disponibles"));
+
+        expect(mockNavigate).toHaveBeenCalledWith("/routines");
+    });
+
+    test("renders calendar view correctly", async () => {
+        jest
+            .useFakeTimers()
+            .setSystemTime(new Date("2025-12-01T00:00:00Z"));
+
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+
+        const startTime = `${currentYear}-${String(currentMonth).padStart(
+            2,
+            "0",
+        )}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(
+            2,
+            "0",
+        )}-01T11:00:00Z`;
+
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime,
+                endTime,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((s) =>
+            s({ user: { id: 1 } }),
+        );
+        getWorkoutsByUser.mockImplementation((id, s) => s(mockWorkouts));
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("diciembre de 2025"),
+            ).toBeInTheDocument();
+            expect(screen.getByText("1")).toBeInTheDocument();
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+    });
+
+    test("handles month navigation in calendar view", async () => {
+        jest
+            .useFakeTimers()
+            .setSystemTime(new Date("2025-01-15T10:00:00Z"));
+
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear(); // 2025
+        const startTime = `${currentYear}-01-01T00:00:00Z`;
+        const endTime = `${currentYear}-01-01T11:00:00Z`;
+
+        const mockWorkouts = [
+            { id: 1, routineName: "Rutina 1", startTime, endTime },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Enero de 2025"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText(">"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Febrero de 2025"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("<"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Enero de 2025"),
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("navigates on workout click in calendar view", async () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, "0")}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, "0")}-01T11:00:00Z`;
+
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime,
+                endTime,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>
+        );
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            const workoutLink = screen.getByText("Rutina 1");
+            expect(workoutLink).toBeInTheDocument();
+            expect(workoutLink.closest("a")).toHaveAttribute(
+                "href",
+                "/workouts/1"
+            );
+        });
+    });
+
+    test("navigates to active workout session", async () => {
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime: "2023-10-01T10:00:00Z",
+                endTime: null,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const workoutLink = screen.getByText("Rutina 1");
+            expect(workoutLink.closest("a")).toHaveAttribute(
+                "href",
+                "/workouts/session/1"
+            );
+        });
+    });
+
+    test("toggles between list and calendar view", async () => {
+        const mockWorkouts = [];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        expect(screen.getByText("Lista")).toHaveClass("active");
+        expect(screen.getByText("Calendario")).not.toHaveClass("active");
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Calendario")).toHaveClass("active");
+            expect(screen.getByText("Lista")).not.toHaveClass("active");
+        });
+
+        fireEvent.click(screen.getByText("Lista"));
+
+        await waitFor(() => {
+            expect(screen.getByText("Lista")).toHaveClass("active");
+            expect(screen.getByText("Calendario")).not.toHaveClass("active");
+        });
+    });
+
+    test("handles year change when navigating from January to December", async () => {
+        jest
+            .useFakeTimers()
+            .setSystemTime(new Date("2025-01-15T10:00:00Z"));
+
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime: "2025-01-01T00:00:00Z",
+                endTime: "2025-01-01T11:00:00Z",
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Enero de 2025"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("<"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Diciembre de 2024"),
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("handles year change when navigating from December to January", async () => {
+        jest
+            .useFakeTimers()
+            .setSystemTime(new Date("2025-12-15T10:00:00Z"));
+
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime: "2025-12-01T00:00:00Z",
+                endTime: "2025-12-01T11:00:00Z",
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkoutsByUser.mockImplementation((id, success) => {
+            success(mockWorkouts);
+        });
+
+        render(
+            <MemoryRouter>
+                <UserWorkoutHistory id="1" />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Calendario"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Diciembre de 2025"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText(">"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Enero de 2026"),
+            ).toBeInTheDocument();
         });
     });
 });
