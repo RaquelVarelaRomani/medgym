@@ -14,7 +14,7 @@ const Login = () => {
     const handleSubmit = () => {
         if (!email.trim() || !password) return;
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email.trim())) return;
 
         login(
