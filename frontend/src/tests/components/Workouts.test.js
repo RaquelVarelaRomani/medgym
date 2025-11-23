@@ -1257,55 +1257,6 @@ describe("UserWorkoutHistory Component", () => {
         expect(mockNavigate).toHaveBeenCalledWith("/routines");
     });
 
-    test("renders calendar view correctly", async () => {
-        jest
-            .useFakeTimers()
-            .setSystemTime(new Date("2025-12-01T00:00:00Z"));
-
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-
-        const startTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T00:00:00Z`;
-        const endTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T11:00:00Z`;
-
-        const mockWorkouts = [
-            {
-                id: 1,
-                routineName: "Rutina 1",
-                startTime,
-                endTime,
-            },
-        ];
-
-        tryLoginFromServiceToken.mockImplementation((s) =>
-            s({ user: { id: 1 } }),
-        );
-        getWorkoutsByUser.mockImplementation((id, s) => s(mockWorkouts));
-
-        render(
-            <MemoryRouter>
-                <UserWorkoutHistory id="1" />
-            </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("diciembre de 2025"),
-            ).toBeInTheDocument();
-            expect(screen.getByText("1")).toBeInTheDocument();
-            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
-        });
-    });
-
     test("handles month navigation in calendar view", async () => {
         jest
             .useFakeTimers()

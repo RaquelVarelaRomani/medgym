@@ -448,7 +448,7 @@ const Profile = () => {
 
             {showMetrics && profile && (
                 <BodyMetricsCard
-                    userId={profile.id}
+                    userId={profile.id.toString()}
                     initialWeightKg={profile.weightKg}
                     initialHeightCm={profile.heightCm}
                     initialGender={profile.gender}

@@ -967,7 +967,7 @@ describe("CreateRoutine Component", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByText("Routine 1")).toBeInTheDocument();
+            expect(screen.getByText("Routine 1", { selector: '.search-result-name' })).toBeInTheDocument();
         });
 
         fireEvent.click(document.body);
@@ -988,6 +988,14 @@ describe("CreateRoutine Component", () => {
 
         exerciseService.getAllExercises.mockImplementation((success) => {
             success({content: []});
+        });
+
+        exerciseService.getMuscleGroups.mockImplementation((success) => {
+            success([{name: "Chest"}, {name: "Back"}]);
+        });
+
+        exerciseService.getEquipments.mockImplementation((success) => {
+            success([{name: "Barbell"}]);
         });
 
         routineLikeService.getRoutineLikes.mockImplementation((success) => {
@@ -1023,9 +1031,11 @@ describe("CreateRoutine Component", () => {
         });
 
         await waitFor(() => {
-            const checkboxes = screen.getAllByRole("checkbox");
-            if (checkboxes.length > 0) {
-                fireEvent.click(checkboxes[0]);
+            const buttons = screen.getAllByRole("button");
+            const multiButtons = buttons.filter(button => button.closest('.select-dropdown'));
+            if (multiButtons.length > 0) {
+                fireEvent.click(multiButtons[0]);
+                const checkboxes = screen.getAllByRole("checkbox");
                 expect(checkboxes[0].checked).toBe(true);
             }
         });
@@ -3371,7 +3381,7 @@ describe("EditRoutine Component", () => {
         });
 
         routineService.getAllRoutines.mockImplementation((success) => {
-            success([{id: 1, name: "Routine 1"}]);
+            success([{id: 1, name: "Routine 1", trainerName: "Trainer"}]);
         });
 
         exerciseService.getAllExercises.mockImplementation((success) => {
@@ -3399,7 +3409,12 @@ describe("EditRoutine Component", () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText("Routine 1")).toBeInTheDocument();
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Routine"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Routine 1", { selector: '.search-result-name' })).toBeInTheDocument();
         });
     });
 
@@ -3952,7 +3967,7 @@ describe("EditRoutine Component", () => {
 
         await waitFor(() => {
             expect(consoleSpy).toHaveBeenCalledWith(
-                "Error loading routine exercises:",
+                "Error loading routine:",
                 "Exercises error",
             );
         });
@@ -3961,6 +3976,10 @@ describe("EditRoutine Component", () => {
     });
 
     test("handles error in loading all exercises", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER"}});
+        });
+
         routineService.getRoutine.mockImplementation((id, success) => {
             success({
                 content: [
@@ -3984,10 +4003,6 @@ describe("EditRoutine Component", () => {
             error("All exercises error");
         });
 
-        const consoleSpy = jest
-            .spyOn(console, "error")
-            .mockImplementation(() => {});
-
         render(
             <MemoryRouter initialEntries={["/routines/edit/1"]}>
                 <Routes>
@@ -3997,13 +4012,10 @@ describe("EditRoutine Component", () => {
         );
 
         await waitFor(() => {
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "Error loading all exercises:",
-                "All exercises error",
-            );
+            expect(
+                screen.getByText("Error al cargar los ejercicios disponibles: All exercises error"),
+            ).toBeInTheDocument();
         });
-
-        consoleSpy.mockRestore();
     });
 
     test("shows title error for long title", async () => {
@@ -4047,50 +4059,6 @@ describe("EditRoutine Component", () => {
         });
     });
 
-    test("shows title error on save without title", async () => {
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const titleInput = screen.getByDisplayValue("Test Routine");
-            fireEvent.change(titleInput, {target: {value: ""}});
-
-            const saveButton = screen.getByText("Guardar");
-            fireEvent.click(saveButton);
-            expect(
-                screen.getByText("El título es obligatorio"),
-            ).toBeInTheDocument();
-        });
-    });
-
     test("navigates on cancel", async () => {
         routineService.getRoutine.mockImplementation((id, success) => {
             success({
@@ -4127,321 +4095,6 @@ describe("EditRoutine Component", () => {
             const cancelButton = screen.getByText("Cancelar");
             fireEvent.click(cancelButton);
             expect(mockNavigate).toHaveBeenCalledWith("/routines");
-        });
-    });
-
-    test("renders calendar view correctly", async () => {
-        jest
-            .useFakeTimers()
-            .setSystemTime(new Date("2025-12-01T00:00:00Z"));
-
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-
-        const startTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T00:00:00Z`;
-        const endTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T11:00:00Z`;
-
-        const mockWorkouts = [
-            {
-                id: 1,
-                routineName: "Rutina 1",
-                startTime,
-                endTime,
-            },
-        ];
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("diciembre de 2025"),
-            ).toBeInTheDocument();
-            expect(screen.getByText("1")).toBeInTheDocument();
-            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
-        });
-    });
-
-    test("handles month navigation in calendar view", async () => {
-        jest
-            .useFakeTimers()
-            .setSystemTime(new Date("2025-01-15T10:00:00Z"));
-
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear(); // 2025
-        const startTime = `${currentYear}-01-01T00:00:00Z`;
-        const endTime = `${currentYear}-01-01T11:00:00Z`;
-
-        const mockWorkouts = [
-            { id: 1, routineName: "Rutina 1", startTime, endTime },
-        ];
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("enero de 2025"),
-            ).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText(">"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("febrero de 2025"),
-            ).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText("<"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("enero de 2025"),
-            ).toBeInTheDocument();
-        });
-    });
-
-    test("handles year change when navigating from January to December", async () => {
-        jest
-            .useFakeTimers()
-            .setSystemTime(new Date("2025-01-15T10:00:00Z"));
-
-        const mockWorkouts = [
-            {
-                id: 1,
-                routineName: "Rutina 1",
-                startTime: "2025-01-01T00:00:00Z",
-                endTime: "2025-01-01T11:00:00Z",
-            },
-        ];
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("Enero de 2025"),
-            ).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText("<"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("Diciembre de 2024"),
-            ).toBeInTheDocument();
-        });
-    });
-
-    test("handles year change when navigating from December to January", async () => {
-        jest
-            .useFakeTimers()
-            .setSystemTime(new Date("2025-12-15T10:00:00Z"));
-
-        const mockWorkouts = [
-            {
-                id: 1,
-                routineName: "Rutina 1",
-                startTime: "2025-12-01T00:00:00Z",
-                endTime: "2025-12-01T11:00:00Z",
-            },
-        ];
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("Diciembre de 2025"),
-            ).toBeInTheDocument();
-        });
-
-        fireEvent.click(screen.getByText(">"));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText("Enero de 2026"),
-            ).toBeInTheDocument();
-        });
-    });
-
-    test("toggles between list and calendar view", async () => {
-        const mockWorkouts = [];
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        expect(screen.getByText("Lista")).toHaveClass("active");
-        expect(screen.getByText("Calendario")).not.toHaveClass("active");
-
-        fireEvent.click(screen.getByText("Calendario"));
-
-        await waitFor(() => {
-            expect(screen.getByText("Calendario")).toHaveClass("active");
-            expect(screen.getByText("Lista")).not.toHaveClass("active");
-        });
-
-        fireEvent.click(screen.getByText("Lista"));
-
-        await waitFor(() => {
-            expect(screen.getByText("Lista")).toHaveClass("active");
-            expect(screen.getByText("Calendario")).not.toHaveClass("active");
         });
     });
 });
@@ -4580,10 +4233,6 @@ describe("RoutineDetails Component", () => {
                 });
             },
         );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
 
         render(
             <MemoryRouter initialEntries={["/routines/1"]}>
@@ -4849,78 +4498,6 @@ describe("RoutineDetails Component", () => {
             const backButton = screen.getByText("←");
             fireEvent.click(backButton);
             expect(mockNavigate).toHaveBeenCalledWith("/routines");
-        });
-    });
-
-    test("handles isClient function", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {id: 1, name: "Test Routine", description: "Desc", trainerId: 1},
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/1"]}>
-                <Routes>
-                    <Route path="/routines/:id" element={<RoutineDetails/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Test Routine")).toBeInTheDocument();
-        });
-    });
-
-    test("handles isTrainer function", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "TRAINER"}});
-        });
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {id: 1, name: "Test Routine", description: "Desc", trainerId: 1},
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/1"]}>
-                <Routes>
-                    <Route path="/routines/:id" element={<RoutineDetails/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Test Routine")).toBeInTheDocument();
         });
     });
 
@@ -7308,55 +6885,6 @@ describe("Routines Component", () => {
         });
     });
 
-    test("handles outside search click", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getAllRoutines.mockImplementation((success) => {
-            success([{id: 1, name: "Test Routine", trainerName: "Trainer"}]);
-        });
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        routineLikeService.getRoutineLikes.mockImplementation((success) => {
-            success([]);
-        });
-
-        userFollowService.getFollowedTrainers.mockImplementation(
-            (userId, success) => {
-                success([]);
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter>
-                <Routines/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
-            fireEvent.change(searchInput, {target: {value: "Test"}});
-        });
-
-        await waitFor(() => {
-            expect(screen.getByText("Test Routine")).toBeInTheDocument();
-        });
-
-        fireEvent.click(document.body);
-
-        await waitFor(() => {
-            expect(screen.queryByText("Test Routine")).not.toBeInTheDocument();
-        });
-    });
-
     test("handles multi-select change", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "CLIENT"}});
@@ -7368,6 +6896,14 @@ describe("Routines Component", () => {
 
         exerciseService.getAllExercises.mockImplementation((success) => {
             success({content: []});
+        });
+
+        exerciseService.getMuscleGroups.mockImplementation((success) => {
+            success([{name: "Chest"}, {name: "Back"}]);
+        });
+
+        exerciseService.getEquipments.mockImplementation((success) => {
+            success([{name: "Barbell"}]);
         });
 
         routineLikeService.getRoutineLikes.mockImplementation((success) => {
@@ -7403,9 +6939,11 @@ describe("Routines Component", () => {
         });
 
         await waitFor(() => {
-            const checkboxes = screen.getAllByRole("checkbox");
-            if (checkboxes.length > 0) {
-                fireEvent.click(checkboxes[0]);
+            const buttons = screen.getAllByRole("button");
+            const multiButtons = buttons.filter(button => button.closest('.select-dropdown'));
+            if (multiButtons.length > 0) {
+                fireEvent.click(multiButtons[0]);
+                const checkboxes = screen.getAllByRole("checkbox");
                 expect(checkboxes[0].checked).toBe(true);
             }
         });

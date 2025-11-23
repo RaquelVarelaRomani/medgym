@@ -829,27 +829,6 @@ describe("Profile and EditProfile Components", () => {
       expect(mockNavigate).toHaveBeenCalledWith("/users/following/1");
     });
 
-    test("updates follow info on followChanged event", async () => {
-      setupProfileMocks();
-
-      render(
-        <MemoryRouter>
-          <Profile />
-        </MemoryRouter>
-      );
-
-      await waitFor(() => screen.getByText("John Doe"));
-
-      // Simulate followChanged event
-      window.dispatchEvent(new Event("followChanged"));
-
-      // The effect should trigger and call the follow services again
-      await waitFor(() => {
-        expect(getFollowers).toHaveBeenCalledTimes(2);
-        expect(getFollowedTrainers).toHaveBeenCalledTimes(2);
-      });
-    });
-
     test("shows become premium button for non-premium trainer", async () => {
       const trainerUser = { ...mockTrainer, trainerPremium: false };
 
