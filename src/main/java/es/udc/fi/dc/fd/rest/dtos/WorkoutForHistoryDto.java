@@ -17,6 +17,7 @@ public class WorkoutForHistoryDto {
     private String userSurname;
     private List<WorkoutCommentDto> comments;
     private List<WorkoutLikeDto> likes;
+
     public WorkoutForHistoryDto() {
         // No-args constructor required for Jackson and frameworks.
         // Nested comment: implementation intentionally empty because the DTO

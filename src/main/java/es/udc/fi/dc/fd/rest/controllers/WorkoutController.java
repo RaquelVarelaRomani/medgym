@@ -8,7 +8,6 @@ import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
 import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;

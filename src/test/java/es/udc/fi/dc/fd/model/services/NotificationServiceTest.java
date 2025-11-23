@@ -8,22 +8,20 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class NotificationServiceTest {
+class NotificationServiceTest {
 
     @Autowired
     private NotificationService notificationService;
@@ -149,11 +147,11 @@ public class NotificationServiceTest {
 
     @Test
     void testCreateWorkoutLikeNotification() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
-        User u1 = userDao.save(new User("u1","u1","u1@test.com","600000011","pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User u2 = userDao.save(new User("u2","u2","u2@test.com","600000012","pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User u1 = userDao.save(new User("u1", "u1", "u1@test.com", "600000011", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User u2 = userDao.save(new User("u2", "u2", "u2@test.com", "600000012", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         u2.setTrainerPremium(true);
 
-        Routine r = routineService.createRoutine("R1","d",u2,
+        Routine r = routineService.createRoutine("R1", "d", u2,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         var w = workoutService.startWorkout(r.getId(), u2.getId());
 
@@ -167,11 +165,11 @@ public class NotificationServiceTest {
 
     @Test
     void testCreateWorkoutCommentNotification() throws Exception {
-        User u1 = userDao.save(new User("u1c","u1c","u1c@test.com","600000013","pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User u2 = userDao.save(new User("u2c","u2c","u2c@test.com","600000014","pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User u1 = userDao.save(new User("u1c", "u1c", "u1c@test.com", "600000013", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User u2 = userDao.save(new User("u2c", "u2c", "u2c@test.com", "600000014", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         u2.setTrainerPremium(true);
 
-        Routine r = routineService.createRoutine("R2","d",u2,
+        Routine r = routineService.createRoutine("R2", "d", u2,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         var w = workoutService.startWorkout(r.getId(), u2.getId());
 
@@ -185,12 +183,12 @@ public class NotificationServiceTest {
 
     @Test
     void testDeleteNotificationsByIdToRedirect() throws Exception {
-        User u = userDao.save(new User("uX","uX","uX@test.com","600000015","pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User t = userDao.save(new User("tX","tX","tX@test.com","600000016","pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User u = userDao.save(new User("uX", "uX", "uX@test.com", "600000015", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User t = userDao.save(new User("tX", "tX", "tX@test.com", "600000016", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         t.setTrainerPremium(true);
 
         userFollowService.followUser(u.getId(), t.getId());
-        Routine r = routineService.createRoutine("R3","d",t,
+        Routine r = routineService.createRoutine("R3", "d", t,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
         notificationService.deleteNotificationsByIdToRedirect(r.getId());

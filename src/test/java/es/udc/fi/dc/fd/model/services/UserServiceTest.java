@@ -9,80 +9,77 @@ import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class UserServiceTest {
+class UserServiceTest {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	private User createUser(String email, String phoneNumber) {
-		return new User("name", "surname", email, phoneNumber, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
-	}
+    private User createUser(String email, String phoneNumber) {
+        return new User("name", "surname", email, phoneNumber, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+    }
 
-	@Test
-	void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
+    @Test
+    void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
 
-		User user = createUser("user@test.com", "123456789");
+        User user = createUser("user@test.com", "123456789");
 
-		userService.signUp(user);
+        userService.signUp(user);
 
-		User loggedInUser = userService.loginFromId(user.getId());
+        User loggedInUser = userService.loginFromId(user.getId());
 
-		assertEquals(user, loggedInUser);
-		assertEquals(User.RoleType.CLIENT, user.getRole());
-		assertEquals(User.StatusType.ACTIVE, user.getStatus());
+        assertEquals(user, loggedInUser);
+        assertEquals(User.RoleType.CLIENT, user.getRole());
+        assertEquals(User.StatusType.ACTIVE, user.getStatus());
 
-	}
+    }
 
-	@Test
-	void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    @Test
+    void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin@admin.com", "+34 222 222 222");
-		admin.setRole(User.RoleType.ADMIN);
-		userService.signUp(admin);
+        User admin = createUser("admin@admin.com", "+34 222 222 222");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
 
-		User user = createUser("user2@user2.com", "+34 333 333 333");
-		userService.signUp(user);
+        User user = createUser("user2@user2.com", "+34 333 333 333");
+        userService.signUp(user);
 
-		userService.blockUser(admin.getId(), user.getId());
+        userService.blockUser(admin.getId(), user.getId());
 
-		User blockedUser = userService.findUserById(user.getId());
+        User blockedUser = userService.findUserById(user.getId());
 
-		assertEquals(User.StatusType.BLOCKED, blockedUser.getStatus());
+        assertEquals(User.StatusType.BLOCKED, blockedUser.getStatus());
 
-	}
+    }
 
-	@Test
-	void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    @Test
+    void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin2@admin2.com", "+34 444 444 444");
-		admin.setRole(User.RoleType.ADMIN);
-		userService.signUp(admin);
+        User admin = createUser("admin2@admin2.com", "+34 444 444 444");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
 
-		User user = createUser("user3@user3.com", "+34 555 555 555");
-		userService.signUp(user);
+        User user = createUser("user3@user3.com", "+34 555 555 555");
+        userService.signUp(user);
 
-		userService.blockUser(admin.getId(), user.getId());
-		userService.unblockUser(admin.getId(), user.getId());
+        userService.blockUser(admin.getId(), user.getId());
+        userService.unblockUser(admin.getId(), user.getId());
 
-		User unblockedUser = userService.findUserById(user.getId());
+        User unblockedUser = userService.findUserById(user.getId());
 
-		assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
+        assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
 
-	}
+    }
 
     @Test
     void testSignUpDuplicateEmail() throws DuplicateInstanceException {
@@ -170,8 +167,9 @@ public class UserServiceTest {
         User user = createUser("update@test.com", "700444444");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateProfile(user.getId(), "New", "Name", "invalid-email", "+34 555 666 777", null);
+            userService.updateProfile(userId, "New", "Name", "invalid-email", "+34 555 666 777", null);
         });
     }
 
@@ -232,8 +230,9 @@ public class UserServiceTest {
         User user = createUser("body@test.com", "701111111");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateBodyMetrics(user.getId(), -10.0, 170.0, User.GenderType.MALE);
+            userService.updateBodyMetrics(userId, -10.0, 170.0, User.GenderType.MALE);
         });
     }
 
@@ -242,8 +241,9 @@ public class UserServiceTest {
         User user = createUser("body2@test.com", "701222222");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateBodyMetrics(user.getId(), 70.0, 0.0, User.GenderType.MALE);
+            userService.updateBodyMetrics(userId, 70.0, 0.0, User.GenderType.MALE);
         });
     }
 

@@ -5,23 +5,21 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutLikeServiceTest {
+class WorkoutLikeServiceTest {
 
     @Autowired
     private WorkoutLikeService workoutLikeService;

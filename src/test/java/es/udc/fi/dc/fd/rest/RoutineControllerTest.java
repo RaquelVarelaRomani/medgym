@@ -10,16 +10,14 @@ import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +26,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class RoutineControllerTest {
+class RoutineControllerTest {
 
     private static final String PASSWORD = "password";
 
@@ -57,8 +55,8 @@ public class RoutineControllerTest {
     private AuthenticatedUserDto anotherTrainerUser;
     private AuthenticatedUserDto clientUser;
 
-    @Before
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
+    @BeforeEach
+    void setUp() throws IncorrectLoginException, BlockedUserException {
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003",
@@ -67,7 +65,7 @@ public class RoutineControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                        RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+                                                         RoleType roleType) throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
@@ -220,10 +218,10 @@ public class RoutineControllerTest {
         intermediateRoutine.setVisibility("PUBLIC");
         intermediateRoutine.setDifficulty("INTERMEDIATE");
         mockMvc.perform(post("/api/routines")
-                .header("Authorization", "Bearer " + trainerUser.getServiceToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(intermediateRoutine))
-                .requestAttr("userId", trainerUser.getUserDto().getId()))
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(intermediateRoutine))
+                        .requestAttr("userId", trainerUser.getUserDto().getId()))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/api/routines/filter")

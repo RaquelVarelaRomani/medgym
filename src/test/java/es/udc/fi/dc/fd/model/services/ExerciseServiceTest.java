@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class ExerciseServiceTest {
+class ExerciseServiceTest {
 
     @Autowired
     private ExerciseService exerciseService;
@@ -121,8 +121,9 @@ public class ExerciseServiceTest {
         RoutineExercise re = new RoutineExercise(r, e, 1);
         routineExerciseDao.save(re);
 
+        var exerciseId = e.getId();
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> exerciseService.deleteExercise(e.getId()));
+                () -> exerciseService.deleteExercise(exerciseId));
 
         assertEquals(400, ex.getStatusCode().value());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("No se puede borrar"));

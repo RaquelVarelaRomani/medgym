@@ -6,25 +6,22 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class RoutineExerciseServiceTest {
+class RoutineExerciseServiceTest {
 
     @Autowired
     private RoutineExerciseService routineExerciseService;
@@ -52,7 +49,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user) throws PermissionException, DuplicateInstanceException {
-        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1, 2, 3}, user);
     }
 
     private Routine createRoutine(String name, User user) {
@@ -104,7 +101,7 @@ public class RoutineExerciseServiceTest {
     @Test
     void testClientCannotCreateExercise() {
         User client = new User(
-                "C","L","client@test.com","600","p",
+                "C", "L", "client@test.com", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE
         );
         client = userDao.save(client);
@@ -194,7 +191,7 @@ public class RoutineExerciseServiceTest {
     @Test
     void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
         User trainer = createTrainerPremium("trainer@udc.es");
-        User other = new User("X","Y","other@udc.es","600","p",
+        User other = new User("X", "Y", "other@udc.es", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         other = userDao.save(other);
 

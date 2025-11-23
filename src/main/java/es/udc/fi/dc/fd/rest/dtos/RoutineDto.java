@@ -18,6 +18,7 @@ public class RoutineDto {
     private String visibility;
     private String difficulty;
     private List<RoutineLikeDto> likes;
+
     public RoutineDto() {
         // No-args constructor required for Jackson and frameworks.
         // Nested comment: implementation intentionally empty because the DTO

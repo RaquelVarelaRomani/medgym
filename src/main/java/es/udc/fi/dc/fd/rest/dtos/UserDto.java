@@ -19,6 +19,7 @@ public class UserDto {
     private String gender;
     private Double bmi;
     private Boolean trainerPremium;
+
     public UserDto() {
         // No-args constructor required for Jackson and frameworks.
         // Nested comment: implementation intentionally empty because the DTO

@@ -9,16 +9,14 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,41 +26,33 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutCommentControllerTest {
+class WorkoutCommentControllerTest {
 
+    private static final String PASSWORD = "password";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private WorkoutDao workoutDao;
-
     @Autowired
     private RoutineService routineService;
-
     @Autowired
     private WorkoutCommentService workoutCommentService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private UserController userController;
-
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    private static final String PASSWORD = "password";
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Comment", "trainer_comment@test.com", "600000300", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "Comment", "client_comment@test.com", "600000301", User.RoleType.CLIENT);
     }
@@ -88,7 +78,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testCommentWorkout() throws Exception {
+    void testCommentWorkout() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
 
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/comments")
@@ -102,7 +92,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testGetWorkoutComments() throws Exception {
+    void testGetWorkoutComments() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Test A", workout.getId());
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Test B", workout.getId());
@@ -114,7 +104,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testDeleteWorkoutComment() throws Exception {
+    void testDeleteWorkoutComment() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
 
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Borrar", workout.getId());
@@ -130,7 +120,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testCommentWorkoutNotFound() throws Exception {
+    void testCommentWorkoutNotFound() throws Exception {
         mockMvc.perform(post("/api/workouts/9999/comments")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .requestAttr("userId", clientUser.getUserDto().getId())

@@ -8,20 +8,18 @@ import es.udc.fi.dc.fd.model.entities.UserFollowDao;
 import es.udc.fi.dc.fd.model.services.exceptions.FollowException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class UserFollowServiceTest {
+class UserFollowServiceTest {
     @Autowired
     private UserFollowService userFollowService;
     @Autowired
@@ -29,13 +27,13 @@ public class UserFollowServiceTest {
     @Autowired
     private UserFollowDao userFollowDao;
 
-    private User createTrainer(){
+    private User createTrainer() {
         User trainer = new User("Pepe", "Domingo", "hola@emeail.com",
                 "666555444", "password", User.RoleType.TRAINER, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
-    private User createUser(){
+    private User createUser() {
         User trainer = new User("Pepe", "Domingo", "hola2@emeail.com",
                 "666585444", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(trainer);

@@ -18,8 +18,10 @@ public class Routine {
     private User trainer;
     private List<RoutineExercise> routineExercises;
     private List<RoutineLike> routineLikes;
+
     public Routine() {
     }
+
     public Routine(String name, String description, VisibilityType visibility, DifficultyType difficulty,
                    User trainer) {
         this.name = name;

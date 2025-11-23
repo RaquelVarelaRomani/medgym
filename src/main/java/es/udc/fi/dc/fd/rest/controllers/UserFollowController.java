@@ -4,7 +4,6 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.UserFollowService;
 import es.udc.fi.dc.fd.rest.dtos.UserFollowConversor;
 import es.udc.fi.dc.fd.rest.dtos.UserFollowDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
