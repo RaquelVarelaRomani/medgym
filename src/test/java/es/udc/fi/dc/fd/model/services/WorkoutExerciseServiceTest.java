@@ -83,7 +83,7 @@ public class WorkoutExerciseServiceTest {
         }
 
         @Test
-        public void testAddWorkoutExerciseCreatesRecord() {
+        void testAddWorkoutExerciseCreatesRecord() {
                 List<WorkoutExercise> preAll = workoutExerciseDao.findAll();
                 WorkoutExercise we = assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise(
                                 (short) 10,
@@ -104,19 +104,19 @@ public class WorkoutExerciseServiceTest {
         }
 
         @Test
-        public void testAddWorkoutExerciseWithNonexistentWorkoutThrows() {
+        void testAddWorkoutExerciseWithNonexistentWorkoutThrows() {
                 assertThrows(InstanceNotFoundException.class, () -> workoutExerciseService.addWorkoutExercise(
                                 (short) 10, (short) 50, (short) 60, 999L, routineExercise.getId()));
         }
 
         @Test
-        public void testAddWorkoutExerciseWithNonexistentRoutineExerciseThrows() {
+        void testAddWorkoutExerciseWithNonexistentRoutineExerciseThrows() {
                 assertThrows(InstanceNotFoundException.class, () -> workoutExerciseService.addWorkoutExercise(
                                 (short) 10, (short) 50, (short) 60, workout.getId(), 999L));
         }
 
         @Test
-        public void testFindWorkoutExercisesByWorkoutIdReturnsList() {
+        void testFindWorkoutExercisesByWorkoutIdReturnsList() {
                 // Crear 2 ejercicios de entrenamiento
                 assertDoesNotThrow(() -> workoutExerciseService.addWorkoutExercise((short) 10, (short) 50, (short) 60,
                                 workout.getId(), routineExercise.getId()));
@@ -131,7 +131,7 @@ public class WorkoutExerciseServiceTest {
         }
 
         @Test
-        public void testFindWorkoutExercisesByWorkoutIdEmptyList() {
+        void testFindWorkoutExercisesByWorkoutIdEmptyList() {
                 List<WorkoutExercise> list = assertDoesNotThrow(
                                 () -> workoutExerciseService.findWorkoutExercisesByWorkoutId(workout.getId()));
 
@@ -139,13 +139,13 @@ public class WorkoutExerciseServiceTest {
         }
 
         @Test
-        public void testFindWorkoutExercisesByWorkoutIdThrowsIfWorkoutNotFound() {
+        void testFindWorkoutExercisesByWorkoutIdThrowsIfWorkoutNotFound() {
                 assertThrows(InstanceNotFoundException.class,
                                 () -> workoutExerciseService.findWorkoutExercisesByWorkoutId(999L));
         }
 
         @Test
-        public void testFindWorkoutExercisesByWorkoutIdsReturnsExercises() {
+        void testFindWorkoutExercisesByWorkoutIdsReturnsExercises() {
                 Workout workout1 = workoutDao
                                 .save(new Workout(LocalDateTime.now().minusHours(1), null, routine, client));
                 Workout workout2 = workoutDao
@@ -165,7 +165,7 @@ public class WorkoutExerciseServiceTest {
         }
 
         @Test
-        public void testFindWorkoutExercisesByWorkoutIdsEmptyList() {
+        void testFindWorkoutExercisesByWorkoutIdsEmptyList() {
                 List<WorkoutExercise> exercises = assertDoesNotThrow(
                                 () -> workoutExerciseService.findWorkoutExercisesByWorkoutIds(List.of()));
 

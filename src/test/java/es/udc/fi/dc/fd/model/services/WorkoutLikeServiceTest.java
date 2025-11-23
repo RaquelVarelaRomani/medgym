@@ -36,7 +36,7 @@ public class WorkoutLikeServiceTest {
     private UserDao userDao;
 
     @Test
-    public void testLikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testLikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "s1", "u1@test.com", "600000001",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -56,7 +56,7 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u2", "s3", "u2@test.com", "600000003",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -77,7 +77,7 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testUnlikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testUnlikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u3", "s5", "u3@test.com", "600000005",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -97,7 +97,7 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testLikeWorkoutNonExistentWorkout() {
+    void testLikeWorkoutNonExistentWorkout() {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -106,7 +106,7 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
+    void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -132,7 +132,7 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 

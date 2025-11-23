@@ -69,7 +69,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void testPostLogin_Ok() throws Exception {
+	void testPostLogin_Ok() throws Exception {
 
 		AuthenticatedUserDto user = createAuthenticatedUser("user@email.com", RoleType.CLIENT);
 
@@ -86,7 +86,7 @@ public class UserControllerTest {
 	}
 
     @Test
-    public void testChangePassword_Ok() throws Exception {
+    void testChangePassword_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("pass@test.com", RoleType.CLIENT);
 
         String json = """
@@ -104,7 +104,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testChangePassword_PermissionDenied() throws Exception {
+    void testChangePassword_PermissionDenied() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("user1@test.com", RoleType.CLIENT);
 
         String json = """
@@ -122,7 +122,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testChangePassword_IncorrectOldPassword() throws Exception {
+    void testChangePassword_IncorrectOldPassword() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("user2@test.com", RoleType.CLIENT);
 
         String json = """
@@ -140,7 +140,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSetTrainerPremium_Ok() throws Exception {
+    void testSetTrainerPremium_Ok() throws Exception {
         AuthenticatedUserDto trainer = createAuthenticatedUser("trainer@test.com", RoleType.TRAINER);
 
         mockMvc.perform(put("/api/users/" + trainer.getUserDto().getId() + "/premium")
@@ -149,7 +149,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSetTrainerPremium_PermissionDenied() throws Exception {
+    void testSetTrainerPremium_PermissionDenied() throws Exception {
         AuthenticatedUserDto trainer = createAuthenticatedUser("trainer2@test.com", RoleType.TRAINER);
 
         mockMvc.perform(put("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
@@ -158,7 +158,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSignUp_Ok() throws Exception {
+    void testSignUp_Ok() throws Exception {
         String json = """
         {
           "name": "John",
@@ -177,7 +177,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSignUp_DuplicateEmail() throws Exception {
+    void testSignUp_DuplicateEmail() throws Exception {
         // First sign up
         User user = new User("existing", "user", "dup@test.com", "+34 000 000 001", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -200,7 +200,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testLogin_IncorrectPassword() throws Exception {
+    void testLogin_IncorrectPassword() throws Exception {
         User user = new User("test", "user", "login@test.com", "+34 000 000 002", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
@@ -219,7 +219,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testLogin_BlockedUser() throws Exception {
+    void testLogin_BlockedUser() throws Exception {
         User user = new User("blocked", "user", "blocked@test.com", "+34 000 000 003", "password", RoleType.CLIENT, User.StatusType.BLOCKED);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
@@ -238,7 +238,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testLoginFromServiceToken_Ok() throws Exception {
+    void testLoginFromServiceToken_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("token@test.com", RoleType.CLIENT);
 
         mockMvc.perform(post("/api/users/loginFromServiceToken")
@@ -247,7 +247,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateProfile_Ok() throws Exception {
+    void testUpdateProfile_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("update@test.com", RoleType.CLIENT);
 
         String json = """
@@ -267,7 +267,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateProfile_PermissionDenied() throws Exception {
+    void testUpdateProfile_PermissionDenied() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("update1@test.com", RoleType.CLIENT);
         AuthenticatedUserDto other = createAuthenticatedUser("update2@test.com", RoleType.CLIENT);
 
@@ -288,7 +288,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testGetUser_Ok() throws Exception {
+    void testGetUser_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("get@test.com", RoleType.CLIENT);
 
         mockMvc.perform(get("/api/users/" + user.getUserDto().getId())
@@ -297,7 +297,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testGetUser_Blocked() throws Exception {
+    void testGetUser_Blocked() throws Exception {
         AuthenticatedUserDto blocker = createAuthenticatedUser("blocker@test.com", RoleType.CLIENT);
         AuthenticatedUserDto blocked = createAuthenticatedUser("blocked2@test.com", RoleType.CLIENT);
 
@@ -309,7 +309,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testGetAllUsers_Ok() throws Exception {
+    void testGetAllUsers_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("all@test.com", RoleType.CLIENT);
 
         mockMvc.perform(get("/api/users")
@@ -318,7 +318,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testSearchUsers_Ok() throws Exception {
+    void testSearchUsers_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("search@test.com", RoleType.CLIENT);
 
         mockMvc.perform(get("/api/users/search")
@@ -328,7 +328,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testDeleteUser_Ok() throws Exception {
+    void testDeleteUser_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("delete@test.com", RoleType.CLIENT);
 
         mockMvc.perform(delete("/api/users/" + user.getUserDto().getId())
@@ -337,7 +337,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateBodyMetrics_Ok() throws Exception {
+    void testUpdateBodyMetrics_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("body@test.com", RoleType.CLIENT);
 
         String json = """
@@ -356,7 +356,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testUpdateBodyMetrics_InvalidGender() throws Exception {
+    void testUpdateBodyMetrics_InvalidGender() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("body2@test.com", RoleType.CLIENT);
 
         String json = """
@@ -375,7 +375,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testClearBodyMetrics_Ok() throws Exception {
+    void testClearBodyMetrics_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("clear@test.com", RoleType.CLIENT);
 
         mockMvc.perform(delete("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
@@ -384,7 +384,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCalculateBmi_Ok() throws Exception {
+    void testCalculateBmi_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("bmi@test.com", RoleType.CLIENT);
 
         String json = """
@@ -402,7 +402,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCalculateBmi_InvalidParams() throws Exception {
+    void testCalculateBmi_InvalidParams() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("bmi2@test.com", RoleType.CLIENT);
 
         String json = """

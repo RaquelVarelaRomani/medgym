@@ -67,7 +67,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExercise(Long exerciseId, String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
-        Exercise exercise = findExerciseById(exerciseId);
+        Exercise exercise = this.findExerciseById(exerciseId);
 
         if (!exercise.getName().equals(name) && exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
@@ -82,7 +82,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExerciseStatus(Long exerciseId, Exercise.ExerciseStatus status) throws InstanceNotFoundException {
-        Exercise exercise = findExerciseById(exerciseId);
+        Exercise exercise = this.findExerciseById(exerciseId);
         exercise.setStatus(status);
     }
 
@@ -108,7 +108,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void deleteExercise(Long exerciseId) throws InstanceNotFoundException {
-        Exercise exercise = findExerciseById(exerciseId);
+        Exercise exercise = this.findExerciseById(exerciseId);
         if (routineExerciseDao.existsByExerciseId(exerciseId)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "No se puede borrar: el ejercicio está asociado a una o más rutinas."

@@ -15,8 +15,11 @@ import static es.udc.fi.dc.fd.rest.dtos.UserFollowConversor.toUserFollowDto;
 @RestController
 @RequestMapping("/api/users/follow")
 public class UserFollowController {
-    @Autowired
-    private UserFollowService userFollowService;
+    private final UserFollowService userFollowService;
+
+    public UserFollowController(UserFollowService userFollowService) {
+        this.userFollowService = userFollowService;
+    }
 
     @PostMapping("/{trainerId}")
     public UserFollowDto followTrainer(@PathVariable Long trainerId, @RequestAttribute Long userId) throws InstanceNotFoundException {

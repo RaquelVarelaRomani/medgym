@@ -33,7 +33,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
+	void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
 
 		User user = createUser("user@test.com", "123456789");
 
@@ -48,7 +48,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+	void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
 		User admin = createUser("admin@admin.com", "+34 222 222 222");
 		admin.setRole(User.RoleType.ADMIN);
@@ -66,7 +66,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+	void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
 		User admin = createUser("admin2@admin2.com", "+34 444 444 444");
 		admin.setRole(User.RoleType.ADMIN);
@@ -85,7 +85,7 @@ public class UserServiceTest {
 	}
 
     @Test
-    public void testSignUpDuplicateEmail() throws DuplicateInstanceException {
+    void testSignUpDuplicateEmail() throws DuplicateInstanceException {
         User user = createUser("dup@test.com", "600111111");
         userService.signUp(user);
 
@@ -96,7 +96,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLoginIncorrectPassword() throws DuplicateInstanceException {
+    void testLoginIncorrectPassword() throws DuplicateInstanceException {
         User user = createUser("login@test.com", "600333333");
         userService.signUp(user);
 
@@ -106,7 +106,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSetTrainerPremium_Ok() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    void testSetTrainerPremium_Ok() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User trainer = createUser("trainer@test.com", "600444444");
         userService.signUp(trainer);
         trainer.setRole(User.RoleType.TRAINER);
@@ -118,7 +118,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSetTrainerPremium_PermissionDenied() throws DuplicateInstanceException {
+    void testSetTrainerPremium_PermissionDenied() throws DuplicateInstanceException {
         User client = createUser("client@test.com", "600555555");
         userService.signUp(client);
 
@@ -128,7 +128,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSignUp_InvalidEmail() {
+    void testSignUp_InvalidEmail() {
         User user = createUser("invalid-email", "700111111");
 
         assertThrows(IllegalArgumentException.class, () -> {
@@ -137,7 +137,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSignUp_DuplicatePhone() throws DuplicateInstanceException {
+    void testSignUp_DuplicatePhone() throws DuplicateInstanceException {
         User user1 = createUser("phone1@test.com", "700222222");
         userService.signUp(user1);
 
@@ -148,14 +148,14 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLogin_NonExistingEmail() {
+    void testLogin_NonExistingEmail() {
         assertThrows(IncorrectLoginException.class, () -> {
             userService.login("nonexisting@test.com", "password");
         });
     }
 
     @Test
-    public void testLogin_BlockedUser() throws DuplicateInstanceException {
+    void testLogin_BlockedUser() throws DuplicateInstanceException {
         User user = createUser("blocked@test.com", "700333333");
         userService.signUp(user);
         user.setStatus(User.StatusType.BLOCKED);
@@ -166,7 +166,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateProfile_InvalidEmail() throws DuplicateInstanceException {
+    void testUpdateProfile_InvalidEmail() throws DuplicateInstanceException {
         User user = createUser("update@test.com", "700444444");
         userService.signUp(user);
 
@@ -176,7 +176,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testChangePassword_IncorrectOldPassword() throws DuplicateInstanceException {
+    void testChangePassword_IncorrectOldPassword() throws DuplicateInstanceException {
         User user = createUser("changepass@test.com", "700555555");
         userService.signUp(user);
 
@@ -186,14 +186,14 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testFindUserById_NotFound() {
+    void testFindUserById_NotFound() {
         assertThrows(InstanceNotFoundException.class, () -> {
             userService.findUserById(999L);
         });
     }
 
     @Test
-    public void testBlockUser_Admin() throws DuplicateInstanceException {
+    void testBlockUser_Admin() throws DuplicateInstanceException {
         User admin = createUser("adminblock@test.com", "700666666");
         admin.setRole(User.RoleType.ADMIN);
         userService.signUp(admin);
@@ -204,7 +204,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUnblockUser_Admin() throws DuplicateInstanceException {
+    void testUnblockUser_Admin() throws DuplicateInstanceException {
         User admin = createUser("adminunblock@test.com", "700777777");
         admin.setRole(User.RoleType.ADMIN);
         userService.signUp(admin);
@@ -215,7 +215,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSearchUsers() throws DuplicateInstanceException {
+    void testSearchUsers() throws DuplicateInstanceException {
         User user1 = createUser("search1@test.com", "700888888");
         userService.signUp(user1);
 
@@ -228,7 +228,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateBodyMetrics_InvalidWeight() throws DuplicateInstanceException {
+    void testUpdateBodyMetrics_InvalidWeight() throws DuplicateInstanceException {
         User user = createUser("body@test.com", "701111111");
         userService.signUp(user);
 
@@ -238,7 +238,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateBodyMetrics_InvalidHeight() throws DuplicateInstanceException {
+    void testUpdateBodyMetrics_InvalidHeight() throws DuplicateInstanceException {
         User user = createUser("body2@test.com", "701222222");
         userService.signUp(user);
 
@@ -248,7 +248,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateBodyMetrics_Ok() throws DuplicateInstanceException, InstanceNotFoundException {
+    void testUpdateBodyMetrics_Ok() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("body3@test.com", "701333333");
         userService.signUp(user);
 
@@ -259,7 +259,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testClearBodyMetrics() throws DuplicateInstanceException, InstanceNotFoundException {
+    void testClearBodyMetrics() throws DuplicateInstanceException, InstanceNotFoundException {
         User user = createUser("clear@test.com", "701444444");
         userService.signUp(user);
         userService.updateBodyMetrics(user.getId(), 70.0, 170.0, User.GenderType.FEMALE);
@@ -271,7 +271,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testFindAllUsers() throws DuplicateInstanceException {
+    void testFindAllUsers() throws DuplicateInstanceException {
         User user1 = createUser("all1@test.com", "701555555");
         userService.signUp(user1);
 
@@ -283,7 +283,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testDeleteUser() throws DuplicateInstanceException {
+    void testDeleteUser() throws DuplicateInstanceException {
         User user = createUser("delete@test.com", "701777777");
         userService.signUp(user);
 

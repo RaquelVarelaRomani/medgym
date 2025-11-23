@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/blocks")
 public class UserBlockController {
+    private final UserBlockService userBlockService;
 
-    @Autowired
-    private UserBlockService userBlockService;
+    public UserBlockController(UserBlockService userBlockService) {
+        this.userBlockService = userBlockService;
+    }
 
     @PostMapping("/{blockedId}")
     public ResponseEntity<Void> blockUser(

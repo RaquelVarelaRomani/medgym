@@ -38,7 +38,7 @@ public class RoutineLikeServiceTest {
     private RoutineLikeDao routineLikeDao;
 
     @Test
-    public void testLikeRoutine() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testLikeRoutine() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "n1", "u1@test.com", "600000001",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("t1", "n2", "t1@test.com", "600000002",
@@ -57,7 +57,7 @@ public class RoutineLikeServiceTest {
     }
 
     @Test
-    public void testGetRoutineLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testGetRoutineLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u2", "n3", "u2@test.com", "600000003",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("t2", "n4", "t2@test.com", "600000004",
@@ -79,7 +79,7 @@ public class RoutineLikeServiceTest {
     }
 
     @Test
-    public void testUnlikeRoutine() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testUnlikeRoutine() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u3", "n5", "u3@test.com", "600000005",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("t3", "n6", "t3@test.com", "600000006",
@@ -98,7 +98,7 @@ public class RoutineLikeServiceTest {
     }
 
     @Test
-    public void testLikeRoutineNonExistentRoutine() {
+    void testLikeRoutineNonExistentRoutine() {
         User user = userDao.save(new User("ux", "nx", "ux@test.com", "600000010",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -107,7 +107,7 @@ public class RoutineLikeServiceTest {
     }
 
     @Test
-    public void testUnlikeRoutineNotLiked() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
+    void testUnlikeRoutineNotLiked() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("uy", "ny", "uy@test.com", "600000011",
                 "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User trainer = userDao.save(new User("ty", "ny2", "ty@test.com", "600000012",

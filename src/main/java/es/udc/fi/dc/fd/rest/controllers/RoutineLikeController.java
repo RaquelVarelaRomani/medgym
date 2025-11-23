@@ -14,8 +14,11 @@ import static es.udc.fi.dc.fd.rest.dtos.RoutineLikeConversor.toRoutineLikeDtos;
 @RequestMapping("/api")
 public class RoutineLikeController {
 
-    @Autowired
-    private RoutineLikeService routineLikeService;
+    private final RoutineLikeService routineLikeService;
+
+    public RoutineLikeController(RoutineLikeService routineLikeService) {
+        this.routineLikeService = routineLikeService;
+    }
 
     @PostMapping("/routines/{routineId}/like")
     public void likeRoutine(@RequestAttribute Long userId, @PathVariable Long routineId) throws InstanceNotFoundException {

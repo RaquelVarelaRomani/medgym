@@ -16,15 +16,11 @@ import static es.udc.fi.dc.fd.rest.dtos.WorkoutExerciseConversor.toWorkoutExerci
 @RestController
 @RequestMapping("/api/workouts")
 public class WorkoutExerciseController {
+    private final WorkoutExerciseService workoutExerciseService;
 
-    @Autowired
-    private WorkoutExerciseService workoutExerciseService;
-
-    @Autowired
-    private WorkoutDao workoutDao;
-
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
+    public WorkoutExerciseController(WorkoutExerciseService workoutExerciseService) {
+        this.workoutExerciseService = workoutExerciseService;
+    }
 
     @PostMapping("/{workoutId}/log")
     public WorkoutExerciseDto addWorkoutExercise(@PathVariable Long workoutId, @RequestBody WorkoutExerciseDto workoutExerciseDto) throws InstanceNotFoundException {

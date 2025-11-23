@@ -15,9 +15,11 @@ import static es.udc.fi.dc.fd.rest.dtos.WorkoutCommentConversor.toWorkoutComment
 @RestController
 @RequestMapping("/api")
 public class WorkoutCommentController {
+    private final WorkoutCommentService workoutCommentService;
 
-    @Autowired
-    private WorkoutCommentService workoutCommentService;
+    public WorkoutCommentController(WorkoutCommentService workoutCommentService) {
+        this.workoutCommentService = workoutCommentService;
+    }
 
     @PostMapping("/workouts/{workoutId}/comments")
     public WorkoutCommentDto commentWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId, @RequestBody WorkoutCommentParamsDto workoutCommentParamsDto)

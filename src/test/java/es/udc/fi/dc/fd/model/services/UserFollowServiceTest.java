@@ -42,7 +42,7 @@ public class UserFollowServiceTest {
     }
 
     @Test
-    public void testFollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+    void testFollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();
         User trainer = createTrainer();
 
@@ -53,7 +53,7 @@ public class UserFollowServiceTest {
     }
 
     @Test
-    public void testUnfollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+    void testUnfollowTrainer() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();
         User trainer = createTrainer();
 
@@ -64,7 +64,7 @@ public class UserFollowServiceTest {
     }
 
     @Test
-    public void testUnfollowedTrainer() throws InstanceNotFoundException, IncorrectLoginException {
+    void testUnfollowedTrainer() throws InstanceNotFoundException, IncorrectLoginException {
         User user = createUser();
         User trainer = createTrainer();
 
@@ -74,7 +74,7 @@ public class UserFollowServiceTest {
     }
 
     @Test
-    public void testFollowTheirself() throws InstanceNotFoundException, IncorrectLoginException {
+    void testFollowTheirself() throws InstanceNotFoundException, IncorrectLoginException {
         User trainer = createTrainer();
 
         assertThrows(FollowException.class, () -> {
@@ -83,14 +83,14 @@ public class UserFollowServiceTest {
     }
 
     @Test
-    public void testGetFollowersNonExistentTrainer() {
+    void testGetFollowersNonExistentTrainer() {
         assertThrows(InstanceNotFoundException.class, () -> {
             userFollowService.getFollowers(999L);
         });
     }
 
     @Test
-    public void testGetFollowedTrainersNonExistentUser() {
+    void testGetFollowedTrainersNonExistentUser() {
         assertThrows(InstanceNotFoundException.class, () -> {
             userFollowService.getFollowedUsers(999L);
         });

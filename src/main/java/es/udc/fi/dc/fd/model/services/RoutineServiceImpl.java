@@ -81,7 +81,7 @@ public class RoutineServiceImpl implements RoutineService {
     public void updateRoutine(Long userId, Long routineId, String name, String description,
                               Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        Routine routine = findRoutineByIdAuth(userId, routineId);
+        Routine routine = this.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -100,7 +100,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
-        Routine routine = findRoutineByIdAuth(userId, routineId);
+        Routine routine = this.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !Objects.equals(user.getId(), routine.getTrainer().getId())) {
@@ -124,7 +124,7 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -139,7 +139,7 @@ public class RoutineServiceImpl implements RoutineService {
         if (user.getRole() != User.RoleType.ADMIN) {
             routines = routines.stream()
                     .filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by equipment if provided (multi-select)
@@ -153,7 +153,7 @@ public class RoutineServiceImpl implements RoutineService {
 
             routines = routines.stream()
                     .filter(equipmentRoutines::contains)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by muscle group if provided
@@ -167,21 +167,21 @@ public class RoutineServiceImpl implements RoutineService {
 
             routines = routines.stream()
                     .filter(muscleGroupRoutines::contains)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by difficulty if provided
         if (difficulty != null) {
             routines = routines.stream()
                     .filter(routine -> routine.getDifficulty() == difficulty)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by trainer if provided
         if (trainerId != null) {
             routines = routines.stream()
                     .filter(routine -> routine.getTrainer().getId().equals(trainerId))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         return routines;

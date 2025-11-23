@@ -13,9 +13,11 @@ import static es.udc.fi.dc.fd.rest.dtos.WorkoutLikeConversor.toWorkoutLikeDtos;
 @RestController
 @RequestMapping("/api")
 public class WorkoutLikeController {
+    private final WorkoutLikeService workoutLikeService;
 
-    @Autowired
-    private WorkoutLikeService workoutLikeService;
+    public WorkoutLikeController(WorkoutLikeService workoutLikeService) {
+        this.workoutLikeService = workoutLikeService;
+    }
 
     @PostMapping("/workouts/{workoutId}/like")
     public void likeWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId) throws InstanceNotFoundException {

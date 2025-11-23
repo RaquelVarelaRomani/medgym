@@ -98,12 +98,12 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testCreateRoutineAsAdmin() throws Exception {
+    void testCreateRoutineAsAdmin() throws Exception {
         createRoutine(adminUser, "Admin Routine").andExpect(status().isCreated());
     }
 
     @Test
-    public void testUpdateAnotherUsersRoutineAsAdmin() throws Exception {
+    void testUpdateAnotherUsersRoutineAsAdmin() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "Trainer's Routine").andExpect(status().isCreated());
         RoutineDto routineToUpdate = getRoutineFromResponse(createActions);
 
@@ -117,7 +117,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testDeleteAnotherUsersRoutineAsAdmin() throws Exception {
+    void testDeleteAnotherUsersRoutineAsAdmin() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "Routine to Delete").andExpect(status().isCreated());
         RoutineDto routineToDelete = getRoutineFromResponse(createActions);
 
@@ -127,7 +127,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testCreateAndUpdateOwnRoutineAsTrainer() throws Exception {
+    void testCreateAndUpdateOwnRoutineAsTrainer() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "My Trainer Routine").andExpect(status().isCreated());
         RoutineDto createdRoutine = getRoutineFromResponse(createActions);
 
@@ -140,7 +140,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testDeleteOwnRoutineAsTrainer() throws Exception {
+    void testDeleteOwnRoutineAsTrainer() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "My Deletable Routine").andExpect(status().isCreated());
         RoutineDto createdRoutine = getRoutineFromResponse(createActions);
 
@@ -150,7 +150,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testUpdateAnotherTrainersRoutineFails() throws Exception {
+    void testUpdateAnotherTrainersRoutineFails() throws Exception {
         ResultActions createActions = createRoutine(anotherTrainerUser, "Another Trainer's Routine")
                 .andExpect(status().isCreated());
         RoutineDto routineToUpdate = getRoutineFromResponse(createActions);
@@ -164,7 +164,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testDeleteAnotherTrainersRoutineFails() throws Exception {
+    void testDeleteAnotherTrainersRoutineFails() throws Exception {
         ResultActions createActions = createRoutine(anotherTrainerUser, "Another's Deletable")
                 .andExpect(status().isCreated());
         RoutineDto routineToDelete = getRoutineFromResponse(createActions);
@@ -175,19 +175,19 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testFindAllRoutinesAsClient() throws Exception {
+    void testFindAllRoutinesAsClient() throws Exception {
         mockMvc.perform(get("/api/routines")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testCreateRoutineAsClientFails() throws Exception {
+    void testCreateRoutineAsClientFails() throws Exception {
         createRoutine(clientUser, "Client Routine").andExpect(status().isForbidden());
     }
 
     @Test
-    public void testUpdateRoutineAsClientFails() throws Exception {
+    void testUpdateRoutineAsClientFails() throws Exception {
         ResultActions createActions = createRoutine(trainerUser, "Existing Routine").andExpect(status().isCreated());
         RoutineDto routine = getRoutineFromResponse(createActions);
 
@@ -199,7 +199,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testCreateRoutineUnauthenticatedFails() throws Exception {
+    void testCreateRoutineUnauthenticatedFails() throws Exception {
         RoutineDto routineDto = new RoutineDto();
         routineDto.setName("Test");
         routineDto.setDescription("Test Description");
@@ -211,7 +211,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testFindRoutinesByFilters() throws Exception {
+    void testFindRoutinesByFilters() throws Exception {
         createRoutine(trainerUser, "Beginner Routine").andExpect(status().isCreated());
 
         RoutineDto intermediateRoutine = new RoutineDto();
@@ -239,7 +239,7 @@ public class RoutineControllerTest {
     }
 
     @Test
-    public void testGetOwnRoutine() throws Exception {
+    void testGetOwnRoutine() throws Exception {
         // Crear rutina como trainer
         ResultActions createActions = createRoutine(trainerUser, "My Routine").andExpect(status().isCreated());
         RoutineDto routine = getRoutineFromResponse(createActions);

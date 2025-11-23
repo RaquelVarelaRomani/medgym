@@ -63,7 +63,7 @@ public class RoutineExerciseServiceTest {
 
 
     @Test
-    public void testAddExerciseToRoutinePremium() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testAddExerciseToRoutinePremium() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("premium@trainer.com");
         Exercise exercise = createExercise("Ejercicio Premium", trainer);
         Routine routine = createRoutine("Rutina Premium", trainer);
@@ -75,7 +75,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testNonPremiumCannotCreateExercise() {
+    void testNonPremiumCannotCreateExercise() {
         User trainer = createTrainerNonPremium("np1@trainer.com");
 
         assertThrows(PermissionException.class, () ->
@@ -88,7 +88,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testPremiumCanCreateExercise() throws Exception {
+    void testPremiumCanCreateExercise() throws Exception {
         User trainer = createTrainerPremium("p1@trainer.com");
 
         Exercise ex = exerciseService.createExercise(
@@ -102,7 +102,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testClientCannotCreateExercise() {
+    void testClientCannotCreateExercise() {
         User client = new User(
                 "C","L","client@test.com","600","p",
                 RoleType.CLIENT, User.StatusType.ACTIVE
@@ -120,7 +120,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("dup@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -132,7 +132,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("remove@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -145,7 +145,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("remove2@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -158,7 +158,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("update@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -170,7 +170,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("paging@trainer.com");
         Routine routine = createRoutine("Rutina", trainer);
 
@@ -192,7 +192,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
+    void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
         User trainer = createTrainerPremium("trainer@udc.es");
         User other = new User("X","Y","other@udc.es","600","p",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
@@ -207,7 +207,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddExerciseToRoutineNonExistingRoutine() throws PermissionException, DuplicateInstanceException {
+    void testAddExerciseToRoutineNonExistingRoutine() throws PermissionException, DuplicateInstanceException {
         User trainer = createTrainerPremium("trainer2@udc.es");
         Exercise exercise = createExercise("Ejercicio", trainer);
 

@@ -56,7 +56,7 @@ public class WorkoutServiceTest {
 
 
     @Test
-    public void testStartWorkoutcreatesWorkout() {
+    void testStartWorkoutcreatesWorkout() {
         List<Workout> workoutsBefore = workoutDao.findAll();
         Workout workout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
 
@@ -71,7 +71,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFinishWorkoutsetsEndTime() {
+    void testFinishWorkoutsetsEndTime() {
         Workout workout = assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
         assertNull(workout.getEndTime());
 
@@ -82,7 +82,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutByIdReturnsWorkout() throws InstanceNotFoundException {
+    void testFindWorkoutByIdReturnsWorkout() throws InstanceNotFoundException {
         // Arrange
         Workout workout = workoutService.startWorkout(routine.getId(), user.getId());
 
@@ -99,13 +99,13 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutByIdNonexistentThrows() {
+    void testFindWorkoutByIdNonexistentThrows() {
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> workoutService.findWorkoutById(999L));
     }
 
     @Test
-    public void testFindWorkoutsFromUserreturnsWorkouts() {
+    void testFindWorkoutsFromUserreturnsWorkouts() {
         assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
         assertDoesNotThrow(() -> workoutService.startWorkout(routine.getId(), user.getId()));
 
@@ -116,13 +116,13 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutsFromUseremptyList() {
+    void testFindWorkoutsFromUseremptyList() {
         List<Workout> workouts = workoutService.findWorkoutsFromUser(user.getId());
         assertTrue(workouts.isEmpty());
     }
 
     @Test
-    public void testFindWorkoutsByUserAndDateRangeReturnsWorkouts(){
+    void testFindWorkoutsByUserAndDateRangeReturnsWorkouts(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime threeHoursAgo = now.minusHours(3);
         LocalDateTime twoHoursAgo = now.minusHours(2);
@@ -149,7 +149,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutsByUserAndDateRangeEmptyList(){
+    void testFindWorkoutsByUserAndDateRangeEmptyList(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startRange = now.minusHours(2);
         LocalDateTime endRange = now.minusHours(1);
@@ -159,7 +159,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutsByUserAndDateRangeExcludesIncompleteWorkouts(){
+    void testFindWorkoutsByUserAndDateRangeExcludesIncompleteWorkouts(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startRange = now.minusHours(3);
 
@@ -177,25 +177,25 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFinishWorkoutnonexistentIdthrows() {
+    void testFinishWorkoutnonexistentIdthrows() {
         assertThrows(InstanceNotFoundException.class,
                 () -> workoutService.finishWorkout(999L));
     }
 
     @Test
-    public void testStartWorkoutnonexistentRoutinethrows() {
+    void testStartWorkoutnonexistentRoutinethrows() {
         assertThrows(InstanceNotFoundException.class,
                 () -> workoutService.startWorkout(999L, user.getId()));
     }
 
     @Test
-    public void testStartWorkoutnonexistentUserthrows() {
+    void testStartWorkoutnonexistentUserthrows() {
         assertThrows(InstanceNotFoundException.class,
                 () -> workoutService.startWorkout(routine.getId(), 999L));
     }
 
     @Test
-    public void testStartWorkoutNonExistentRoutine() {
+    void testStartWorkoutNonExistentRoutine() {
         User user1 = userDao.save(new User("u", "n", "u@test.com", "600", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutService.startWorkout(999L, user1.getId())
@@ -203,7 +203,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testStartWorkoutCreatesWorkout() throws Exception {
+    void testStartWorkoutCreatesWorkout() throws Exception {
         User trainer = userDao.save(new User("t", "n", "t@test.com", "601", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c", "n", "c@test.com", "602", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -219,7 +219,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFinishWorkout() throws Exception {
+    void testFinishWorkout() throws Exception {
         User trainer = userDao.save(new User("t2", "n", "t2@test.com", "603", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c2", "n", "c2@test.com", "604", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -233,12 +233,12 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFinishWorkoutNonExistent() {
+    void testFinishWorkoutNonExistent() {
         assertThrows(InstanceNotFoundException.class, () -> workoutService.finishWorkout(999L));
     }
 
     @Test
-    public void testFindWorkoutsFromUser() throws Exception {
+    void testFindWorkoutsFromUser() throws Exception {
         User trainer = userDao.save(new User("t3", "n", "t3@test.com", "605", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client = userDao.save(new User("c3", "n", "c3@test.com", "606", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
@@ -252,7 +252,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    public void testFindWorkoutsFromFollowing() throws Exception {
+    void testFindWorkoutsFromFollowing() throws Exception {
         User trainer = userDao.save(new User("tf", "n", "tf@test.com", "607", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
         User client1 = userDao.save(new User("cf1", "n", "cf1@test.com", "608", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         User client2 = userDao.save(new User("cf2", "n", "cf2@test.com", "609", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
