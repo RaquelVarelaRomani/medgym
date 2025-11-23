@@ -64,16 +64,14 @@ public class WorkoutController {
         return toWorkoutForFeedDtos(workoutService.findWorkoutsFromFollowing(userId));
     }
 
-    @GetMapping("/user/{userId}")
-    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @RequestAttribute Long userIdRequester) throws PermissionException {
-        Long requesterId = userIdRequester;
-        Long ownerId = userId;
+    @GetMapping("/user/{userIdPath}")
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userIdPath, @RequestAttribute Long userId) throws PermissionException {
         // Si el dueño ha bloqueado al que hace la petición → no se permite ver
-        if (userBlockService.hasBlocked(ownerId, requesterId)) {
+        if (userBlockService.hasBlocked(userIdPath, userId)) {
             throw new PermissionException();
         }
 
-        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userIdPath));
     }
 
     @GetMapping("/stats")
