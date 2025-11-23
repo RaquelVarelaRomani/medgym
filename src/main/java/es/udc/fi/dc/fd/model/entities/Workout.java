@@ -15,6 +15,7 @@ public class Workout {
     private Routine routine;
     private User user;
     private List<WorkoutComment> comments;
+    private List<WorkoutLike> likes;
 
     public Workout() {
     }
@@ -31,6 +32,7 @@ public class Workout {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -38,6 +40,7 @@ public class Workout {
     public LocalDateTime getStartTime() {
         return startTime;
     }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
@@ -45,6 +48,7 @@ public class Workout {
     public LocalDateTime getEndTime() {
         return endTime;
     }
+
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
@@ -54,6 +58,7 @@ public class Workout {
     public Routine getRoutine() {
         return routine;
     }
+
     public void setRoutine(Routine routine) {
         this.routine = routine;
     }
@@ -63,6 +68,7 @@ public class Workout {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -71,6 +77,7 @@ public class Workout {
     public List<WorkoutComment> getComments() {
         return comments;
     }
+
     public void setComments(List<WorkoutComment> comments) {
         this.comments = comments;
     }
@@ -79,8 +86,8 @@ public class Workout {
     public List<WorkoutLike> getLikes() {
         return likes;
     }
+
     public void setLikes(List<WorkoutLike> likes) {
         this.likes = likes;
     }
-    private List<WorkoutLike> likes;
 }

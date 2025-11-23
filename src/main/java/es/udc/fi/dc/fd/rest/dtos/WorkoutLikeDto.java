@@ -6,7 +6,8 @@ public class WorkoutLikeDto {
     private Long userId;
     private Long workoutId;
 
-    public WorkoutLikeDto() {}
+    public WorkoutLikeDto() {
+    }
 
     public WorkoutLikeDto(Long id, Long userId, Long workoutId) {
         this.id = id;

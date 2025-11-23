@@ -7,7 +7,6 @@ import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutExerciseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,11 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static es.udc.fi.dc.fd.model.entities.User.RoleType;
-import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static es.udc.fi.dc.fd.model.entities.User.RoleType;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

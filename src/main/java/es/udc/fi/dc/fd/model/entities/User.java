@@ -3,152 +3,158 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name= "users")
+@Table(name = "users")
 public class User {
 
-	public enum RoleType {
-		CLIENT,
-		TRAINER,
-		ADMIN
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String surname;
+    private String email;
+    private String phoneNumber;
+    private String password;
+    private byte[] profilePicture;
+    private RoleType role;
+    private StatusType status;
+    private Double weightKg;
+    private Double heightCm;
+    @Enumerated(EnumType.STRING)
+    private GenderType gender;
+    @Column(name = "trainer_premium")
+    private Boolean trainerPremium;
+    public User() {
+    }
+    public User(String name, String surname, String email, String phoneNumber, String password, RoleType role, StatusType status) {
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.role = role;
+        this.status = status;
+    }
 
-	public enum StatusType {
-		ACTIVE,
-		BLOCKED
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public enum GenderType {
-		MALE,
-		FEMALE,
-		OTHER,
-		UNSPECIFIED
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String name;
-	private String surname;
-	private String email;
-	private String phoneNumber;
-	private String password;
-	private byte[] profilePicture;
-	private RoleType role;
-	private StatusType status;
+    public String getName() {
+        return name;
+    }
 
-	private Double weightKg;
-	private Double heightCm;
-	@Enumerated(EnumType.STRING)
-	private GenderType gender;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Column(name="trainer_premium")
-	private Boolean trainerPremium;
+    public String getSurname() {
+        return surname;
+    }
 
-	public User() {
-	}
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 
-	public User(String name, String surname, String email, String phoneNumber, String password, RoleType role, StatusType status) {
-		this.name = name;
-		this.surname = surname;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.password = password;
-		this.role = role;
-		this.status = status;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-	public String getSurname() {
-		return surname;
-	}
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
 
-	public byte[] getProfilePicture() {
-		return profilePicture;
-	}
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 
-	public void setProfilePicture(byte[] profilePicture) {
-		this.profilePicture = profilePicture;
-	}
+    public RoleType getRole() {
+        return role;
+    }
 
-	public RoleType getRole() {
-		return role;
-	}
-	public void setRole(RoleType role) {
-		this.role = role;
-	}
+    public void setRole(RoleType role) {
+        this.role = role;
+    }
 
-	public StatusType getStatus() {
-		return status;
-	}
-	public void setStatus(StatusType status) {
-		this.status = status;
-	}
+    public StatusType getStatus() {
+        return status;
+    }
 
+    public void setStatus(StatusType status) {
+        this.status = status;
+    }
 
-    public Double getWeightKg() { 
-		return weightKg; 
-	}
-    public void setWeightKg(Double weightKg) { 
-		this.weightKg = weightKg; 
-	}
+    public Double getWeightKg() {
+        return weightKg;
+    }
 
-	
-    public Double getHeightCm() { 
-		return heightCm; 
-	}
-    public void setHeightCm(Double heightCm) { 
-		this.heightCm = heightCm; 
-	}
+    public void setWeightKg(Double weightKg) {
+        this.weightKg = weightKg;
+    }
+
+    public Double getHeightCm() {
+        return heightCm;
+    }
+
+    public void setHeightCm(Double heightCm) {
+        this.heightCm = heightCm;
+    }
 
     public GenderType getGender() {
-   return gender;
-  }
+        return gender;
+    }
+
     public void setGender(GenderType gender) {
-  this.gender = gender;
- }
+        this.gender = gender;
+    }
 
     public Boolean getTrainerPremium() {
         return trainerPremium != null && trainerPremium;
     }
+
     public void setTrainerPremium(Boolean trainerPremium) {
         this.trainerPremium = trainerPremium;
+    }
+
+    public enum RoleType {
+        CLIENT,
+        TRAINER,
+        ADMIN
+    }
+
+    public enum StatusType {
+        ACTIVE,
+        BLOCKED
+    }
+
+    public enum GenderType {
+        MALE,
+        FEMALE,
+        OTHER,
+        UNSPECIFIED
     }
 
 }

@@ -1,24 +1,19 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
-
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import jakarta.transaction.Transactional;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")

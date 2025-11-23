@@ -37,10 +37,10 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         int nExercises = getExercisesForRoutines(routineId, PageRequest.of(0, 4)).getSize();
 
-        if(opExercise.isEmpty()) {
+        if (opExercise.isEmpty()) {
             throw new InstanceNotFoundException("exercise", exerciseId);
         }
-        if(opRoutine.isEmpty()) {
+        if (opRoutine.isEmpty()) {
             throw new InstanceNotFoundException("routine", routineId);
         }
 
@@ -49,10 +49,10 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
 
         if (!(
                 user.getRole() == User.RoleType.ADMIN || ( // admin
-                    user.equals(routine.getTrainer()) && ( // trainer who matches routine trainer
-                        (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
-                        (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nExercises < 5) // trainer not premium with less than 5 exercises
-                    )
+                        user.equals(routine.getTrainer()) && ( // trainer who matches routine trainer
+                                (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
+                                        (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nExercises < 5) // trainer not premium with less than 5 exercises
+                        )
                 )
         )) {
             throw new PermissionException();
@@ -75,7 +75,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         User user = permissionChecker.checkUser(userId);
 
         Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
-        if(opRoutineExercise.isEmpty()) {
+        if (opRoutineExercise.isEmpty()) {
             throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
         }
         RoutineExercise routineExercise = opRoutineExercise.get();
@@ -93,7 +93,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         User user = permissionChecker.checkUser(userId);
 
         Optional<RoutineExercise> opRoutineExercise = routineExerciseDao.findByRoutineIdAndExerciseId(routineId, exerciseId);
-        if(opRoutineExercise.isEmpty()) {
+        if (opRoutineExercise.isEmpty()) {
             throw new InstanceNotFoundException("routineExercise", "routine: " + routineId + ", exercise: " + exerciseId);
         }
         RoutineExercise routineExercise = opRoutineExercise.get();

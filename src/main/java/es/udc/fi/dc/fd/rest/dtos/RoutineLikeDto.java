@@ -6,7 +6,8 @@ public class RoutineLikeDto {
     private Long userId;
     private Long routineId;
 
-    public RoutineLikeDto() {}
+    public RoutineLikeDto() {
+    }
 
     public RoutineLikeDto(Long id, Long userId, Long routineId) {
         this.id = id;

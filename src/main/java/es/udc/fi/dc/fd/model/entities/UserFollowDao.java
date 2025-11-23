@@ -9,8 +9,11 @@ import java.util.Optional;
 
 public interface UserFollowDao extends JpaRepository<UserFollow, Long> {
     boolean existsByUserAndFollowUser(User user, User followUser);
+
     Optional<UserFollow> findByUserAndFollowUser(User user, User followUser);
+
     List<UserFollow> findByFollowUser(User followUser);
+
     List<UserFollow> findByUser(User user);
 
     @Modifying

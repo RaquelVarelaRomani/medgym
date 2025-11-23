@@ -4,23 +4,22 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import org.springframework.stereotype.Service;
 
-import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
+    private static final String PROJECT_ENTITIES_USER = "entities.user";
+    private static final String PROJECT_ENTITIES_ROUTINE = "entities.routine";
+    private static final String PROJECT_ENTITIES_WORKOUT = "entities.workout";
     private final NotificationDao notificationDao;
     private final UserFollowDao userFollowDao;
     private final RoutineDao routineDao;
     private final UserDao userDao;
     private final WorkoutDao workoutDao;
-
-    private static final String PROJECT_ENTITIES_USER = "entities.user";
-    private static final String PROJECT_ENTITIES_ROUTINE = "entities.routine";
-    private static final String PROJECT_ENTITIES_WORKOUT = "entities.workout";
 
     public NotificationServiceImpl(NotificationDao notificationDao, UserFollowDao userFollowDao, RoutineDao routineDao, UserDao userDao, WorkoutDao workoutDao) {
         this.notificationDao = notificationDao;

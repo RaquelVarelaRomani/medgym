@@ -1,14 +1,16 @@
 package es.udc.fi.dc.fd.rest.controllers;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import static es.udc.fi.dc.fd.rest.dtos.UserFollowConversor.toUserFollowDto;
 import es.udc.fi.dc.fd.model.services.UserFollowService;
 import es.udc.fi.dc.fd.rest.dtos.UserFollowConversor;
 import es.udc.fi.dc.fd.rest.dtos.UserFollowDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
+import static es.udc.fi.dc.fd.rest.dtos.UserFollowConversor.toUserFollowDto;
 
 @RestController
 @RequestMapping("/api/users/follow")

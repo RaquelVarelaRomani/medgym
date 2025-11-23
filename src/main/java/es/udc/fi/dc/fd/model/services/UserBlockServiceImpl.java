@@ -1,17 +1,13 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.time.LocalDateTime;
-
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.UserBlock;
-import es.udc.fi.dc.fd.model.entities.UserBlockDao;
-import es.udc.fi.dc.fd.model.entities.UserFollowDao;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class UserBlockServiceImpl implements UserBlockService {

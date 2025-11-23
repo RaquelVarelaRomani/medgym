@@ -1,33 +1,9 @@
 package es.udc.fi.dc.fd.rest.controllers;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URI;
-import java.util.List;
-import java.util.Locale;
-
-import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
@@ -36,34 +12,35 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.common.ErrorsDto;
 import es.udc.fi.dc.fd.rest.common.JwtGenerator;
 import es.udc.fi.dc.fd.rest.common.JwtInfo;
-import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
-import es.udc.fi.dc.fd.rest.dtos.BmiCalculateParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.BmiDto;
-import es.udc.fi.dc.fd.rest.dtos.BodyMetricsParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.ChangePasswordParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.UserConversor;
+import es.udc.fi.dc.fd.rest.dtos.*;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toAuthenticatedUserDto;
-import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUser;
-import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDto;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URI;
+import java.util.List;
+import java.util.Locale;
 
-import es.udc.fi.dc.fd.rest.dtos.UserDto;
-import es.udc.fi.dc.fd.model.services.UserBlockService;
+import static es.udc.fi.dc.fd.rest.dtos.UserConversor.*;
 
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-	private static final String BLOCKED_USER_EXCEPTION_CODE = "project.exceptions.BlockedUserException";
-	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
-	private static final String INCORRECT_PASS_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
+    private static final String BLOCKED_USER_EXCEPTION_CODE = "project.exceptions.BlockedUserException";
+    private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
+    private static final String INCORRECT_PASS_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
 
-	private final MessageSource messageSource;
-	private final JwtGenerator jwtGenerator;
-	private final UserService userService;
-	private final UserBlockService userBlockService;
+    private final MessageSource messageSource;
+    private final JwtGenerator jwtGenerator;
+    private final UserService userService;
+    private final UserBlockService userBlockService;
 
     public UserController(MessageSource messageSource, JwtGenerator jwtGenerator, UserService userService, UserBlockService userBlockService) {
         this.messageSource = messageSource;
@@ -73,145 +50,145 @@ public class UserController {
     }
 
     @ExceptionHandler(IncorrectLoginException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorsDto handleIncorrectLoginException(IncorrectLoginException exception, Locale locale) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorsDto handleIncorrectLoginException(IncorrectLoginException exception, Locale locale) {
 
-		String errorMessage = messageSource.getMessage(INCORRECT_LOGIN_EXCEPTION_CODE, null,
-				INCORRECT_LOGIN_EXCEPTION_CODE, locale);
+        String errorMessage = messageSource.getMessage(INCORRECT_LOGIN_EXCEPTION_CODE, null,
+                INCORRECT_LOGIN_EXCEPTION_CODE, locale);
 
-		return new ErrorsDto(errorMessage);
+        return new ErrorsDto(errorMessage);
 
-	}
+    }
 
-	@ExceptionHandler(IncorrectPasswordException.class)
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorsDto handleIncorrectPasswordException(IncorrectPasswordException exception, Locale locale) {
+    @ExceptionHandler(IncorrectPasswordException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorsDto handleIncorrectPasswordException(IncorrectPasswordException exception, Locale locale) {
 
-		String errorMessage = messageSource.getMessage(INCORRECT_PASS_EXCEPTION_CODE, null,
-				INCORRECT_PASS_EXCEPTION_CODE, locale);
+        String errorMessage = messageSource.getMessage(INCORRECT_PASS_EXCEPTION_CODE, null,
+                INCORRECT_PASS_EXCEPTION_CODE, locale);
 
-		return new ErrorsDto(errorMessage);
+        return new ErrorsDto(errorMessage);
 
-	}
+    }
 
-	@ExceptionHandler(BlockedUserException.class)
-	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public ErrorsDto handleBlockedUserException(BlockedUserException exception, Locale locale) {
+    @ExceptionHandler(BlockedUserException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorsDto handleBlockedUserException(BlockedUserException exception, Locale locale) {
 
-		String errorMessage = messageSource.getMessage(BLOCKED_USER_EXCEPTION_CODE, null,
-				BLOCKED_USER_EXCEPTION_CODE, locale);
+        String errorMessage = messageSource.getMessage(BLOCKED_USER_EXCEPTION_CODE, null,
+                BLOCKED_USER_EXCEPTION_CODE, locale);
 
-		return new ErrorsDto(errorMessage);
+        return new ErrorsDto(errorMessage);
 
-	}
+    }
 
-	@PostMapping("/signUp")
-	public ResponseEntity<AuthenticatedUserDto> signUp(
-			@Validated({ UserDto.AllValidations.class }) @RequestBody UserDto userDto)
-			throws DuplicateInstanceException {
+    @PostMapping("/signUp")
+    public ResponseEntity<AuthenticatedUserDto> signUp(
+            @Validated({UserDto.AllValidations.class}) @RequestBody UserDto userDto)
+            throws DuplicateInstanceException {
 
-		User user = toUser(userDto);
+        User user = toUser(userDto);
 
-		userService.signUp(user);
+        userService.signUp(user);
 
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
 
-		return ResponseEntity.created(location).body(toAuthenticatedUserDto(generateServiceToken(user), user));
+        return ResponseEntity.created(location).body(toAuthenticatedUserDto(generateServiceToken(user), user));
 
-	}
+    }
 
-	@PostMapping("/login")
-	public AuthenticatedUserDto login(@Validated @RequestBody LoginParamsDto params) throws IncorrectLoginException, BlockedUserException {
+    @PostMapping("/login")
+    public AuthenticatedUserDto login(@Validated @RequestBody LoginParamsDto params) throws IncorrectLoginException, BlockedUserException {
 
-		User user = userService.login(params.getEmail(), params.getPassword());
+        User user = userService.login(params.getEmail(), params.getPassword());
 
-		return toAuthenticatedUserDto(generateServiceToken(user), user);
+        return toAuthenticatedUserDto(generateServiceToken(user), user);
 
-	}
+    }
 
-	@PostMapping("/loginFromServiceToken")
-	public AuthenticatedUserDto loginFromServiceToken(@RequestAttribute Long userId,
-			@RequestAttribute String serviceToken) throws InstanceNotFoundException {
+    @PostMapping("/loginFromServiceToken")
+    public AuthenticatedUserDto loginFromServiceToken(@RequestAttribute Long userId,
+                                                      @RequestAttribute String serviceToken) throws InstanceNotFoundException {
 
-		User user = userService.loginFromId(userId);
+        User user = userService.loginFromId(userId);
 
-		return toAuthenticatedUserDto(serviceToken, user);
+        return toAuthenticatedUserDto(serviceToken, user);
 
-	}
+    }
 
-	@PutMapping("/{id}")
-	public UserDto updateProfile(@RequestAttribute Long userId, @PathVariable("id") Long id,
-			@Validated({ UserDto.UpdateValidations.class }) @RequestBody UserDto userDto)
-			throws InstanceNotFoundException, PermissionException {
+    @PutMapping("/{id}")
+    public UserDto updateProfile(@RequestAttribute Long userId, @PathVariable("id") Long id,
+                                 @Validated({UserDto.UpdateValidations.class}) @RequestBody UserDto userDto)
+            throws InstanceNotFoundException, PermissionException {
 
-		if (!id.equals(userId)) {
-			throw new PermissionException();
-		}
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
 
-		return toUserDto(userService.updateProfile(id, userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPhoneNumber(), userDto.getProfilePicture()));
+        return toUserDto(userService.updateProfile(id, userDto.getName(), userDto.getSurname(), userDto.getEmail(), userDto.getPhoneNumber(), userDto.getProfilePicture()));
 
-	}
+    }
 
-	@PostMapping("/{id}/changePassword")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void changePassword(@RequestAttribute Long userId, @PathVariable Long id,
-			@Validated @RequestBody ChangePasswordParamsDto params)
-			throws PermissionException, InstanceNotFoundException, IncorrectPasswordException {
+    @PostMapping("/{id}/changePassword")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(@RequestAttribute Long userId, @PathVariable Long id,
+                               @Validated @RequestBody ChangePasswordParamsDto params)
+            throws PermissionException, InstanceNotFoundException, IncorrectPasswordException {
 
-		if (!id.equals(userId)) {
-			throw new PermissionException();
-		}
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
 
-		userService.changePassword(id, params.getOldPassword(), params.getNewPassword());
+        userService.changePassword(id, params.getOldPassword(), params.getNewPassword());
 
-	}
+    }
 
-	private String generateServiceToken(User user) {
+    private String generateServiceToken(User user) {
 
-		JwtInfo jwtInfo = new JwtInfo(user.getId(), user.getEmail(), user.getRole().toString(), user.getStatus().toString());
+        JwtInfo jwtInfo = new JwtInfo(user.getId(), user.getEmail(), user.getRole().toString(), user.getStatus().toString());
 
-		return jwtGenerator.generate(jwtInfo);
+        return jwtGenerator.generate(jwtInfo);
 
-	}
+    }
 
-	@GetMapping("/{id}")
-	public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
+    @GetMapping("/{id}")
+    public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
 
-		// No se aplica bloqueo cuando pides tu propio perfil
-		if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId) || userBlockService.hasBlocked(userId, id))) {
-			throw new PermissionException();
-		}
+        // No se aplica bloqueo cuando pides tu propio perfil
+        if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId) || userBlockService.hasBlocked(userId, id))) {
+            throw new PermissionException();
+        }
 
-		return toUserDto(userService.findUserById(id));
-	}
+        return toUserDto(userService.findUserById(id));
+    }
 
-	@GetMapping
-	public List<UserDto> getAllUsers(@RequestAttribute Long userId) {
+    @GetMapping
+    public List<UserDto> getAllUsers(@RequestAttribute Long userId) {
 
-		return userService.findAllUsers().stream()
-			.filter(u -> !userBlockService.hasBlocked(u.getId(), userId)) // si ELLOS me bloquearon → no los veo
-			.map(UserConversor::toUserDto)
-			.toList();
-	}
+        return userService.findAllUsers().stream()
+                .filter(u -> !userBlockService.hasBlocked(u.getId(), userId)) // si ELLOS me bloquearon → no los veo
+                .map(UserConversor::toUserDto)
+                .toList();
+    }
 
-	@GetMapping("/search")
-	public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
-		return userService.searchUsers(userId, query).stream()
-            .filter(u -> !userBlockService.hasBlocked(u.getId(), userId))
-            .map(UserConversor::toUserDto)
-            .toList();
-	}
+    @GetMapping("/search")
+    public List<UserDto> searchUsers(@RequestAttribute Long userId, @RequestParam("q") String query) {
+        return userService.searchUsers(userId, query).stream()
+                .filter(u -> !userBlockService.hasBlocked(u.getId(), userId))
+                .map(UserConversor::toUserDto)
+                .toList();
+    }
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteUser(@RequestAttribute Long userId, @PathVariable Long id) throws PermissionException {
-		if (!id.equals(userId)) {
-			throw new PermissionException();
-		}
-		userService.deleteUser(id);
-	}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@RequestAttribute Long userId, @PathVariable Long id) throws PermissionException {
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
+        userService.deleteUser(id);
+    }
 
-	@PutMapping("/{id}/bodyMetrics")
+    @PutMapping("/{id}/bodyMetrics")
     public UserDto updateBodyMetrics(
             @RequestAttribute Long userId,
             @PathVariable("id") Long id,

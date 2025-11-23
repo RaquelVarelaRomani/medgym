@@ -6,26 +6,31 @@ public class BodyMetricsParamsDto {
     private Double heightCm;
     private String gender;
 
-    public BodyMetricsParamsDto() { super(); }
-
-    public Double getWeightKg() { 
-        return weightKg; 
-    }
-    public void setWeightKg(Double weightKg) { 
-        this.weightKg = weightKg; 
+    public BodyMetricsParamsDto() {
+        super();
     }
 
-    public Double getHeightCm() { 
-        return heightCm; 
-    }
-    public void setHeightCm(Double heightCm) { 
-        this.heightCm = heightCm; 
+    public Double getWeightKg() {
+        return weightKg;
     }
 
-    public String getGender() { 
-        return gender; 
+    public void setWeightKg(Double weightKg) {
+        this.weightKg = weightKg;
     }
-    public void setGender(String gender) { 
-        this.gender = gender; 
+
+    public Double getHeightCm() {
+        return heightCm;
+    }
+
+    public void setHeightCm(Double heightCm) {
+        this.heightCm = heightCm;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

@@ -1,19 +1,14 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import es.udc.fi.dc.fd.model.entities.*;
+import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.Workout;
-import es.udc.fi.dc.fd.model.entities.WorkoutComment;
-import es.udc.fi.dc.fd.model.entities.WorkoutLike;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class WorkoutConversorTest {
 

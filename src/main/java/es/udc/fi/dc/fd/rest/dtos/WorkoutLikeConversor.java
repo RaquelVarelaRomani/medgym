@@ -6,7 +6,8 @@ import java.util.List;
 
 public class WorkoutLikeConversor {
 
-    private WorkoutLikeConversor() {}
+    private WorkoutLikeConversor() {
+    }
 
     public static WorkoutLikeDto toWorkoutLikeDto(WorkoutLike workoutLike) {
         return new WorkoutLikeDto(

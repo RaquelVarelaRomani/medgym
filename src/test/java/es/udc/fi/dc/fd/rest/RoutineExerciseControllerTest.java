@@ -2,15 +2,15 @@ package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.RoutineExerciseService;
-
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineExerciseDto;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
-import es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

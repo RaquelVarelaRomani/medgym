@@ -1,7 +1,8 @@
 package es.udc.fi.dc.fd.rest.controllers;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
 import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutExerciseDto;
 import org.springframework.beans.factory.annotation.Autowired;

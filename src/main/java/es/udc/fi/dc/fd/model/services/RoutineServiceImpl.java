@@ -1,19 +1,14 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.RoutineLikeDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -40,8 +35,8 @@ public class RoutineServiceImpl implements RoutineService {
 
         if (!(
                 user.getRole() == User.RoleType.ADMIN || // admin
-                (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
-                (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nRoutines < 3) // trainer not premium with less than 3 routines
+                        (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
+                        (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nRoutines < 3) // trainer not premium with less than 3 routines
         )) {
             throw new PermissionException();
         }
@@ -84,7 +79,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void updateRoutine(Long userId, Long routineId, String name, String description,
-            Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
+                              Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         Routine routine = findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
@@ -136,7 +131,7 @@ public class RoutineServiceImpl implements RoutineService {
     @Override
     @Transactional(readOnly = true)
     public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup,
-            Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+                                               Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 

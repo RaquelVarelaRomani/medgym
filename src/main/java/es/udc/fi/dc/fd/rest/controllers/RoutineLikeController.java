@@ -6,9 +6,9 @@ import es.udc.fi.dc.fd.rest.dtos.RoutineLikeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static es.udc.fi.dc.fd.rest.dtos.RoutineLikeConversor.toRoutineLikeDtos;
-
 import java.util.List;
+
+import static es.udc.fi.dc.fd.rest.dtos.RoutineLikeConversor.toRoutineLikeDtos;
 
 @RestController
 @RequestMapping("/api")

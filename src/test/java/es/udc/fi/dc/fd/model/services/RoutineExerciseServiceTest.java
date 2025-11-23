@@ -1,10 +1,11 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,22 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.ExerciseDao;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.RoutineExercise;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import jakarta.transaction.Transactional;
-
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @RunWith(SpringRunner.class)

@@ -32,7 +32,7 @@ public class UserFollowServiceImpl implements UserFollowService {
     public UserFollow followUser(Long userId, Long followUserId) throws InstanceNotFoundException {
         User trainer = userService.findUserById(followUserId);
 
-        if (Objects.equals(userId, followUserId)){
+        if (Objects.equals(userId, followUserId)) {
             throw new FollowException(followUserId);
         }
 
@@ -42,7 +42,7 @@ public class UserFollowServiceImpl implements UserFollowService {
             throw new FollowException(followUserId);
         }
 
-        if(userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)){
+        if (userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)) {
             throw new FollowException(followUserId);
         }
 
@@ -58,7 +58,7 @@ public class UserFollowServiceImpl implements UserFollowService {
 
         Optional<UserFollow> userFollow = userFollowDao.findByUserAndFollowUser(user, trainer);
 
-        if(userFollow.isEmpty()){
+        if (userFollow.isEmpty()) {
             throw new FollowException(followUserId);
         }
 

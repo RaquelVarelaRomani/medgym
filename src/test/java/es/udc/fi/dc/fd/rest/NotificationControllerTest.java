@@ -1,8 +1,9 @@
 package es.udc.fi.dc.fd.rest;
 
 import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
 import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.NotificationService;
 import es.udc.fi.dc.fd.model.services.RoutineService;
 import es.udc.fi.dc.fd.model.services.UserService;
@@ -22,8 +23,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)

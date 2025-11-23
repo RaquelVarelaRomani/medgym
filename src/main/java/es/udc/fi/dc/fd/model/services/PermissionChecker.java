@@ -4,9 +4,9 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 
 public interface PermissionChecker {
-	
-	public void checkUserExists(Long userId) throws InstanceNotFoundException;
-	
-	public User checkUser(Long userId) throws InstanceNotFoundException;
-	
+
+    void checkUserExists(Long userId) throws InstanceNotFoundException;
+
+    User checkUser(Long userId) throws InstanceNotFoundException;
+
 }

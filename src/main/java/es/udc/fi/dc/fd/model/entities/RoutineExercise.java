@@ -10,7 +10,8 @@ public class RoutineExercise {
     private Exercise exercise;
     private Integer position;
 
-    public RoutineExercise() {}
+    public RoutineExercise() {
+    }
 
     public RoutineExercise(Routine routine, Exercise exercise, Integer position) {
         this.routine = routine;
@@ -23,6 +24,7 @@ public class RoutineExercise {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -32,6 +34,7 @@ public class RoutineExercise {
     public Routine getRoutine() {
         return routine;
     }
+
     public void setRoutine(Routine routine) {
         this.routine = routine;
     }
@@ -41,6 +44,7 @@ public class RoutineExercise {
     public Exercise getExercise() {
         return exercise;
     }
+
     public void setExercise(Exercise exercise) {
         this.exercise = exercise;
     }

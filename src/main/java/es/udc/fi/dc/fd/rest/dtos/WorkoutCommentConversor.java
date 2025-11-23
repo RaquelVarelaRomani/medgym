@@ -6,7 +6,8 @@ import java.util.List;
 
 public class WorkoutCommentConversor {
 
-    private WorkoutCommentConversor() {}
+    private WorkoutCommentConversor() {
+    }
 
     public static WorkoutCommentDto toWorkoutCommentDto(WorkoutComment workoutComment) {
         WorkoutCommentDto workoutCommentDto = new WorkoutCommentDto();

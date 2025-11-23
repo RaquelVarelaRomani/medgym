@@ -10,9 +10,10 @@ import java.util.Map;
 
 public class StatisticsConversor {
 
-    private StatisticsConversor() {}
+    private StatisticsConversor() {
+    }
 
-    public static final StatisticsDto toStatisticsDto(List<Workout> workouts, List<WorkoutExercise> performedExercises){
+    public static final StatisticsDto toStatisticsDto(List<Workout> workouts, List<WorkoutExercise> performedExercises) {
         int workoutCount = workouts.size();
         Long totalDuration = calculateTotalDuration(workouts);
         Double averageDuration = workoutCount > 0 ? (double) totalDuration / workoutCount : 0.0;
@@ -21,7 +22,7 @@ public class StatisticsConversor {
         return new StatisticsDto(workoutCount, totalDuration, averageDuration, muscleGroupStats);
     }
 
-    private static Long calculateTotalDuration(List<Workout> workouts){
+    private static Long calculateTotalDuration(List<Workout> workouts) {
         return workouts.stream()
                 .filter(w -> w.getEndTime() != null)
                 .mapToLong(w -> ChronoUnit.SECONDS.between(w.getStartTime(), w.getEndTime()))

@@ -15,6 +15,7 @@ public class NotificationWorkoutLikeParamsDto {
     public Long getUserId() {
         return userId;
     }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -23,6 +24,7 @@ public class NotificationWorkoutLikeParamsDto {
     public Long getWorkoutId() {
         return workoutId;
     }
+
     public void setWorkoutId(Long workoutId) {
         this.workoutId = workoutId;
     }
