@@ -367,24 +367,29 @@
 /* search dropdown */
 .search-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.5rem);
   left: 0;
-  right: 0;
+  width: 100%;
   background: var(--bg-card);
   border: 1px solid var(--neon-orange);
   border-radius: 12px;
   max-height: 300px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 5000;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   margin-top: 0.5rem;
 }
 
 .search-result-item {
+  all: unset;
+  display: block;
+  width: 100%;
   padding: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
   border-bottom: 1px solid var(--border-color);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-card);
 }
 
 .search-result-item:last-child {
@@ -396,6 +401,8 @@
 }
 
 .search-result-name {
+  all:unset;
+  display: block;
   color: var(--text-primary);
   font-weight: 600;
   font-size: 0.95rem;
@@ -418,6 +425,7 @@
 
 .search-dropdown::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 .search-dropdown::-webkit-scrollbar-track {

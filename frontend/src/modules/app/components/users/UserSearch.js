@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchUsers } from '../../../../backend/userService';
 import ProfilePhoto from '../common/profilePhoto';
@@ -11,6 +11,7 @@ const UserSearch = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState(null);
     const navigate = useNavigate();
+    const modalRef = useRef(null);
 
     const performSearch = useCallback((searchQuery) => {
         if (!searchQuery.trim()) {
@@ -54,87 +55,79 @@ const UserSearch = ({ isOpen, onClose }) => {
         setQuery(e.target.value);
     };
 
+    const handleOverlayClick = (e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) {
+            onClose();
+        }
+    };
     const handleViewProfile = (userId) => {
-        setQuery('');
-        setResults([]);
-        navigate(`/users/profile/${userId}`);
         onClose();
+        navigate(`/users/profile/${userId}`);
     };
 
 
     if (!isOpen) return null;
 
     return (
-        <button
-            type="button"
+        <div
             className={styles.overlay}
-            onClick={onClose}
-            aria-label="Cerrar buscador"
+            onClick={handleOverlayClick}
+            aria-hidden="true"
         >
-            {/* container ahora es botón accesible */}
-            <button
-                type="button"
-                className={styles.container}
-                onClick={e => e.stopPropagation()}
-                onKeyDown={e => {
-                    if (e.key === "Enter" || e.key === " ") e.stopPropagation();
-                }}
-            >
-                {/* modal ya NO tiene listeners → se evita el segundo warning */}
-                <div className={styles.modal}>
-                    <div className={styles.searchContainer}>
-                        <input
-                            type="text"
-                            placeholder="Buscar usuarios..."
-                            value={query}
-                            onChange={handleInputChange}
-                            className={styles.searchInput}
-                            autoFocus
-                        />
-                    </div>
+            <div ref={modalRef} className={styles.modal}>
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Buscar usuarios..."
+                        value={query}
+                        onChange={handleInputChange}
+                        className={styles.searchInput}
+                        autoFocus
+                    />
+                </div>
 
-                    <div className={styles.resultsContainer}>
-                        {loading && (
-                            <div className={styles.noResults}>Buscando...</div>
-                        )}
+                <div className={styles.resultsContainer}>
+                    {loading && (
+                        <div className={styles.noResults}>Buscando...</div>
+                    )}
 
-                        {!loading && results.length === 0 && query.trim() && (
-                            <div className={styles.noResults}>
-                                No se encontraron usuarios
-                            </div>
-                        )}
+                    {!loading && results.length === 0 && query.trim() && (
+                        <div className={styles.noResults}>
+                            No se encontraron usuarios
+                        </div>
+                    )}
 
-                        {!loading &&
-                            results.map(user => (
-                                <div key={user.id} className={styles.userItem}>
-                                    <ProfilePhoto
-                                        profilePicture={user.profilePicture}
-                                        alt={`${user.firstName} ${user.lastName}`}
-                                        size="small"
-                                    />
-                                    <div className={styles.userInfo}>
-                                        <div className={styles.userName}>
-                                            {user.name} {user.surname}
-                                        </div>
-                                    </div>
-                                    <div className={styles.userActions}>
-                                        <button
-                                            className={styles.viewProfileBtn}
-                                            onClick={() =>
-                                                handleViewProfile(user.id)
-                                            }
-                                        >
-                                            Ver Perfil
-                                        </button>
+                    {!loading &&
+                        results.map(user => (
+                            <div key={user.id} className={styles.userItem}>
+                                <ProfilePhoto
+                                    profilePicture={user.profilePicture}
+                                    alt={`${user.firstName} ${user.lastName}`}
+                                    size="small"
+                                />
+                                <div className={styles.userInfo}>
+                                    <div className={styles.userName}>
+                                        {user.name} {user.surname}
                                     </div>
                                 </div>
-                            ))}
-                    </div>
+                                <div className={styles.userActions}>
+                                    <button
+                                        className={styles.viewProfileBtn}
+                                        onClick={() =>
+                                            handleViewProfile(user.id)
+                                        }
+                                    >
+                                        Ver Perfil
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                 </div>
-            </button>
-        </button>
+            </div>
+        </div>
     );
 };
+UserSearch.displayName = 'UserSearch';
 
 export default UserSearch;
 
