@@ -1,14 +1,15 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
 import es.udc.fi.dc.fd.model.entities.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 class WorkoutConversorTest {
 

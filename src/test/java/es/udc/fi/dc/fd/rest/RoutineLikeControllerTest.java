@@ -8,15 +8,13 @@ import es.udc.fi.dc.fd.model.services.RoutineService;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -49,7 +47,7 @@ class RoutineLikeControllerTest {
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    @Before
+    @BeforeEach
     void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Test", "trainer_like@test.com", "600000100", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "Like", "client_like@test.com", "600000101", User.RoleType.CLIENT);

@@ -6,21 +6,18 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional

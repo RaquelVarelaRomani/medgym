@@ -9,26 +9,25 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -53,7 +52,7 @@ class WorkoutLikeControllerTest {
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    @Before
+    @BeforeEach
     void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Test", "trainer_workoutlike@test.com", "600000200", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "WorkoutLike", "client_workoutlike@test.com", "600000201", User.RoleType.CLIENT);
@@ -115,6 +114,6 @@ class WorkoutLikeControllerTest {
                 .andExpect(status().isOk());
 
         List<?> likes = workoutLikeService.getLikesByUser(clientUser.getUserDto().getId());
-        org.junit.Assert.assertTrue(likes.isEmpty());
+        assertTrue(likes.isEmpty());
     }
 }
