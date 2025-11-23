@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +15,15 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 @Service
 @Transactional
 public class UserBlockServiceImpl implements UserBlockService {
+    private final UserDao userDao;
+    private final UserFollowDao userFollowDao;
+    private final UserBlockDao userBlockDao;
 
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private UserFollowDao userFollowDao;
-
-    @Autowired
-    private UserBlockDao userBlockDao;
+    public UserBlockServiceImpl(UserDao userDao, UserFollowDao userFollowDao, UserBlockDao userBlockDao) {
+        this.userDao = userDao;
+        this.userFollowDao = userFollowDao;
+        this.userBlockDao = userBlockDao;
+    }
 
     @Override
     public void blockUser(Long blockerId, Long blockedId) throws InstanceNotFoundException, PermissionException {

@@ -3,11 +3,9 @@ package es.udc.fi.dc.fd.rest.controllers;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URI;
-import java.security.Permission;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -50,7 +47,7 @@ import es.udc.fi.dc.fd.rest.dtos.UserConversor;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toAuthenticatedUserDto;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUser;
 import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDto;
-import static es.udc.fi.dc.fd.rest.dtos.UserConversor.toUserDtos;
+
 import es.udc.fi.dc.fd.rest.dtos.UserDto;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 
@@ -63,21 +60,20 @@ public class UserController {
 	private static final String INCORRECT_LOGIN_EXCEPTION_CODE = "project.exceptions.IncorrectLoginException";
 	private static final String INCORRECT_PASS_EXCEPTION_CODE = "project.exceptions.IncorrectPasswordException";
 
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
+	private final JwtGenerator jwtGenerator;
+	private final UserService userService;
+	private final UserBlockService userBlockService;
 
-	@Autowired
-	private JwtGenerator jwtGenerator;
+    public UserController(MessageSource messageSource, JwtGenerator jwtGenerator, UserService userService, UserBlockService userBlockService) {
+        this.messageSource = messageSource;
+        this.jwtGenerator = jwtGenerator;
+        this.userService = userService;
+        this.userBlockService = userBlockService;
+    }
 
-	@Autowired
-	private UserService userService;
-
-	@Autowired
-	private UserBlockService userBlockService;
-
-	@ExceptionHandler(IncorrectLoginException.class)
+    @ExceptionHandler(IncorrectLoginException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ResponseBody
 	public ErrorsDto handleIncorrectLoginException(IncorrectLoginException exception, Locale locale) {
 
 		String errorMessage = messageSource.getMessage(INCORRECT_LOGIN_EXCEPTION_CODE, null,
@@ -89,7 +85,6 @@ public class UserController {
 
 	@ExceptionHandler(IncorrectPasswordException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ResponseBody
 	public ErrorsDto handleIncorrectPasswordException(IncorrectPasswordException exception, Locale locale) {
 
 		String errorMessage = messageSource.getMessage(INCORRECT_PASS_EXCEPTION_CODE, null,
@@ -101,7 +96,6 @@ public class UserController {
 
 	@ExceptionHandler(BlockedUserException.class)
 	@ResponseStatus(HttpStatus.FORBIDDEN)
-	@ResponseBody
 	public ErrorsDto handleBlockedUserException(BlockedUserException exception, Locale locale) {
 
 		String errorMessage = messageSource.getMessage(BLOCKED_USER_EXCEPTION_CODE, null,

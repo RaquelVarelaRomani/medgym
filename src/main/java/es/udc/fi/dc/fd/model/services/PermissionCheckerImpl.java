@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +12,13 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 @Service
 @Transactional(readOnly=true)
 public class PermissionCheckerImpl implements PermissionChecker {
-	
-	@Autowired
-	private UserDao userDao;
-	
-	@Override
+	private final UserDao userDao;
+
+    public PermissionCheckerImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    @Override
 	public void checkUserExists(Long userId) throws InstanceNotFoundException {
 		
 		if (!userDao.existsById(userId)) {
@@ -31,7 +32,7 @@ public class PermissionCheckerImpl implements PermissionChecker {
 
 		Optional<User> user = userDao.findById(userId);
 		
-		if (!user.isPresent()) {
+		if (user.isEmpty()) {
 			throw new InstanceNotFoundException("project.entities.user", userId);
 		}
 		

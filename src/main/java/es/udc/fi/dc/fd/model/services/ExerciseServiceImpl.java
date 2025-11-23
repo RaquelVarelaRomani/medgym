@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.model.services;
 import java.util.List;
 
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,15 +22,15 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 @Service
 @Transactional
 public class ExerciseServiceImpl implements ExerciseService {
+    private final ExerciseDao exerciseDao;
+    private final PermissionChecker permissionChecker;
+    private final RoutineExerciseDao routineExerciseDao;
 
-    @Autowired
-    private ExerciseDao exerciseDao;
-
-    @Autowired
-    private PermissionChecker permissionChecker;
-
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
+    public ExerciseServiceImpl(ExerciseDao exerciseDao, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
+        this.exerciseDao = exerciseDao;
+        this.permissionChecker = permissionChecker;
+        this.routineExerciseDao = routineExerciseDao;
+    }
 
     @Override
     public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException, PermissionException {

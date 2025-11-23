@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.rest.controllers;
 
 import static es.udc.fi.dc.fd.rest.dtos.RoutineExerciseConversor.toRoutineExerciseDto;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -29,8 +28,11 @@ import es.udc.fi.dc.fd.rest.dtos.RoutineExerciseDto;
 @RestController
 @RequestMapping("/api/routines/{routineId}/exercises")
 public class RoutineExerciseController {
-    @Autowired
-    private RoutineExerciseService routineExerciseService;
+    private final RoutineExerciseService routineExerciseService;
+
+    public RoutineExerciseController(RoutineExerciseService routineExerciseService) {
+        this.routineExerciseService = routineExerciseService;
+    }
 
     @PostMapping("")
     public RoutineExerciseDto addRoutineExercise(@RequestAttribute Long userId,

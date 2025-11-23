@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import es.udc.fi.dc.fd.model.entities.Exercise;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,18 +18,17 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 @Service
 @Transactional
 public class RoutineServiceImpl implements RoutineService {
+    private final RoutineDao routineDao;
+    private final UserService userService;
+    private final NotificationService notificationService;
+    private final RoutineLikeDao routineLikeDao;
 
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private RoutineLikeDao routineLikeDao;
+    public RoutineServiceImpl(RoutineDao routineDao, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
+        this.routineDao = routineDao;
+        this.userService = userService;
+        this.notificationService = notificationService;
+        this.routineLikeDao = routineLikeDao;
+    }
 
     @Override
     public Routine createRoutine(String name, String description, User user, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {

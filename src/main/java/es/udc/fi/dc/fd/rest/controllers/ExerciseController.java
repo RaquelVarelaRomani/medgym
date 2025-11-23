@@ -6,7 +6,6 @@ import java.util.List;
 
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,12 +35,13 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 @RestController
 @RequestMapping("/api/exercises")
 public class ExerciseController {
+    private final ExerciseService exerciseService;
+    private final UserService userService;
 
-    @Autowired
-    private ExerciseService exerciseService;
-
-    @Autowired
-    private UserService userService;
+    public ExerciseController(ExerciseService exerciseService, UserService userService) {
+        this.exerciseService = exerciseService;
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {

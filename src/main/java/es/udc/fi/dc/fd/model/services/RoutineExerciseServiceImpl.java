@@ -4,7 +4,6 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +15,17 @@ import java.util.Optional;
 @Service
 @Transactional
 public class RoutineExerciseServiceImpl implements RoutineExerciseService {
-    @Autowired
-    private PermissionChecker permissionChecker;
+    private final PermissionChecker permissionChecker;
+    private final RoutineExerciseDao routineExerciseDao;
+    private final RoutineDao routineDao;
+    private final ExerciseDao exerciseDao;
 
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private ExerciseDao exerciseDao;
+    public RoutineExerciseServiceImpl(PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao, RoutineDao routineDao, ExerciseDao exerciseDao) {
+        this.permissionChecker = permissionChecker;
+        this.routineExerciseDao = routineExerciseDao;
+        this.routineDao = routineDao;
+        this.exerciseDao = exerciseDao;
+    }
 
     @Override
     public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, Integer position)

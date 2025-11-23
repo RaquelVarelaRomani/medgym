@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.model.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +20,17 @@ import es.udc.fi.dc.fd.util.EmailValidation;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+	private final PermissionChecker permissionChecker;
+	private final BCryptPasswordEncoder passwordEncoder;
+	private final UserDao userDao;
 
-	@Autowired
-	private PermissionChecker permissionChecker;
+    public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UserDao userDao) {
+        this.permissionChecker = permissionChecker;
+        this.passwordEncoder = passwordEncoder;
+        this.userDao = userDao;
+    }
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
-	private UserDao userDao;
-
-	@Override
+    @Override
 	public void signUp(User user) throws DuplicateInstanceException {
 
 		if (!EmailValidation.isValidEmail(user.getEmail())) {

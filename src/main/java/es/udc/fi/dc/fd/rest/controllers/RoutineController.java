@@ -4,7 +4,6 @@ package es.udc.fi.dc.fd.rest.controllers;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,12 +32,13 @@ import es.udc.fi.dc.fd.rest.dtos.RoutineDto;
 @RestController
 @RequestMapping("/api/routines")
 public class RoutineController {
+    private final RoutineService routineService;
+    private final UserService userService;
 
-    @Autowired
-    private RoutineService routineService;
-
-    @Autowired
-    private UserService userService;
+    public RoutineController(RoutineService routineService, UserService userService) {
+        this.routineService = routineService;
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {

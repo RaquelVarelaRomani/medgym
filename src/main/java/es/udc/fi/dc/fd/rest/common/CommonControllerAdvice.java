@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,10 +27,13 @@ public class CommonControllerAdvice {
 
 	private static final String INVALID_EMAIL_EXCEPTION_CODE = "project.exceptions.InvalidEmailFormatException"; 
 
-	@Autowired
-	private MessageSource messageSource;
+	private final MessageSource messageSource;
 
-	@ExceptionHandler(MethodArgumentNotValidException.class)
+    public CommonControllerAdvice(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public ErrorsDto handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {

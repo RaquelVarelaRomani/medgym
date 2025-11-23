@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,15 +10,15 @@ import java.util.List;
 @Service
 @Transactional
 public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
+    private final WorkoutExerciseDao workoutExerciseDao;
+    private final WorkoutDao workoutDao;
+    private final RoutineExerciseDao routineExerciseDao;
 
-    @Autowired
-    private WorkoutExerciseDao workoutExerciseDao;
-
-    @Autowired
-    private WorkoutDao workoutDao;
-
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
+    public WorkoutExerciseServiceImpl(WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao, RoutineExerciseDao routineExerciseDao) {
+        this.workoutExerciseDao = workoutExerciseDao;
+        this.workoutDao = workoutDao;
+        this.routineExerciseDao = routineExerciseDao;
+    }
 
     @Override
     public WorkoutExercise addWorkoutExercise(Short reps, Short weight, Short durationSeconds, Long workoutId, Long routineExerciseId) throws InstanceNotFoundException {

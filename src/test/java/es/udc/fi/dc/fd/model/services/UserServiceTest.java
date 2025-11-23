@@ -1,6 +1,6 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.Test;
@@ -266,9 +266,9 @@ public class UserServiceTest {
         userService.updateBodyMetrics(user.getId(), 70.0, 170.0, User.GenderType.FEMALE);
 
         User cleared = userService.clearBodyMetrics(user.getId());
-        assertEquals(null, cleared.getWeightKg());
-        assertEquals(null, cleared.getHeightCm());
-        assertEquals(null, cleared.getGender());
+        assertNull(cleared.getWeightKg());
+        assertNull(cleared.getHeightCm());
+        assertNull(cleared.getGender());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class UserServiceTest {
         userService.signUp(user2);
 
         var all = userService.findAllUsers();
-        assertEquals(true, all.size() >= 2);
+        assertTrue(all.size() >= 2);
     }
 
     @Test
