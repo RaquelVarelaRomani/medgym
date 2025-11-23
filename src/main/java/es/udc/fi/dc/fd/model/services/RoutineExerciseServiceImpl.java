@@ -4,6 +4,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private final RoutineDao routineDao;
     private final ExerciseDao exerciseDao;
 
-    public RoutineExerciseServiceImpl(PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao, RoutineExerciseService routineExercise, RoutineDao routineDao, ExerciseDao exerciseDao) {
+    public RoutineExerciseServiceImpl(PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao, @Lazy RoutineExerciseService routineExercise, RoutineDao routineDao, ExerciseDao exerciseDao) {
         this.permissionChecker = permissionChecker;
         this.routineExerciseDao = routineExerciseDao;
         this.routineExerciseService = routineExercise;

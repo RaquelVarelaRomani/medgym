@@ -4,6 +4,7 @@ import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class RoutineServiceImpl implements RoutineService {
     private final NotificationService notificationService;
     private final RoutineLikeDao routineLikeDao;
 
-    public RoutineServiceImpl(RoutineDao routineDao, RoutineService routineService, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
+    public RoutineServiceImpl(RoutineDao routineDao, @Lazy RoutineService routineService, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
         this.routineDao = routineDao;
         this.routineService = routineService;
         this.userService = userService;

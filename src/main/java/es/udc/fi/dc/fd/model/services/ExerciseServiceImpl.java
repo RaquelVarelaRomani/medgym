@@ -8,6 +8,7 @@ import es.udc.fi.dc.fd.model.entities.ExerciseDao;
 import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     private final PermissionChecker permissionChecker;
     private final RoutineExerciseDao routineExerciseDao;
 
-    public ExerciseServiceImpl(ExerciseDao exerciseDao, ExerciseService exerciseService, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
+    public ExerciseServiceImpl(ExerciseDao exerciseDao, @Lazy ExerciseService exerciseService, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
         this.exerciseDao = exerciseDao;
         this.exerciseService = exerciseService;
         this.permissionChecker = permissionChecker;
