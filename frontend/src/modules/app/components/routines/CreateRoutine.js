@@ -236,8 +236,9 @@ const CreateRoutine = () => {
 
             <div className={styles['form-crear-rutina']}>
                 <div className={styles['form-div']}>
-                    <label>Título:</label>
+                    <label htmlFor={"titulo-input"}>Título:</label>
                     <input
+                        id={"titulo-input"}
                         type="text"
                         name="titulo"
                         placeholder="Escriba aquí el título de la rutina."
@@ -249,8 +250,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Descripción de la rutina:</label>
+                    <label htmlFor={"descripcion-text-area"}>Descripción de la rutina:</label>
                     <textarea
+                        id={"descripcion-text-area"}
                         name="descripcion"
                         placeholder="Escriba aquí la descripción."
                         value={routineData.descripcion}
@@ -260,8 +262,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Dificultad:</label>
+                    <label htmlFor={"dificultad-select"}>Dificultad:</label>
                     <select
+                        id={"dificultad-select"}
                         name="difficulty"
                         value={routineData.difficulty}
                         onChange={handleInputChange}
@@ -274,8 +277,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Visibilidad:</label>
+                    <label htmlFor={"visibilidad-select"}>Visibilidad:</label>
                     <select
+                        id={"visibilidad-select"}
                         name="visibility"
                         value={routineData.visibility}
                         onChange={handleInputChange}

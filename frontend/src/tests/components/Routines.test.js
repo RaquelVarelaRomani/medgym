@@ -23,8 +23,8 @@ jest.mock("../../modules/app/components/common/CropModal", () => {
                         <div data-testid="container" />
                     </div>
                     <div className="zoom-control">
-                        <label>Zoom</label>
-                        <input type="range" min="1" max="3" step="0.1" value="1" />
+                        <label htmlFor={"zoom-input"}>Zoom</label>
+                        <input id={"zoom-input"} type="range" min="1" max="3" step="0.1" value="1" />
                     </div>
                     <div className="crop-actions">
                         <button className="cancel-btn" onClick={onCancel}>

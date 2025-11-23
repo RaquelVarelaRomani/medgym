@@ -434,8 +434,9 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
     return (
         <>
             <div className={styles["form-div"]}>
-                <label>Título:</label>
+                <label htmlFor={"titulo-input"}>Título:</label>
                 <input
+                    id={"titulo-input"}
                     name="titulo"
                     value={routineData.titulo}
                     onChange={changeInput}
@@ -449,8 +450,9 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
             </div>
 
             <div className={styles["form-div"]}>
-                <label>Descripción:</label>
+                <label htmlFor={"descripcion-text-area"}>Descripción:</label>
                 <textarea
+                    id={"descripcion-text-area"}
                     name="descripcion"
                     value={routineData.descripcion}
                     onChange={changeInput}
@@ -459,8 +461,9 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
             </div>
 
             <div className={styles["form-div"]}>
-                <label>Dificultad:</label>
+                <label htmlFor={"dificultad-select"}>Dificultad:</label>
                 <select
+                    id={"dificultad-select"}
                     name="difficulty"
                     value={routineData.difficulty}
                     onChange={changeInput}
@@ -472,8 +475,9 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
             </div>
 
             <div className={styles["form-div"]}>
-                <label>Visibilidad:</label>
+                <label htmlFor={"visibilidad-select"}>Visibilidad:</label>
                 <select
+                    id={"visibilidad-select"}
                     name="visibility"
                     value={routineData.visibility}
                     onChange={changeInput}

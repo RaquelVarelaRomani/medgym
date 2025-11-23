@@ -76,7 +76,7 @@ public class RoutineServiceImpl implements RoutineService {
         User user = userService.loginFromId(userId);
         Routine routine = opRoutine.get();
 
-        if (user.getRole() != User.RoleType.ADMIN && userId != routine.getTrainer().getId() &&
+        if (user.getRole() != User.RoleType.ADMIN && !Objects.equals(userId, routine.getTrainer().getId()) &&
                 routine.getVisibility() == Routine.VisibilityType.PRIVATE) {
             throw new PermissionException();
         }

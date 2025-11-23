@@ -66,8 +66,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                 </div>
 
                 <div className={styles['zoom-control']}>
-                    <label>Zoom</label>
+                    <label htmlFor="zoom-control">Zoom</label>
                     <input
+                        id="zoom-control"
                         type="range"
                         min={1}
                         max={3}

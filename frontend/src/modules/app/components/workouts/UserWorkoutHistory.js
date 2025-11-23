@@ -98,59 +98,17 @@ const UserWorkoutHistory = ({ id }) => {
         } else setCurrentMonth(currentMonth + 1);
     };
 
-    const renderCalendarDays = () => {
-        const firstDay = getFirstDayOfMonth();
-        const daysInMonth = getDaysInMonth();
-        const calendarDays = [];
+    const firstDay = getFirstDayOfMonth();
+    const daysInMonth = getDaysInMonth();
+    const calendarDays = [];
 
-        for (let i = 0; i < firstDay; i++) {
-            calendarDays.push({ id: `empty-${currentYear}-${currentMonth}-${i}`, day: null });
-        }
+    for (let i = 0; i < firstDay; i++) {
+        calendarDays.push({ id: `empty-${currentYear}-${currentMonth}-${i}`, day: null });
+    }
 
-        for (let day = 1; day <= daysInMonth; day++) {
-            calendarDays.push({ id: `day-${currentYear}-${currentMonth}-${day}`, day });
-        }
-
-        calendarDays.map(({ id, day }) => {
-            if (day === null) {
-                return (
-                    <div key={id} className={styles["calendario-dia-vacia"]}></div>
-                );
-            }
-
-            const dateString = `${currentYear}-${String(
-                currentMonth + 1
-            ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-
-            const workoutsForDay = workouts.filter((w) => {
-                const workoutDateStr = w.startTime.split("T")[0];
-                return workoutDateStr === dateString;
-            });
-
-            return (
-                <div key={day} className={styles["calendario-dia"]}>
-                    <div className={styles["calendario-dia-num"]}>{day}</div>
-
-                    {workoutsForDay.map((w) => {
-                        const isInProgress = !w.endTime;
-                        return (
-                            <Link
-                                key={w.id}
-                                to={
-                                    isInProgress
-                                        ? `/workouts/session/${w.id}`
-                                        : `/workouts/${w.id}`
-                                }
-                                className={styles["calendario-workout"]}
-                            >
-                                {w.routineName}
-                            </Link>
-                        );
-                    })}
-                </div>
-            );
-        });
-    };
+    for (let day = 1; day <= daysInMonth; day++) {
+        calendarDays.push({ id: `day-${currentYear}-${currentMonth}-${day}`, day });
+    }
 
     let content;
     if (workouts.length === 0) {
@@ -229,7 +187,44 @@ const UserWorkoutHistory = ({ id }) => {
                 </div>
 
                 <div className={styles["calendario-grid"]}>
-                    {renderCalendarDays()}
+                    {calendarDays.map(({ id, day }) => {
+                        if (day === null) {
+                            return (
+                                <div key={id} className={styles["calendario-dia-vacia"]} />
+                            );
+                        }
+
+                        const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+                        const workoutsForDay = workouts.filter(w => {
+                            const workoutDateStr = w.startTime.split("T")[0];
+                            return workoutDateStr === dateString;
+                        });
+
+                        return (
+                            <div key={id} className={styles["calendario-dia"]}>
+                                <div className={styles["calendario-dia-num"]}>{day}</div>
+
+                                {workoutsForDay.map(w => {
+                                    const isInProgress = !w.endTime;
+
+                                    return (
+                                        <Link
+                                            key={w.id}
+                                            to={
+                                                isInProgress
+                                                    ? `/workouts/session/${w.id}`
+                                                    : `/workouts/${w.id}`
+                                            }
+                                            className={styles["calendario-workout"]}
+                                        >
+                                            {w.routineName}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );

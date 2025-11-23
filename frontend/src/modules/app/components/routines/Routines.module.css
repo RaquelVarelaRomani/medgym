@@ -20,7 +20,6 @@
 .routines-titulo-grande h2 {
   font-size: 2rem;
   font-weight: 700;
-  font-weight: 700;
   color: var(--text-secondary);
   margin: 0;
   letter-spacing: 0.05em;
@@ -691,7 +690,6 @@
 
 /* create button */
 .boton-crear {
-  position: fixed;
   bottom: 40px;
   right: 40px;
   background: linear-gradient(
