@@ -19,25 +19,45 @@ import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
 
-function ProfileHeader({
-                           profile,
-                           me,
-                           followers,
-                           following,
-                           loading,
-                           loadingFollow,
-                           isFollowing,
-                           isBlockedByMe,
-                           setShowMetrics,
-                           handleFollowToggle,
-                           handleBlockToggle,
-                           handleEditProfile,
-                           handleChangePassword,
-                           handleBecomePremium,
-                           navigate
-                       }) {
+function ProfileHeader(props) {
+    const {
+        profile,
+        me,
+        followers,
+        following,
+        loading,
+        loadingFollow,
+        isFollowing,
+        isBlockedByMe,
+        setShowMetrics,
+        handleFollowToggle,
+        handleBlockToggle,
+        handleEditProfile,
+        handleChangePassword,
+        handleBecomePremium,
+        navigate
+    } = props;
+
     const showSelfActions = me && profile && me.id === profile.id;
     const showOtherActions = me && profile && me.id !== profile.id;
+
+    const followText = loadingFollow
+        ? "Cargando..."
+        : isFollowing
+            ? "Dejar de seguir"
+            : "Seguir";
+
+    const blockText = isBlockedByMe ? "Desbloquear" : "Bloquear";
+
+    const isPremiumTrainer =
+        profile &&
+        profile.role === "TRAINER" &&
+        profile.trainerPremium;
+
+    const canBecomePremium =
+        showSelfActions &&
+        me.role === "TRAINER" &&
+        !me.trainerPremium;
 
     return (
         <div className={styles["profile-header"]}>
@@ -61,13 +81,11 @@ function ProfileHeader({
                 <div>
                     <h2 className={styles["profile-name"]}>
                         {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
-                        {profile &&
-                            profile.role === "TRAINER" &&
-                            profile.trainerPremium && (
-                                <span className={styles["premium-badge"]}>
-                                    Entrenador premium
-                                </span>
-                            )}
+                        {isPremiumTrainer && (
+                            <span className={styles["premium-badge"]}>
+                                Entrenador premium
+                            </span>
+                        )}
                     </h2>
 
                     {!loading && (
@@ -76,19 +94,25 @@ function ProfileHeader({
                                 type="button"
                                 className={styles["follow-side"]}
                                 onClick={() => navigate(`/users/followers/${profile.id}`)}
-                                onKeyDown={(e) => e.key === "Enter" && navigate(`/users/followers/${profile.id}`)}
+                                onKeyDown={(e) =>
+                                    e.key === "Enter" &&
+                                    navigate(`/users/followers/${profile.id}`)
+                                }
                             >
                                 Seguidores: {followers}
                             </button>
+
                             <button
                                 type="button"
                                 className={styles["follow-side"]}
                                 onClick={() => navigate(`/users/following/${profile.id}`)}
-                                onKeyDown={(e) => e.key === "Enter" && navigate(`/users/following/${profile.id}`)}
+                                onKeyDown={(e) =>
+                                    e.key === "Enter" &&
+                                    navigate(`/users/following/${profile.id}`)
+                                }
                             >
                                 Siguiendo: {following}
                             </button>
-
                         </div>
                     )}
                 </div>
@@ -118,7 +142,7 @@ function ProfileHeader({
                             Métricas corporales
                         </button>
 
-                        {me.role === "TRAINER" && !me.trainerPremium && (
+                        {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}
                                 onClick={handleBecomePremium}
@@ -136,18 +160,14 @@ function ProfileHeader({
                             onClick={handleFollowToggle}
                             disabled={loadingFollow}
                         >
-                            {loadingFollow
-                                ? "Cargando..."
-                                : isFollowing
-                                    ? "Dejar de seguir"
-                                    : "Seguir"}
+                            {followText}
                         </button>
 
                         <button
                             className={styles["edit-profile-button"]}
                             onClick={handleBlockToggle}
                         >
-                            {isBlockedByMe ? "Desbloquear" : "Bloquear"}
+                            {blockText}
                         </button>
                     </>
                 )}
@@ -157,15 +177,13 @@ function ProfileHeader({
 }
 
 function ProfileData({ profile, roleString }) {
-    if (!profile)
-        return <p>Cargando datos...</p>;
+    if (!profile) return <p>Cargando datos...</p>;
 
     return (
         <div className={styles["profile-data"]}>
             <p><strong>Correo electrónico:</strong> {profile.email}</p>
             <p><strong>Teléfono:</strong> {profile.phoneNumber}</p>
             <p><strong>Rol:</strong> {roleString()}</p>
-
             <p><strong>Peso:</strong> {profile.weightKg ?? "—"} kg</p>
             <p><strong>Altura:</strong> {profile.heightCm ?? "—"} cm</p>
             <p><strong>Género:</strong> {profile.gender ?? "—"}</p>
@@ -226,8 +244,7 @@ const Profile = () => {
                             getFollowedTrainers(meTemp.id, (trainers) => {
                                 setIsFollowing(
                                     trainers.some(
-                                        (t) =>
-                                            t.trainerId === profileTemp.id
+                                        (t) => t.trainerId === profileTemp.id
                                     )
                                 );
                                 resolve();
@@ -239,7 +256,6 @@ const Profile = () => {
             () => navigate("/users/login")
         );
     }, [id, navigate]);
-
 
     useEffect(() => {
         const onFollowChange = () => {
@@ -255,9 +271,9 @@ const Profile = () => {
         };
 
         window.addEventListener("followChanged", onFollowChange);
-        return () => window.removeEventListener("followChanged", onFollowChange);
+        return () =>
+            window.removeEventListener("followChanged", onFollowChange);
     }, [profile, me]);
-
 
     const handleEditProfile = () => navigate("/users/profile/edit-profile");
     const handleChangePassword = () =>
@@ -281,7 +297,7 @@ const Profile = () => {
             unblockUser(
                 profile.id,
                 () => setIsBlockedByMe(false),
-                (err) => console.error("Error desbloqueando:", err)
+                (err) => console.error(err)
             );
             return;
         }
@@ -292,7 +308,7 @@ const Profile = () => {
                 setIsBlockedByMe(true);
                 setIsFollowing(false);
             },
-            (err) => console.error("Error bloqueando:", err)
+            (err) => console.error(err)
         );
     };
 
@@ -315,7 +331,6 @@ const Profile = () => {
                 setTimeout(() => setLoadingFollow(false), 500);
             },
             (err) => {
-                console.error(err);
                 setIsFollowing(!next);
                 setFollowers((n) => n - (next ? 1 : -1));
                 setLoadingFollow(false);
@@ -330,7 +345,6 @@ const Profile = () => {
         if (profile.role === "ADMIN") return "Administrador";
         return "Indefinido";
     };
-
 
     if (loading) return <LoadingMessage text="Cargando perfil..." />;
 

@@ -21,12 +21,13 @@ const WorkoutHistory = () => {
     const [error, setError] = useState(null);
     const [viewMode, setViewMode] = useState("list");
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [commentModalOpen, setCommentModalOpen] = useState(false);
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [stats, setStats] = useState(null);
     const [statsLoading, setStatsLoading] = useState(false);
     const [statsError, setStatsError] = useState(null);
+
+    const currentYear = new Date().getFullYear();
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -91,6 +92,12 @@ const WorkoutHistory = () => {
         );
     };
 
+    const modeLabels = {
+        list: "Lista",
+        calendar: "Calendario",
+        stats: "Estadísticas"
+    };
+
     const renderHeader = () => (
         <div className={styles["history-titulo-grande"]}>
             <h2>Historial de entrenamientos</h2>
@@ -104,7 +111,7 @@ const WorkoutHistory = () => {
                             if (mode === "stats" && !stats) loadStatistics();
                         }}
                     >
-                        {mode === "list" ? "Lista" : mode === "calendar" ? "Calendario" : "Estadísticas"}
+                        {modeLabels[mode]}
                     </button>
                 ))}
             </div>
@@ -120,14 +127,47 @@ const WorkoutHistory = () => {
         </div>
     );
 
+    const getWorkoutLink = (workout, isInProgress) =>
+        isInProgress
+            ? `/workouts/session/${workout.id}`
+            : `/workouts/${workout.id}?returnTo=history`;
+
+    const toggleLike = (workout, next, currentUser, setWorkouts) => {
+        setWorkouts(prev =>
+            prev.map(w =>
+                w.id === workout.id
+                    ? {
+                        ...w,
+                        likes: next
+                            ? [...w.likes, { userId: currentUser.id }]
+                            : w.likes.filter(l => l.userId !== currentUser.id)
+                    }
+                    : w
+            )
+        );
+
+        if (next) {
+            likeWorkout(workout.id, () => {}, () => {});
+        } else {
+            unlikeWorkout(workout.id, () => {}, () => {});
+        }
+    };
+
+    const openComments = (e, workout, setSelectedWorkout, setCommentModalOpen) => {
+        e.stopPropagation();
+        setSelectedWorkout(workout);
+        setCommentModalOpen(true);
+    };
+
     const renderWorkoutItem = workout => {
         const isInProgress = !workout.endTime;
         const duration = calculateDuration(workout.startTime, workout.endTime);
+        const link = getWorkoutLink(workout, isInProgress);
 
         return (
             <Link
                 key={workout.id}
-                to={isInProgress ? `/workouts/session/${workout.id}` : `/workouts/${workout.id}?returnTo=history`}
+                to={link}
                 className={`${styles["caja-workout"]} ${isInProgress ? styles["active-workout"] : ""}`}
             >
                 <div className={styles["workout-info"]}>
@@ -137,34 +177,17 @@ const WorkoutHistory = () => {
                         <HeartLike
                             count={(workout.likes || []).length}
                             liked={workout.likes?.some(l => l.userId === currentUser?.id) || false}
-                            onChange={next => {
-                                setWorkouts(prev =>
-                                    prev.map(w =>
-                                        w.id === workout.id
-                                            ? {
-                                                ...w,
-                                                likes: next
-                                                    ? [...w.likes, { userId: currentUser.id }]
-                                                    : w.likes.filter(l => l.userId !== currentUser.id)
-                                            }
-                                            : w
-                                    )
-                                );
-
-                                next
-                                    ? likeWorkout(workout.id, () => {}, () => {})
-                                    : unlikeWorkout(workout.id, () => {}, () => {});
-                            }}
+                            onChange={next =>
+                                toggleLike(workout, next, currentUser, setWorkouts)
+                            }
                             size={22}
                         />
 
                         <CommentBubble
                             count={(workout.comments || []).length}
-                            onClick={e => {
-                                e.stopPropagation();
-                                setSelectedWorkout(workout);
-                                setCommentModalOpen(true);
-                            }}
+                            onClick={e =>
+                                openComments(e, workout, setSelectedWorkout, setCommentModalOpen)
+                            }
                         />
                     </div>
 
@@ -180,9 +203,9 @@ const WorkoutHistory = () => {
                 </div>
 
                 <div className={styles["workout-stats"]}>
-                    <span className={isInProgress ? styles["in-progress"] : styles["duration"]}>
-                        {isInProgress ? "En progreso" : duration}
-                    </span>
+                <span className={isInProgress ? styles["in-progress"] : styles["duration"]}>
+                    {isInProgress ? "En progreso" : duration}
+                </span>
                 </div>
             </Link>
         );
@@ -310,18 +333,22 @@ const WorkoutHistory = () => {
             </div>
         );
 
+    let mainView;
+
+    if (workouts.length === 0 && viewMode !== "stats") {
+        mainView = renderEmptyMessage();
+    } else if (viewMode === "list") {
+        mainView = renderListView();
+    } else if (viewMode === "calendar") {
+        mainView = renderCalendarView();
+    } else {
+        mainView = renderStatsView();
+    }
+
     return (
         <div className={styles.contenedor}>
             {renderHeader()}
-
-            {workouts.length === 0 && viewMode !== "stats"
-                ? renderEmptyMessage()
-                : viewMode === "list"
-                    ? renderListView()
-                    : viewMode === "calendar"
-                        ? renderCalendarView()
-                        : renderStatsView()}
-
+            {mainView}
             {renderCommentModal()}
         </div>
     );

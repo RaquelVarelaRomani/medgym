@@ -11,15 +11,10 @@ const FollowingPage = () => {
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [currentUser, setCurrentUser] = useState(null);
-    const [me, setMe] = useState(null)
 
     useEffect(() => {
         tryLoginFromServiceToken(
-        (data) => {
-            const user = data.user;
-            setCurrentUser(user);
-
+        () => {
             getFollowedTrainers(
             id,
             (followersData) => {
@@ -59,12 +54,17 @@ const FollowingPage = () => {
         ) : (
             <div className={styles["followers-list"]}>
             {followers.map((follower) => (
-                <div key={follower.id} className={styles["follower-card"]} onClick={() => navigate(`/users/profile/${follower.trainerId}`)}>
-                <h3>
-                    {follower.trainerUserName} {follower.trainerUserSurname}
-                </h3>
-                <p>{follower.trainerUserEmail}</p>
-                </div>
+                <button
+                    key={follower.id}
+                    type="button"
+                    className={styles["follower-card"]}
+                    onClick={() => navigate(`/users/profile/${follower.trainerId}`)}
+                >
+                    <h3>
+                        {follower.trainerUserName} {follower.trainerUserSurname}
+                    </h3>
+                    <p>{follower.trainerUserEmail}</p>
+                </button>
             ))}
             </div>
         )}

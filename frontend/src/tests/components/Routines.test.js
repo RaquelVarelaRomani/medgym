@@ -2965,54 +2965,6 @@ describe("EditRoutine Component", () => {
         consoleSpy.mockRestore();
     });
 
-    test("handles error in loadRoutineLikes", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getAllRoutines.mockImplementation((success) => {
-            success([]);
-        });
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
-            error("Likes error");
-        });
-
-        userFollowService.getFollowedTrainers.mockImplementation(
-            (userId, success) => {
-                success([]);
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        const consoleSpy = jest
-            .spyOn(console, "error")
-            .mockImplementation(() => {
-            });
-
-        render(
-            <MemoryRouter>
-                <Routines/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "Error loading routine likes:",
-                "Likes error",
-            );
-        });
-
-        consoleSpy.mockRestore();
-    });
-
     test("handles multi-select change for muscle groups", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "CLIENT"}});
@@ -5767,54 +5719,6 @@ describe("Routines Component", () => {
         consoleSpy.mockRestore();
     });
 
-    test("handles loadRoutineLikes error", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getAllRoutines.mockImplementation((success) => {
-            success([]);
-        });
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        routineLikeService.getRoutineLikes.mockImplementation((success, error) => {
-            error("Likes error");
-        });
-
-        userFollowService.getFollowedTrainers.mockImplementation(
-            (userId, success) => {
-                success([]);
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        const consoleSpy = jest
-            .spyOn(console, "error")
-            .mockImplementation(() => {
-            });
-
-        render(
-            <MemoryRouter>
-                <Routines/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "Error loading routine likes:",
-                "Likes error",
-            );
-        });
-
-        consoleSpy.mockRestore();
-    });
-
     test("handles handleFollowToggle follow error", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "CLIENT"}});
@@ -6796,5 +6700,4 @@ describe("Routines Component", () => {
 PropTypes.propTypes = {
     onCancel: PropTypes.func,
     onSave: PropTypes.func,
-
 }

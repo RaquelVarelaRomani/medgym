@@ -57,7 +57,6 @@ const Routines = () => {
                 setCurrentUser(user);
                 loadAllTrainers();
                 loadRoutines();
-                loadRoutineLikes();
                 if (user.role === "CLIENT") {
                     loadFollowing(user.id);
                     checkActiveWorkout();
@@ -106,13 +105,6 @@ const Routines = () => {
         return () => document.removeEventListener("click", handleOutsideFilterClick);
     }, [openDropdown]);
 
-    const loadRoutineLikes = () => {
-        getRoutineLikes(
-            data => setRoutineLikes(data),
-            err => console.error("Error loading routine likes:", err)
-        );
-    };
-
     const checkActiveWorkout = () => {
         workoutService.getWorkouts(
             (data) => {
@@ -144,7 +136,6 @@ const Routines = () => {
                         if (!acc.has(id)) {
                             acc.set(id, {
                                 id,
-                                name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
                                 name: `${r.trainerName || ""} ${r.trainerSurname || ""}`.trim(),
                             });
                         }

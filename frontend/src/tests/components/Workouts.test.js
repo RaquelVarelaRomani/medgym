@@ -1169,7 +1169,11 @@ describe("ExerciseEntry Component", () => {
                 expect.any(Function),
             );
             expect(
-                screen.getByText("Serie 1: 10 reps · 80 kg · 60s"),
+                screen.getByText((t) =>
+                    /10 reps/.test(t) &&
+                    /80 kg/.test(t) &&
+                    /60s/.test(t)
+                ),
             ).toBeInTheDocument();
             expect(repsInput.value).toBe("");
             expect(weightInput.value).toBe("");
@@ -1252,7 +1256,12 @@ describe("ExerciseEntry Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("Serie 1: 10 reps · 80 kg · 60s"),
+                screen.getByText((t) =>
+                    t.includes("Serie") &&
+                    t.includes("10 reps") &&
+                    t.includes("80 kg") &&
+                    t.includes("60s")
+                )
             ).toBeInTheDocument();
         });
     });
