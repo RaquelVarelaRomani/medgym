@@ -167,8 +167,9 @@ class UserServiceTest {
         User user = createUser("update@test.com", "700444444");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateProfile(user.getId(), "New", "Name", "invalid-email", "+34 555 666 777", null);
+            userService.updateProfile(userId, "New", "Name", "invalid-email", "+34 555 666 777", null);
         });
     }
 
@@ -229,8 +230,9 @@ class UserServiceTest {
         User user = createUser("body@test.com", "701111111");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateBodyMetrics(user.getId(), -10.0, 170.0, User.GenderType.MALE);
+            userService.updateBodyMetrics(userId, -10.0, 170.0, User.GenderType.MALE);
         });
     }
 
@@ -239,8 +241,9 @@ class UserServiceTest {
         User user = createUser("body2@test.com", "701222222");
         userService.signUp(user);
 
+        var userId = user.getId();
         assertThrows(IllegalArgumentException.class, () -> {
-            userService.updateBodyMetrics(user.getId(), 70.0, 0.0, User.GenderType.MALE);
+            userService.updateBodyMetrics(userId, 70.0, 0.0, User.GenderType.MALE);
         });
     }
 
