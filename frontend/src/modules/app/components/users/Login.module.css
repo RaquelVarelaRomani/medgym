@@ -167,6 +167,7 @@
   transition: color 0.2s ease;
   background: none;
   border: none;
+  padding-bottom: 13px;
 }
 
 .ver-password:focus {
