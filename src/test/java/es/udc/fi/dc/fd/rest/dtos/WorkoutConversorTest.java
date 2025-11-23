@@ -10,10 +10,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class WorkoutConversorTest {
+class WorkoutConversorTest {
 
     @Test
-    public void testToWorkoutDto() {
+    void testToWorkoutDto() {
         User user = new User("John", "Doe", "john@test.com", "+34 123 456 789", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
 
@@ -38,7 +38,7 @@ public class WorkoutConversorTest {
     }
 
     @Test
-    public void testToWorkoutForFeedDto() {
+    void testToWorkoutForFeedDto() {
         User user = new User("Jane", "Smith", "jane@test.com", "+34 987 654 321", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
         user.setProfilePicture(new byte[]{1, 2, 3});
@@ -55,8 +55,8 @@ public class WorkoutConversorTest {
         WorkoutComment comment = new WorkoutComment("Nice workout", LocalDateTime.now(), workout, user);
         WorkoutLike like = new WorkoutLike(workout, user);
 
-        workout.setComments(Arrays.asList(comment));
-        workout.setLikes(Arrays.asList(like));
+        workout.setComments(List.of(comment));
+        workout.setLikes(List.of(like));
 
         WorkoutForFeedDto dto = WorkoutConversor.toWorkoutForFeedDto(workout);
 
@@ -70,7 +70,7 @@ public class WorkoutConversorTest {
     }
 
     @Test
-    public void testToWorkoutForHistoryDto() {
+    void testToWorkoutForHistoryDto() {
         User user = new User("History", "User", "history@test.com", "+34 111 222 333", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
 
@@ -89,7 +89,7 @@ public class WorkoutConversorTest {
     }
 
     @Test
-    public void testToWorkoutDtos() {
+    void testToWorkoutDtos() {
         User user = new User("List", "User", "list@test.com", "+34 444 555 666", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
 
@@ -113,7 +113,7 @@ public class WorkoutConversorTest {
     }
 
     @Test
-    public void testToWorkoutForFeedDtos() {
+    void testToWorkoutForFeedDtos() {
         User user = new User("FeedList", "User", "feedlist@test.com", "+34 777 888 999", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
 
@@ -123,7 +123,7 @@ public class WorkoutConversorTest {
         Workout workout = new Workout(LocalDateTime.now(), LocalDateTime.now().plusHours(1), routine, user);
         workout.setId(3L);
 
-        List<Workout> workouts = Arrays.asList(workout);
+        List<Workout> workouts = List.of(workout);
 
         List<WorkoutForFeedDto> dtos = WorkoutConversor.toWorkoutForFeedDtos(workouts);
 
@@ -132,7 +132,7 @@ public class WorkoutConversorTest {
     }
 
     @Test
-    public void testToWorkoutForHistoryDtos() {
+    void testToWorkoutForHistoryDtos() {
         User user = new User("HistoryList", "User", "historylist@test.com", "+34 000 111 222", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(1L);
 
@@ -142,7 +142,7 @@ public class WorkoutConversorTest {
         Workout workout = new Workout(LocalDateTime.now(), LocalDateTime.now().plusHours(1), routine, user);
         workout.setId(3L);
 
-        List<Workout> workouts = Arrays.asList(workout);
+        List<Workout> workouts = List.of(workout);
 
         List<WorkoutForHistoryDto> dtos = WorkoutConversor.toWorkoutForHistoryDtos(workouts);
 

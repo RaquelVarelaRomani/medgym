@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class UserFollowControllerTest {
+class UserFollowControllerTest {
     private static final String PASSWORD = "password";
 
     @Autowired
@@ -51,13 +51,13 @@ public class UserFollowControllerTest {
     private AuthenticatedUserDto trainerUser;
 
     @Before
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
+    void setUp() throws IncorrectLoginException, BlockedUserException {
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", User.RoleType.CLIENT);
         trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", User.RoleType.TRAINER);
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                            User.RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+                                                         User.RoleType roleType) throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, null, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(PASSWORD));
@@ -72,21 +72,21 @@ public class UserFollowControllerTest {
     }
 
     @Test
-    public void testFollowAndUnfollowTrainer() throws Exception {
+    void testFollowAndUnfollowTrainer() throws Exception {
         mockMvc.perform(post("/api/users/follow/" + trainerUser.getUserDto().getId())
-                .header("Authorization", "Bearer " + clientUser.getServiceToken()))
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk());
         mockMvc.perform(delete("/api/users/follow/" + trainerUser.getUserDto().getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isNoContent());
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-                    .get("/api/users/follow/followers/" + trainerUser.getUserDto().getId())
-                    .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
-            .andExpect(status().isOk());
+                        .get("/api/users/follow/followers/" + trainerUser.getUserDto().getId())
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void testGetFollowedTrainers() throws Exception {
+    void testGetFollowedTrainers() throws Exception {
         // client sigue a trainer
         mockMvc.perform(post("/api/users/follow/" + trainerUser.getUserDto().getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
@@ -99,7 +99,7 @@ public class UserFollowControllerTest {
     }
 
     @Test
-    public void testFollowTrainer_NotFound() throws Exception {
+    void testFollowTrainer_NotFound() throws Exception {
         mockMvc.perform(post("/api/users/follow/" + 999999)
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isNotFound());

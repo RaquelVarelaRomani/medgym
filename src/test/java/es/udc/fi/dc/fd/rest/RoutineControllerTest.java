@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class RoutineControllerTest {
+class RoutineControllerTest {
 
     private static final String PASSWORD = "password";
 
@@ -58,7 +58,7 @@ public class RoutineControllerTest {
     private AuthenticatedUserDto clientUser;
 
     @Before
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
+    void setUp() throws IncorrectLoginException, BlockedUserException {
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         anotherTrainerUser = createAuthenticatedUser("Trainer", "Two", "trainer2@test.com", "600000003",
@@ -67,7 +67,7 @@ public class RoutineControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email, String phoneNumber,
-                                                        RoleType roleType) throws IncorrectLoginException, BlockedUserException {
+                                                         RoleType roleType) throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         user.setRole(roleType);
@@ -220,10 +220,10 @@ public class RoutineControllerTest {
         intermediateRoutine.setVisibility("PUBLIC");
         intermediateRoutine.setDifficulty("INTERMEDIATE");
         mockMvc.perform(post("/api/routines")
-                .header("Authorization", "Bearer " + trainerUser.getServiceToken())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(intermediateRoutine))
-                .requestAttr("userId", trainerUser.getUserDto().getId()))
+                        .header("Authorization", "Bearer " + trainerUser.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(intermediateRoutine))
+                        .requestAttr("userId", trainerUser.getUserDto().getId()))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/api/routines/filter")

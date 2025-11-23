@@ -22,11 +22,13 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 @Transactional
 public class ExerciseServiceImpl implements ExerciseService {
     private final ExerciseDao exerciseDao;
+    private final ExerciseService exerciseService;
     private final PermissionChecker permissionChecker;
     private final RoutineExerciseDao routineExerciseDao;
 
-    public ExerciseServiceImpl(ExerciseDao exerciseDao, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
+    public ExerciseServiceImpl(ExerciseDao exerciseDao, ExerciseService exerciseService, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
         this.exerciseDao = exerciseDao;
+        this.exerciseService = exerciseService;
         this.permissionChecker = permissionChecker;
         this.routineExerciseDao = routineExerciseDao;
     }
@@ -67,7 +69,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExercise(Long exerciseId, String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
-        Exercise exercise = this.findExerciseById(exerciseId);
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
 
         if (!exercise.getName().equals(name) && exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
@@ -82,7 +84,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExerciseStatus(Long exerciseId, Exercise.ExerciseStatus status) throws InstanceNotFoundException {
-        Exercise exercise = this.findExerciseById(exerciseId);
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
         exercise.setStatus(status);
     }
 
@@ -108,7 +110,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void deleteExercise(Long exerciseId) throws InstanceNotFoundException {
-        Exercise exercise = this.findExerciseById(exerciseId);
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
         if (routineExerciseDao.existsByExerciseId(exerciseId)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "No se puede borrar: el ejercicio está asociado a una o más rutinas."

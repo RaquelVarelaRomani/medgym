@@ -17,12 +17,14 @@ import java.util.Optional;
 public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     private final PermissionChecker permissionChecker;
     private final RoutineExerciseDao routineExerciseDao;
+    private final RoutineExerciseService routineExerciseService;
     private final RoutineDao routineDao;
     private final ExerciseDao exerciseDao;
 
-    public RoutineExerciseServiceImpl(PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao, RoutineDao routineDao, ExerciseDao exerciseDao) {
+    public RoutineExerciseServiceImpl(PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao, RoutineExerciseService routineExercise, RoutineDao routineDao, ExerciseDao exerciseDao) {
         this.permissionChecker = permissionChecker;
         this.routineExerciseDao = routineExerciseDao;
+        this.routineExerciseService = routineExercise;
         this.routineDao = routineDao;
         this.exerciseDao = exerciseDao;
     }
@@ -35,7 +37,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         Optional<Routine> opRoutine = routineDao.findById(routineId);
         Optional<Exercise> opExercise = exerciseDao.findById(exerciseId);
 
-        int nExercises = this.getExercisesForRoutines(routineId, PageRequest.of(0, 4)).getSize();
+        int nExercises = routineExerciseService.getExercisesForRoutines(routineId, PageRequest.of(0, 4)).getSize();
 
         if (opExercise.isEmpty()) {
             throw new InstanceNotFoundException("exercise", exerciseId);

@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.rest.controllers;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

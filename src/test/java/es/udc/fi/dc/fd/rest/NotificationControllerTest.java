@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @Transactional
-public class NotificationControllerTest {
+class NotificationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,7 +49,7 @@ public class NotificationControllerTest {
     private Routine routine;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         client = new User();
         client.setId(1L);
         client.setName("Client");
@@ -64,7 +64,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testCreateNewRoutineNotification() throws Exception {
+    void testCreateNewRoutineNotification() throws Exception {
         Mockito.when(routineService.findRoutineById(10L)).thenReturn(routine);
 
         mockMvc.perform(post("/api/notifications/newRoutine")
@@ -77,16 +77,16 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testCreateFollowNotification() throws Exception {
+    void testCreateFollowNotification() throws Exception {
         Mockito.when(userService.findUserById(1L)).thenReturn(client);
         Mockito.when(userService.findUserById(2L)).thenReturn(trainer);
 
         String json = """
-        {
-          "clientId": 1,
-          "trainerId": 2
-        }
-        """;
+                {
+                  "clientId": 1,
+                  "trainerId": 2
+                }
+                """;
 
         mockMvc.perform(post("/api/notifications/follow")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -98,18 +98,18 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testCreateRoutineLikeNotification() throws Exception {
+    void testCreateRoutineLikeNotification() throws Exception {
         Mockito.when(userService.findUserById(1L)).thenReturn(client);
         Mockito.when(userService.findUserById(2L)).thenReturn(trainer);
         Mockito.when(routineService.findRoutineById(10L)).thenReturn(routine);
 
         String json = """
-        {
-          "clientId": 1,
-          "trainerId": 2,
-          "routineId": 10
-        }
-        """;
+                {
+                  "clientId": 1,
+                  "trainerId": 2,
+                  "routineId": 10
+                }
+                """;
 
         mockMvc.perform(post("/api/notifications/routineLike")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +121,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testGetUserNotifications() throws Exception {
+    void testGetUserNotifications() throws Exception {
         User user = new User();
         user.setId(1L);
 
@@ -139,7 +139,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testMarkNotificationAsRead() throws Exception {
+    void testMarkNotificationAsRead() throws Exception {
         mockMvc.perform(put("/api/notifications/99/read")
                         .requestAttr("userId", 1L))
                 .andExpect(status().isOk());
@@ -148,7 +148,7 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testDeleteNotification() throws Exception {
+    void testDeleteNotification() throws Exception {
         mockMvc.perform(delete("/api/notifications/88")
                         .requestAttr("userId", 1L))
                 .andExpect(status().isOk());
@@ -157,13 +157,13 @@ public class NotificationControllerTest {
     }
 
     @Test
-    public void testCreateWorkoutLikeNotification() throws Exception {
+    void testCreateWorkoutLikeNotification() throws Exception {
         String json = """
-    {
-      "userId": 1,
-      "workoutId": 20
-    }
-    """;
+                {
+                  "userId": 1,
+                  "workoutId": 20
+                }
+                """;
 
         mockMvc.perform(post("/api/notifications/workoutLike")
                         .contentType(MediaType.APPLICATION_JSON)

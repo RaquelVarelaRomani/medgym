@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class UserFollowServiceTest {
+class UserFollowServiceTest {
     @Autowired
     private UserFollowService userFollowService;
     @Autowired
@@ -29,13 +29,13 @@ public class UserFollowServiceTest {
     @Autowired
     private UserFollowDao userFollowDao;
 
-    private User createTrainer(){
+    private User createTrainer() {
         User trainer = new User("Pepe", "Domingo", "hola@emeail.com",
                 "666555444", "password", User.RoleType.TRAINER, User.StatusType.ACTIVE);
         return userDao.save(trainer);
     }
 
-    private User createUser(){
+    private User createUser() {
         User trainer = new User("Pepe", "Domingo", "hola2@emeail.com",
                 "666585444", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(trainer);

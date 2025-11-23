@@ -18,6 +18,7 @@ public class WorkoutForFeedDto {
     private byte[] userProfilePicture;
     private List<WorkoutCommentDto> comments;
     private List<WorkoutLikeDto> likes;
+
     public WorkoutForFeedDto() {
         // No-args constructor required for Jackson and frameworks.
         // Nested comment: implementation intentionally empty because the DTO

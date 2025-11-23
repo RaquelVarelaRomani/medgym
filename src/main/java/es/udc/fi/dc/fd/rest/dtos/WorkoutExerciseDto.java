@@ -8,6 +8,7 @@ public class WorkoutExerciseDto {
     private Short durationSeconds;
     private Long workoutId;
     private Long routineExerciseId;
+
     public WorkoutExerciseDto() {
     }
 

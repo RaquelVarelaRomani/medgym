@@ -31,70 +31,70 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class UserControllerTest {
+class UserControllerTest {
 
-	private static final String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-	@Autowired
-	private UserDao userDao;
+    @Autowired
+    private UserDao userDao;
 
-	@Autowired
-	private UserBlockService userBlockService;
+    @Autowired
+    private UserBlockService userBlockService;
 
-	@Autowired
-	private UserController userController;
+    @Autowired
+    private UserController userController;
 
-	private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
-			throws IncorrectLoginException, BlockedUserException {
+    private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
+            throws IncorrectLoginException, BlockedUserException {
 
-		User user = new User("user", "1", email, "+34 000 000 000", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+        User user = new User("user", "1", email, "+34 000 000 000", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
 
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setRole(roleType);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(roleType);
 
-		userDao.save(user);
+        userDao.save(user);
 
-		LoginParamsDto loginParams = new LoginParamsDto();
-		loginParams.setEmail(user.getEmail());
-		loginParams.setPassword(PASSWORD);
+        LoginParamsDto loginParams = new LoginParamsDto();
+        loginParams.setEmail(user.getEmail());
+        loginParams.setPassword(PASSWORD);
 
-		return userController.login(loginParams);
+        return userController.login(loginParams);
 
-	}
+    }
 
-	@Test
-	void testPostLogin_Ok() throws Exception {
+    @Test
+    void testPostLogin_Ok() throws Exception {
 
-		AuthenticatedUserDto user = createAuthenticatedUser("user@email.com", RoleType.CLIENT);
+        AuthenticatedUserDto user = createAuthenticatedUser("user@email.com", RoleType.CLIENT);
 
-		LoginParamsDto loginParams = new LoginParamsDto();
-		loginParams.setEmail(user.getUserDto().getEmail());
-		loginParams.setPassword(PASSWORD);
+        LoginParamsDto loginParams = new LoginParamsDto();
+        loginParams.setEmail(user.getUserDto().getEmail());
+        loginParams.setPassword(PASSWORD);
 
-		ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
 
-		mockMvc.perform(post("/api/users/login").header("Authorization", "Bearer " + user.getServiceToken())
-				.contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(loginParams)))
-				.andExpect(status().isOk());
+        mockMvc.perform(post("/api/users/login").header("Authorization", "Bearer " + user.getServiceToken())
+                        .contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsBytes(loginParams)))
+                .andExpect(status().isOk());
 
-	}
+    }
 
     @Test
     void testChangePassword_Ok() throws Exception {
         AuthenticatedUserDto user = createAuthenticatedUser("pass@test.com", RoleType.CLIENT);
 
         String json = """
-    {
-      "oldPassword": "password",
-      "newPassword": "newpass"
-    }
-    """;
+                {
+                  "oldPassword": "password",
+                  "newPassword": "newpass"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/changePassword")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -108,11 +108,11 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("user1@test.com", RoleType.CLIENT);
 
         String json = """
-    {
-      "oldPassword": "password",
-      "newPassword": "newpass"
-    }
-    """;
+                {
+                  "oldPassword": "password",
+                  "newPassword": "newpass"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/" + (user.getUserDto().getId() + 1) + "/changePassword")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -126,11 +126,11 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("user2@test.com", RoleType.CLIENT);
 
         String json = """
-    {
-      "oldPassword": "wrong",
-      "newPassword": "newpass"
-    }
-    """;
+                {
+                  "oldPassword": "wrong",
+                  "newPassword": "newpass"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/changePassword")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -160,14 +160,14 @@ public class UserControllerTest {
     @Test
     void testSignUp_Ok() throws Exception {
         String json = """
-        {
-          "name": "John",
-          "surname": "Doe",
-          "email": "john@test.com",
-          "phoneNumber": "+34 123 456 789",
-          "password": "password"
-        }
-        """;
+                {
+                  "name": "John",
+                  "surname": "Doe",
+                  "email": "john@test.com",
+                  "phoneNumber": "+34 123 456 789",
+                  "password": "password"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/signUp")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -184,14 +184,14 @@ public class UserControllerTest {
         userDao.save(user);
 
         String json = """
-        {
-          "name": "Jane",
-          "surname": "Doe",
-          "email": "dup@test.com",
-          "phoneNumber": "+34 987 654 321",
-          "password": "password"
-        }
-        """;
+                {
+                  "name": "Jane",
+                  "surname": "Doe",
+                  "email": "dup@test.com",
+                  "phoneNumber": "+34 987 654 321",
+                  "password": "password"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/signUp")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -206,11 +206,11 @@ public class UserControllerTest {
         userDao.save(user);
 
         String json = """
-        {
-          "email": "login@test.com",
-          "password": "wrong"
-        }
-        """;
+                {
+                  "email": "login@test.com",
+                  "password": "wrong"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -225,11 +225,11 @@ public class UserControllerTest {
         userDao.save(user);
 
         String json = """
-        {
-          "email": "blocked@test.com",
-          "password": "password"
-        }
-        """;
+                {
+                  "email": "blocked@test.com",
+                  "password": "password"
+                }
+                """;
 
         mockMvc.perform(post("/api/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -251,13 +251,13 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("update@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "name": "Updated",
-          "surname": "Name",
-          "email": "updated@test.com",
-          "phoneNumber": "+34 111 222 333"
-        }
-        """;
+                {
+                  "name": "Updated",
+                  "surname": "Name",
+                  "email": "updated@test.com",
+                  "phoneNumber": "+34 111 222 333"
+                }
+                """;
 
         mockMvc.perform(put("/api/users/" + user.getUserDto().getId())
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -272,13 +272,13 @@ public class UserControllerTest {
         AuthenticatedUserDto other = createAuthenticatedUser("update2@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "name": "Hacked",
-          "surname": "Name",
-          "email": "hacked@test.com",
-          "phoneNumber": "+34 444 555 666"
-        }
-        """;
+                {
+                  "name": "Hacked",
+                  "surname": "Name",
+                  "email": "hacked@test.com",
+                  "phoneNumber": "+34 444 555 666"
+                }
+                """;
 
         mockMvc.perform(put("/api/users/" + other.getUserDto().getId())
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -341,12 +341,12 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("body@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "weightKg": 70.5,
-          "heightCm": 175.0,
-          "gender": "MALE"
-        }
-        """;
+                {
+                  "weightKg": 70.5,
+                  "heightCm": 175.0,
+                  "gender": "MALE"
+                }
+                """;
 
         mockMvc.perform(put("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -360,12 +360,12 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("body2@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "weightKg": 70.5,
-          "heightCm": 175.0,
-          "gender": "INVALID"
-        }
-        """;
+                {
+                  "weightKg": 70.5,
+                  "heightCm": 175.0,
+                  "gender": "INVALID"
+                }
+                """;
 
         mockMvc.perform(put("/api/users/" + user.getUserDto().getId() + "/bodyMetrics")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -388,11 +388,11 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("bmi@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "weightKg": 70.0,
-          "heightCm": 170.0
-        }
-        """;
+                {
+                  "weightKg": 70.0,
+                  "heightCm": 170.0
+                }
+                """;
 
         mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/bmi/calculate")
                         .header("Authorization", "Bearer " + user.getServiceToken())
@@ -406,11 +406,11 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("bmi2@test.com", RoleType.CLIENT);
 
         String json = """
-        {
-          "weightKg": 70.0,
-          "heightCm": 0
-        }
-        """;
+                {
+                  "weightKg": 70.0,
+                  "heightCm": 0
+                }
+                """;
 
         mockMvc.perform(post("/api/users/" + user.getUserDto().getId() + "/bmi/calculate")
                         .header("Authorization", "Bearer " + user.getServiceToken())

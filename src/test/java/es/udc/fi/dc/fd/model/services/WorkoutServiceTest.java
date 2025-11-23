@@ -19,20 +19,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutServiceTest {
+class WorkoutServiceTest {
 
     @Autowired
     WorkoutService workoutService;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserDao userDao;
-
     @Autowired
     WorkoutDao workoutDao;
-
+    @Autowired
+    private RoutineDao routineDao;
+    @Autowired
+    private UserDao userDao;
     private User user;
     private Routine routine;
     @Autowired
@@ -122,7 +118,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    void testFindWorkoutsByUserAndDateRangeReturnsWorkouts(){
+    void testFindWorkoutsByUserAndDateRangeReturnsWorkouts() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime threeHoursAgo = now.minusHours(3);
         LocalDateTime twoHoursAgo = now.minusHours(2);
@@ -149,7 +145,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    void testFindWorkoutsByUserAndDateRangeEmptyList(){
+    void testFindWorkoutsByUserAndDateRangeEmptyList() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startRange = now.minusHours(2);
         LocalDateTime endRange = now.minusHours(1);
@@ -159,7 +155,7 @@ public class WorkoutServiceTest {
     }
 
     @Test
-    void testFindWorkoutsByUserAndDateRangeExcludesIncompleteWorkouts(){
+    void testFindWorkoutsByUserAndDateRangeExcludesIncompleteWorkouts() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startRange = now.minusHours(3);
 

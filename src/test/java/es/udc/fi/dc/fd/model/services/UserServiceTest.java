@@ -23,66 +23,66 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class UserServiceTest {
+class UserServiceTest {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	private User createUser(String email, String phoneNumber) {
-		return new User("name", "surname", email, phoneNumber, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
-	}
+    private User createUser(String email, String phoneNumber) {
+        return new User("name", "surname", email, phoneNumber, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+    }
 
-	@Test
-	void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
+    @Test
+    void testSignUpAndLoginFromId() throws DuplicateInstanceException, InstanceNotFoundException {
 
-		User user = createUser("user@test.com", "123456789");
+        User user = createUser("user@test.com", "123456789");
 
-		userService.signUp(user);
+        userService.signUp(user);
 
-		User loggedInUser = userService.loginFromId(user.getId());
+        User loggedInUser = userService.loginFromId(user.getId());
 
-		assertEquals(user, loggedInUser);
-		assertEquals(User.RoleType.CLIENT, user.getRole());
-		assertEquals(User.StatusType.ACTIVE, user.getStatus());
+        assertEquals(user, loggedInUser);
+        assertEquals(User.RoleType.CLIENT, user.getRole());
+        assertEquals(User.StatusType.ACTIVE, user.getStatus());
 
-	}
+    }
 
-	@Test
-	void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    @Test
+    void testBlockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin@admin.com", "+34 222 222 222");
-		admin.setRole(User.RoleType.ADMIN);
-		userService.signUp(admin);
+        User admin = createUser("admin@admin.com", "+34 222 222 222");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
 
-		User user = createUser("user2@user2.com", "+34 333 333 333");
-		userService.signUp(user);
+        User user = createUser("user2@user2.com", "+34 333 333 333");
+        userService.signUp(user);
 
-		userService.blockUser(admin.getId(), user.getId());
+        userService.blockUser(admin.getId(), user.getId());
 
-		User blockedUser = userService.findUserById(user.getId());
+        User blockedUser = userService.findUserById(user.getId());
 
-		assertEquals(User.StatusType.BLOCKED, blockedUser.getStatus());
+        assertEquals(User.StatusType.BLOCKED, blockedUser.getStatus());
 
-	}
+    }
 
-	@Test
-	void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    @Test
+    void testUnblockUser() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
 
-		User admin = createUser("admin2@admin2.com", "+34 444 444 444");
-		admin.setRole(User.RoleType.ADMIN);
-		userService.signUp(admin);
+        User admin = createUser("admin2@admin2.com", "+34 444 444 444");
+        admin.setRole(User.RoleType.ADMIN);
+        userService.signUp(admin);
 
-		User user = createUser("user3@user3.com", "+34 555 555 555");
-		userService.signUp(user);
+        User user = createUser("user3@user3.com", "+34 555 555 555");
+        userService.signUp(user);
 
-		userService.blockUser(admin.getId(), user.getId());
-		userService.unblockUser(admin.getId(), user.getId());
+        userService.blockUser(admin.getId(), user.getId());
+        userService.unblockUser(admin.getId(), user.getId());
 
-		User unblockedUser = userService.findUserById(user.getId());
+        User unblockedUser = userService.findUserById(user.getId());
 
-		assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
+        assertEquals(User.StatusType.ACTIVE, unblockedUser.getStatus());
 
-	}
+    }
 
     @Test
     void testSignUpDuplicateEmail() throws DuplicateInstanceException {

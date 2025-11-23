@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutExerciseControllerTest {
+class WorkoutExerciseControllerTest {
 
     private static final String PASSWORD = "password";
 
@@ -73,7 +73,7 @@ public class WorkoutExerciseControllerTest {
     private Workout workout;
 
     @BeforeEach
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
+    void setUp() throws IncorrectLoginException, BlockedUserException {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
 
         // Crear rutina
@@ -83,7 +83,7 @@ public class WorkoutExerciseControllerTest {
 
         // Crear ejercicio
         exercise = new Exercise("Sentadillas Test", "Ejercicio básico de piernas", MuscleGroup.LEG, Equipment.BARBELL,
-                new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED,
+                new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);
 
@@ -98,7 +98,7 @@ public class WorkoutExerciseControllerTest {
     }
 
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
-            String phoneNumber, RoleType roleType)
+                                                         String phoneNumber, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
         User user = new User(name, surname, email, phoneNumber, PASSWORD, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
@@ -128,7 +128,7 @@ public class WorkoutExerciseControllerTest {
     // ---------------- TESTS ----------------
 
     @Test
-    public void testAddWorkoutExerciseCreatesLog() throws Exception {
+    void testAddWorkoutExerciseCreatesLog() throws Exception {
         WorkoutExerciseDto dto = new WorkoutExerciseDto();
         dto.setReps((short) 10);
         dto.setWeight((short) 50);
@@ -145,7 +145,7 @@ public class WorkoutExerciseControllerTest {
     }
 
     @Test
-    public void testAddWorkoutExerciseWorkoutNotFound() throws Exception {
+    void testAddWorkoutExerciseWorkoutNotFound() throws Exception {
         WorkoutExerciseDto dto = new WorkoutExerciseDto();
         dto.setReps((short) 10);
         dto.setWeight((short) 50);
@@ -157,7 +157,7 @@ public class WorkoutExerciseControllerTest {
     }
 
     @Test
-    public void testAddWorkoutExerciseRoutineExerciseNotFound() throws Exception {
+    void testAddWorkoutExerciseRoutineExerciseNotFound() throws Exception {
         WorkoutExerciseDto dto = new WorkoutExerciseDto();
         dto.setReps((short) 10);
         dto.setWeight((short) 50);
@@ -169,7 +169,7 @@ public class WorkoutExerciseControllerTest {
     }
 
     @Test
-    public void testGetWorkoutExercisesReturnsList() throws Exception {
+    void testGetWorkoutExercisesReturnsList() throws Exception {
         WorkoutExerciseDto dto1 = new WorkoutExerciseDto();
         dto1.setReps((short) 10);
         dto1.setWeight((short) 50);
@@ -191,7 +191,7 @@ public class WorkoutExerciseControllerTest {
     }
 
     @Test
-    public void testGetWorkoutExercisesEmptyList() throws Exception {
+    void testGetWorkoutExercisesEmptyList() throws Exception {
         getWorkoutExercises(trainerUser, workout.getId())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -199,13 +199,13 @@ public class WorkoutExerciseControllerTest {
     }
 
     @Test
-    public void testGetWorkoutExercisesWorkoutNotFound() throws Exception {
+    void testGetWorkoutExercisesWorkoutNotFound() throws Exception {
         getWorkoutExercises(trainerUser, 999L)
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void testAddWorkoutExerciseUnauthorized() throws Exception {
+    void testAddWorkoutExerciseUnauthorized() throws Exception {
         WorkoutExerciseDto dto = new WorkoutExerciseDto();
         dto.setReps((short) 10);
         dto.setWeight((short) 50);
@@ -213,8 +213,8 @@ public class WorkoutExerciseControllerTest {
         dto.setRoutineExerciseId(routineExercise.getId());
 
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/log")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isForbidden());
     }
 }

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class RoutineExerciseServiceTest {
+class RoutineExerciseServiceTest {
 
     @Autowired
     private RoutineExerciseService routineExerciseService;
@@ -52,7 +52,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user) throws PermissionException, DuplicateInstanceException {
-        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1, 2, 3}, user);
     }
 
     private Routine createRoutine(String name, User user) {
@@ -104,7 +104,7 @@ public class RoutineExerciseServiceTest {
     @Test
     void testClientCannotCreateExercise() {
         User client = new User(
-                "C","L","client@test.com","600","p",
+                "C", "L", "client@test.com", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE
         );
         client = userDao.save(client);
@@ -194,7 +194,7 @@ public class RoutineExerciseServiceTest {
     @Test
     void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
         User trainer = createTrainerPremium("trainer@udc.es");
-        User other = new User("X","Y","other@udc.es","600","p",
+        User other = new User("X", "Y", "other@udc.es", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         other = userDao.save(other);
 

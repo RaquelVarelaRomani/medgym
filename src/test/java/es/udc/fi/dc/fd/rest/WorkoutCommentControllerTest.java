@@ -33,36 +33,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutCommentControllerTest {
+class WorkoutCommentControllerTest {
 
+    private static final String PASSWORD = "password";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private WorkoutDao workoutDao;
-
     @Autowired
     private RoutineService routineService;
-
     @Autowired
     private WorkoutCommentService workoutCommentService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private UserController userController;
-
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    private static final String PASSWORD = "password";
-
     @Before
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Comment", "trainer_comment@test.com", "600000300", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "Comment", "client_comment@test.com", "600000301", User.RoleType.CLIENT);
     }
@@ -88,7 +80,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testCommentWorkout() throws Exception {
+    void testCommentWorkout() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
 
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/comments")
@@ -102,7 +94,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testGetWorkoutComments() throws Exception {
+    void testGetWorkoutComments() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Test A", workout.getId());
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Test B", workout.getId());
@@ -114,7 +106,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testDeleteWorkoutComment() throws Exception {
+    void testDeleteWorkoutComment() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
 
         workoutCommentService.commentWorkout(clientUser.getUserDto().getId(), "Borrar", workout.getId());
@@ -130,7 +122,7 @@ public class WorkoutCommentControllerTest {
     }
 
     @Test
-    public void testCommentWorkoutNotFound() throws Exception {
+    void testCommentWorkoutNotFound() throws Exception {
         mockMvc.perform(post("/api/workouts/9999/comments")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .requestAttr("userId", clientUser.getUserDto().getId())

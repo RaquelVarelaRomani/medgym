@@ -4,7 +4,6 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutCommentService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutCommentDto;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutCommentParamsDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

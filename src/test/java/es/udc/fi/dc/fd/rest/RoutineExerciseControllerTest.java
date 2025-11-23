@@ -32,24 +32,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class RoutineExerciseControllerTest {
+class RoutineExerciseControllerTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private UserDao userDao;
-    @Autowired private ExerciseDao exerciseDao;
-    @Autowired private BCryptPasswordEncoder passwordEncoder;
-    @Autowired private RoutineDao routineDao;
-    @Autowired private RoutineExerciseService routineExerciseService;
-    @Autowired private ObjectMapper objectMapper;
-    @Autowired private UserController userController;
-
+    private static final String PASSWORD = "password";
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private ExerciseDao exerciseDao;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private RoutineDao routineDao;
+    @Autowired
+    private RoutineExerciseService routineExerciseService;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private UserController userController;
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    private static final String PASSWORD = "password";
-
     @org.junit.Before
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
     }
@@ -72,7 +78,7 @@ public class RoutineExerciseControllerTest {
     private Exercise createExercise(String name, User user) {
         return exerciseDao.save(new Exercise(
                 name, name + " description", MuscleGroup.FULL_BODY,
-                Equipment.NONE, new byte[]{1,2,3},
+                Equipment.NONE, new byte[]{1, 2, 3},
                 ExerciseStatus.PENDING, user));
     }
 
@@ -86,7 +92,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testAddExerciseToRoutine() throws Exception {
+    void testAddExerciseToRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -111,7 +117,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseInRoutine() throws Exception {
+    void testUpdateExerciseInRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -135,7 +141,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testGetExercisesForRoutinesPaging() throws Exception {
+    void testGetExercisesForRoutinesPaging() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = createRoutine("Rutina", trainer);
 
@@ -165,7 +171,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExerciseToRoutine() throws Exception {
+    void testDeleteExerciseToRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -179,7 +185,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testAddExerciseToRoutinePermissionDenied() throws Exception {
+    void testAddExerciseToRoutinePermissionDenied() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio.", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -199,7 +205,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExerciseToRoutinePermissionDenied() throws Exception {
+    void testDeleteExerciseToRoutinePermissionDenied() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = createRoutine("Rutina", trainer);
         Exercise exercise1 = createExercise("Ejercicio 1", trainer);
@@ -213,7 +219,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testAddExerciseToRoutineWithNonExistentExercise() throws Exception {
+    void testAddExerciseToRoutineWithNonExistentExercise() throws Exception {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
 
         RoutineExerciseDto dto = new RoutineExerciseDto();
@@ -231,7 +237,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testAddExerciseToNonExistentRoutine() throws Exception {
+    void testAddExerciseToNonExistentRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio", trainer);
 
@@ -250,7 +256,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteNonExistentRoutineExercise() throws Exception {
+    void testDeleteNonExistentRoutineExercise() throws Exception {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/-1")
@@ -259,7 +265,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testAddExerciseToRoutineWithInvalidToken() throws Exception {
+    void testAddExerciseToRoutineWithInvalidToken() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = createRoutine("Rutina", trainer);
         Exercise exercise = createExercise("Ejercicio", trainer);
@@ -279,7 +285,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testGetRoutineExercisesIncludesAllExerciseData() throws Exception {
+    void testGetRoutineExercisesIncludesAllExerciseData() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
 
         Exercise exercise = exerciseDao.save(new Exercise(
@@ -287,7 +293,7 @@ public class RoutineExerciseControllerTest {
                 "Ejercicio de pecho con barra",
                 MuscleGroup.CHEST,
                 Equipment.BENCH_AND_BARBELL,
-                new byte[]{1,2,3,4,5},
+                new byte[]{1, 2, 3, 4, 5},
                 ExerciseStatus.APPROVED,
                 trainer
         ));
@@ -310,7 +316,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testRoutineExerciseReturnsEmptyStringsWhenOptionalFieldsMissing() throws Exception {
+    void testRoutineExerciseReturnsEmptyStringsWhenOptionalFieldsMissing() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
 
         Exercise exercise = exerciseDao.save(new Exercise(
@@ -335,7 +341,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseInRoutinePermissionDenied() throws Exception {
+    void testUpdateExerciseInRoutinePermissionDenied() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -355,7 +361,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseInNonExistentRoutine() throws Exception {
+    void testUpdateExerciseInNonExistentRoutine() throws Exception {
         RoutineExerciseDto dto = new RoutineExerciseDto();
         dto.setPosition(2);
 
@@ -367,7 +373,7 @@ public class RoutineExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateNonExistentExerciseInRoutine() throws Exception {
+    void testUpdateNonExistentExerciseInRoutine() throws Exception {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
 
         RoutineExerciseDto dto = new RoutineExerciseDto();

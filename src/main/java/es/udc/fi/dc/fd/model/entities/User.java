@@ -23,8 +23,10 @@ public class User {
     private GenderType gender;
     @Column(name = "trainer_premium")
     private Boolean trainerPremium;
+
     public User() {
     }
+
     public User(String name, String surname, String email, String phoneNumber, String password, RoleType role, StatusType status) {
         this.name = name;
         this.surname = surname;

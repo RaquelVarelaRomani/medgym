@@ -33,36 +33,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutLikeControllerTest {
+class WorkoutLikeControllerTest {
 
+    private static final String PASSWORD = "password";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private WorkoutDao workoutDao;
-
     @Autowired
     private RoutineService routineService;
-
     @Autowired
     private WorkoutLikeService workoutLikeService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private UserController userController;
-
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    private static final String PASSWORD = "password";
-
     @Before
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Test", "trainer_workoutlike@test.com", "600000200", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "WorkoutLike", "client_workoutlike@test.com", "600000201", User.RoleType.CLIENT);
     }
@@ -88,7 +80,7 @@ public class WorkoutLikeControllerTest {
     }
 
     @Test
-    public void testLikeWorkout() throws Exception {
+    void testLikeWorkout() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
 
         mockMvc.perform(post("/api/workouts/" + workout.getId() + "/like")
@@ -101,7 +93,7 @@ public class WorkoutLikeControllerTest {
     }
 
     @Test
-    public void testGetWorkoutLikesByUser() throws Exception {
+    void testGetWorkoutLikesByUser() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
         workoutLikeService.likeWorkout(clientUser.getUserDto().getId(), workout.getId());
 
@@ -113,7 +105,7 @@ public class WorkoutLikeControllerTest {
     }
 
     @Test
-    public void testUnlikeWorkout() throws Exception {
+    void testUnlikeWorkout() throws Exception {
         Workout workout = createWorkoutFor(userDao.findById(clientUser.getUserDto().getId()).get());
         workoutLikeService.likeWorkout(clientUser.getUserDto().getId(), workout.getId());
 

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutCommentServiceTest {
+class WorkoutCommentServiceTest {
 
     @Autowired
     private WorkoutCommentService workoutCommentService;

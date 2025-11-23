@@ -8,18 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class RoutineServiceImpl implements RoutineService {
     private final RoutineDao routineDao;
+    private final RoutineService routineService;
     private final UserService userService;
     private final NotificationService notificationService;
     private final RoutineLikeDao routineLikeDao;
 
-    public RoutineServiceImpl(RoutineDao routineDao, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
+    public RoutineServiceImpl(RoutineDao routineDao, RoutineService routineService, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
         this.routineDao = routineDao;
+        this.routineService = routineService;
         this.userService = userService;
         this.notificationService = notificationService;
         this.routineLikeDao = routineLikeDao;
@@ -81,7 +82,7 @@ public class RoutineServiceImpl implements RoutineService {
     public void updateRoutine(Long userId, Long routineId, String name, String description,
                               Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        Routine routine = this.findRoutineByIdAuth(userId, routineId);
+        Routine routine = routineService.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -100,7 +101,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
-        Routine routine = this.findRoutineByIdAuth(userId, routineId);
+        Routine routine = routineService.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !Objects.equals(user.getId(), routine.getTrainer().getId())) {

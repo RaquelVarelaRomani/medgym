@@ -14,13 +14,16 @@ public class Exercise {
     private Equipment equipment;
     private byte[] image;
     private User creator;
+
     public Exercise() {
     }
+
     public Exercise(String name, String description, ExerciseStatus status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
+
     public Exercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, ExerciseStatus status, User creator) {
         this.name = name;
         this.description = description;

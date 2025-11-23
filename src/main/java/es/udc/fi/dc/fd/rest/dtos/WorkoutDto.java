@@ -12,6 +12,7 @@ public class WorkoutDto {
     private Long routineId;
     private String routineName;
     private Long userId;
+
     public WorkoutDto() {
     }
 

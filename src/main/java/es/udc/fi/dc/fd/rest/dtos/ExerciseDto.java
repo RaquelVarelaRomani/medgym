@@ -13,6 +13,7 @@ public class ExerciseDto {
     private byte[] image;
     private String status;
     private Long creatorId;
+
     public ExerciseDto() {
         // No-args constructor required for Jackson and frameworks.
         // Nested comment: implementation intentionally empty because the DTO
