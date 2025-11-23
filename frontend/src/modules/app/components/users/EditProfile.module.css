@@ -149,12 +149,16 @@
 }
 
 .ver-password {
-    position: absolute;
-    right: 0.75rem;
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--text-muted);
-    transition: color 0.2s ease;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
 }
 
 .ver-password:hover {
