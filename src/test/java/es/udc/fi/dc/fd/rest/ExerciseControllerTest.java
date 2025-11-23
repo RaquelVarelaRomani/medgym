@@ -44,7 +44,7 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 @Transactional
 public class ExerciseControllerTest {
 
-    private final static String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;

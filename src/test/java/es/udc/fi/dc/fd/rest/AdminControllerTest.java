@@ -31,7 +31,7 @@ import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 @Transactional
 public class AdminControllerTest {
 
-    private final static String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;

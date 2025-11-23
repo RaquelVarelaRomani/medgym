@@ -36,7 +36,7 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                 resolve(canvas.toDataURL("image/jpeg"));
             };
 
-            image.onerror = (err) => reject(err);
+            image.onerror = () => reject(new Error('Image failed to load'));
         });
     };
 

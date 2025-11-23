@@ -42,7 +42,7 @@ import es.udc.fi.dc.fd.rest.dtos.RoutineDto;
 @Transactional
 public class RoutineControllerTest {
 
-    private final static String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;
