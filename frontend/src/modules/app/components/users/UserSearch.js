@@ -72,7 +72,8 @@ const UserSearch = ({ isOpen, onClose }) => {
         <div
             className={styles.overlay}
             onClick={handleOverlayClick}
-            role="presentation"
+            aria-hidden="true"
+            role="none"
         >
             <div className={styles.container}>
                 <div ref={modalRef} className={styles.modal}>
