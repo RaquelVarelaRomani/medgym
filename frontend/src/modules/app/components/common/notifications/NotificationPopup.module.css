@@ -103,7 +103,6 @@
 .content {
     margin-right: 24px; /* deja espacio para la X */
     all: unset;
-    display: block;
     width: 100%;
     cursor: pointer;
     display: flex;
