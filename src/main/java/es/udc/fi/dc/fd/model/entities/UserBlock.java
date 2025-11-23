@@ -1,11 +1,11 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "user_block", uniqueConstraints = @UniqueConstraint(columnNames = { "blocker_id", "blocked_id" }))
+@Table(name = "user_block", uniqueConstraints = @UniqueConstraint(columnNames = {"blocker_id", "blocked_id"}))
 public class UserBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

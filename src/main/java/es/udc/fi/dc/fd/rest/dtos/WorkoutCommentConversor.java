@@ -6,7 +6,8 @@ import java.util.List;
 
 public class WorkoutCommentConversor {
 
-    private WorkoutCommentConversor() {}
+    private WorkoutCommentConversor() {
+    }
 
     public static WorkoutCommentDto toWorkoutCommentDto(WorkoutComment workoutComment) {
         WorkoutCommentDto workoutCommentDto = new WorkoutCommentDto();
@@ -24,6 +25,9 @@ public class WorkoutCommentConversor {
     }
 
     public static List<WorkoutCommentDto> toWorkoutCommentDtos(List<WorkoutComment> workoutComments) {
+        if (workoutComments == null) {
+            return List.of();
+        }
         return workoutComments.stream().map(WorkoutCommentConversor::toWorkoutCommentDto).toList();
     }
 }

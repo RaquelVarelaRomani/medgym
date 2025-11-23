@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 
 public class ExerciseConversor {
 
-    private ExerciseConversor() {}
+    private ExerciseConversor() {
+    }
 
     public static ExerciseDto toExerciseDto(Exercise exercise) {
 

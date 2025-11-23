@@ -29,6 +29,7 @@ public class WorkoutExercise {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -36,6 +37,7 @@ public class WorkoutExercise {
     public Short getReps() {
         return reps;
     }
+
     public void setReps(Short reps) {
         this.reps = reps;
     }
@@ -43,6 +45,7 @@ public class WorkoutExercise {
     public Short getWeight() {
         return weight;
     }
+
     public void setWeight(Short weight) {
         this.weight = weight;
     }
@@ -50,6 +53,7 @@ public class WorkoutExercise {
     public Short getDurationSeconds() {
         return durationSeconds;
     }
+
     public void setDurationSeconds(Short durationSeconds) {
         this.durationSeconds = durationSeconds;
     }
@@ -59,6 +63,7 @@ public class WorkoutExercise {
     public Workout getWorkout() {
         return workout;
     }
+
     public void setWorkout(Workout workout) {
         this.workout = workout;
     }
@@ -68,6 +73,7 @@ public class WorkoutExercise {
     public RoutineExercise getRoutineExercise() {
         return routineExercise;
     }
+
     public void setRoutineExercise(RoutineExercise routineExercise) {
         this.routineExercise = routineExercise;
     }

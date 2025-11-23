@@ -19,7 +19,8 @@ public final class EmailValidation {
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile(EMAIL_REGEX);
 
-    private EmailValidation() {}
+    private EmailValidation() {
+    }
 
     public static boolean isValidEmail(String email) {
         if (email == null) return false;

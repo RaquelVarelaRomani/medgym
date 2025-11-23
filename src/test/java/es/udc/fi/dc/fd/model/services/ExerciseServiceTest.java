@@ -1,36 +1,28 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.RoutineExercise;
-import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
-import jakarta.transaction.Transactional;
-
 import java.util.Objects;
 
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class ExerciseServiceTest {
+class ExerciseServiceTest {
 
     @Autowired
     private ExerciseService exerciseService;
@@ -65,7 +57,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testCreateAndFindExercise() throws Exception {
+    void testCreateAndFindExercise() throws Exception {
         User user = createPremiumTrainer("t1@test");
         Exercise e = createBasicExercise(user, "ex");
         Exercise found = exerciseService.findExerciseById(e.getId());
@@ -73,14 +65,14 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testCreateDuplicateExercise() throws Exception {
+    void testCreateDuplicateExercise() throws Exception {
         User user = createPremiumTrainer("t2@test");
         createBasicExercise(user, "ex");
         assertThrows(DuplicateInstanceException.class, () -> createBasicExercise(user, "ex"));
     }
 
     @Test
-    public void testUpdateExercise() throws Exception {
+    void testUpdateExercise() throws Exception {
         User user = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(user, "ex");
 
@@ -94,7 +86,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseDuplicateName() throws Exception {
+    void testUpdateExerciseDuplicateName() throws Exception {
         User user = createPremiumTrainer("t@test");
         createBasicExercise(user, "ex1");
         Exercise e2 = createBasicExercise(user, "ex2");
@@ -105,7 +97,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testDeleteExercise() throws Exception {
+    void testDeleteExercise() throws Exception {
         User user = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(user, "ex");
         exerciseService.deleteExercise(e.getId());
@@ -113,12 +105,12 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testDeleteNonExistentExercise() {
+    void testDeleteNonExistentExercise() {
         assertThrows(InstanceNotFoundException.class, () -> exerciseService.deleteExercise(999L));
     }
 
     @Test
-    public void testDeleteExerciseInUse() throws Exception {
+    void testDeleteExerciseInUse() throws Exception {
         User trainer = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(trainer, "ex");
 
@@ -129,27 +121,28 @@ public class ExerciseServiceTest {
         RoutineExercise re = new RoutineExercise(r, e, 1);
         routineExerciseDao.save(re);
 
+        var exerciseId = e.getId();
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                () -> exerciseService.deleteExercise(e.getId()));
+                () -> exerciseService.deleteExercise(exerciseId));
 
         assertEquals(400, ex.getStatusCode().value());
         assertTrue(Objects.requireNonNull(ex.getReason()).contains("No se puede borrar"));
     }
 
     @Test
-    public void testFindNonExistentExercise() {
+    void testFindNonExistentExercise() {
         assertThrows(InstanceNotFoundException.class, () -> exerciseService.findExerciseById(999L));
     }
 
     @Test
-    public void testCreateExerciseWithDefaultStatus() throws Exception {
+    void testCreateExerciseWithDefaultStatus() throws Exception {
         User trainer = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(trainer, "ex");
         assertEquals(ExerciseStatus.PENDING, e.getStatus());
     }
 
     @Test
-    public void testUpdateExerciseStatus() throws Exception {
+    void testUpdateExerciseStatus() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
 
@@ -160,13 +153,13 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusNonExistentExercise() {
+    void testUpdateExerciseStatusNonExistentExercise() {
         assertThrows(InstanceNotFoundException.class,
                 () -> exerciseService.updateExerciseStatus(999L, ExerciseStatus.REJECTED));
     }
 
     @Test
-    public void testUpdateExerciseStatusToNull() throws Exception {
+    void testUpdateExerciseStatusToNull() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
         exerciseService.updateExerciseStatus(e.getId(), null);
@@ -174,7 +167,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusToSameValue() throws Exception {
+    void testUpdateExerciseStatusToSameValue() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
         exerciseService.updateExerciseStatus(e.getId(), ExerciseStatus.PENDING);
@@ -182,7 +175,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusMultipleTimes() throws Exception {
+    void testUpdateExerciseStatusMultipleTimes() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
 
@@ -197,7 +190,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusAfterNameChange() throws Exception {
+    void testUpdateExerciseStatusAfterNameChange() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
 
@@ -212,7 +205,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusAfterDeletion() throws Exception {
+    void testUpdateExerciseStatusAfterDeletion() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
         exerciseService.deleteExercise(e.getId());
@@ -221,7 +214,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindAllExercises() throws Exception {
+    void testFindAllExercises() throws Exception {
         User t = createPremiumTrainer("t@test");
         int initial = exerciseService.findAllExercises(t.getId()).size();
 
@@ -236,7 +229,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindExercisesWithPendingStatus() throws Exception {
+    void testFindExercisesWithPendingStatus() throws Exception {
         User t = createPremiumTrainer("t@test");
 
         int initial = exerciseService.findExercisesWithPendingStatus().size();
@@ -249,7 +242,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusWhenNone() throws Exception {
+    void testFindExercisesWithPendingStatusWhenNone() throws Exception {
         User t = createPremiumTrainer("t@test");
         int initial = exerciseService.findExercisesWithPendingStatus().size();
 
@@ -264,7 +257,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusWhenAll() throws Exception {
+    void testFindExercisesWithPendingStatusWhenAll() throws Exception {
         User t = createPremiumTrainer("t@test");
         int initial = exerciseService.findExercisesWithPendingStatus().size();
 
@@ -276,7 +269,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusAfterDeletion() throws Exception {
+    void testFindExercisesWithPendingStatusAfterDeletion() throws Exception {
         User t = createPremiumTrainer("t@test");
 
         int initial = exerciseService.findExercisesWithPendingStatus().size();
@@ -292,7 +285,7 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusAfterStatusUpdate() throws Exception {
+    void testFindExercisesWithPendingStatusAfterStatusUpdate() throws Exception {
         User t = createPremiumTrainer("t@test");
 
         int initial = exerciseService.findExercisesWithPendingStatus().size();
@@ -308,33 +301,33 @@ public class ExerciseServiceTest {
     }
 
     @Test
-    public void testCreateExerciseSetsDefaultStatus() throws Exception {
+    void testCreateExerciseSetsDefaultStatus() throws Exception {
         User t = createPremiumTrainer("t@test");
         Exercise e = createBasicExercise(t, "ex");
         assertEquals(ExerciseStatus.PENDING, e.getStatus());
     }
 
     @Test
-    public void testFindAllMuscleGroups() {
+    void testFindAllMuscleGroups() {
         var groups = exerciseService.findAllMuscleGroups();
         assertEquals(MuscleGroup.values().length, groups.size());
     }
 
     @Test
-    public void testFindAllEquipments() {
+    void testFindAllEquipments() {
         var eq = exerciseService.findAllEquipments();
         assertEquals(Equipment.values().length, eq.size());
     }
 
     @Test
-    public void testUpdateExerciseNonExistent() {
+    void testUpdateExerciseNonExistent() {
         assertThrows(InstanceNotFoundException.class,
                 () -> exerciseService.updateExercise(999L, "x", "y",
                         MuscleGroup.LEG, Equipment.NONE, new byte[]{1}));
     }
 
     @Test
-    public void testFindAllExercisesUserNotFound() {
+    void testFindAllExercisesUserNotFound() {
         assertThrows(InstanceNotFoundException.class,
                 () -> exerciseService.findAllExercises(999L));
     }

@@ -23,6 +23,7 @@ public class WorkoutLike {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -32,6 +33,7 @@ public class WorkoutLike {
     public Workout getWorkout() {
         return workout;
     }
+
     public void setWorkout(Workout workout) {
         this.workout = workout;
     }
@@ -41,6 +43,7 @@ public class WorkoutLike {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }

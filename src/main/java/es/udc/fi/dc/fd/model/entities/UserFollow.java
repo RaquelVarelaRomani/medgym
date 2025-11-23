@@ -10,7 +10,8 @@ public class UserFollow {
     private User user;
     private User followUser;
 
-    public UserFollow() {}
+    public UserFollow() {
+    }
 
     public UserFollow(User user, User trainer) {
         this.user = user;
@@ -22,6 +23,7 @@ public class UserFollow {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -31,6 +33,7 @@ public class UserFollow {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -40,6 +43,7 @@ public class UserFollow {
     public User getFollowUser() {
         return followUser;
     }
+
     public void setFollowUser(User followUser) {
         this.followUser = followUser;
     }

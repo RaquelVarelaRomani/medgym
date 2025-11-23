@@ -2,8 +2,6 @@ package es.udc.fi.dc.fd.model.entities;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "routine_likes")
 public class RoutineLike {
@@ -12,7 +10,8 @@ public class RoutineLike {
     private User user;
     private Routine routine;
 
-    public RoutineLike() {}
+    public RoutineLike() {
+    }
 
     public RoutineLike(User user, Routine routine) {
         this.user = user;
@@ -24,6 +23,7 @@ public class RoutineLike {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -33,6 +33,7 @@ public class RoutineLike {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -42,6 +43,7 @@ public class RoutineLike {
     public Routine getRoutine() {
         return routine;
     }
+
     public void setRoutine(Routine routine) {
         this.routine = routine;
     }

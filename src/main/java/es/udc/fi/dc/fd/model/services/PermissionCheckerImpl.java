@@ -1,42 +1,42 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
 public class PermissionCheckerImpl implements PermissionChecker {
-	
-	@Autowired
-	private UserDao userDao;
-	
-	@Override
-	public void checkUserExists(Long userId) throws InstanceNotFoundException {
-		
-		if (!userDao.existsById(userId)) {
-			throw new InstanceNotFoundException("project.entities.user", userId);
-		}
-		
-	}
+    private final UserDao userDao;
 
-	@Override
-	public User checkUser(Long userId) throws InstanceNotFoundException {
+    public PermissionCheckerImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-		Optional<User> user = userDao.findById(userId);
-		
-		if (!user.isPresent()) {
-			throw new InstanceNotFoundException("project.entities.user", userId);
-		}
-		
-		return user.get();
-		
-	}
+    @Override
+    public void checkUserExists(Long userId) throws InstanceNotFoundException {
+
+        if (!userDao.existsById(userId)) {
+            throw new InstanceNotFoundException("project.entities.user", userId);
+        }
+
+    }
+
+    @Override
+    public User checkUser(Long userId) throws InstanceNotFoundException {
+
+        Optional<User> user = userDao.findById(userId);
+
+        if (user.isEmpty()) {
+            throw new InstanceNotFoundException("project.entities.user", userId);
+        }
+
+        return user.get();
+
+    }
 
 }

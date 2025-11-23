@@ -1,50 +1,41 @@
 package es.udc.fi.dc.fd.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import es.udc.fi.dc.fd.rest.controllers.UserController;
+import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.ExerciseDto;
+import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
-import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
-import es.udc.fi.dc.fd.rest.controllers.UserController;
-import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
-import es.udc.fi.dc.fd.rest.dtos.ExerciseDto;
-import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class ExerciseControllerTest {
+class ExerciseControllerTest {
 
-    private final static String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
     @Autowired
     private MockMvc mockMvc;
@@ -66,8 +57,8 @@ public class ExerciseControllerTest {
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto trainerUserPremium;
 
-    @Before
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
+    @BeforeEach
+    void setUp() throws IncorrectLoginException, BlockedUserException {
         adminUser = createAuthenticatedUser("Admin", "User", "admin@test.com", "600000001", RoleType.ADMIN, null);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000002", RoleType.CLIENT, null);
         trainerUser = createAuthenticatedUser("Trainer", "User", "trainer@test.com", "600000003", RoleType.TRAINER, false);
@@ -105,7 +96,7 @@ public class ExerciseControllerTest {
     // -----------------------------------------------------------------------
 
     @Test
-    public void testCreateAndGetExerciseAsAdmin() throws Exception {
+    void testCreateAndGetExerciseAsAdmin() throws Exception {
         ExerciseDto exerciseDto = new ExerciseDto();
         exerciseDto.setName("Push-ups");
         exerciseDto.setDescription("A basic push-up");
@@ -128,7 +119,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseAsAdmin() throws Exception {
+    void testUpdateExerciseAsAdmin() throws Exception {
 
         // original DTO
         ExerciseDto originalDto = new ExerciseDto();
@@ -167,14 +158,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExerciseAsAdmin() throws Exception {
+    void testDeleteExerciseAsAdmin() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Lunge");
         dto.setDescription("A basic lunge");
         dto.setMuscleGroup(MuscleGroup.LEG.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -194,14 +185,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testFindAllExercisesAsAdmin() throws Exception {
+    void testFindAllExercisesAsAdmin() throws Exception {
         mockMvc.perform(get("/api/exercises")
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testCreateExerciseAsClientFails() throws Exception {
+    void testCreateExerciseAsClientFails() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Push-ups");
@@ -216,14 +207,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseAsClientFails() throws Exception {
+    void testUpdateExerciseAsClientFails() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Plank");
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -238,7 +229,7 @@ public class ExerciseControllerTest {
         updated.setDescription("Advanced core exercise");
         updated.setMuscleGroup(MuscleGroup.CORE.name());
         updated.setEquipment(Equipment.NONE.name());
-        updated.setImage(new byte[]{1,2,3});
+        updated.setImage(new byte[]{1, 2, 3});
         updated.setStatus("PENDING");
         updated.setCreatorId(adminUser.getUserDto().getId());
 
@@ -250,14 +241,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusAsClientFails() throws Exception {
+    void testUpdateExerciseStatusAsClientFails() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Plank");
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -276,14 +267,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusAsTrainer() throws Exception {
+    void testUpdateExerciseStatusAsTrainer() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Plank");
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUser.getUserDto().getId());
 
@@ -304,14 +295,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testUpdateExerciseStatusAsAdmin() throws Exception {
+    void testUpdateExerciseStatusAsAdmin() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Plank");
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -331,14 +322,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExerciseAsClientFails() throws Exception {
+    void testDeleteExerciseAsClientFails() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Lunge");
         dto.setDescription("A basic lunge");
         dto.setMuscleGroup(MuscleGroup.LEG.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -353,20 +344,20 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testFindAllExercisesAsClient() throws Exception {
+    void testFindAllExercisesAsClient() throws Exception {
         mockMvc.perform(get("/api/exercises")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testCreateExerciseAsTrainerSucceeds() throws Exception {
+    void testCreateExerciseAsTrainerSucceeds() throws Exception {
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Crunches");
         dto.setDescription("Abdominal exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUserPremium.getUserDto().getId());
 
@@ -374,14 +365,14 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testDeleteExerciseAsTrainerSucceeds() throws Exception {
+    void testDeleteExerciseAsTrainerSucceeds() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Plank");
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUser.getUserDto().getId());
 
@@ -396,42 +387,42 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testFindAllExercisesAsTrainer() throws Exception {
+    void testFindAllExercisesAsTrainer() throws Exception {
         mockMvc.perform(get("/api/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusAsAdmin() throws Exception {
+    void testFindExercisesWithPendingStatusAsAdmin() throws Exception {
         mockMvc.perform(get("/api/exercises/pending")
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusAsClientFails() throws Exception {
+    void testFindExercisesWithPendingStatusAsClientFails() throws Exception {
         mockMvc.perform(get("/api/exercises/pending")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void testFindExercisesWithPendingStatusAsTrainerFails() throws Exception {
+    void testFindExercisesWithPendingStatusAsTrainerFails() throws Exception {
         mockMvc.perform(get("/api/exercises/pending")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void testCreateExerciseUnauthenticatedFails() throws Exception {
+    void testCreateExerciseUnauthenticatedFails() throws Exception {
 
         ExerciseDto dto = new ExerciseDto();
         dto.setName("Burpees");
         dto.setDescription("Full body exercise");
         dto.setMuscleGroup(MuscleGroup.FULL_BODY.name());
         dto.setEquipment(Equipment.NONE.name());
-        dto.setImage(new byte[]{1,2,3});
+        dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
 
@@ -442,7 +433,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testGetMuscleGroups() throws Exception {
+    void testGetMuscleGroups() throws Exception {
         mockMvc.perform(get("/api/exercises/muscleGroups")
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk())
@@ -452,7 +443,7 @@ public class ExerciseControllerTest {
     }
 
     @Test
-    public void testGetEquipments() throws Exception {
+    void testGetEquipments() throws Exception {
         mockMvc.perform(get("/api/exercises/equipments")
                         .header("Authorization", "Bearer " + adminUser.getServiceToken()))
                 .andExpect(status().isOk())

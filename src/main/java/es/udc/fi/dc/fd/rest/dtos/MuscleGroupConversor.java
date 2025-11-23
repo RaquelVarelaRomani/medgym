@@ -6,7 +6,8 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 
 public class MuscleGroupConversor {
 
-    private MuscleGroupConversor() {}
+    private MuscleGroupConversor() {
+    }
 
     public static MuscleGroupDto toMuscleGroupDto(MuscleGroup muscleGroup) {
 

@@ -1,21 +1,19 @@
 package es.udc.fi.dc.fd.rest.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.rest.common.JwtInfo;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/blocks")
 public class UserBlockController {
+    private final UserBlockService userBlockService;
 
-    @Autowired
-    private UserBlockService userBlockService;
+    public UserBlockController(UserBlockService userBlockService) {
+        this.userBlockService = userBlockService;
+    }
 
     @PostMapping("/{blockedId}")
     public ResponseEntity<Void> blockUser(

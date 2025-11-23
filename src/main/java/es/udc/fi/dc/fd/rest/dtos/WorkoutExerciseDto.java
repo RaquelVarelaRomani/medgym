@@ -2,8 +2,6 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 public class WorkoutExerciseDto {
 
-    public interface AllValidations {}
-
     private Long id;
     private Short reps;
     private Short weight;
@@ -26,6 +24,7 @@ public class WorkoutExerciseDto {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -33,6 +32,7 @@ public class WorkoutExerciseDto {
     public Short getReps() {
         return reps;
     }
+
     public void setReps(Short reps) {
         this.reps = reps;
     }
@@ -40,6 +40,7 @@ public class WorkoutExerciseDto {
     public Short getWeight() {
         return weight;
     }
+
     public void setWeight(Short weight) {
         this.weight = weight;
     }
@@ -47,6 +48,7 @@ public class WorkoutExerciseDto {
     public Short getDurationSeconds() {
         return durationSeconds;
     }
+
     public void setDurationSeconds(Short durationSeconds) {
         this.durationSeconds = durationSeconds;
     }
@@ -54,6 +56,7 @@ public class WorkoutExerciseDto {
     public Long getWorkoutId() {
         return workoutId;
     }
+
     public void setWorkoutId(Long workoutId) {
         this.workoutId = workoutId;
     }
@@ -61,7 +64,11 @@ public class WorkoutExerciseDto {
     public Long getRoutineExerciseId() {
         return routineExerciseId;
     }
+
     public void setRoutineExerciseId(Long routineExerciseId) {
         this.routineExerciseId = routineExerciseId;
+    }
+
+    public interface AllValidations {
     }
 }

@@ -1,24 +1,4 @@
-
 package es.udc.fi.dc.fd.rest.controllers;
-
-import java.net.URI;
-import java.util.List;
-
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.rest.dtos.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -27,21 +7,29 @@ import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.ExerciseService;
 import es.udc.fi.dc.fd.model.services.UserService;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import es.udc.fi.dc.fd.rest.dtos.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import static es.udc.fi.dc.fd.rest.dtos.ExerciseConversor.toExerciseDto;
+import java.net.URI;
+import java.util.List;
 
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.rest.dtos.ExerciseConversor.toExerciseDto;
 
 @RestController
 @RequestMapping("/api/exercises")
 public class ExerciseController {
+    private final ExerciseService exerciseService;
+    private final UserService userService;
 
-    @Autowired
-    private ExerciseService exerciseService;
-
-    @Autowired
-    private UserService userService;
+    public ExerciseController(ExerciseService exerciseService, UserService userService) {
+        this.exerciseService = exerciseService;
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
@@ -58,8 +46,8 @@ public class ExerciseController {
 
     @PutMapping("/{id}")
     public ExerciseDto updateExercise(@PathVariable Long id,
-                                    @RequestBody ExerciseDto exerciseDto,
-                                    @RequestAttribute Long userId)
+                                      @RequestBody ExerciseDto exerciseDto,
+                                      @RequestAttribute Long userId)
             throws InstanceNotFoundException, DuplicateInstanceException {
 
         User user = userService.loginFromId(userId);

@@ -444,11 +444,11 @@ const Profile = () => {
                 }}
             />
 
-            {profile && <UserWorkoutHistory id={profile.id} />}
+            {profile && <UserWorkoutHistory id={profile.id.toString()} />}
 
             {showMetrics && profile && (
                 <BodyMetricsCard
-                    userId={profile.id}
+                    userId={profile.id.toString()}
                     initialWeightKg={profile.weightKg}
                     initialHeightCm={profile.heightCm}
                     initialGender={profile.gender}

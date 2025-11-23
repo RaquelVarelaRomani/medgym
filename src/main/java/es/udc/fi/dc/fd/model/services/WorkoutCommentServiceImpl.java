@@ -5,7 +5,6 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.entities.WorkoutComment;
 import es.udc.fi.dc.fd.model.entities.WorkoutCommentDao;
 import es.udc.fi.dc.fd.model.entities.WorkoutDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +14,17 @@ import java.util.List;
 @Service
 @Transactional
 public class WorkoutCommentServiceImpl implements WorkoutCommentService {
+    private final WorkoutCommentDao workoutCommentDao;
+    private final UserDao userDao;
+    private final WorkoutDao workoutDao;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private WorkoutCommentDao workoutCommentDao;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private WorkoutDao workoutDao;
-
-    @Autowired
-    private NotificationService notificationService;
+    public WorkoutCommentServiceImpl(WorkoutCommentDao workoutCommentDao, UserDao userDao, WorkoutDao workoutDao, NotificationService notificationService) {
+        this.workoutCommentDao = workoutCommentDao;
+        this.userDao = userDao;
+        this.workoutDao = workoutDao;
+        this.notificationService = notificationService;
+    }
 
     @Override
     public WorkoutComment findWorkoutCommentById(Long workoutCommentId) throws InstanceNotFoundException {

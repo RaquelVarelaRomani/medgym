@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,18 +10,17 @@ import java.util.List;
 @Service
 @Transactional
 public class RoutineLikeServiceImpl implements RoutineLikeService {
+    private final RoutineLikeDao routineLikeDao;
+    private final UserDao userDao;
+    private final RoutineDao routineDao;
+    private final NotificationService notificationService;
 
-    @Autowired
-    private RoutineLikeDao routineLikeDao;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private NotificationService notificationService;
+    public RoutineLikeServiceImpl(RoutineLikeDao routineLikeDao, UserDao userDao, RoutineDao routineDao, NotificationService notificationService) {
+        this.routineLikeDao = routineLikeDao;
+        this.userDao = userDao;
+        this.routineDao = routineDao;
+        this.notificationService = notificationService;
+    }
 
     @Override
     public void likeRoutine(Long userId, Long routineId) throws InstanceNotFoundException {

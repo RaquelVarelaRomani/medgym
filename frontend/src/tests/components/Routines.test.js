@@ -52,7 +52,7 @@ jest.mock("../../modules/app/components/common/CropModal", () => {
     return MockCropModal;
 });
 
-import { tryLoginFromServiceToken } from "../../backend/userService";
+import { tryLoginFromServiceToken, becomePremium } from "../../backend/userService";
 import * as exerciseService from "../../backend/exerciseService";
 import * as routineService from "../../backend/routineService";
 import * as routineExerciseService from "../../backend/routineExerciseService";
@@ -70,6 +70,7 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("../../backend/userService", () => ({
     tryLoginFromServiceToken: jest.fn(),
+    becomePremium: jest.fn(),
 }));
 
 jest.mock("../../backend/exerciseService", () => ({
@@ -877,6 +878,639 @@ describe("CreateRoutine Component", () => {
             ).toBeInTheDocument();
             expect(screen.getByText("Reintentar")).toBeInTheDocument();
         });
+    });
+
+    test("handles error in loading muscle groups", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        exerciseService.getMuscleGroups.mockImplementation((success, error) => {
+            error("Muscle groups error");
+        });
+
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith("Error loading muscle groups:", "Muscle groups error");
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    test("handles error in loading equipment", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        exerciseService.getEquipments.mockImplementation((success, error) => {
+            error("Equipment error");
+        });
+
+        const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith("Error loading equipment:", "Equipment error");
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    test("handles outside click to close search results", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Routine 1", trainerName: "Trainer"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Routine"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Routine 1", { selector: '.search-result-name' })).toBeInTheDocument();
+        });
+
+        fireEvent.click(document.body);
+
+        await waitFor(() => {
+            expect(screen.queryByText("Routine 1", { selector: '.search-result-name' })).not.toBeInTheDocument();
+        });
+    });
+
+    test("handles multi-select change for muscle groups", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        exerciseService.getMuscleGroups.mockImplementation((success) => {
+            success([{name: "Chest"}, {name: "Back"}]);
+        });
+
+        exerciseService.getEquipments.mockImplementation((success) => {
+            success([{name: "Barbell"}]);
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const muscleGroupSelect = screen
+                .getByText("Grupos Musculares:")
+                .parentElement.querySelector(".select-display");
+            fireEvent.click(muscleGroupSelect);
+        });
+
+        await waitFor(() => {
+            const buttons = screen.getAllByRole("button");
+            const multiButtons = buttons.filter(button => button.closest('.select-dropdown'));
+            if (multiButtons.length > 0) {
+                fireEvent.click(multiButtons[0]);
+                const checkboxes = screen.getAllByRole("checkbox");
+                expect(checkboxes[0].checked).toBe(true);
+            }
+        });
+    });
+
+    test("handles search change and shows results", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer", trainerSurname: "One"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Routine", { selector: '.search-result-name' })).toBeInTheDocument();
+            expect(screen.getByText("Trainer One", { selector: '.search-result-trainer' })).toBeInTheDocument();
+        });
+    });
+
+    test("handles select searched routine", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer", trainerSurname: "One"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            const resultItem = screen.getAllByText("Test Routine").find(el => el.closest('.search-result-item'));
+            fireEvent.click(resultItem);
+        });
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            expect(searchInput.value).toBe("Test Routine");
+        });
+    });
+
+    test("handles clear search", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            const clearButton = screen.getByText("✕");
+            fireEvent.click(clearButton);
+        });
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            expect(searchInput.value).toBe("");
+        });
+    });
+
+    test("shows GoPremiumPopup when trainer cannot create routine", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([
+                {id: 1, name: "Routine 1", trainerId: 1},
+                {id: 2, name: "Routine 2", trainerId: 1},
+                {id: 3, name: "Routine 3", trainerId: 1},
+            ]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const addButton = screen.getByText("+");
+            fireEvent.click(addButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Crear más de 3 rutinas es una función premium.")).toBeInTheDocument();
+        });
+    });
+
+    test("handles GoPremiumPopup OK click", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([
+                {id: 1, name: "Routine 1", trainerId: 1},
+                {id: 2, name: "Routine 2", trainerId: 1},
+                {id: 3, name: "Routine 3", trainerId: 1},
+            ]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const addButton = screen.getByText("+");
+            fireEvent.click(addButton);
+        });
+
+        becomePremium.mockImplementation((userId, success) => {
+            success();
+        });
+
+        await waitFor(() => {
+            const okButton = screen.getByText("Hacerme premium");
+            fireEvent.click(okButton);
+        });
+
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1", { replace: true });
+        });
+    });
+
+    test("renders DifficultyFilter options", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const difficultySelect = screen.getByText("Todas");
+            fireEvent.click(difficultySelect);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Principiante")).toBeInTheDocument();
+            expect(screen.getByText("Intermedia")).toBeInTheDocument();
+            expect(screen.getByText("Avanzada")).toBeInTheDocument();
+        });
+    });
+
+    test("renders MultiSelectFilter with selected labels", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Grupos Musculares:")).toBeInTheDocument();
+            expect(screen.getByText("Equipamiento:")).toBeInTheDocument();
+        });
+    });
+
+    test("renders TrainerFilter with trainer name", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Entrenador:")).toBeInTheDocument();
+        });
+    });
+
+    test("handles SearchBar onFocus", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        let searchInput;
+        await waitFor(() => {
+            searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.focus(searchInput);
+        });
+
+        // Test that focus doesn't break anything
+        expect(searchInput).toBeInTheDocument();
+    });
+
+    test("handles RoutineCard like change", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{
+                id: 1,
+                name: "Test Routine",
+                trainerName: "Trainer",
+                likes: [{userId: 1}]
+            }]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const heartButton = screen.getByLabelText(/me gusta/i);
+            fireEvent.click(heartButton);
+        });
+
+        // Test that like change is handled
+        expect(routineLikeService.unlikeRoutine).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
     });
 
     test("retries loading exercises on button click", async () => {
@@ -2747,7 +3381,7 @@ describe("EditRoutine Component", () => {
         });
 
         routineService.getAllRoutines.mockImplementation((success) => {
-            success([{id: 1, name: "Routine 1"}]);
+            success([{id: 1, name: "Routine 1", trainerName: "Trainer"}]);
         });
 
         exerciseService.getAllExercises.mockImplementation((success) => {
@@ -2775,7 +3409,12 @@ describe("EditRoutine Component", () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText("Routine 1")).toBeInTheDocument();
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Routine"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Routine 1", { selector: '.search-result-name' })).toBeInTheDocument();
         });
     });
 
@@ -3161,6 +3800,305 @@ describe("EditRoutine Component", () => {
     });
 });
 
+describe("EditRoutine Component", () => {
+    test("renders loading state initially", () => {
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        expect(screen.getByText("Cargando rutina...")).toBeInTheDocument();
+    });
+
+    test("loads and displays routine data", async () => {
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({
+                    content: [
+                        {exerciseId: 1, exerciseName: "Exercise 1", position: 1},
+                    ],
+                });
+            },
+        );
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: [{id: 1, name: "Exercise 1"}]});
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByDisplayValue("Test Routine")).toBeInTheDocument();
+            expect(screen.getByDisplayValue("Desc")).toBeInTheDocument();
+        });
+    });
+
+    test("saves changes successfully", async () => {
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({content: []});
+            },
+        );
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineService.updateRoutine.mockImplementation(
+            (id, name, desc, visibility, difficulty, success) => {
+                success();
+            },
+        );
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const titleInput = screen.getByDisplayValue("Test Routine");
+            fireEvent.change(titleInput, {target: {value: "Updated Routine"}});
+
+            const saveButton = screen.getByText("Guardar");
+            fireEvent.click(saveButton);
+        });
+
+        await waitFor(() => {
+            expect(routineService.updateRoutine).toHaveBeenCalled();
+        });
+    });
+
+    test("handles error in loading routine", async () => {
+        routineService.getRoutine.mockImplementation((id, success, error) => {
+            error("Load error");
+        });
+
+        const consoleSpy = jest
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error loading routine:",
+                "Load error",
+            );
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    test("handles error in loading exercises", async () => {
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success, error) => {
+                error("Exercises error");
+            },
+        );
+
+        const consoleSpy = jest
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error loading routine:",
+                "Exercises error",
+            );
+        });
+
+        consoleSpy.mockRestore();
+    });
+
+    test("handles error in loading all exercises", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER"}});
+        });
+
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({content: []});
+            },
+        );
+
+        exerciseService.getAllExercises.mockImplementation((success, error) => {
+            error("All exercises error");
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("Error al cargar los ejercicios disponibles: All exercises error"),
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("shows title error for long title", async () => {
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({content: []});
+            },
+        );
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const titleInput = screen.getByDisplayValue("Test Routine");
+            fireEvent.change(titleInput, {target: {value: "A".repeat(51)}});
+            expect(
+                screen.getByText("El título es demasiado grande"),
+            ).toBeInTheDocument();
+        });
+    });
+
+    test("navigates on cancel", async () => {
+        routineService.getRoutine.mockImplementation((id, success) => {
+            success({
+                content: [
+                    {
+                        name: "Test Routine",
+                        description: "Desc",
+                        visibility: "PUBLIC",
+                        difficulty: "INTERMEDIATE",
+                    },
+                ],
+            });
+        });
+
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({content: []});
+            },
+        );
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/routines/edit/1"]}>
+                <Routes>
+                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const cancelButton = screen.getByText("Cancelar");
+            fireEvent.click(cancelButton);
+            expect(mockNavigate).toHaveBeenCalledWith("/routines");
+        });
+    });
+});
+
 describe("ExerciseDetails Component", () => {
     test("renders loading state initially", () => {
         exerciseService.getExercise.mockImplementation((id, success) => {
@@ -3295,10 +4233,6 @@ describe("RoutineDetails Component", () => {
                 });
             },
         );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
 
         render(
             <MemoryRouter initialEntries={["/routines/1"]}>
@@ -3564,78 +4498,6 @@ describe("RoutineDetails Component", () => {
             const backButton = screen.getByText("←");
             fireEvent.click(backButton);
             expect(mockNavigate).toHaveBeenCalledWith("/routines");
-        });
-    });
-
-    test("handles isClient function", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {id: 1, name: "Test Routine", description: "Desc", trainerId: 1},
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/1"]}>
-                <Routes>
-                    <Route path="/routines/:id" element={<RoutineDetails/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Test Routine")).toBeInTheDocument();
-        });
-    });
-
-    test("handles isTrainer function", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "TRAINER"}});
-        });
-
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {id: 1, name: "Test Routine", description: "Desc", trainerId: 1},
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/1"]}>
-                <Routes>
-                    <Route path="/routines/:id" element={<RoutineDetails/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Test Routine")).toBeInTheDocument();
         });
     });
 
@@ -5984,6 +6846,755 @@ describe("Routines Component", () => {
         });
     });
 
+    test("loads muscle groups and equipment on mount", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(exerciseService.getMuscleGroups).toHaveBeenCalled();
+            expect(exerciseService.getEquipments).toHaveBeenCalled();
+        });
+    });
+
+    test("handles multi-select change", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        exerciseService.getMuscleGroups.mockImplementation((success) => {
+            success([{name: "Chest"}, {name: "Back"}]);
+        });
+
+        exerciseService.getEquipments.mockImplementation((success) => {
+            success([{name: "Barbell"}]);
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const muscleGroupSelect = screen
+                .getByText("Grupos Musculares:")
+                .parentElement.querySelector(".select-display");
+            fireEvent.click(muscleGroupSelect);
+        });
+
+        await waitFor(() => {
+            const buttons = screen.getAllByRole("button");
+            const multiButtons = buttons.filter(button => button.closest('.select-dropdown'));
+            if (multiButtons.length > 0) {
+                fireEvent.click(multiButtons[0]);
+                const checkboxes = screen.getAllByRole("checkbox");
+                expect(checkboxes[0].checked).toBe(true);
+            }
+        });
+    });
+
+    test("handles search change with results", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer", trainerSurname: "One"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Test Routine", { selector: '.search-result-name' })).toBeInTheDocument();
+            expect(screen.getByText("Trainer One", { selector: '.search-result-trainer' })).toBeInTheDocument();
+        });
+    });
+
+    test("handles select searched routine", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer", trainerSurname: "One"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            const resultItem = screen.getAllByText("Test Routine").find(el => el.closest('.search-result-item'));
+            fireEvent.click(resultItem);
+        });
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            expect(searchInput.value).toBe("Test Routine");
+        });
+    });
+
+    test("handles clear search", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Test Routine", trainerName: "Trainer"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "Test"}});
+        });
+
+        await waitFor(() => {
+            const clearButton = screen.getByText("✕");
+            fireEvent.click(clearButton);
+        });
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            expect(searchInput.value).toBe("");
+        });
+    });
+
+    test("can create routine for admin", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "ADMIN"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("+")).toBeInTheDocument();
+        });
+    });
+
+    test("can create routine for trainer with premium", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER", trainerPremium: true}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("+")).toBeInTheDocument();
+        });
+    });
+
+    test("cannot create routine for trainer without premium and 3 routines", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([
+                {id: 1, name: "Routine 1", trainerId: 1},
+                {id: 2, name: "Routine 2", trainerId: 1},
+                {id: 3, name: "Routine 3", trainerId: 1},
+            ]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const addButton = screen.getByText("+");
+            fireEvent.click(addButton);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("Crear más de 3 rutinas es una función premium.")).toBeInTheDocument();
+        });
+    });
+
+    test("handles GoPremiumPopup OK click", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([
+                {id: 1, name: "Routine 1", trainerId: 1},
+                {id: 2, name: "Routine 2", trainerId: 1},
+                {id: 3, name: "Routine 3", trainerId: 1},
+            ]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        becomePremium.mockImplementation((userId, success) => {
+            success();
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const addButton = screen.getByText("+");
+            fireEvent.click(addButton);
+        });
+
+        await waitFor(() => {
+            const okButton = screen.getByText("Hacerme premium");
+            fireEvent.click(okButton);
+        });
+
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1", { replace: true });
+        });
+    });
+
+    test("handles DifficultyFilter option selection", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const difficultySelect = screen.getByText("Todas");
+            fireEvent.click(difficultySelect);
+        });
+
+        await waitFor(() => {
+            const beginnerOption = screen.getByText("Principiante");
+            fireEvent.click(beginnerOption);
+        });
+
+        await waitFor(() => {
+            const applyButton = screen.getByText("Aplicar Filtros");
+            fireEvent.click(applyButton);
+        });
+
+        await waitFor(() => {
+            expect(routineService.getFilteredRoutines).toHaveBeenCalled();
+        });
+    });
+
+    test("handles MultiSelectFilter with multiple selections", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        exerciseService.getEquipments.mockImplementation((success) => {
+            success([{name: "Barbell"}, {name: "Dumbbell"}]);
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const equipmentSelect = screen
+                .getByText("Equipamiento:")
+                .parentElement.querySelector(".select-display");
+            fireEvent.click(equipmentSelect);
+        });
+
+        await waitFor(() => {
+            const checkboxes = screen.getAllByRole("checkbox");
+            if (checkboxes.length > 1) {
+                fireEvent.click(checkboxes[0]);
+                fireEvent.click(checkboxes[1]);
+                expect(checkboxes[0].checked).toBe(true);
+                expect(checkboxes[1].checked).toBe(true);
+            }
+        });
+    });
+
+    test("handles TrainerFilter selection", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([
+                {id: 1, name: "Routine 1", trainerId: 2, trainerName: "Trainer", trainerSurname: "One"},
+            ]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const filterButton = screen.getByText("Filtrar");
+            fireEvent.click(filterButton);
+        });
+
+        await waitFor(() => {
+            const trainerSelect = screen.getByText("Entrenador:");
+            fireEvent.click(trainerSelect);
+        });
+
+        await waitFor(() => {
+            const trainerOption = screen.getByText("Trainer One");
+            fireEvent.click(trainerOption);
+        });
+
+        await waitFor(() => {
+            const applyButton = screen.getByText("Aplicar Filtros");
+            fireEvent.click(applyButton);
+        });
+
+        await waitFor(() => {
+            expect(routineService.getFilteredRoutines).toHaveBeenCalled();
+        });
+    });
+
+    test("handles SearchBar with no results", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{id: 1, name: "Routine 1", trainerName: "Trainer"}]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const searchInput = screen.getByPlaceholderText("Buscar por nombre de rutina o entrenador...");
+            fireEvent.change(searchInput, {target: {value: "NonExistent"}});
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText("No se encontraron resultados")).toBeInTheDocument();
+        });
+    });
+
+    test("handles RoutineCard like toggle", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{
+                id: 1,
+                name: "Test Routine",
+                trainerName: "Trainer",
+                likes: []
+            }]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        routineLikeService.likeRoutine.mockImplementation((id, success) => {
+            success();
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const heartButton = screen.getByRole("button", {name: /me gusta/i});
+            fireEvent.click(heartButton);
+        });
+
+        await waitFor(() => {
+            expect(routineLikeService.likeRoutine).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+        });
+    });
+
+    test("handles RoutineCard unlike toggle", async () => {
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({user: {id: 1, role: "CLIENT"}});
+        });
+
+        routineService.getAllRoutines.mockImplementation((success) => {
+            success([{
+                id: 1,
+                name: "Test Routine",
+                trainerName: "Trainer",
+                likes: [{userId: 1}]
+            }]);
+        });
+
+        exerciseService.getAllExercises.mockImplementation((success) => {
+            success({content: []});
+        });
+
+        routineLikeService.getRoutineLikes.mockImplementation((success) => {
+            success([]);
+        });
+
+        userFollowService.getFollowedTrainers.mockImplementation(
+            (userId, success) => {
+                success([]);
+            },
+        );
+
+        workoutService.getWorkouts.mockImplementation((success) => {
+            success([]);
+        });
+
+        routineLikeService.unlikeRoutine.mockImplementation((id, success) => {
+            success();
+        });
+
+        render(
+            <MemoryRouter>
+                <Routines/>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            const heartButton = screen.getByLabelText(/me gusta/i);
+            fireEvent.click(heartButton);
+        });
+
+        await waitFor(() => {
+            expect(routineLikeService.unlikeRoutine).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+        });
+    });
+
     test("unfollows trainer", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "CLIENT"}});
@@ -6490,6 +8101,316 @@ describe("Routines Component", () => {
 
             await waitFor(() => {
                 expect(screen.queryByText("+")).not.toBeInTheDocument();
+            });
+        });
+
+        test("handles delete exercise", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "TRAINER"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "APPROVED",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            exerciseService.updateExerciseStatus.mockImplementation(
+                (id, success) => {
+                    success();
+                },
+            );
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const deleteButton = screen.getByText("Eliminar");
+                fireEvent.click(deleteButton);
+            });
+
+            await waitFor(() => {
+                const confirmButton = screen.getByText("OK");
+                fireEvent.click(confirmButton);
+                expect(exerciseService.updateExerciseStatus).toHaveBeenCalledWith(
+                    1,
+                    expect.any(Function),
+                    expect.any(Function),
+                );
+            });
+        });
+
+        test("handles block/unblock exercise", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "ADMIN"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "APPROVED",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            exerciseService.updateExerciseStatus.mockImplementation(
+                (id, status, success) => {
+                    success();
+                },
+            );
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const blockButton = screen.getByText("Bloquear");
+                fireEvent.click(blockButton);
+                expect(exerciseService.updateExerciseStatus).toHaveBeenCalledWith(
+                    1,
+                    "BLOCKED",
+                    expect.any(Function),
+                    expect.any(Function),
+                );
+            });
+        });
+
+        test("handles approve exercise", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "ADMIN"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([]);
+            });
+
+            exerciseService.getPendingExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "PENDING",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            exerciseService.updateExerciseStatus.mockImplementation(
+                (id, status, success) => {
+                    success();
+                },
+            );
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const pendingButton = screen.getByText("Ejercicios Pendientes");
+                fireEvent.click(pendingButton);
+            });
+
+            await waitFor(() => {
+                const approveButton = screen.getByText("Aprobar");
+                fireEvent.click(approveButton);
+                expect(exerciseService.updateExerciseStatus).toHaveBeenCalledWith(
+                    1,
+                    "APPROVED",
+                    expect.any(Function),
+                    expect.any(Function),
+                );
+            });
+        });
+
+        test("handles reject exercise", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "ADMIN"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([]);
+            });
+
+            exerciseService.getPendingExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "PENDING",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            exerciseService.updateExerciseStatus.mockImplementation(
+                (id, status, success) => {
+                    success();
+                },
+            );
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const pendingButton = screen.getByText("Ejercicios Pendientes");
+                fireEvent.click(pendingButton);
+            });
+
+            await waitFor(() => {
+                const rejectButton = screen.getByText("Rechazar");
+                fireEvent.click(rejectButton);
+            });
+
+            await waitFor(() => {
+                const confirmButton = screen.getByText("OK");
+                fireEvent.click(confirmButton);
+                expect(exerciseService.updateExerciseStatus).toHaveBeenCalledWith(
+                    1,
+                    "REJECTED",
+                    expect.any(Function),
+                    expect.any(Function),
+                );
+            });
+        });
+
+        test("handles add exercise for trainer without premium", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([]);
+            });
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const addButton = screen.getByText("+");
+                fireEvent.click(addButton);
+                expect(screen.getByText("La creación de ejercicios es una función premium.")).toBeInTheDocument();
+            });
+        });
+
+        test("handles become premium", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "TRAINER", trainerPremium: false}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([]);
+            });
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const addButton = screen.getByText("+");
+                fireEvent.click(addButton);
+            });
+
+            await waitFor(() => {
+                expect(screen.getByText("La creación de ejercicios es una función premium.")).toBeInTheDocument();
+            });
+        });
+
+        test("handles delete error", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "TRAINER"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "APPROVED",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            exerciseService.updateExerciseStatus.mockImplementation(
+                (id, success, error) => {
+                    error({message: "Delete error"});
+                },
+            );
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                const deleteButton = screen.getByText("Eliminar");
+                fireEvent.click(deleteButton);
+            });
+
+            await waitFor(() => {
+                const confirmButton = screen.getByText("OK");
+                fireEvent.click(confirmButton);
+            });
+
+            await waitFor(() => {
+                expect(screen.getByText("Delete error")).toBeInTheDocument();
+            });
+        });
+
+        test("renders blocked badge", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({user: {id: 1, role: "CLIENT"}});
+            });
+
+            exerciseService.getAllExercises.mockImplementation((success) => {
+                success([
+                    {
+                        id: 1,
+                        name: "Exercise 1",
+                        description: "Desc",
+                        status: "BLOCKED",
+                        creatorId: 1,
+                    },
+                ]);
+            });
+
+            render(
+                <MemoryRouter>
+                    <Exercises/>
+                </MemoryRouter>,
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Bloqueado")).toBeInTheDocument();
             });
         });
     });

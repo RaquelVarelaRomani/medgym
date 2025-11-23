@@ -1,13 +1,5 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
@@ -17,155 +9,163 @@ import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.util.EmailValidation;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+    private final PermissionChecker permissionChecker;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserDao userDao;
 
-	@Autowired
-	private PermissionChecker permissionChecker;
+    public UserServiceImpl(PermissionChecker permissionChecker, BCryptPasswordEncoder passwordEncoder, UserDao userDao) {
+        this.permissionChecker = permissionChecker;
+        this.passwordEncoder = passwordEncoder;
+        this.userDao = userDao;
+    }
 
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
+    @Override
+    public void signUp(User user) throws DuplicateInstanceException {
 
-	@Autowired
-	private UserDao userDao;
+        if (!EmailValidation.isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Formato de email inválido");
+        }
 
-	@Override
-	public void signUp(User user) throws DuplicateInstanceException {
-
-		if (!EmailValidation.isValidEmail(user.getEmail())) {
-			throw new IllegalArgumentException("Formato de email inválido");
-		}
-		
-		if (userDao.existsByEmail(user.getEmail())) {
-			throw new DuplicateInstanceException("email", user.getEmail());
-		}
+        if (userDao.existsByEmail(user.getEmail())) {
+            throw new DuplicateInstanceException("email", user.getEmail());
+        }
 
         if (userDao.existsByPhoneNumber(user.getPhoneNumber())) {
             throw new DuplicateInstanceException("phoneNumber", user.getPhoneNumber());
         }
 
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		user.setRole(User.RoleType.CLIENT);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRole() != User.RoleType.ADMIN) {
+            user.setRole(User.RoleType.CLIENT);
+        }
 
-		userDao.save(user);
+        userDao.save(user);
 
-	}
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public User login(String email, String password) throws IncorrectLoginException, BlockedUserException {
+    @Override
+    @Transactional(readOnly = true)
+    public User login(String email, String password) throws IncorrectLoginException, BlockedUserException {
 
-		Optional<User> user = userDao.findByEmail(email);
+        Optional<User> user = userDao.findByEmail(email);
 
-		if (user.isEmpty()) {
-			throw new IncorrectLoginException(email, password);
-		}
+        if (user.isEmpty()) {
+            throw new IncorrectLoginException(email, password);
+        }
 
-		if (!passwordEncoder.matches(password, user.get().getPassword())) {
-			throw new IncorrectLoginException(email, password);
-		}
+        if (!passwordEncoder.matches(password, user.get().getPassword())) {
+            throw new IncorrectLoginException(email, password);
+        }
 
-		if (user.get().getStatus() == User.StatusType.BLOCKED) {
-			throw new BlockedUserException(email);
-		}
+        if (user.get().getStatus() == User.StatusType.BLOCKED) {
+            throw new BlockedUserException(email);
+        }
 
-		return user.get();
+        return user.get();
 
-	}
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public User loginFromId(Long id) throws InstanceNotFoundException {
-		return permissionChecker.checkUser(id);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public User loginFromId(Long id) throws InstanceNotFoundException {
+        return permissionChecker.checkUser(id);
+    }
 
-	@Override
-	public User updateProfile(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture) throws InstanceNotFoundException {
+    @Override
+    public User updateProfile(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture) throws InstanceNotFoundException {
 
-		User user = permissionChecker.checkUser(id);
+        User user = permissionChecker.checkUser(id);
 
-		if (!EmailValidation.isValidEmail(email)) {
-			throw new IllegalArgumentException("Formato de email inválido");
-		}
+        if (!EmailValidation.isValidEmail(email)) {
+            throw new IllegalArgumentException("Formato de email inválido");
+        }
 
-		user.setName(name);
-		user.setSurname(surname);
-		user.setEmail(email);
-		user.setPhoneNumber(phoneNumber);
-		user.setProfilePicture(profilePicture);
+        user.setName(name);
+        user.setSurname(surname);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setProfilePicture(profilePicture);
 
-		return user;
+        return user;
 
-	}
+    }
 
-	@Override
-	public void changePassword(Long id, String oldPassword, String newPassword)
-			throws InstanceNotFoundException, IncorrectPasswordException {
+    @Override
+    public void changePassword(Long id, String oldPassword, String newPassword)
+            throws InstanceNotFoundException, IncorrectPasswordException {
 
-		User user = permissionChecker.checkUser(id);
+        User user = permissionChecker.checkUser(id);
 
-		if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-			throw new IncorrectPasswordException();
-		} else {
-			user.setPassword(passwordEncoder.encode(newPassword));
-		}
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IncorrectPasswordException();
+        } else {
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
 
-	}
+    }
 
-	@Override
-	public User findUserById(Long id) throws InstanceNotFoundException {
-		Optional<User> user = userDao.findById(id);
-		if (user.isEmpty()) {
-			throw new InstanceNotFoundException("project.entities.user", id);
-		}
+    @Override
+    public User findUserById(Long id) throws InstanceNotFoundException {
+        Optional<User> user = userDao.findById(id);
+        if (user.isEmpty()) {
+            throw new InstanceNotFoundException("project.entities.user", id);
+        }
 
-		return user.get();
-	}
+        return user.get();
+    }
 
-	@Override
-	public List<User> findAllUsers() {
-		return userDao.findAll();
-	}
+    @Override
+    public List<User> findAllUsers() {
+        return userDao.findAll();
+    }
 
-	@Override
-	public void deleteUser(Long id) {
-		userDao.deleteById(id);
-	}
+    @Override
+    public void deleteUser(Long id) {
+        userDao.deleteById(id);
+    }
 
-	@Override
-	public void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
-		User user = permissionChecker.checkUser(id);
+    @Override
+    public void blockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
+        User user = permissionChecker.checkUser(id);
 
-		if (user.getRole() == User.RoleType.ADMIN) {
-			throw new PermissionException();
-		}
+        if (user.getRole() == User.RoleType.ADMIN) {
+            throw new PermissionException();
+        }
 
-		user.setStatus(User.StatusType.BLOCKED);
-	}
+        user.setStatus(User.StatusType.BLOCKED);
+    }
 
-	@Override
-	public void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
-		User user = permissionChecker.checkUser(id);
+    @Override
+    public void unblockUser(Long currentUserId, Long id) throws InstanceNotFoundException, PermissionException {
+        User user = permissionChecker.checkUser(id);
 
-		if (user.getRole() == User.RoleType.ADMIN) {
-			throw new PermissionException();
-		}
+        if (user.getRole() == User.RoleType.ADMIN) {
+            throw new PermissionException();
+        }
 
-		user.setStatus(User.StatusType.ACTIVE);
-	}
+        user.setStatus(User.StatusType.ACTIVE);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<User> searchUsers(Long currentUserId, String query) {
-		List<User> users = userDao.findByNameAndSurnameContainingIgnoreCase(query);
-		return users.stream()
-			.filter(user -> !user.getId().equals(currentUserId))
-			.toList();
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> searchUsers(Long currentUserId, String query) {
+        List<User> users = userDao.findByNameAndSurnameContainingIgnoreCase(query);
+        return users.stream()
+                .filter(user -> !user.getId().equals(currentUserId))
+                .toList();
+    }
 
-	@Override
+    @Override
     public User updateBodyMetrics(Long id, Double weightKg, Double heightCm, User.GenderType gender)
             throws InstanceNotFoundException {
 

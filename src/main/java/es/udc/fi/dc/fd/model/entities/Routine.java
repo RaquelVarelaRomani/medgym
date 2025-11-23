@@ -8,17 +8,6 @@ import java.util.List;
 @Entity
 @Table(name = "routines")
 public class Routine {
-    public enum VisibilityType {
-        PUBLIC,
-        PRIVATE
-    }
-
-    public enum DifficultyType {
-        BEGINNER,
-        INTERMEDIATE,
-        ADVANCED
-    }
-
     private Long id;
     private String name;
     private String description;
@@ -34,7 +23,7 @@ public class Routine {
     }
 
     public Routine(String name, String description, VisibilityType visibility, DifficultyType difficulty,
-            User trainer) {
+                   User trainer) {
         this.name = name;
         this.description = description;
         this.visibility = visibility;
@@ -135,5 +124,16 @@ public class Routine {
     @Transient
     public boolean isPrivate() {
         return visibility == VisibilityType.PRIVATE;
+    }
+
+    public enum VisibilityType {
+        PUBLIC,
+        PRIVATE
+    }
+
+    public enum DifficultyType {
+        BEGINNER,
+        INTERMEDIATE,
+        ADVANCED
     }
 }

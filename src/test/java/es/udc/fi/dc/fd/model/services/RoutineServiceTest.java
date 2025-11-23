@@ -1,29 +1,24 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
-
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import jakarta.transaction.Transactional;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class RoutineServiceTest {
+class RoutineServiceTest {
 
     @Autowired
     private RoutineService routineService;
@@ -85,7 +80,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testCreateAndFindRoutine() throws Exception {
+    void testCreateAndFindRoutine() throws Exception {
         User user = createTrainerPremium("u1");
         Routine routine = routineService.createRoutine(
                 "r1", "d", user,
@@ -98,7 +93,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testCreateDuplicateRoutine() throws Exception {
+    void testCreateDuplicateRoutine() throws Exception {
         User user = createTrainerPremium("u2");
         routineService.createRoutine("rx", "d", user,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -109,7 +104,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testUpdateRoutine() throws Exception {
+    void testUpdateRoutine() throws Exception {
         User user = createTrainerPremium("u3");
         Routine routine = routineService.createRoutine(
                 "ru", "d", user,
@@ -130,7 +125,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testUpdateRoutineDuplicateName() throws Exception {
+    void testUpdateRoutineDuplicateName() throws Exception {
         User user = createTrainerPremium("u4");
         routineService.createRoutine("a1", "d", user,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -145,7 +140,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testUpdateRoutineWithoutPermission() throws Exception {
+    void testUpdateRoutineWithoutPermission() throws Exception {
         User trainer = createTrainerPremium("trainerX");
         User client = createUser("clientX");
 
@@ -162,7 +157,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testDeleteRoutine() throws Exception {
+    void testDeleteRoutine() throws Exception {
         User user = createTrainerPremium("u6");
         Routine routine = routineService.createRoutine(
                 "del", "d", user,
@@ -176,7 +171,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testDeleteRoutineWithoutPermission() throws Exception {
+    void testDeleteRoutineWithoutPermission() throws Exception {
         User trainer = createTrainerPremium("trainerY");
         User client = createUser("clientY");
 
@@ -190,7 +185,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testGetAllRoutines() throws Exception {
+    void testGetAllRoutines() throws Exception {
         User user = createTrainerPremium("owner");
         User user2 = createTrainerNonPremium("other");
         user2.setTrainerPremium(true);
@@ -209,7 +204,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testGetRoutine_permissionDeniedOnDeleteByOtherUser() throws Exception {
+    void testGetRoutine_permissionDeniedOnDeleteByOtherUser() throws Exception {
         User owner = createTrainerPremium("u10");
 
         Routine created = routineService.createRoutine(
@@ -225,7 +220,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testDeleteRoutineCascadesNotifications() throws Exception {
+    void testDeleteRoutineCascadesNotifications() throws Exception {
         User trainer = createTrainerPremium("trainerZ");
         User client = createUser("clientZ");
 
@@ -252,13 +247,13 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testFindRoutineByIdNonExistent() {
+    void testFindRoutineByIdNonExistent() {
         assertThrows(InstanceNotFoundException.class, () ->
                 routineService.findRoutineById(999L));
     }
 
     @Test
-    public void testFindRoutinesByFilters() throws Exception {
+    void testFindRoutinesByFilters() throws Exception {
         User trainer = createTrainerPremium("filterT");
 
         Routine r2 = routineService.createRoutine(
@@ -281,7 +276,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testPremiumTrainerUnlimitedRoutines() throws Exception {
+    void testPremiumTrainerUnlimitedRoutines() throws Exception {
         User trainer = createTrainerPremium("prUnlimited");
 
         for (int i = 1; i <= 10; i++) {
@@ -297,7 +292,7 @@ public class RoutineServiceTest {
     }
 
     @Test
-    public void testNonPremiumTrainerLimit() throws Exception {
+    void testNonPremiumTrainerLimit() throws Exception {
         User trainer = createTrainerNonPremium("np1");
 
         for (int i = 0; i < 3; i++) {

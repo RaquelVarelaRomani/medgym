@@ -8,55 +8,47 @@ import es.udc.fi.dc.fd.model.services.RoutineService;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.util.List;
 
-@RunWith(SpringRunner.class)
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class RoutineLikeControllerTest {
+class RoutineLikeControllerTest {
 
+    private static final String PASSWORD = "password";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private UserDao userDao;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private RoutineService routineService;
-
     @Autowired
     private UserController userController;
-
     @Autowired
     private RoutineLikeService routineLikeService;
-
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
-    private static final String PASSWORD = "password";
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         trainerUser = createAuthenticatedUser("Trainer", "Test", "trainer_like@test.com", "600000100", User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "Like", "client_like@test.com", "600000101", User.RoleType.CLIENT);
     }
@@ -74,7 +66,7 @@ public class RoutineLikeControllerTest {
     }
 
     @Test
-    public void testLikeRoutine() throws Exception {
+    void testLikeRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
                 "Rutina para likes", "Descripción", trainer,
@@ -90,7 +82,7 @@ public class RoutineLikeControllerTest {
     }
 
     @Test
-    public void testGetRoutineLikesByUser() throws Exception {
+    void testGetRoutineLikesByUser() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
                 "Rutina consultar likes", "Descripción", trainer,
@@ -106,7 +98,7 @@ public class RoutineLikeControllerTest {
     }
 
     @Test
-    public void testUnlikeRoutine() throws Exception {
+    void testUnlikeRoutine() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine(
                 "Rutina unlike", "Descripción", trainer,
@@ -124,13 +116,13 @@ public class RoutineLikeControllerTest {
     }
 
     @Test
-    public void testLikeRoutine_Unauthenticated() throws Exception {
+    void testLikeRoutine_Unauthenticated() throws Exception {
         mockMvc.perform(post("/api/routines/1/like"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void testLikeRoutine_RoutineNotFound() throws Exception {
+    void testLikeRoutine_RoutineNotFound() throws Exception {
         mockMvc.perform(post("/api/routines/-1/like")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .requestAttr("userId", clientUser.getUserDto().getId()))
@@ -138,7 +130,7 @@ public class RoutineLikeControllerTest {
     }
 
     @Test
-    public void testUnlikeRoutine_WhenNotLiked_NoError() throws Exception {
+    void testUnlikeRoutine_WhenNotLiked_NoError() throws Exception {
         User trainer = userDao.findById(trainerUser.getUserDto().getId()).get();
         Routine routine = routineService.createRoutine("R", "D", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);

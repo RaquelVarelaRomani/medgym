@@ -1,42 +1,27 @@
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
-import es.udc.fi.dc.fd.model.entities.ExerciseDao;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.RoutineExercise;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import jakarta.transaction.Transactional;
-
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class RoutineExerciseServiceTest {
+class RoutineExerciseServiceTest {
 
     @Autowired
     private RoutineExerciseService routineExerciseService;
@@ -64,7 +49,7 @@ public class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user) throws PermissionException, DuplicateInstanceException {
-        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1,2,3}, user);
+        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1, 2, 3}, user);
     }
 
     private Routine createRoutine(String name, User user) {
@@ -75,7 +60,7 @@ public class RoutineExerciseServiceTest {
 
 
     @Test
-    public void testAddExerciseToRoutinePremium() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testAddExerciseToRoutinePremium() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("premium@trainer.com");
         Exercise exercise = createExercise("Ejercicio Premium", trainer);
         Routine routine = createRoutine("Rutina Premium", trainer);
@@ -87,7 +72,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testNonPremiumCannotCreateExercise() {
+    void testNonPremiumCannotCreateExercise() {
         User trainer = createTrainerNonPremium("np1@trainer.com");
 
         assertThrows(PermissionException.class, () ->
@@ -100,7 +85,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testPremiumCanCreateExercise() throws Exception {
+    void testPremiumCanCreateExercise() throws Exception {
         User trainer = createTrainerPremium("p1@trainer.com");
 
         Exercise ex = exerciseService.createExercise(
@@ -114,9 +99,9 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testClientCannotCreateExercise() {
+    void testClientCannotCreateExercise() {
         User client = new User(
-                "C","L","client@test.com","600","p",
+                "C", "L", "client@test.com", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE
         );
         client = userDao.save(client);
@@ -132,7 +117,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testAddDuplicateExerciseToRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("dup@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -144,7 +129,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testRemoveExerciseFromRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("remove@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -157,7 +142,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testRemoveNotValidExercise() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("remove2@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -170,7 +155,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testUpdateExerciseInRoutine() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("update@trainer.com");
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
@@ -182,7 +167,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
+    void testGetExercisesForRoutinesPaging() throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         User trainer = createTrainerPremium("paging@trainer.com");
         Routine routine = createRoutine("Rutina", trainer);
 
@@ -204,9 +189,9 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
+    void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
         User trainer = createTrainerPremium("trainer@udc.es");
-        User other = new User("X","Y","other@udc.es","600","p",
+        User other = new User("X", "Y", "other@udc.es", "600", "p",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         other = userDao.save(other);
 
@@ -219,7 +204,7 @@ public class RoutineExerciseServiceTest {
     }
 
     @Test
-    public void testAddExerciseToRoutineNonExistingRoutine() throws PermissionException, DuplicateInstanceException {
+    void testAddExerciseToRoutineNonExistingRoutine() throws PermissionException, DuplicateInstanceException {
         User trainer = createTrainerPremium("trainer2@udc.es");
         Exercise exercise = createExercise("Ejercicio", trainer);
 

@@ -4,10 +4,10 @@ public class FollowException extends RuntimeException {
     private final Long userId;
 
     public FollowException(Long userId) {
-      this.userId = userId;
+        this.userId = userId;
     }
 
     public Long getUserId() {
-      return userId;
+        return userId;
     }
 }

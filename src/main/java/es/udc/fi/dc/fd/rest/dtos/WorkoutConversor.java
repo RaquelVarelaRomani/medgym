@@ -1,8 +1,8 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-import java.util.List;
-
 import es.udc.fi.dc.fd.model.entities.Workout;
+
+import java.util.List;
 
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutCommentConversor.toWorkoutCommentDtos;
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutLikeConversor.toWorkoutLikeDtos;

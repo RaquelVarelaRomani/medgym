@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserFollowConversor {
-    private UserFollowConversor() {}
+    private UserFollowConversor() {
+    }
 
     public static UserFollowDto toUserFollowDto(UserFollow userFollow) {
         UserFollowDto userFollowDto = new UserFollowDto();

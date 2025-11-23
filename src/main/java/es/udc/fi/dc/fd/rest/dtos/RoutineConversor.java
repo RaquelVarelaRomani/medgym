@@ -1,4 +1,3 @@
-
 package es.udc.fi.dc.fd.rest.dtos;
 
 import es.udc.fi.dc.fd.model.entities.Routine;
@@ -10,7 +9,8 @@ import static es.udc.fi.dc.fd.rest.dtos.RoutineLikeConversor.toRoutineLikeDtos;
 
 public class RoutineConversor {
 
-    private RoutineConversor() {}
+    private RoutineConversor() {
+    }
 
     public static RoutineDto toRoutineDto(Routine routine) {
 

@@ -1,14 +1,5 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.List;
-
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.Exercise;
@@ -16,22 +7,32 @@ import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.ExerciseDao;
 import es.udc.fi.dc.fd.model.entities.RoutineExerciseDao;
 import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import java.util.List;
+
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 
 @Service
 @Transactional
 public class ExerciseServiceImpl implements ExerciseService {
+    private final ExerciseDao exerciseDao;
+    private final ExerciseService exerciseService;
+    private final PermissionChecker permissionChecker;
+    private final RoutineExerciseDao routineExerciseDao;
 
-    @Autowired
-    private ExerciseDao exerciseDao;
-
-    @Autowired
-    private PermissionChecker permissionChecker;
-
-    @Autowired
-    private RoutineExerciseDao routineExerciseDao;
+    public ExerciseServiceImpl(ExerciseDao exerciseDao, @Lazy ExerciseService exerciseService, PermissionChecker permissionChecker, RoutineExerciseDao routineExerciseDao) {
+        this.exerciseDao = exerciseDao;
+        this.exerciseService = exerciseService;
+        this.permissionChecker = permissionChecker;
+        this.routineExerciseDao = routineExerciseDao;
+    }
 
     @Override
     public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException, PermissionException {
@@ -49,7 +50,7 @@ public class ExerciseServiceImpl implements ExerciseService {
         } else {
             throw new PermissionException();
         }
-        
+
         Exercise exercise = new Exercise(name, description, muscleGroup, equipment, image, status, user);
         return exerciseDao.save(exercise);
     }
@@ -69,7 +70,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExercise(Long exerciseId, String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image) throws InstanceNotFoundException, DuplicateInstanceException {
-        Exercise exercise = findExerciseById(exerciseId);
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
 
         if (!exercise.getName().equals(name) && exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
@@ -84,7 +85,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void updateExerciseStatus(Long exerciseId, Exercise.ExerciseStatus status) throws InstanceNotFoundException {
-        Exercise exercise = findExerciseById(exerciseId);
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
         exercise.setStatus(status);
     }
 
@@ -110,10 +111,10 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     @Override
     public void deleteExercise(Long exerciseId) throws InstanceNotFoundException {
-        Exercise exercise = findExerciseById(exerciseId);
-        if (routineExerciseDao.existsByExerciseId(exerciseId)){
+        Exercise exercise = exerciseService.findExerciseById(exerciseId);
+        if (routineExerciseDao.existsByExerciseId(exerciseId)) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,"No se puede borrar: el ejercicio está asociado a una o más rutinas."
+                    HttpStatus.BAD_REQUEST, "No se puede borrar: el ejercicio está asociado a una o más rutinas."
             );
         }
 

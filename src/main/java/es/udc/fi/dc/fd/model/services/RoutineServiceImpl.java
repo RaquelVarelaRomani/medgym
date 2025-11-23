@@ -1,36 +1,31 @@
 package es.udc.fi.dc.fd.model.services;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import es.udc.fi.dc.fd.model.entities.Exercise;
-import org.springframework.beans.factory.annotation.Autowired;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.RoutineLikeDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import java.util.*;
 
 @Service
 @Transactional
 public class RoutineServiceImpl implements RoutineService {
+    private final RoutineDao routineDao;
+    private final RoutineService routineService;
+    private final UserService userService;
+    private final NotificationService notificationService;
+    private final RoutineLikeDao routineLikeDao;
 
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private RoutineLikeDao routineLikeDao;
+    public RoutineServiceImpl(RoutineDao routineDao, @Lazy RoutineService routineService, UserService userService, NotificationService notificationService, RoutineLikeDao routineLikeDao) {
+        this.routineDao = routineDao;
+        this.routineService = routineService;
+        this.userService = userService;
+        this.notificationService = notificationService;
+        this.routineLikeDao = routineLikeDao;
+    }
 
     @Override
     public Routine createRoutine(String name, String description, User user, Routine.VisibilityType visibility, Routine.DifficultyType difficulty) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
@@ -42,8 +37,8 @@ public class RoutineServiceImpl implements RoutineService {
 
         if (!(
                 user.getRole() == User.RoleType.ADMIN || // admin
-                (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
-                (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nRoutines < 3) // trainer not premium with less than 3 routines
+                        (user.getRole() == User.RoleType.TRAINER && user.getTrainerPremium()) || // trainer premium
+                        (user.getRole() == User.RoleType.TRAINER && !user.getTrainerPremium() && nRoutines < 3) // trainer not premium with less than 3 routines
         )) {
             throw new PermissionException();
         }
@@ -86,9 +81,9 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void updateRoutine(Long userId, Long routineId, String name, String description,
-            Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
+                              Routine.VisibilityType visibility, Routine.DifficultyType difficulty)
             throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
-        Routine routine = findRoutineByIdAuth(userId, routineId);
+        Routine routine = routineService.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !user.equals(routine.getTrainer())) {
@@ -107,7 +102,7 @@ public class RoutineServiceImpl implements RoutineService {
 
     @Override
     public void deleteRoutine(Long userId, Long routineId) throws InstanceNotFoundException, PermissionException {
-        Routine routine = findRoutineByIdAuth(userId, routineId);
+        Routine routine = routineService.findRoutineByIdAuth(userId, routineId);
         User user = userService.loginFromId(userId);
 
         if (user.getRole() != User.RoleType.ADMIN && !Objects.equals(user.getId(), routine.getTrainer().getId())) {
@@ -131,14 +126,14 @@ public class RoutineServiceImpl implements RoutineService {
         }
 
         return routines.stream().filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
     @Override
     @Transactional(readOnly = true)
     public List<Routine> findRoutinesByFilters(Long userId, String equipment, String muscleGroup,
-            Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
+                                               Routine.DifficultyType difficulty, Long trainerId) throws InstanceNotFoundException {
         User user = userService.loginFromId(userId);
         List<Routine> routines = routineDao.findAll();
 
@@ -146,7 +141,7 @@ public class RoutineServiceImpl implements RoutineService {
         if (user.getRole() != User.RoleType.ADMIN) {
             routines = routines.stream()
                     .filter(routine -> !routine.isPrivate() || routine.getTrainer().equals(user))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by equipment if provided (multi-select)
@@ -160,7 +155,7 @@ public class RoutineServiceImpl implements RoutineService {
 
             routines = routines.stream()
                     .filter(equipmentRoutines::contains)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by muscle group if provided
@@ -174,21 +169,21 @@ public class RoutineServiceImpl implements RoutineService {
 
             routines = routines.stream()
                     .filter(muscleGroupRoutines::contains)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by difficulty if provided
         if (difficulty != null) {
             routines = routines.stream()
                     .filter(routine -> routine.getDifficulty() == difficulty)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         // Filter by trainer if provided
         if (trainerId != null) {
             routines = routines.stream()
                     .filter(routine -> routine.getTrainer().getId().equals(trainerId))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         return routines;

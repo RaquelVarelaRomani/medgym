@@ -2,35 +2,32 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
-    @Autowired
-    private NotificationDao notificationDao;
-
-    @Autowired
-    private UserFollowDao userFollowDao;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private WorkoutDao workoutDao;
-
     private static final String PROJECT_ENTITIES_USER = "entities.user";
     private static final String PROJECT_ENTITIES_ROUTINE = "entities.routine";
     private static final String PROJECT_ENTITIES_WORKOUT = "entities.workout";
+    private final NotificationDao notificationDao;
+    private final UserFollowDao userFollowDao;
+    private final RoutineDao routineDao;
+    private final UserDao userDao;
+    private final WorkoutDao workoutDao;
+
+    public NotificationServiceImpl(NotificationDao notificationDao, UserFollowDao userFollowDao, RoutineDao routineDao, UserDao userDao, WorkoutDao workoutDao) {
+        this.notificationDao = notificationDao;
+        this.userFollowDao = userFollowDao;
+        this.routineDao = routineDao;
+        this.userDao = userDao;
+        this.workoutDao = workoutDao;
+    }
 
     @Override
     public void createNewRoutineNotification(Long routineId) throws InstanceNotFoundException {

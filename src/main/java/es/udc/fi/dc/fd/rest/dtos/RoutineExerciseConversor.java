@@ -5,7 +5,8 @@ import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.RoutineExercise;
 
 public class RoutineExerciseConversor {
-    private RoutineExerciseConversor() {}
+    private RoutineExerciseConversor() {
+    }
 
     public static RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
 

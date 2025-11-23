@@ -1,20 +1,20 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-
 public class UserConversor {
 
-	private UserConversor() {
-	}
+    private UserConversor() {
+    }
 
-	public static UserDto toUserDto(User user) {
-		Double bmi = null;
+    public static UserDto toUserDto(User user) {
+        Double bmi = null;
         if (user.getWeightKg() != null && user.getHeightCm() != null && user.getHeightCm() > 0) {
             double hMeters = user.getHeightCm() / 100.0;
             double raw = user.getWeightKg() / (hMeters * hMeters);
@@ -41,27 +41,27 @@ public class UserConversor {
         userDto.setTrainerPremium(user.getTrainerPremium());
 
         return userDto;
-	}
+    }
 
-	public static List<UserDto> toUserDtos(List<User> users) {
-		List<UserDto> userDtos = new ArrayList<>();
+    public static List<UserDto> toUserDtos(List<User> users) {
+        List<UserDto> userDtos = new ArrayList<>();
 
-		for (User user : users) {
-			userDtos.add(UserConversor.toUserDto(user));
-		}
+        for (User user : users) {
+            userDtos.add(UserConversor.toUserDto(user));
+        }
 
-		return userDtos;
-	}
+        return userDtos;
+    }
 
-	public static User toUser(UserDto userDto) {
-		User user = new User(
-            safeTrim(userDto.getName()),
-            safeTrim(userDto.getSurname()),
-            safeTrim(userDto.getEmail()),
-            safeTrim(userDto.getPhoneNumber()),
-            userDto.getPassword(),
-            RoleType.valueOf(userDto.getRole()),
-            User.StatusType.valueOf(userDto.getStatus())
+    public static User toUser(UserDto userDto) {
+        User user = new User(
+                safeTrim(userDto.getName()),
+                safeTrim(userDto.getSurname()),
+                safeTrim(userDto.getEmail()),
+                safeTrim(userDto.getPhoneNumber()),
+                userDto.getPassword(),
+                userDto.getRole() != null ? RoleType.valueOf(userDto.getRole()) : RoleType.CLIENT,
+                userDto.getStatus() != null ? User.StatusType.valueOf(userDto.getStatus()) : User.StatusType.ACTIVE
         );
 
         user.setProfilePicture(userDto.getProfilePicture());
@@ -84,12 +84,12 @@ public class UserConversor {
     }
 
 
-	public static AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
-		return new AuthenticatedUserDto(serviceToken, toUserDto(user));
+    public static AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
+        return new AuthenticatedUserDto(serviceToken, toUserDto(user));
 
-	}
+    }
 
-	private static String safeTrim(String s) {
+    private static String safeTrim(String s) {
         return s == null ? null : s.trim();
     }
 }

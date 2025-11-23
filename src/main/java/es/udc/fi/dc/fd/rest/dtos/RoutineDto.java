@@ -1,4 +1,3 @@
-
 package es.udc.fi.dc.fd.rest.dtos;
 
 import jakarta.validation.constraints.NotNull;
@@ -8,8 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class RoutineDto {
-    public interface AllValidations {}
-
     private Long id;
     private String name;
     private String description;
@@ -37,8 +34,8 @@ public class RoutineDto {
         this.id = id;
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, max=100, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, max = 100, groups = {AllValidations.class})
     public String getName() {
         return name;
     }
@@ -47,8 +44,8 @@ public class RoutineDto {
         this.name = name.trim();
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, groups = {AllValidations.class})
     public String getDescription() {
         return description;
     }
@@ -116,8 +113,12 @@ public class RoutineDto {
     public List<RoutineLikeDto> getLikes() {
         return likes;
     }
+
     public void setLikes(List<RoutineLikeDto> likes) {
         this.likes = likes;
+    }
+
+    public interface AllValidations {
     }
 
 }

@@ -1,13 +1,11 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.validation.constraints.NotNull;
-
 public class WorkoutForFeedDto {
-
-    public interface AllValidations {}
 
     private Long id;
     private LocalDateTime startTime;
@@ -31,6 +29,7 @@ public class WorkoutForFeedDto {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -39,6 +38,7 @@ public class WorkoutForFeedDto {
     public LocalDateTime getStartTime() {
         return startTime;
     }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
@@ -46,6 +46,7 @@ public class WorkoutForFeedDto {
     public LocalDateTime getEndTime() {
         return endTime;
     }
+
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
@@ -53,6 +54,7 @@ public class WorkoutForFeedDto {
     public Long getRoutineId() {
         return routineId;
     }
+
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
     }
@@ -60,6 +62,7 @@ public class WorkoutForFeedDto {
     public String getRoutineName() {
         return routineName;
     }
+
     public void setRoutineName(String routineName) {
         this.routineName = routineName;
     }
@@ -67,6 +70,7 @@ public class WorkoutForFeedDto {
     public Long getUserId() {
         return userId;
     }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -74,6 +78,7 @@ public class WorkoutForFeedDto {
     public String getUserName() {
         return userName;
     }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -81,6 +86,7 @@ public class WorkoutForFeedDto {
     public String getUserSurname() {
         return userSurname;
     }
+
     public void setUserSurname(String userSurname) {
         this.userSurname = userSurname;
     }
@@ -88,6 +94,7 @@ public class WorkoutForFeedDto {
     public byte[] getUserProfilePicture() {
         return userProfilePicture;
     }
+
     public void setUserProfilePicture(byte[] userProfilePicture) {
         this.userProfilePicture = userProfilePicture;
     }
@@ -95,6 +102,7 @@ public class WorkoutForFeedDto {
     public List<WorkoutCommentDto> getComments() {
         return comments;
     }
+
     public void setComments(List<WorkoutCommentDto> comments) {
         this.comments = comments;
     }
@@ -102,7 +110,11 @@ public class WorkoutForFeedDto {
     public List<WorkoutLikeDto> getLikes() {
         return likes;
     }
+
     public void setLikes(List<WorkoutLikeDto> likes) {
         this.likes = likes;
+    }
+
+    public interface AllValidations {
     }
 }
