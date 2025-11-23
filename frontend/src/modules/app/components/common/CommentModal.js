@@ -15,20 +15,18 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
     if (!open) return null;
 
     return (
-        <div
-            className={styles.overlay}
-            role="button"
-            tabIndex={0}
-            onClick={onClose}
-            onKeyDown={e => {
-                if (e.key === "Enter" || e.key === " ") onClose();
-            }}
-        >
-            <dialog
-                className={styles.modalWrapper}
-                open
-                onClick={(e) => e.stopPropagation()}   // AHORA ES LEGAL: <dialog> sí es interactivo
-            >
+        <div className={styles.overlay}>
+            {/* Fondo clicable accesible */}
+            <button
+                type="button"
+                className={styles.backdrop}
+                aria-label="Cerrar comentarios"
+                onClick={onClose}
+            />
+
+            {/* MODAL */}
+            <dialog className={styles.modalWrapper} open>
+                {/* NO lleva onclick → cumple la regla */}
                 <div className={styles.modal}>
                     <h3>Comentarios</h3>
 
@@ -46,18 +44,18 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
                                         alt=""
                                     />
                                     <div className={styles.meta}>
-                                <span className={styles.author}>
-                                    {c.userName} {c.userSurname}
-                                </span>
+                                        <span className={styles.author}>
+                                            {c.userName} {c.userSurname}
+                                        </span>
                                         <span className={styles.date}>
-                                    {new Date(c.date).toLocaleString("es-ES", {
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                        hour: "2-digit",
-                                        minute: "2-digit"
-                                    })}
-                                </span>
+                                            {new Date(c.date).toLocaleString("es-ES", {
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })}
+                                        </span>
                                     </div>
                                 </div>
 

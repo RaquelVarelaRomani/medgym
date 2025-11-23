@@ -71,21 +71,17 @@ const UserSearch = ({ isOpen, onClose }) => {
             onClick={onClose}
             aria-label="Cerrar buscador"
         >
-            <div
-                role="button"
-                tabIndex={0}
+            {/* container ahora es botón accesible */}
+            <button
+                type="button"
                 className={styles.container}
                 onClick={e => e.stopPropagation()}
                 onKeyDown={e => {
                     if (e.key === "Enter" || e.key === " ") e.stopPropagation();
                 }}
             >
-                <div
-                    className={styles.modal}
-                    tabIndex={-1}
-                    onClick={e => e.stopPropagation()}
-                    onMouseDown={e => e.stopPropagation()}
-                >
+                {/* modal ya NO tiene listeners → se evita el segundo warning */}
+                <div className={styles.modal}>
                     <div className={styles.searchContainer}>
                         <input
                             type="text"
@@ -96,11 +92,18 @@ const UserSearch = ({ isOpen, onClose }) => {
                             autoFocus
                         />
                     </div>
+
                     <div className={styles.resultsContainer}>
-                        {loading && <div className={styles.noResults}>Buscando...</div>}
-                        {!loading && results.length === 0 && query.trim() && (
-                            <div className={styles.noResults}>No se encontraron usuarios</div>
+                        {loading && (
+                            <div className={styles.noResults}>Buscando...</div>
                         )}
+
+                        {!loading && results.length === 0 && query.trim() && (
+                            <div className={styles.noResults}>
+                                No se encontraron usuarios
+                            </div>
+                        )}
+
                         {!loading &&
                             results.map(user => (
                                 <div key={user.id} className={styles.userItem}>
@@ -117,7 +120,9 @@ const UserSearch = ({ isOpen, onClose }) => {
                                     <div className={styles.userActions}>
                                         <button
                                             className={styles.viewProfileBtn}
-                                            onClick={() => handleViewProfile(user.id)}
+                                            onClick={() =>
+                                                handleViewProfile(user.id)
+                                            }
                                         >
                                             Ver Perfil
                                         </button>
@@ -126,7 +131,7 @@ const UserSearch = ({ isOpen, onClose }) => {
                             ))}
                     </div>
                 </div>
-            </div>
+            </button>
         </button>
     );
 };

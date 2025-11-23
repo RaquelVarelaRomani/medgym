@@ -187,13 +187,15 @@ const CreateRoutine = () => {
                 ex => ex.id !== null && ex.nombre.trim() !== ""
             );
 
+            const onError = (err) => console.error("Error adding exercise:", err);
+
             const saveRequests = validExercises.map(ex =>
                 routineExerciseService.createRoutineExercise(
                     routineId,
                     ex.id,
                     ex.position,
-                    () => {},
-                    (err) => console.error("Error adding exercise:", err)
+                    null,
+                    onError
                 )
             );
 

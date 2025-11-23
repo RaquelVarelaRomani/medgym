@@ -3,7 +3,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Outlet } from "react-router-dom";
 import Body from "../../modules/app/components/Body";
-import PropTypes from "prop-types";
 
 jest.mock("../../modules/app/components/users/Register", () => () => (
   <div data-testid="register">Register</div>
