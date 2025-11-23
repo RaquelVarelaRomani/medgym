@@ -50,7 +50,6 @@ public class RoutineServiceTest {
                 name + "@mail.com",
                 "600",
                 "password",
-                null,
                 RoleType.CLIENT,
                 User.StatusType.ACTIVE
         );
@@ -64,7 +63,6 @@ public class RoutineServiceTest {
                 name + "@mail.com",
                 "601",
                 "password",
-                null,
                 RoleType.TRAINER,
                 User.StatusType.ACTIVE
         );
@@ -79,7 +77,6 @@ public class RoutineServiceTest {
                 name + "@mail.com",
                 "602",
                 "password",
-                null,
                 RoleType.TRAINER,
                 User.StatusType.ACTIVE
         );

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchUsers, tryLoginFromServiceToken } from '../../../../backend/userService';
+import { searchUsers } from '../../../../backend/userService';
 import ProfilePhoto from '../common/profilePhoto';
 import styles from './UserSearch.module.css';
+import PropTypes from 'prop-types';
 
 const UserSearch = ({ isOpen, onClose }) => {
     const [query, setQuery] = useState('');
@@ -64,9 +65,23 @@ const UserSearch = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.container}>
-                <div className={styles.modal} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+        <button
+            type="button"
+            className={styles.overlay}
+            onClick={onClose}
+            aria-label="Cerrar buscador"
+        >
+            <div
+                className={styles.container}
+                onClick={e => e.stopPropagation()}
+            >
+                <div
+                    className={styles.modal}
+                    role="presentation"
+                    tabIndex={-1}
+                    onClick={e => e.stopPropagation()}
+                    onMouseDown={e => e.stopPropagation()}
+                >
                     <div className={styles.searchContainer}>
                         <input
                             type="text"
@@ -107,8 +122,13 @@ const UserSearch = ({ isOpen, onClose }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </button>
     );
 };
 
 export default UserSearch;
+
+UserSearch.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+};

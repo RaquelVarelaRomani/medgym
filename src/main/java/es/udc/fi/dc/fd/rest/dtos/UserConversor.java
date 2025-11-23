@@ -13,7 +13,7 @@ public class UserConversor {
 	private UserConversor() {
 	}
 
-	public static final UserDto toUserDto(User user) {
+	public static UserDto toUserDto(User user) {
 		Double bmi = null;
         if (user.getWeightKg() != null && user.getHeightCm() != null && user.getHeightCm() > 0) {
             double hMeters = user.getHeightCm() / 100.0;
@@ -24,11 +24,26 @@ public class UserConversor {
 
         String genderStr = user.getGender() != null ? user.getGender().name() : null;
 
-		return new UserDto(user.getId(), user.getName(), user.getSurname(), user.getEmail(), user.getPhoneNumber(), user.getProfilePicture(), user.getRole().toString(), user.getStatus().toString(),
-		user.getWeightKg(), user.getHeightCm(), genderStr, bmi, user.getTrainerPremium());
+        UserDto userDto = new UserDto();
+
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+        userDto.setSurname(user.getSurname());
+        userDto.setEmail(user.getEmail());
+        userDto.setPhoneNumber(user.getPhoneNumber());
+        userDto.setProfilePicture(user.getProfilePicture());
+        userDto.setRole(user.getRole().toString());
+        userDto.setStatus(user.getStatus().toString());
+        userDto.setWeightKg(user.getWeightKg());
+        userDto.setHeightCm(user.getHeightCm());
+        userDto.setGender(genderStr);
+        userDto.setBmi(bmi);
+        userDto.setTrainerPremium(user.getTrainerPremium());
+
+        return userDto;
 	}
 
-	public static final List<UserDto> toUserDtos(List<User> users) {
+	public static List<UserDto> toUserDtos(List<User> users) {
 		List<UserDto> userDtos = new ArrayList<>();
 
 		for (User user : users) {
@@ -38,17 +53,18 @@ public class UserConversor {
 		return userDtos;
 	}
 
-	public static final User toUser(UserDto userDto) {
+	public static User toUser(UserDto userDto) {
 		User user = new User(
             safeTrim(userDto.getName()),
             safeTrim(userDto.getSurname()),
             safeTrim(userDto.getEmail()),
             safeTrim(userDto.getPhoneNumber()),
             userDto.getPassword(),
-            userDto.getProfilePicture(),
             RoleType.valueOf(userDto.getRole()),
             User.StatusType.valueOf(userDto.getStatus())
         );
+
+        user.setProfilePicture(userDto.getProfilePicture());
 
         user.setWeightKg(userDto.getWeightKg());
         user.setHeightCm(userDto.getHeightCm());
@@ -68,7 +84,7 @@ public class UserConversor {
     }
 
 
-	public static final AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
+	public static AuthenticatedUserDto toAuthenticatedUserDto(String serviceToken, User user) {
 		return new AuthenticatedUserDto(serviceToken, toUserDto(user));
 
 	}

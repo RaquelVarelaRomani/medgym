@@ -686,7 +686,7 @@ describe("Common Components", () => {
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
     });
 
-      test("handles error in crop save", () => {
+      test("handles error in crop save", async () => {
           const consoleSpy = jest
               .spyOn(console, "error")
               .mockImplementation(() => {});
@@ -700,8 +700,7 @@ describe("Common Components", () => {
                   this.onload = null;
                   this.onerror = null;
 
-                  const fireError = () => this.onerror?.(imageError());
-                  setTimeout(fireError, 0);
+                  setTimeout(() => this.onerror?.(imageError()), 0);
               }
           });
 
@@ -718,20 +717,17 @@ describe("Common Components", () => {
           fireEvent.click(screen.getByText("Complete Crop"));
           fireEvent.click(screen.getByText("Guardar"));
 
-          return new Promise((resolve) => {
-              const assertError = () => {
-                  expect(consoleSpy).toHaveBeenCalledWith(
-                      "Error al recortar:",
-                      expect.any(Error)
-                  );
-                  expect(mockOnSave).not.toHaveBeenCalled();
-                  consoleSpy.mockRestore();
-                  resolve();
-              };
-
-              setTimeout(assertError, 0);
+          await waitFor(() => {
+              expect(consoleSpy).toHaveBeenCalledWith(
+                  "Error al recortar:",
+                  expect.any(Error)
+              );
+              expect(mockOnSave).not.toHaveBeenCalled();
           });
+
+          consoleSpy.mockRestore();
       });
+
   });
 
   describe("FollowersPage Component", () => {

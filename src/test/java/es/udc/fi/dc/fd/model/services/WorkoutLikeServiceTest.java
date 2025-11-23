@@ -43,10 +43,10 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testLikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "s1", "u1@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t1", "s2", "t1@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R1", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -63,10 +63,10 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u2", "s3", "u2@test.com", "600000003",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t2", "s4", "t2@test.com", "600000004",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R2", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -84,10 +84,10 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testUnlikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u3", "s5", "u3@test.com", "600000005",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t3", "s6", "t3@test.com", "600000006",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R3", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -104,7 +104,7 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testLikeWorkoutNonExistentWorkout() {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutLikeService.likeWorkout(user.getId(), 999L));
@@ -113,10 +113,10 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -139,10 +139,10 @@ public class WorkoutLikeServiceTest {
     @Test
     public void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);

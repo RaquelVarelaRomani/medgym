@@ -19,7 +19,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
+    private static final String ADMIN = "ADMIN";
+    private static final String TRAINER = "TRAINER";
+
     @Autowired
     private JwtFilter jwtFilter;
 
@@ -36,16 +39,16 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/api/users/signUp")).permitAll()
                 .requestMatchers(antMatcher("/api/users/login")).permitAll()
                 .requestMatchers(antMatcher("/api/users/loginFromServiceToken")).permitAll()
-                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/users/*")).hasRole("ADMIN")
-                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*/status")).hasRole("ADMIN")
-                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/exercises/*")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher(HttpMethod.GET, "/api/exercises/pending")).hasRole("ADMIN")
-                .requestMatchers(antMatcher(HttpMethod.POST, "/api/routines")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole("ADMIN", "TRAINER")
-                .requestMatchers(antMatcher("/api/admin/**")).hasRole("ADMIN")
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/users/*")).hasRole(ADMIN)
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/exercises")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/exercises/*/status")).hasRole(ADMIN)
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/exercises/*")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher(HttpMethod.GET, "/api/exercises/pending")).hasRole(ADMIN)
+                .requestMatchers(antMatcher(HttpMethod.POST, "/api/routines")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole(ADMIN, TRAINER)
+                .requestMatchers(antMatcher("/api/admin/**")).hasRole(ADMIN)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

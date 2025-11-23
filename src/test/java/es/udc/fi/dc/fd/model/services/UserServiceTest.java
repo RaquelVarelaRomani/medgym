@@ -27,7 +27,7 @@ public class UserServiceTest {
 	private UserService userService;
 
 	private User createUser(String email, String phoneNumber) {
-		return new User("name", "surname", email, phoneNumber, "password", null, RoleType.CLIENT, User.StatusType.ACTIVE);
+		return new User("name", "surname", email, phoneNumber, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
 	}
 
 	@Test

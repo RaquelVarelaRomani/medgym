@@ -41,10 +41,6 @@ const RoutineDetails = () => {
     if (!currentUser) return true;
     return currentUser.role === 'CLIENT';
   };
-  const isTrainer = () => {
-    if (!currentUser) return false;
-    return currentUser.role === 'TRAINER';
-  };
   const isAdmin = () => {
     if (!currentUser) return false;
     return currentUser.role === 'ADMIN';
@@ -70,25 +66,31 @@ const RoutineDetails = () => {
 
                 setRoutine(routineObj);
 
+                const handleRoutineExercisesSuccess = (routineExercisesPage) => {
+                    console.log("Routine exercises:", routineExercisesPage);
+
+                    const exercisesArray = routineExercisesPage.content
+                        ? routineExercisesPage.content
+                        : routineExercisesPage;
+
+                    const sortedExercises = exercisesArray.sort(
+                        (a, b) => a.position - b.position
+                    );
+
+                    setExercises(sortedExercises);
+                    setLoading(false);
+                };
+
+                const handleRoutineExercisesError = (exerciseErrors) => {
+                    console.error("Error loading exercises:", exerciseErrors);
+                    setError("Error al cargar los ejercicios");
+                    setLoading(false);
+                };
+
                 routineExerciseService.getRoutineExercises(
                     id,
-                    (routineExercisesPage) => {
-                        console.log("Routine exercises:", routineExercisesPage);
-
-                        const exercisesArray = routineExercisesPage.content
-                            ? routineExercisesPage.content
-                            : routineExercisesPage;
-
-                        const sortedExercises = exercisesArray.sort((a, b) => a.position - b.position);
-
-                        setExercises(sortedExercises);
-                        setLoading(false);
-                    },
-                    (exerciseErrors) => {
-                        console.error("Error loading exercises:", exerciseErrors);
-                        setError("Error al cargar los ejercicios");
-                        setLoading(false);
-                    }
+                    handleRoutineExercisesSuccess,
+                    handleRoutineExercisesError
                 );
             },
             (routineErrors) => {
@@ -193,44 +195,51 @@ const RoutineDetails = () => {
       <div className={styles["lista-ejercicios"]}>
         {exercises.map((exercise, index) => (
           <div key={exercise.id} className={styles.ejercicio}>
-            <div
-              className={styles["header-ejercicio"]}
-              onClick={() => toggleExercise(exercise.id)}
-            >
-              <h3>
-                {index + 1}. {exercise.exerciseName}
-              </h3>
-
-              {/*Warning*/}
-              {exercise.blocked && (
-                <div
-                  className={styles["warning-badge"]}
-                  onClick={(e) => e.stopPropagation()}
-                  title={
-                    isAdmin()
-                      ? "Has bloqueado este ejercicio."
-                      : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."
-                  }
-                >
-                  <span aria-hidden className={styles["warning-icon"]}>⚠️</span>
-                  <span className={styles["warning-text"]}>
-                    {isAdmin()
-                      ? "Has bloqueado este ejercicio."
-                      : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."}
-                  </span>
-                </div>
-              )}
-
-              <span
-                className={`${styles.flecha} ${
-                  expandedExercises[exercise.id] ? styles.expandida : ""
-                }`}
+              <button
+                  type="button"
+                  className={styles["header-ejercicio"]}
+                  onClick={() => toggleExercise(exercise.id)}
               >
-                &#9660;
-              </span>
-            </div>
+                  <h3>
+                      {index + 1}. {exercise.exerciseName}
+                  </h3>
 
-            {expandedExercises[exercise.id] && (
+                  {exercise.blocked && (
+                      <div
+                          role="button"
+                          tabIndex={0}
+                          className={styles["warning-badge"]}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                  e.stopPropagation();
+                              }
+                          }}
+                          title={
+                              isAdmin()
+                                  ? "Has bloqueado este ejercicio."
+                                  : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."
+                          }
+                      >
+                          <span aria-hidden className={styles["warning-icon"]}>⚠️</span>
+                          <span className={styles["warning-text"]}>
+                              {isAdmin()
+                                    ? "Has bloqueado este ejercicio."
+                                    : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."}
+                          </span>
+                      </div>
+
+                  )}
+
+                  <span
+                      className={`${styles.flecha} ${
+                          expandedExercises[exercise.id] ? styles.expandida : ""
+                      }`}
+                  >
+                      ▼
+                  </span>
+              </button>
+              {expandedExercises[exercise.id] && (
               <div className={styles["ejercicio-contenido"]}>
                 <div className={styles["detalles-ejercicio"]}>
                   <p><strong>Descripción:</strong> {exercise.exerciseDescription}</p>

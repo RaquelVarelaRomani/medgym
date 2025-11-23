@@ -19,6 +19,50 @@ import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
 
+/* Helpers fuera del componente para reducir profundidad de funciones */
+
+const getAuth = () =>
+    new Promise((resolve, reject) =>
+        tryLoginFromServiceToken(resolve, reject)
+    );
+
+const getUserById = (id) =>
+    new Promise((resolve) => getUser(id, resolve));
+
+const checkIsBlocked = (userId) =>
+    new Promise((resolve) =>
+        isBlocked(
+            userId,
+            (blocked) => resolve(blocked),
+            () => resolve(false)
+        )
+    );
+
+const getFollowersCount = (userId) =>
+    new Promise((resolve) =>
+        getFollowers(userId, (f) => resolve(f.length))
+    );
+
+const getFollowingCount = (userId) =>
+    new Promise((resolve) =>
+        getFollowedTrainers(userId, (t) => resolve(t.length))
+    );
+
+const getIsFollowingTrainer = (meId, profileId) =>
+    new Promise((resolve) =>
+        getFollowedTrainers(meId, (trainers) =>
+            resolve(trainers.some((t) => t.trainerId === profileId))
+        )
+    );
+
+const getFollowText = (loadingFollow, isFollowing) => {
+    if (loadingFollow) return "Cargando...";
+    if (isFollowing) return "Dejar de seguir";
+    return "Seguir";
+};
+
+/* Presentational components */
+
 function ProfileHeader(props) {
     const {
         profile,
@@ -41,12 +85,7 @@ function ProfileHeader(props) {
     const showSelfActions = me && profile && me.id === profile.id;
     const showOtherActions = me && profile && me.id !== profile.id;
 
-    const followText = loadingFollow
-        ? "Cargando..."
-        : isFollowing
-            ? "Dejar de seguir"
-            : "Seguir";
-
+    const followText = getFollowText(loadingFollow, isFollowing);
     const blockText = isBlockedByMe ? "Desbloquear" : "Bloquear";
 
     const isPremiumTrainer =
@@ -94,10 +133,11 @@ function ProfileHeader(props) {
                                 type="button"
                                 className={styles["follow-side"]}
                                 onClick={() => navigate(`/users/followers/${profile.id}`)}
-                                onKeyDown={(e) =>
-                                    e.key === "Enter" &&
-                                    navigate(`/users/followers/${profile.id}`)
-                                }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        navigate(`/users/followers/${profile.id}`);
+                                    }
+                                }}
                             >
                                 Seguidores: {followers}
                             </button>
@@ -106,10 +146,11 @@ function ProfileHeader(props) {
                                 type="button"
                                 className={styles["follow-side"]}
                                 onClick={() => navigate(`/users/following/${profile.id}`)}
-                                onKeyDown={(e) =>
-                                    e.key === "Enter" &&
-                                    navigate(`/users/following/${profile.id}`)
-                                }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        navigate(`/users/following/${profile.id}`);
+                                    }
+                                }}
                             >
                                 Siguiendo: {following}
                             </button>
@@ -192,6 +233,8 @@ function ProfileData({ profile, roleString }) {
     );
 }
 
+/* Componente principal */
+
 const Profile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -208,83 +251,102 @@ const Profile = () => {
     const [loadingFollow, setLoadingFollow] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    /* Carga inicial */
+
     useEffect(() => {
-        let meTemp = null;
-        let profileTemp = null;
+        let isMounted = true;
 
-        tryLoginFromServiceToken(
-            (auth) => {
-                meTemp = auth.user;
-                setMe(meTemp);
+        const loadProfile = async () => {
+            try {
+                const auth = await getAuth();
+                if (!isMounted) return;
 
-                getUser(id, (user) => {
-                    profileTemp = user;
-                    setProfile(profileTemp);
+                const meUser = auth.user;
+                setMe(meUser);
 
-                    isBlocked(
-                        profileTemp.id,
-                        (blocked) => setIsBlockedByMe(blocked),
-                        () => setIsBlockedByMe(false)
-                    );
+                const user = await getUserById(id);
+                if (!isMounted) return;
 
-                    Promise.all([
-                        new Promise((resolve) =>
-                            getFollowers(profileTemp.id, (f) => {
-                                setFollowers(f.length);
-                                resolve();
-                            })
-                        ),
-                        new Promise((resolve) =>
-                            getFollowedTrainers(profileTemp.id, (t) => {
-                                setFollowing(t.length);
-                                resolve();
-                            })
-                        ),
-                        new Promise((resolve) =>
-                            getFollowedTrainers(meTemp.id, (trainers) => {
-                                setIsFollowing(
-                                    trainers.some(
-                                        (t) => t.trainerId === profileTemp.id
-                                    )
-                                );
-                                resolve();
-                            })
-                        )
-                    ]).then(() => setLoading(false));
-                });
-            },
-            () => navigate("/users/login")
-        );
+                setProfile(user);
+
+                const blocked = await checkIsBlocked(user.id);
+                if (isMounted) {
+                    setIsBlockedByMe(blocked);
+                }
+
+                const [followersCount, followingCount, followingFlag] =
+                    await Promise.all([
+                        getFollowersCount(user.id),
+                        getFollowingCount(user.id),
+                        getIsFollowingTrainer(meUser.id, user.id)
+                    ]);
+
+                if (!isMounted) return;
+
+                setFollowers(followersCount);
+                setFollowing(followingCount);
+                setIsFollowing(followingFlag);
+                setLoading(false);
+            } catch (e) {
+                if (isMounted) {
+                    navigate("/users/login");
+                }
+            }
+        };
+
+        loadProfile();
+
+        return () => {
+            isMounted = false;
+        };
     }, [id, navigate]);
 
+    /* Actualización cuando cambia el follow */
+
     useEffect(() => {
-        const onFollowChange = () => {
+        const updateFollowInfo = async () => {
             if (!profile || !me) return;
 
-            getFollowers(profile.id, (f) => setFollowers(f.length));
-            getFollowedTrainers(profile.id, (t) => setFollowing(t.length));
-            getFollowedTrainers(me.id, (trainers) =>
-                setIsFollowing(
-                    trainers.some((t) => t.trainerId === profile.id)
-                )
-            );
+            const [followersCount, followingCount, followingFlag] =
+                await Promise.all([
+                    getFollowersCount(profile.id),
+                    getFollowingCount(profile.id),
+                    getIsFollowingTrainer(me.id, profile.id)
+                ]);
+
+            setFollowers(followersCount);
+            setFollowing(followingCount);
+            setIsFollowing(followingFlag);
+        };
+
+        const onFollowChange = () => {
+            updateFollowInfo();
         };
 
         window.addEventListener("followChanged", onFollowChange);
-        return () =>
+        return () => {
             window.removeEventListener("followChanged", onFollowChange);
+        };
     }, [profile, me]);
 
-    const handleEditProfile = () => navigate("/users/profile/edit-profile");
-    const handleChangePassword = () =>
+    /* Handlers */
+
+    const handleEditProfile = () => {
+        navigate("/users/profile/edit-profile");
+    };
+
+    const handleChangePassword = () => {
         navigate("/users/profile/change-password");
+    };
 
     const handleBecomePremium = () => {
+        if (!me) return;
+
         becomePremium(
             me.id,
             () => {
-                setMe((p) => ({ ...p, trainerPremium: true }));
-                setProfile((p) => ({ ...p, trainerPremium: true }));
+                setMe((prev) => ({ ...prev, trainerPremium: true }));
+                setProfile((prev) => ({ ...prev, trainerPremium: true }));
             },
             (err) => alert("Error becoming premium: " + err)
         );
@@ -330,7 +392,7 @@ const Profile = () => {
                 window.dispatchEvent(new Event("followChanged"));
                 setTimeout(() => setLoadingFollow(false), 500);
             },
-            (err) => {
+            () => {
                 setIsFollowing(!next);
                 setFollowers((n) => n - (next ? 1 : -1));
                 setLoadingFollow(false);
@@ -373,7 +435,7 @@ const Profile = () => {
             </div>
 
             <Popup
-                text={"Sesión cerrada. ¡Vuelva pronto!"}
+                text="Sesión cerrada. ¡Vuelva pronto!"
                 show={showPopup}
                 onOk={() => {
                     setShowPopup(false);
@@ -391,7 +453,7 @@ const Profile = () => {
                     initialGender={profile.gender}
                     initialBmi={profile.bmi}
                     onSaved={(partial) =>
-                        setProfile((p) => ({ ...p, ...partial }))
+                        setProfile((prev) => ({ ...prev, ...partial }))
                     }
                     onClose={() => setShowMetrics(false)}
                 />
@@ -399,6 +461,8 @@ const Profile = () => {
         </div>
     );
 };
+
+/* PropTypes */
 
 ProfileHeader.propTypes = {
     profile: PropTypes.object,

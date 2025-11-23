@@ -52,7 +52,7 @@ public class WorkoutServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", null, RoleType.TRAINER, User.StatusType.ACTIVE);
+        user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", RoleType.TRAINER, User.StatusType.ACTIVE);
         user.setName("Name");
         user.setEmail("user@example.com");
         user.setPhoneNumber("1234567890");
@@ -206,7 +206,7 @@ public class WorkoutServiceTest {
 
     @Test
     public void testStartWorkoutNonExistentRoutine() {
-        User user1 = userDao.save(new User("u", "n", "u@test.com", "600", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User user1 = userDao.save(new User("u", "n", "u@test.com", "600", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutService.startWorkout(999L, user1.getId())
         );
@@ -214,8 +214,8 @@ public class WorkoutServiceTest {
 
     @Test
     public void testStartWorkoutCreatesWorkout() throws Exception {
-        User trainer = userDao.save(new User("t", "n", "t@test.com", "601", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        User client = userDao.save(new User("c", "n", "c@test.com", "602", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("t", "n", "t@test.com", "601", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User client = userDao.save(new User("c", "n", "c@test.com", "602", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         Routine routine1 = routineService.createRoutine("R", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -230,8 +230,8 @@ public class WorkoutServiceTest {
 
     @Test
     public void testFinishWorkout() throws Exception {
-        User trainer = userDao.save(new User("t2", "n", "t2@test.com", "603", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        User client = userDao.save(new User("c2", "n", "c2@test.com", "604", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("t2", "n", "t2@test.com", "603", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User client = userDao.save(new User("c2", "n", "c2@test.com", "604", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         Routine routine1 = routineService.createRoutine("R2", "d2", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
         Workout w = workoutService.startWorkout(routine1.getId(), client.getId());
@@ -249,8 +249,8 @@ public class WorkoutServiceTest {
 
     @Test
     public void testFindWorkoutsFromUser() throws Exception {
-        User trainer = userDao.save(new User("t3", "n", "t3@test.com", "605", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        User client = userDao.save(new User("c3", "n", "c3@test.com", "606", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("t3", "n", "t3@test.com", "605", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User client = userDao.save(new User("c3", "n", "c3@test.com", "606", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         Routine routine1 = routineService.createRoutine("R3", "d3", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
@@ -263,9 +263,9 @@ public class WorkoutServiceTest {
 
     @Test
     public void testFindWorkoutsFromFollowing() throws Exception {
-        User trainer = userDao.save(new User("tf", "n", "tf@test.com", "607", "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        User client1 = userDao.save(new User("cf1", "n", "cf1@test.com", "608", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User client2 = userDao.save(new User("cf2", "n", "cf2@test.com", "609", "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User trainer = userDao.save(new User("tf", "n", "tf@test.com", "607", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        User client1 = userDao.save(new User("cf1", "n", "cf1@test.com", "608", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+        User client2 = userDao.save(new User("cf2", "n", "cf2@test.com", "609", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         userFollowService.followUser(client1.getId(), trainer.getId());
 

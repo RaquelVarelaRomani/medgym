@@ -334,14 +334,9 @@ describe("WorkoutHistory Component", () => {
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth() + 1;
-        const startTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T00:00:00Z`;
-        const endTime = `${currentYear}-${String(currentMonth).padStart(
-            2,
-            "0",
-        )}-01T11:00:00Z`;
+        const startTime = `${currentYear}-${String(currentMonth).padStart(2, "0")}-01T00:00:00Z`;
+        const endTime = `${currentYear}-${String(currentMonth).padStart(2, "0")}-01T11:00:00Z`;
+
         const mockWorkouts = [
             {
                 id: 1,
@@ -362,7 +357,7 @@ describe("WorkoutHistory Component", () => {
         render(
             <MemoryRouter>
                 <WorkoutHistory />
-            </MemoryRouter>,
+            </MemoryRouter>
         );
 
         fireEvent.click(screen.getByText("Calendario"));
@@ -372,7 +367,7 @@ describe("WorkoutHistory Component", () => {
             expect(workoutLink).toBeInTheDocument();
             expect(workoutLink.closest("a")).toHaveAttribute(
                 "href",
-                "/workouts/1",
+                "/workouts/1?returnTo=history"
             );
         });
     });
@@ -966,6 +961,10 @@ describe("WorkoutDetails Component", () => {
 
         getRoutineExercises.mockImplementation((routineId, success, error) => {
             error("Error al cargar los ejercicios");
+        });
+
+        getWorkoutExercisesByWorkoutId.mockImplementation((id, success) => {
+            success([]);     // NECESARIO
         });
 
         render(

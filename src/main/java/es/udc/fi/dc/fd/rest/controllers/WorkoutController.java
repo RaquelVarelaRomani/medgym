@@ -72,7 +72,7 @@ public class WorkoutController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @RequestAttribute Long userIdRequester) throws InstanceNotFoundException, PermissionException {
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @RequestAttribute Long userIdRequester) throws PermissionException {
         Long requesterId = userIdRequester;
         Long ownerId = userId;
         // Si el dueño ha bloqueado al que hace la petición → no se permite ver

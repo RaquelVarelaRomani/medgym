@@ -6,7 +6,7 @@ public class BodyMetricsParamsDto {
     private Double heightCm;
     private String gender;
 
-    public BodyMetricsParamsDto() {}
+    public BodyMetricsParamsDto() { super(); }
 
     public Double getWeightKg() { 
         return weightKg; 

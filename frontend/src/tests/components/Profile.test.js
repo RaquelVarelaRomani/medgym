@@ -16,6 +16,7 @@ import {
     getFollowedTrainers,
 } from "../../backend/userFollowService";
 import { getWorkoutsByUser } from "../../backend/workoutService";
+import {isBlocked} from "../../backend/userBlockService";
 
 const mockNavigate = jest.fn();
 
@@ -67,11 +68,29 @@ describe("Profile and EditProfile Components", () => {
         };
 
         const setupProfileMocks = () => {
-            tryLoginFromServiceToken.mockImplementation((cb) => cb({ user: mockUser }));
-            getUser.mockImplementation((id, cb) => cb(mockUser));
-            getFollowers.mockImplementation((id, cb) => cb([]));
-            getFollowedTrainers.mockImplementation((id, cb) => cb([]));
-            getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+            tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+                resolve({ user: mockUser });
+            });
+
+            getUser.mockImplementation((id, resolve, reject) => {
+                resolve(mockUser);
+            });
+
+            isBlocked.mockImplementation((id, resolve, reject) => {
+                resolve(false);
+            });
+
+            getFollowers.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
+
+            getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
+
+            getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
         };
 
         test("renders loading state initially", () => {
@@ -118,11 +137,30 @@ describe("Profile and EditProfile Components", () => {
 
         test("renders profile picture when available", async () => {
             const userWithPic = { ...mockUser, profilePicture: "base64encodedimage" };
-            tryLoginFromServiceToken.mockImplementation((cb) => cb({ user: userWithPic }));
-            getUser.mockImplementation((id, cb) => cb(userWithPic));
-            getFollowers.mockImplementation((id, cb) => cb([]));
-            getFollowedTrainers.mockImplementation((id, cb) => cb([]));
-            getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+
+            tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+                resolve({ user: userWithPic });
+            });
+
+            getUser.mockImplementation((id, resolve, reject) => {
+                resolve(userWithPic);
+            });
+
+            isBlocked.mockImplementation((id, resolve, reject) => {
+                resolve(false);
+            });
+
+            getFollowers.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
+
+            getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
+
+            getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+                resolve([]);
+            });
 
             render(
                 <MemoryRouter>
@@ -130,10 +168,12 @@ describe("Profile and EditProfile Components", () => {
                 </MemoryRouter>
             );
 
-            await waitFor(() => {
-                const img = screen.getByAltText("Foto de perfil");
-                expect(img).toHaveAttribute("src", "data:image/jpeg;base64,base64encodedimage");
-            });
+            const img = await screen.findByAltText("Foto de perfil");
+
+            expect(img).toHaveAttribute(
+                "src",
+                "data:image/jpeg;base64,base64encodedimage"
+            );
         });
 
         test("navigates to edit profile on button click", async () => {
@@ -187,11 +227,30 @@ describe("Profile and EditProfile Components", () => {
 
             for (const { role, expected } of roles) {
                 const user = { ...mockUser, role };
-                tryLoginFromServiceToken.mockImplementation((cb) => cb({ user }));
-                getUser.mockImplementation((id, cb) => cb(user));
-                getFollowers.mockImplementation((id, cb) => cb([]));
-                getFollowedTrainers.mockImplementation((id, cb) => cb([]));
-                getWorkoutsByUser.mockImplementation((id, cb) => cb([]));
+
+                tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
+                    resolve({ user });
+                });
+
+                getUser.mockImplementation((id, resolve, reject) => {
+                    resolve(user);
+                });
+
+                isBlocked.mockImplementation((id, resolve, reject) => {
+                    resolve(false);
+                });
+
+                getFollowers.mockImplementation((id, resolve, reject) => {
+                    resolve([]);
+                });
+
+                getFollowedTrainers.mockImplementation((id, resolve, reject) => {
+                    resolve([]);
+                });
+
+                getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
+                    resolve([]);
+                });
 
                 render(
                     <MemoryRouter key={role}>
@@ -199,9 +258,10 @@ describe("Profile and EditProfile Components", () => {
                     </MemoryRouter>
                 );
 
-                await waitFor(() => {
-                    expect(screen.getByText(expected)).toBeInTheDocument();
-                });
+                const element = await screen.findByText(expected);
+                expect(element).toBeInTheDocument();
+
+                jest.clearAllMocks();
             }
         });
     });

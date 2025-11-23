@@ -11,8 +11,10 @@ public class UserFollowDto {
     private String userSurname;
     private String userEmail;
 
-    // No parameter constructor because of sonarqube restrictions
-
+    // No-args constructor required for Jackson and frameworks.
+    // Nested comment: implementation intentionally empty because the DTO
+    // is only used as a data carrier and all fields are set via setters,
+    // satisfying SonarQube rules regarding unused or empty methods.
     public UserFollowDto() {}
 
     public Long getId() {

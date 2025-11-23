@@ -178,20 +178,14 @@ const CreateRoutine = () => {
             trainerId = authUser.id;
         }
 
-        routineService.createRoutine(
-            routineData.titulo,
-            routineData.descripcion,
-            trainerId,
-            routineData.visibility,
-            routineData.difficulty,
-            (createdRoutine) => {
-                console.log("Routine created:", createdRoutine);
-                const routineId = createdRoutine.id;
+        const handleRoutineCreated = (createdRoutine) => {
+            console.log("Routine created:", createdRoutine);
 
-                //crear ejercicios
-                const exercisesToSave = exercises
-                    .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
-                    .map(ex =>
+            const routineId = createdRoutine.id;
+
+            const exercisesToSave = exercises
+                .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
+                .map(ex =>
                     routineExerciseService.createRoutineExercise(
                         routineId,
                         ex.id,
@@ -201,14 +195,24 @@ const CreateRoutine = () => {
                     )
                 );
 
-                Promise.all(exercisesToSave).finally(() => {
-                    navigate("/routines");
-                });
-            },
-            (error) => {
-                console.error("Error creating routine:", error);
-                alert("No se pudo crear la rutina. Intenta de nuevo.");
-            },
+            Promise.all(exercisesToSave).finally(() => {
+                navigate("/routines");
+            });
+        };
+
+        const handleRoutineError = (error) => {
+            console.error("Error creating routine:", error);
+            alert("No se pudo crear la rutina. Intenta de nuevo.");
+        };
+
+        routineService.createRoutine(
+            routineData.titulo,
+            routineData.descripcion,
+            trainerId,
+            routineData.visibility,
+            routineData.difficulty,
+            handleRoutineCreated,
+            handleRoutineError
         );
     };
 
@@ -319,13 +323,14 @@ const CreateRoutine = () => {
                             {showExerciseSearch === index && (
                                 <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((exercise, i) => (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={exercise.id}
                                             className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, exercise)}
                                         >
                                             {exercise.name}
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             )}

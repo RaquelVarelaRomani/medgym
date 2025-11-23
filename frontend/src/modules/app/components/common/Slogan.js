@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Slogan.module.css";
+import PropTypes from "prop-types";
 
 const Slogan = ({ className = "" }) => {
   return (
@@ -9,3 +10,7 @@ const Slogan = ({ className = "" }) => {
 };
 
 export default Slogan;
+
+Slogan.propTypes = {
+    className: PropTypes.string
+};

@@ -6,17 +6,106 @@ import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
-import PropTypes  from "prop-types";
+import PropTypes from "prop-types";
+
+function getRoutineFromResponse(data) {
+    return data.content ? data.content[0] : data;
+}
+
+function mapRoutineExercises(page) {
+    const list = Array.isArray(page.content) ? page.content : [];
+    return list
+        .map((re) => ({
+            id: re.exerciseId,
+            nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
+            position: re.position ?? null,
+        }))
+        .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity));
+}
+
+// Wrappers a promesas para evitar callbacks anidados
+function getRoutineAsync(id) {
+    return new Promise((resolve, reject) =>
+        routineService.getRoutine(id, resolve, reject),
+    );
+}
+
+function getRoutineExercisesAsync(id) {
+    return new Promise((resolve, reject) =>
+        routineExerciseService.getRoutineExercises(id, resolve, reject),
+    );
+}
+
+function deleteRoutineExerciseAsync(routineId, exerciseId) {
+    return new Promise((resolve, reject) =>
+        routineExerciseService.deleteRoutineExercise(
+            routineId,
+            exerciseId,
+            resolve,
+            reject,
+        ),
+    );
+}
+
+function updateRoutineExerciseAsync(routineId, exerciseId, position) {
+    return new Promise((resolve, reject) =>
+        routineExerciseService.updateRoutineExercise(
+            routineId,
+            exerciseId,
+            position,
+            resolve,
+            reject,
+        ),
+    );
+}
+
+function createRoutineExerciseAsync(routineId, exerciseId, position) {
+    return new Promise((resolve, reject) =>
+        routineExerciseService.createRoutineExercise(
+            routineId,
+            exerciseId,
+            position,
+            resolve,
+            reject,
+        ),
+    );
+}
+
+function updateRoutineAsync(
+    id,
+    titulo,
+    descripcion,
+    visibility,
+    difficulty,
+) {
+    return new Promise((resolve, reject) =>
+        routineService.updateRoutine(
+            id,
+            titulo,
+            descripcion,
+            visibility,
+            difficulty,
+            resolve,
+            reject,
+        ),
+    );
+}
 
 export default function EditRoutine() {
     const navigate = useNavigate();
     const { id } = useParams();
 
     const [routineData, setRoutineData] = useState({
-        titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"
+        titulo: "",
+        descripcion: "",
+        visibility: "PUBLIC",
+        difficulty: "INTERMEDIATE",
     });
     const [originalRoutineData, setOriginalRoutineData] = useState({
-        titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"
+        titulo: "",
+        descripcion: "",
+        visibility: "PUBLIC",
+        difficulty: "INTERMEDIATE",
     });
     const [exercises, setExercises] = useState([]);
     const [originalExercises, setOriginalExercises] = useState([]);
@@ -34,55 +123,45 @@ export default function EditRoutine() {
         exerciseService.getAllExercises(
             (data) => {
                 const arr = data.content || data;
-                setAvailableExercises(arr.sort((a, b) => a.name.localeCompare(b.name)));
+                setAvailableExercises(
+                    arr.sort((a, b) => a.name.localeCompare(b.name)),
+                );
             },
-            (err) => setError("Error al cargar los ejercicios disponibles: " + err)
+            (err) =>
+                setError(
+                    "Error al cargar los ejercicios disponibles: " + err,
+                ),
         );
     };
 
-    const loadRoutine = () => {
-        routineService.getRoutine(
-            id,
-            (data) => {
-                const r = data.content ? data.content[0] : data;
+    const loadRoutine = async () => {
+        setLoading(true);
 
-                const base = {
-                    titulo: r.name,
-                    descripcion: r.description,
-                    visibility: r.visibility,
-                    difficulty: r.difficulty
-                };
+        try {
+            const routineResponse = await getRoutineAsync(id);
+            const r = getRoutineFromResponse(routineResponse);
 
-                setRoutineData(base);
-                setOriginalRoutineData(base);
+            const base = {
+                titulo: r.name,
+                descripcion: r.description,
+                visibility: r.visibility,
+                difficulty: r.difficulty,
+            };
 
-                routineExerciseService.getRoutineExercises(
-                    id,
-                    (page) => {
-                        const list = Array.isArray(page.content) ? page.content : [];
-                        const mapped = list
-                            .map(re => ({
-                                id: re.exerciseId,
-                                nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
-                                position: re.position || null
-                            }))
-                            .sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
+            setRoutineData(base);
+            setOriginalRoutineData(base);
 
-                        setExercises(mapped);
-                        setOriginalExercises(JSON.parse(JSON.stringify(mapped)));
-                        setLoading(false);
-                    },
-                    () => {
-                        setError("Error al cargar los ejercicios de la rutina");
-                        setLoading(false);
-                    }
-                );
-            },
-            () => {
-                setError("Error al cargar la rutina");
-                setLoading(false);
-            }
-        );
+            const routineExercisesPage = await getRoutineExercisesAsync(id);
+            const mapped = mapRoutineExercises(routineExercisesPage);
+
+            setExercises(mapped);
+            setOriginalExercises(JSON.parse(JSON.stringify(mapped)));
+            setLoading(false);
+        } catch (err) {
+            console.error("Error loading routine:", err);
+            setError("Error al cargar la rutina");
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -95,54 +174,75 @@ export default function EditRoutine() {
             if (
                 showExerciseSearch !== null &&
                 inputContainerRefs.current[showExerciseSearch] &&
-                !inputContainerRefs.current[showExerciseSearch].contains(e.target)
+                !inputContainerRefs.current[showExerciseSearch].contains(
+                    e.target,
+                )
             ) {
                 setShowExerciseSearch(null);
                 setSearchTerm("");
             }
         };
-        if (showExerciseSearch !== null) document.addEventListener("click", handleOutsideClick);
-        return () => document.removeEventListener("click", handleOutsideClick);
+
+        if (showExerciseSearch !== null) {
+            document.addEventListener("click", handleOutsideClick);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleOutsideClick);
+        };
     }, [showExerciseSearch]);
 
-    const filteredExercises = availableExercises.filter(ex =>
-        ex.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !exercises.some(e => e.id === ex.id)
+    const filteredExercises = availableExercises.filter(
+        (ex) =>
+            ex.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            !exercises.some((e) => e.id === ex.id),
     );
 
     const changeInput = (e) => {
         const { name, value } = e.target;
 
-        setRoutineData(prev => {
+        setRoutineData((prev) => {
             const updated = { ...prev, [name]: value };
-            console.log("New routineData:", updated);
             return updated;
         });
 
-        if (name === "titulo" && value.length > 50) setTitleError("El título es demasiado grande");
-        else setTitleError("");
+        if (name === "titulo" && value.length > 50) {
+            setTitleError("El título es demasiado grande");
+        } else {
+            setTitleError("");
+        }
     };
 
     const changeExerciseField = (index, field, value) => {
         const copy = [...exercises];
-        copy[index][field] = field === "position"
-            ? (value === "" ? null : Number(value))
-            : value;
 
-        console.log("New exercises:", copy);
+        if (field === "position") {
+            if (value === "") {
+                copy[index][field] = null;
+            } else {
+                copy[index][field] = Number(value);
+            }
+        } else {
+            copy[index][field] = value;
+        }
 
         setExercises(copy);
     };
 
     const addExercise = () => {
         setShowExerciseSearch(null);
-        setExercises([...exercises, { id: null, nombre: "", position: exercises.length + 1 }]);
+        setExercises((prev) => [
+            ...prev,
+            { id: null, nombre: "", position: prev.length + 1 },
+        ]);
     };
 
     const removeExercise = (index) => {
         const arr = [...exercises];
         arr.splice(index, 1);
-        arr.forEach((ex, i) => ex.position = i + 1);
+        arr.forEach((ex, i) => {
+            ex.position = i + 1;
+        });
         setExercises(arr);
     };
 
@@ -155,7 +255,9 @@ export default function EditRoutine() {
         arr[index].position = arr[newIndex].position;
         arr[newIndex].position = tmp;
 
-        arr.sort((a, b) => (a.position || Infinity) - (b.position || Infinity));
+        arr.sort(
+            (a, b) => (a.position ?? Infinity) - (b.position ?? Infinity),
+        );
         setExercises(arr);
     };
 
@@ -175,47 +277,55 @@ export default function EditRoutine() {
             routineData.visibility !== originalRoutineData.visibility ||
             routineData.difficulty !== originalRoutineData.difficulty;
 
-        const removed = originalExercises.filter(oe => !exercises.some(e => e.id === oe.id));
-        const added = exercises.filter(e => e.id && !originalExercises.some(oe => oe.id === e.id));
-        const updated = exercises.filter(e => {
-            const orig = originalExercises.find(oe => oe.id === e.id);
+        const removed = originalExercises.filter(
+            (oe) => !exercises.some((e) => e.id === oe.id),
+        );
+        const added = exercises.filter(
+            (e) => e.id && !originalExercises.some((oe) => oe.id === e.id),
+        );
+        const updated = exercises.filter((e) => {
+            const orig = originalExercises.find((oe) => oe.id === e.id);
             return orig && e.position !== orig.position;
         });
 
-        const anyChange = changedFields || removed.length > 0 || added.length > 0 || updated.length > 0;
+        const anyChange =
+            changedFields ||
+            removed.length > 0 ||
+            added.length > 0 ||
+            updated.length > 0;
 
-        if (!anyChange) return setPopupMessage("¡No hay cambios para guardar!");
+        if (!anyChange) {
+            setPopupMessage("¡No hay cambios para guardar!");
+            return;
+        }
 
         let errorMsg = "";
         let successMsg = "";
 
+        // eliminados
         for (const ex of removed) {
             try {
-                await new Promise((res, rej) =>
-                    routineExerciseService.deleteRoutineExercise(id, ex.id, res, rej)
-                );
+                await deleteRoutineExerciseAsync(id, ex.id);
                 successMsg += `Ejercicio ${ex.nombre} eliminado correctamente.\n`;
             } catch (err) {
                 errorMsg += `Error al eliminar ${ex.nombre}: ${err.message}\n`;
             }
         }
 
+        // actualizados
         for (const ex of updated) {
             try {
-                await new Promise((res, rej) =>
-                    routineExerciseService.updateRoutineExercise(id, ex.id, ex.position, res, rej)
-                );
+                await updateRoutineExerciseAsync(id, ex.id, ex.position);
                 successMsg += `Ejercicio ${ex.nombre} actualizado correctamente.\n`;
             } catch (err) {
                 errorMsg += `Error al actualizar ${ex.nombre}: ${err.message}\n`;
             }
         }
 
+        // añadidos
         for (const ex of added) {
             try {
-                await new Promise((res, rej) =>
-                    routineExerciseService.createRoutineExercise(id, ex.id, ex.position, res, rej)
-                );
+                await createRoutineExerciseAsync(id, ex.id, ex.position);
                 successMsg += `Ejercicio ${ex.nombre} agregado correctamente.\n`;
             } catch (err) {
                 errorMsg += `Error al agregar ${ex.nombre}: ${err.message}\n`;
@@ -224,23 +334,28 @@ export default function EditRoutine() {
 
         if (changedFields) {
             try {
-                await new Promise((res, rej) =>
-                    routineService.updateRoutine(
-                        id,
-                        routineData.titulo,
-                        routineData.descripcion,
-                        routineData.visibility,
-                        routineData.difficulty,
-                        res, rej
-                    )
+                await updateRoutineAsync(
+                    id,
+                    routineData.titulo,
+                    routineData.descripcion,
+                    routineData.visibility,
+                    routineData.difficulty,
                 );
             } catch (err) {
-                errorMsg += `Error al actualizar los datos de la rutina: ${err.message}\n`;
+                errorMsg +=
+                    "Error al actualizar los datos de la rutina: " +
+                    err.message +
+                    "\n";
             }
         }
 
-        if (errorMsg) setPopupMessage("Ocurrió un error");
-        else setPopupMessage("Cambios guardados. ¡Gracias!");
+        if (errorMsg) {
+            console.error(errorMsg);
+            setPopupMessage("Ocurrió un error");
+        } else {
+            console.log(successMsg);
+            setPopupMessage("Cambios guardados. ¡Gracias!");
+        }
     };
 
     if (loading) return <LoadingMessage text="Cargando rutina..." />;
@@ -271,15 +386,27 @@ export default function EditRoutine() {
                     moveExercise={moveExercise}
                 />
 
-                <button className={styles["boton-agregar-ejercicio"]} onClick={addExercise}>
+                <button
+                    type="button"
+                    className={styles["boton-agregar-ejercicio"]}
+                    onClick={addExercise}
+                >
                     +
                 </button>
 
                 <div className={styles["form-actions"]}>
-                    <button className={styles["boton-guardar-rutina"]} onClick={save}>
+                    <button
+                        type="button"
+                        className={styles["boton-guardar-rutina"]}
+                        onClick={save}
+                    >
                         Guardar
                     </button>
-                    <button className={styles["boton-cancelar"]} onClick={cancel}>
+                    <button
+                        type="button"
+                        className={styles["boton-cancelar"]}
+                        onClick={cancel}
+                    >
                         Cancelar
                     </button>
                 </div>
@@ -291,7 +418,12 @@ export default function EditRoutine() {
                 onOk={() => {
                     const msg = popupMessage || "";
                     setPopupMessage(null);
-                    if (msg.includes("guardados") || msg.includes("Cambios")) navigate("/routines");
+                    if (
+                        msg.includes("guardados") ||
+                        msg.includes("Cambios")
+                    ) {
+                        navigate("/routines");
+                    }
                 }}
             />
         </div>
@@ -309,7 +441,11 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
                     onChange={changeInput}
                     className={titleError ? styles["input-error"] : ""}
                 />
-                {titleError && <span className={styles["error-message"]}>{titleError}</span>}
+                {titleError && (
+                    <span className={styles["error-message"]}>
+                        {titleError}
+                    </span>
+                )}
             </div>
 
             <div className={styles["form-div"]}>
@@ -324,7 +460,11 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
 
             <div className={styles["form-div"]}>
                 <label>Dificultad:</label>
-                <select name="difficulty" value={routineData.difficulty} onChange={changeInput}>
+                <select
+                    name="difficulty"
+                    value={routineData.difficulty}
+                    onChange={changeInput}
+                >
                     <option value="BEGINNER">Principiante</option>
                     <option value="INTERMEDIATE">Intermedia</option>
                     <option value="ADVANCED">Avanzada</option>
@@ -333,7 +473,11 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
 
             <div className={styles["form-div"]}>
                 <label>Visibilidad:</label>
-                <select name="visibility" value={routineData.visibility} onChange={changeInput}>
+                <select
+                    name="visibility"
+                    value={routineData.visibility}
+                    onChange={changeInput}
+                >
                     <option value="PUBLIC">Pública</option>
                     <option value="PRIVATE">Privada</option>
                 </select>
@@ -343,11 +487,17 @@ function RoutineTextFields({ routineData, titleError, changeInput }) {
 }
 
 function ExerciseList({
-                          exercises, originalExercises, filteredExercises,
-                          inputContainerRefs, showExerciseSearch,
-                          setShowExerciseSearch, setSearchTerm,
-                          changeExerciseField, selectExercise,
-                          removeExercise, moveExercise
+                          exercises,
+                          originalExercises,
+                          filteredExercises,
+                          inputContainerRefs,
+                          showExerciseSearch,
+                          setShowExerciseSearch,
+                          setSearchTerm,
+                          changeExerciseField,
+                          selectExercise,
+                          removeExercise,
+                          moveExercise,
                       }) {
     return exercises.map((exercise, index) => (
         <ExerciseItem
@@ -370,12 +520,23 @@ function ExerciseList({
 }
 
 function ExerciseItem({
-                          index, exercise, originalExercises, filteredExercises,
-                          inputContainerRefs, showExerciseSearch,
-                          setShowExerciseSearch, setSearchTerm,
-                          changeExerciseField, selectExercise,
-                          removeExercise, moveExercise, total
+                          index,
+                          exercise,
+                          originalExercises,
+                          filteredExercises,
+                          inputContainerRefs,
+                          showExerciseSearch,
+                          setShowExerciseSearch,
+                          setSearchTerm,
+                          changeExerciseField,
+                          selectExercise,
+                          removeExercise,
+                          moveExercise,
+                          total,
                       }) {
+    const isOriginal = originalExercises.some(
+        (oe) => oe.id === exercise.id,
+    );
 
     return (
         <div className={styles["ejercicio-item"]}>
@@ -389,23 +550,30 @@ function ExerciseItem({
                 aria-label="Eliminar ejercicio"
             >
                 <img
-                    src={process.env.PUBLIC_URL + "/assets/papelera.svg"}
+                    src={
+                        process.env.PUBLIC_URL + "/assets/papelera.svg"
+                    }
                     alt="Eliminar ejercicio"
                     className={styles["icono-papelera"]}
                 />
             </button>
+
             <div
                 className={styles["ejercicio-input-container"]}
-                ref={el => inputContainerRefs.current[index] = el}
+                ref={(el) => {
+                    inputContainerRefs.current[index] = el;
+                }}
             >
                 <input
                     type="text"
                     value={exercise.nombre}
-                    disabled={originalExercises.some(oe => oe.id === exercise.id)}
+                    disabled={isOriginal}
                     placeholder="Buscar ejercicio..."
                     onChange={(e) => {
                         const v = e.target.value;
-                        if (v !== exercise.nombre) changeExerciseField(index, "id", null);
+                        if (v !== exercise.nombre) {
+                            changeExerciseField(index, "id", null);
+                        }
                         changeExerciseField(index, "nombre", v);
                         setSearchTerm(v);
                         setShowExerciseSearch(index);
@@ -418,14 +586,15 @@ function ExerciseItem({
 
                 {showExerciseSearch === index && (
                     <div className={styles["ejercicio-dropdown"]}>
-                        {filteredExercises.map(ex => (
-                            <div
+                        {filteredExercises.map((ex) => (
+                            <button
                                 key={ex.id}
+                                type="button"
                                 className={styles["ejercicio-option"]}
                                 onClick={() => selectExercise(index, ex)}
                             >
                                 {ex.name}
-                            </div>
+                            </button>
                         ))}
                     </div>
                 )}
@@ -468,11 +637,13 @@ RoutineTextFields.propTypes = {
 };
 
 ExerciseList.propTypes = {
-    exercises: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        nombre: PropTypes.string.isRequired,
-        position: PropTypes.number,
-    })).isRequired,
+    exercises: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            nombre: PropTypes.string.isRequired,
+            position: PropTypes.number,
+        }),
+    ).isRequired,
     originalExercises: PropTypes.array.isRequired,
     filteredExercises: PropTypes.array.isRequired,
     inputContainerRefs: PropTypes.object.isRequired,

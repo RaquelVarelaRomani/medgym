@@ -48,7 +48,7 @@ public class AdminControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
 
-        User user = new User("user", "1", email, "+34 000 000 000", "password", null, roleType, User.StatusType.ACTIVE);
+        User user = new User("user", "1", email, "+34 000 000 000", "password", roleType, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleType);
@@ -106,7 +106,7 @@ public class AdminControllerTest {
     public void testBlockUser_Admin_Ok() throws Exception {
 
         AuthenticatedUserDto admin = createAuthenticatedUser("admin2@email.com", RoleType.ADMIN);
-        User userToBlock = new User("user", "2", "user2@email.com", "+34 000 000 001", "password", null, RoleType.CLIENT, User.StatusType.ACTIVE);
+        User userToBlock = new User("user", "2", "user2@email.com", "+34 000 000 001", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         userToBlock.setPassword(passwordEncoder.encode(userToBlock.getPassword()));
         userDao.save(userToBlock);
 
@@ -120,7 +120,7 @@ public class AdminControllerTest {
     public void testBlockUser_Client_Forbidden() throws Exception {
 
         AuthenticatedUserDto client = createAuthenticatedUser("client2@email.com", RoleType.CLIENT);
-        User userToBlock = new User("user", "3", "user3@email.com", "+34 000 000 002", "password", null, RoleType.CLIENT, User.StatusType.ACTIVE);
+        User userToBlock = new User("user", "3", "user3@email.com", "+34 000 000 002", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         userToBlock.setPassword(passwordEncoder.encode(userToBlock.getPassword()));
         userDao.save(userToBlock);
 
@@ -134,7 +134,7 @@ public class AdminControllerTest {
     public void testUnblockUser_Admin_Ok() throws Exception {
 
         AuthenticatedUserDto admin = createAuthenticatedUser("admin3@email.com", RoleType.ADMIN);
-        User userToUnblock = new User("user", "4", "user4@email.com", "+34 000 000 003", "password", null, RoleType.CLIENT, User.StatusType.ACTIVE);
+        User userToUnblock = new User("user", "4", "user4@email.com", "+34 000 000 003", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         userToUnblock.setPassword(passwordEncoder.encode(userToUnblock.getPassword()));
         userToUnblock.setStatus(User.StatusType.BLOCKED);
         userDao.save(userToUnblock);
@@ -149,7 +149,7 @@ public class AdminControllerTest {
     public void testUnblockUser_Client_Forbidden() throws Exception {
 
         AuthenticatedUserDto client = createAuthenticatedUser("client3@email.com", RoleType.CLIENT);
-        User userToUnblock = new User("user", "5", "user5@email.com", "+34 000 000 004", "password", null, RoleType.CLIENT, User.StatusType.ACTIVE);
+        User userToUnblock = new User("user", "5", "user5@email.com", "+34 000 000 004", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
         userToUnblock.setPassword(passwordEncoder.encode(userToUnblock.getPassword()));
         userToUnblock.setStatus(User.StatusType.BLOCKED);
         userDao.save(userToUnblock);

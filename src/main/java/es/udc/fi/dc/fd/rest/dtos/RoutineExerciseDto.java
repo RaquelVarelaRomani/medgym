@@ -12,39 +12,9 @@ public class RoutineExerciseDto {
     private Integer position;
     private boolean blocked;
 
+    // No parameter constructor because of sonarqube restrictions
+
     public RoutineExerciseDto() {}
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String muscleGroup, String equipment, byte[] image, Integer position) {
-        this.id = id;
-        this.routineId = routineId;
-        this.exerciseId = exerciseId;
-
-        this.exerciseName = exerciseName == null ? null : exerciseName.trim();
-        this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.position = position;
-        this.blocked = false;
-    }
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String muscleGroup, String equipment, byte[] image, Integer position, boolean blocked) {
-        this.id = id;
-        this.routineId = routineId;
-        this.exerciseId = exerciseId;
-
-        this.exerciseName = exerciseName == null ? null : exerciseName.trim();
-        this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.position = position;
-        this.blocked = blocked;
-    }
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, Integer position) {
-    this(id, routineId, exerciseId, exerciseName, exerciseDescription,"", "", null, position);
-}
 
     public Long getId() {
         return id;

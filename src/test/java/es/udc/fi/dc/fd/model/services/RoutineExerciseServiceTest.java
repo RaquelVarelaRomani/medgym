@@ -51,14 +51,14 @@ public class RoutineExerciseServiceTest {
 
     private User createTrainerPremium(String email) {
         User trainer = new User("Pepe", "Domingo", email,
-                "666555444", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
+                "666555444", "password", RoleType.TRAINER, User.StatusType.ACTIVE);
         trainer.setTrainerPremium(true);
         return userDao.save(trainer);
     }
 
     private User createTrainerNonPremium(String email) {
         User trainer = new User("Pepe", "Domingo", email,
-                "666555445", "password", null, RoleType.TRAINER, User.StatusType.ACTIVE);
+                "666555445", "password", RoleType.TRAINER, User.StatusType.ACTIVE);
         trainer.setTrainerPremium(false);
         return userDao.save(trainer);
     }
@@ -116,7 +116,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testClientCannotCreateExercise() {
         User client = new User(
-                "C","L","client@test.com","600","p",null,
+                "C","L","client@test.com","600","p",
                 RoleType.CLIENT, User.StatusType.ACTIVE
         );
         client = userDao.save(client);
@@ -206,7 +206,7 @@ public class RoutineExerciseServiceTest {
     @Test
     public void testAddExerciseToRoutinePermissionDenied() throws DuplicateInstanceException, PermissionException {
         User trainer = createTrainerPremium("trainer@udc.es");
-        User other = new User("X","Y","other@udc.es","600","p",null,
+        User other = new User("X","Y","other@udc.es","600","p",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         other = userDao.save(other);
 

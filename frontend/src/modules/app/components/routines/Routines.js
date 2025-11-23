@@ -7,7 +7,7 @@ import { becomePremium, tryLoginFromServiceToken } from "../../../../backend/use
 import { getMuscleGroups, getEquipments } from "../../../../backend/exerciseService";
 import { followTrainer, unfollowTrainer, getFollowedTrainers } from "../../../../backend/userFollowService";
 import HeartLike from "../common/HeartLike";
-import { getRoutineLikes, likeRoutine, unlikeRoutine } from "../../../../backend/routineLikeService";
+import { likeRoutine, unlikeRoutine } from "../../../../backend/routineLikeService";
 import * as workoutService from "../../../../backend/workoutService";
 import { getDifficultyText, getEquipmentText, getMuscleGroupsText } from "../../util/enumConversor";
 import GoPremiumPopup from "../common/popup/GoPremiumPopup";
@@ -291,17 +291,21 @@ const Routines = () => {
         navigate(`/routines/edit/${routineId}`);
     };
 
+    const onDeleteSuccess = (routineId) => {
+        setRoutines(prev => prev.filter(r => r.id !== routineId));
+        window.dispatchEvent(new CustomEvent("routineDeleted"));
+    };
+
+    const onDeleteError = (err) => {
+        console.error("Error deleting routine:", err);
+        alert("No se pudo eliminar la rutina. Intenta de nuevo.");
+    };
+
     const handleDelete = (routineId) => {
         routineService.deleteRoutine(
             routineId,
-            () => {
-                setRoutines(prev => prev.filter(r => r.id !== routineId));
-                window.dispatchEvent(new CustomEvent("routineDeleted"));
-            },
-            (err) => {
-                console.error("Error deleting routine:", err);
-                alert("No se pudo eliminar la rutina. Intenta de nuevo.");
-            }
+            () => onDeleteSuccess(routineId),
+            onDeleteError
         );
     };
 
@@ -357,6 +361,29 @@ const Routines = () => {
             </div>
         );
     }
+
+    const handleUnfollowSuccess = (trainerId) => {
+        setFollowing(prev => prev.filter(id => id !== trainerId));
+    };
+
+    const handleUnfollowError = () => {
+        console.error("Error al dejar de seguir entrenador");
+    };
+
+    const confirmUnfollow = () => {
+        if (trainerToUnfollow) {
+            unfollowTrainer(
+                trainerToUnfollow,
+                () => handleUnfollowSuccess(trainerToUnfollow),
+                handleUnfollowError
+            );
+        }
+        setTrainerToUnfollow(null);
+    };
+
+    const cancelUnfollow = () => {
+        setTrainerToUnfollow(null);
+    };
 
     return (
         <div className={styles.contenedor}>
@@ -426,13 +453,10 @@ const Routines = () => {
             )}
 
             <ConfirmationPopup
-                text="Seguro que quieres eliminar esta rutina?"
-                show={routineToDelete !== null}
-                onOk={() => {
-                    if (routineToDelete) handleDelete(routineToDelete);
-                    setRoutineToDelete(null);
-                }}
-                onCancel={() => setRoutineToDelete(null)}
+                text="¿Seguro que quieres dejar de seguir a este entrenador?"
+                show={trainerToUnfollow !== null}
+                onOk={confirmUnfollow}
+                onCancel={cancelUnfollow}
             />
 
             <ConfirmationPopup
@@ -448,19 +472,13 @@ const Routines = () => {
             />
 
             <ConfirmationPopup
-                text="¿Seguro que quieres dejar de seguir a este entrenador?"
-                show={trainerToUnfollow !== null}
+                show={routineToDelete !== null}
+                text="¿Seguro que quieres eliminar esta rutina?"
                 onOk={() => {
-                    if (trainerToUnfollow) {
-                        unfollowTrainer(
-                            trainerToUnfollow,
-                            () => setFollowing(prev => prev.filter(id => id !== trainerToUnfollow)),
-                            () => console.error("Error al dejar de seguir entrenador")
-                        );
-                    }
-                    setTrainerToUnfollow(null);
+                    handleDelete(routineToDelete);
+                    setRoutineToDelete(null);
                 }}
-                onCancel={() => setTrainerToUnfollow(null)}
+                onCancel={() => setRoutineToDelete(null)}
             />
 
             <GoPremiumPopup
@@ -819,11 +837,10 @@ function SearchBar({
                                     `${routine.trainerName || ""} ${routine.trainerSurname || ""}`.trim() ||
                                     "Entrenador desconocido";
                                 return (
-                                    <div
+                                    <button
                                         key={routine.id}
+                                        type="button"
                                         className={styles["search-result-item"]}
-                                        role="button"
-                                        tabIndex="0"
                                         onClick={() => handleSelectSearchedRoutine(routine)}
                                         onKeyDown={e => {
                                             if (e.key === "Enter" || e.key === " ") {
@@ -839,8 +856,8 @@ function SearchBar({
                                         <div className={styles["search-result-trainer"]}>
                                             {trainerName}
                                         </div>
-                                    </div>
-                                )
+                                    </button>
+                                );
                             })
                         ) : (
                             <div className={styles["no-search-results"]}>
@@ -952,13 +969,17 @@ function RoutineCard({
             return;
         }
 
-        setRoutines(prev =>
-            prev.map(r =>
-                r.id === routine.id
-                    ? { ...r, likes: (r.likes || []).filter(like => like.userId !== currentUser.id) }
+        const removeUserLike = (likes, userId) =>
+            (likes || []).filter(like => like.userId !== userId);
+
+        const updateRoutineLikes = (routineList, routineId, userId) =>
+            routineList.map(r =>
+                r.id === routineId
+                    ? { ...r, likes: removeUserLike(r.likes, userId) }
                     : r
-            )
-        );
+            );
+
+        setRoutines(prev => updateRoutineLikes(prev, routine.id, currentUser.id));
 
         unlikeRoutine(
             routine.id,

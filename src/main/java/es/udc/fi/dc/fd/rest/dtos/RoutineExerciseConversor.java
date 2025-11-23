@@ -4,37 +4,27 @@ import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.Exercise.ExerciseStatus;
 import es.udc.fi.dc.fd.model.entities.RoutineExercise;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class RoutineExerciseConversor {
     private RoutineExerciseConversor() {}
 
-    public static final RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
+    public static RoutineExerciseDto toRoutineExerciseDto(RoutineExercise routineExercise) {
 
         Exercise ex = routineExercise.getExercise();
         boolean blocked = (ex != null && ex.getStatus() == ExerciseStatus.BLOCKED);
-        
-        return new RoutineExerciseDto(
-            
-            routineExercise.getId(),
-            routineExercise.getRoutine().getId(),
 
-            routineExercise.getExercise().getId(),
-            routineExercise.getExercise().getName(),
-            routineExercise.getExercise().getDescription(),
+        RoutineExerciseDto routineExerciseDto = new RoutineExerciseDto();
 
-            routineExercise.getExercise().getMuscleGroup().toString(),
-            routineExercise.getExercise().getEquipment().toString(),
-            routineExercise.getExercise().getImage(),
+        routineExerciseDto.setId(routineExercise.getId());
+        routineExerciseDto.setRoutineId(routineExercise.getRoutine().getId());
+        routineExerciseDto.setExerciseId(routineExercise.getExercise().getId());
+        routineExerciseDto.setExerciseName(routineExercise.getExercise().getName());
+        routineExerciseDto.setExerciseDescription(routineExercise.getExercise().getDescription());
+        routineExerciseDto.setMuscleGroup(routineExercise.getExercise().getMuscleGroup().toString());
+        routineExerciseDto.setEquipment(routineExercise.getExercise().getEquipment().toString());
+        routineExerciseDto.setImage(routineExercise.getExercise().getImage());
+        routineExerciseDto.setPosition(routineExercise.getPosition());
+        routineExerciseDto.setBlocked(blocked);
 
-            routineExercise.getPosition(),
-            blocked);
-    }
-
-    public static final List<RoutineExerciseDto> toRoutineExercisesDtos(List<RoutineExercise> routineExercises) {
-        return routineExercises.stream()
-                .map(RoutineExerciseConversor::toRoutineExerciseDto)
-                .collect(Collectors.toList());
+        return routineExerciseDto;
     }
 }

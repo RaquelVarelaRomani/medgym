@@ -3,6 +3,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Outlet } from "react-router-dom";
 import Body from "../../modules/app/components/Body";
+import PropTypes from "prop-types";
 
 jest.mock("../../modules/app/components/users/Register", () => () => (
   <div data-testid="register">Register</div>
@@ -13,15 +14,15 @@ jest.mock("../../modules/app/components/users/Login", () => () => (
 jest.mock("../../modules/app/components/users/Profile", () => () => (
   <div data-testid="profile">Profile</div>
 ));
-jest.mock(
-  "../../modules/app/components/users/EditProfile",
-  () =>
-    ({ isPasswordMode }) => (
-      <div data-testid="edit-profile">
-        {isPasswordMode ? "Password" : "Profile"}
-      </div>
-    ),
-);
+jest.mock("../../modules/app/components/users/EditProfile", () => {
+    const MockEditProfile = ({ isPasswordMode }) => (
+        <div data-testid="edit-profile">
+            {isPasswordMode ? "Password" : "Profile"}
+        </div>
+    );
+
+    return MockEditProfile;
+});
 jest.mock("../../modules/app/components/routines/Routines", () => () => (
   <div data-testid="routines">Routines</div>
 ));
@@ -64,9 +65,13 @@ jest.mock("../../modules/app/components/common/RequiresLogout", () => {
   );
   return MockRequiresLogout;
 });
-jest.mock("../../modules/app/components/Layout", () => ({ children }) => (
-  <div data-testid="layout">{children}</div>
-));
+jest.mock("../../modules/app/components/Layout", () => {
+    const MockLayout = ({ children }) => (
+        <div data-testid="layout">{children}</div>
+    );
+
+    return MockLayout;
+});
 jest.mock("../../modules/app/components/users/UserModeration", () => () => (
   <div data-testid="user-moderation">UserModeration</div>
 ));

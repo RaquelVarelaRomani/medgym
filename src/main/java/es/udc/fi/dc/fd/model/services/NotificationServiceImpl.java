@@ -28,13 +28,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     private WorkoutDao workoutDao;
 
-    private final String project_entities_user = "entities.user";
-    private final String project_entities_routine = "entities.routine";
-    private final String project_entities_workout = "entities.workout";
+    private static final String PROJECT_ENTITIES_USER = "entities.user";
+    private static final String PROJECT_ENTITIES_ROUTINE = "entities.routine";
+    private static final String PROJECT_ENTITIES_WORKOUT = "entities.workout";
 
     @Override
     public void createNewRoutineNotification(Long routineId) throws InstanceNotFoundException {
-        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(project_entities_routine, routineId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ROUTINE, routineId));
 
         List<UserFollow> userFollows = userFollowDao.findByFollowUser(routine.getTrainer());
 
@@ -45,8 +45,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createFollowNotification(Long clientId, Long trainerId) throws InstanceNotFoundException {
-        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(project_entities_user, clientId));
-        User trainer = userDao.findById(trainerId).orElseThrow(() -> new InstanceNotFoundException(project_entities_user, trainerId));
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, clientId));
+        User trainer = userDao.findById(trainerId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, trainerId));
 
         notificationDao.save(new Notification(
                 client.getName() + " " + client.getSurname() + " ha comenzado a seguirte",
@@ -60,8 +60,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createRoutineLikeNotification(Long clientId, Long routineId) throws InstanceNotFoundException {
-        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(project_entities_user, clientId));
-        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(project_entities_routine, routineId));
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, clientId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ROUTINE, routineId));
 
         if (client.getId().equals(routine.getTrainer().getId())) {
             return;
@@ -79,8 +79,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createWorkoutLikeNotification(Long userId, Long workoutId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(project_entities_user, userId));
-        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(project_entities_workout, workoutId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_WORKOUT, workoutId));
 
         if (user.getId().equals(workout.getUser().getId())) {
             return;
@@ -98,8 +98,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createWorkoutCommentNotification(Long userId, String text, Long workoutId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(project_entities_user, userId));
-        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(project_entities_workout, workoutId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_WORKOUT, workoutId));
 
         if (userId.equals(workout.getUser().getId())) {
             return;

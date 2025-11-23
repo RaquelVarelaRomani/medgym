@@ -75,12 +75,13 @@ const Login = () => {
                             placeholder="Escriba aquí su contraseña..."
                         />
 
-                        <span
-                            className={styles['ver-password']}
+                        <button
+                            type="button"
+                            className={styles["ver-password"]}
                             onClick={() => setShowPassword(!showPassword)}
                         >
                             &#128065;
-                        </span>
+                        </button>
                     </div>
 
                     <p className={styles['ir-a-registrarse']}>

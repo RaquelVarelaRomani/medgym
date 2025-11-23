@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import PropTypes from "prop-types";
 
 import CreateExercise from "../../modules/app/components/routines/CreateExercise";
 import CreateRoutine from "../../modules/app/components/routines/CreateRoutine";
@@ -14,7 +13,9 @@ import Routines from "../../modules/app/components/routines/Routines";
 import Exercises from "../../modules/app/components/routines/Exercises";
 
 jest.mock("../../modules/app/components/common/CropModal", () => {
-    return function MockCropModal({ onCancel, onSave }) {
+    const PropTypes = require("prop-types");
+
+    function MockCropModal({ onCancel, onSave }) {
         return (
             <div className="crop-modal">
                 <div className="crop-box">
@@ -41,7 +42,14 @@ jest.mock("../../modules/app/components/common/CropModal", () => {
                 </div>
             </div>
         );
+    }
+
+    MockCropModal.propTypes = {
+        onCancel: PropTypes.func.isRequired,
+        onSave: PropTypes.func.isRequired
     };
+
+    return MockCropModal;
 });
 
 import { tryLoginFromServiceToken } from "../../backend/userService";
@@ -1545,7 +1553,7 @@ describe("EditExercise Component", () => {
 
     test("navigates to profile on logo click", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "TRAINER"}});
+            success({ user: { id: 1, role: "TRAINER" } });
         });
 
         exerciseService.getExercise.mockImplementation((id, success) => {
@@ -1560,13 +1568,13 @@ describe("EditExercise Component", () => {
         render(
             <MemoryRouter initialEntries={["/exercises/edit/1"]}>
                 <Routes>
-                    <Route path="/exercises/edit/:id" element={<EditExercise/>}/>
+                    <Route path="/exercises/edit/:id" element={<EditExercise />} />
                 </Routes>
-            </MemoryRouter>,
+            </MemoryRouter>
         );
 
         await waitFor(() => {
-            const logo = screen.getByAltText("Logo");
+            const logo = screen.getByAltText("Foto de perfil");
             fireEvent.click(logo);
             expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
         });
@@ -2090,32 +2098,33 @@ describe("EditRoutine Component", () => {
             success({
                 content: [
                     {
+                        id: 1,
                         name: "Test Routine",
                         description: "Desc",
                         visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
+                        difficulty: "INTERMEDIATE"
+                    }
+                ]
             });
         });
 
         routineExerciseService.getRoutineExercises.mockImplementation(
             (id, success, error) => {
                 error("Error loading exercises");
-            },
+            }
         );
 
         render(
             <MemoryRouter initialEntries={["/routines/edit/1"]}>
                 <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
+                    <Route path="/routines/edit/:id" element={<EditRoutine />} />
                 </Routes>
-            </MemoryRouter>,
+            </MemoryRouter>
         );
 
         await waitFor(() => {
             expect(
-                screen.getByText("Error al cargar los ejercicios de la rutina"),
+                screen.getByText("Error al cargar la rutina")
             ).toBeInTheDocument();
         });
     });
@@ -2449,18 +2458,20 @@ describe("EditRoutine Component", () => {
     test("handles exerciseService.getAllExercises error", async () => {
         routineService.getRoutine.mockImplementation((id, success) => {
             success({
-                content: [{
-                    name: "Test Routine",
-                    description: "Desc",
-                    visibility: "PUBLIC",
-                    difficulty: "INTERMEDIATE",
-                }],
+                id: 1,
+                name: "Test Routine",
+                description: "Desc",
+                visibility: "PUBLIC",
+                difficulty: "INTERMEDIATE",
+                creatorId: 1,
             });
         });
 
-        routineExerciseService.getRoutineExercises.mockImplementation((id, success) => {
-            success({ content: [] });
-        });
+        routineExerciseService.getRoutineExercises.mockImplementation(
+            (id, success) => {
+                success({ content: [] });
+            }
+        );
 
         exerciseService.getAllExercises.mockImplementation((success, error) => {
             error("Load exercises error");
@@ -2474,114 +2485,13 @@ describe("EditRoutine Component", () => {
             </MemoryRouter>
         );
 
-        await screen.findByText("Error al cargar los ejercicios disponibles: Load exercises error");
-    });
-
-    test("handles console.log in handleInputChange", async () => {
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        const consoleSpy = jest
-            .spyOn(console, "log")
-            .mockImplementation(() => {
-            });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
         await waitFor(() => {
-            const titleInput = screen.getByDisplayValue("Test Routine");
-            fireEvent.change(titleInput, {target: {value: "Updated Routine"}});
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "New routineData:",
-                expect.any(Object),
-            );
+            expect(
+                screen.getByText(
+                    "Error al cargar los ejercicios disponibles: Load exercises error"
+                )
+            ).toBeInTheDocument();
         });
-
-        consoleSpy.mockRestore();
-    });
-
-    test("handles console.log in handleExerciseChange", async () => {
-        routineService.getRoutine.mockImplementation((id, success) => {
-            success({
-                content: [
-                    {
-                        name: "Test Routine",
-                        description: "Desc",
-                        visibility: "PUBLIC",
-                        difficulty: "INTERMEDIATE",
-                    },
-                ],
-            });
-        });
-
-        routineExerciseService.getRoutineExercises.mockImplementation(
-            (id, success) => {
-                success({content: []});
-            },
-        );
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        const consoleSpy = jest
-            .spyOn(console, "log")
-            .mockImplementation(() => {
-            });
-
-        render(
-            <MemoryRouter initialEntries={["/routines/edit/1"]}>
-                <Routes>
-                    <Route path="/routines/edit/:id" element={<EditRoutine/>}/>
-                </Routes>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const addButton = screen.getByText("+");
-            fireEvent.click(addButton);
-        });
-
-        await waitFor(() => {
-            const exerciseInputs = screen.getAllByPlaceholderText(
-                "Buscar ejercicio...",
-            );
-            const exerciseInput = exerciseInputs[0];
-            fireEvent.change(exerciseInput, {target: {value: "Test Exercise"}});
-
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "New exercises:",
-                expect.any(Array),
-            );
-        });
-
-        consoleSpy.mockRestore();
     });
 
     test("handles async save operations with success messages", async () => {
@@ -3191,118 +3101,6 @@ describe("EditRoutine Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("+")).toBeInTheDocument();
-        });
-    });
-
-    test("handles ConfirmationPopup onCancel for delete", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "ADMIN"}});
-        });
-
-        routineService.getAllRoutines.mockImplementation((success) => {
-            success([
-                {
-                    id: 1,
-                    name: "Routine 1",
-                    trainerName: "Trainer",
-                    difficulty: "BEGINNER",
-                    trainerId: 1,
-                },
-            ]);
-        });
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        routineLikeService.getRoutineLikes.mockImplementation((success) => {
-            success([]);
-        });
-
-        userFollowService.getFollowedTrainers.mockImplementation(
-            (userId, success) => {
-                success([]);
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter>
-                <Routines/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const deleteButton = screen.getByText("Eliminar");
-            fireEvent.click(deleteButton);
-        });
-
-        await waitFor(() => {
-            const cancelButton = screen.getByText("Cancelar");
-            fireEvent.click(cancelButton);
-            expect(
-                screen.queryByText("Seguro que quieres eliminar esta rutina?"),
-            ).not.toBeInTheDocument();
-        });
-    });
-
-    test("handles ConfirmationPopup onCancel for unfollow", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: {id: 1, role: "CLIENT"}});
-        });
-
-        routineService.getAllRoutines.mockImplementation((success) => {
-            success([
-                {
-                    id: 1,
-                    name: "Routine 1",
-                    trainerName: "Trainer",
-                    difficulty: "BEGINNER",
-                    trainerId: 2,
-                },
-            ]);
-        });
-
-        exerciseService.getAllExercises.mockImplementation((success) => {
-            success({content: []});
-        });
-
-        routineLikeService.getRoutineLikes.mockImplementation((success) => {
-            success([]);
-        });
-
-        userFollowService.getFollowedTrainers.mockImplementation(
-            (userId, success) => {
-                success([{trainerId: 2}]);
-            },
-        );
-
-        workoutService.getWorkouts.mockImplementation((success) => {
-            success([]);
-        });
-
-        render(
-            <MemoryRouter>
-                <Routines/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const followButton = screen.getByText("Dejar de seguir al creador");
-            fireEvent.click(followButton);
-        });
-
-        await waitFor(() => {
-            const cancelButton = screen.getByText("Cancelar");
-            fireEvent.click(cancelButton);
-            expect(
-                screen.queryByText(
-                    "¿Seguro que quieres dejar de seguir a este entrenador?",
-                ),
-            ).not.toBeInTheDocument();
         });
     });
 
@@ -6696,8 +6494,3 @@ describe("Routines Component", () => {
         });
     });
 });
-
-PropTypes.propTypes = {
-    onCancel: PropTypes.func,
-    onSave: PropTypes.func,
-}

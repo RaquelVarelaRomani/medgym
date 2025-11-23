@@ -67,16 +67,16 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                             key={n.id}
                             className={`${styles.item} ${n.isRead ? styles.read : styles.unread}`}
                         >
-                            <div
+                            <button
+                                type="button"
                                 className={styles.content}
-                                role="button"
-                                tabIndex={0}
                                 onClick={() => handleNotificationClick(n)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" || e.key === " ") handleNotificationClick(n);
                                 }}
                             >
-                            <div className={styles.text}>{n.message}</div>
+                                <div className={styles.text}>{n.message}</div>
+
                                 <div className={styles.date}>
                                     {new Date(n.date).toLocaleString("es-ES", {
                                         day: "2-digit",
@@ -86,7 +86,7 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                                         minute: "2-digit",
                                     })}
                                 </div>
-                            </div>
+                            </button>
                             <button
                                 className={styles.deleteButton}
                                 onClick={(e) => handleDeleteNotification(n.id, e)}

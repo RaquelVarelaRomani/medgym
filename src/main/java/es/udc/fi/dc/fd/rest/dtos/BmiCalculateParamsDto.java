@@ -5,7 +5,7 @@ public class BmiCalculateParamsDto {
     private Double weightKg;
     private Double heightCm;
 
-    public BmiCalculateParamsDto() {}
+    public BmiCalculateParamsDto() { super(); }
 
     public Double getWeightKg() { 
         return weightKg; 
@@ -18,6 +18,6 @@ public class BmiCalculateParamsDto {
         return heightCm; 
     }
     public void setHeightCm(Double heightCm) { 
-        this.heightCm = heightCm; 
+        this.heightCm = heightCm;
     }
 }

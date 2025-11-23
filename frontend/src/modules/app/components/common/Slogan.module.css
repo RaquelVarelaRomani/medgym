@@ -3,11 +3,9 @@
   font-weight: 900;
   text-align: center;
   color: var(--neon-orange);
-  margin-top: 0.3rem; /*lo pongo más pegado arriba*/
+  margin-top: 0.3rem;
   margin-bottom: 2rem;
   letter-spacing: 0.5px;
-  /*sintaxis para el brillo (es como un juego de capas)*/
-  /*text-shadow: desplazamientoX desplazamientoY difuminado color;*/
   text-shadow:
     0 0 3px rgba(255, 107, 53, 0.6),
     0 0 12px rgba(255, 107, 53, 0.4),
@@ -16,14 +14,12 @@
   animation: entrada 1.2s ease;
 }
 
-/*para forzar que si vamos al registro no aparezca desde arriba*/
 .slogan-registro {
   animation: none !important;
   transform: none !important;
   opacity: 1 !important;
 }
 
-/*entrada desde arriba*/
 @keyframes entrada {
   from {
     opacity: 0;
@@ -35,7 +31,6 @@
   }
 }
 
-/*para que sea responsive*/
 @media (max-width: 768px) {
   .slogan-texto {
     font-size: 2.3rem;

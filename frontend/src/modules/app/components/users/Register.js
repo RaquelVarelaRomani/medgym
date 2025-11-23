@@ -20,7 +20,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const validatePhoneNumber = (phone) => {
-        const phoneRegex = /^\+?[0-9]{9,15}$/;
+        const phoneRegex = /^\+?\d{9,15}$/;
         return phoneRegex.test(phone);
     };
 
@@ -155,12 +155,14 @@ const Register = () => {
                             required
                             placeholder="Escriba aquí su contraseña..."
                         />
-                        <span
-                            className={styles['ver-password']}
+                        <button
+                            type="button"
+                            className={styles["ver-password"]}
                             onClick={() => setShowPassword(!showPassword)}
+                            aria-label="Mostrar u ocultar contraseña"
                         >
                             &#128065;
-                        </span>
+                        </button>
                     </div>
 
                     <label htmlFor="confirmPassword">Confirmar contraseña</label>
@@ -173,12 +175,14 @@ const Register = () => {
                             required
                             placeholder="Vuelva a escribir aquí su contraseña..."
                         />
-                        <span
-                            className={styles['ver-password']}
+                        <button
+                            type="button"
+                            className={styles["ver-password"]}
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            aria-label="Mostrar u ocultar contraseña"
                         >
                             &#128065;
-                        </span>
+                        </button>
                     </div>
                     
                     <p className={styles['ir-a-login']}>

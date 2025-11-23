@@ -129,12 +129,16 @@ const EditExercise = () => {
         <div className={styles["contenedor-create-exercise"]}>
             <div className={styles["header-crear-ejercicio"]}>
                 <h2>Editando ejercicio: {exerciseData.name}</h2>
-                <img
-                    src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-                    alt="Logo"
-                    className={styles["foto-perfil"]}
+                <button
+                    type="button"
+                    className={styles['foto-perfil']}
                     onClick={() => navigate("/users/profile/" + currentUser.id)}
-                />
+                >
+                    <img
+                        src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+                        alt="Foto de perfil"
+                    />
+                </button>
             </div>
 
             <div className={styles["form-crear-ejercicio"]}>

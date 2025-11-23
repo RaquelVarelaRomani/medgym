@@ -46,7 +46,7 @@ public class ExerciseServiceTest {
 
     private User createPremiumTrainer(String userName) {
         User user = new User(userName, "password", "name", "lastName",
-                userName, null, RoleType.TRAINER, User.StatusType.ACTIVE);
+                userName, RoleType.TRAINER, User.StatusType.ACTIVE);
         user.setTrainerPremium(true);
         return userDao.save(user);
     }

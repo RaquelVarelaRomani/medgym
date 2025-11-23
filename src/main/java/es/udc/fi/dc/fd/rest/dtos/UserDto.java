@@ -26,30 +26,6 @@ public class UserDto {
 	   private Boolean trainerPremium;
 
 	public UserDto() {}
-
-	public UserDto(Long id, String name, String surname, String email, String phoneNumber, byte[] profilePicture, String role, String status) {
-
-		this.id = id;
-		this.name = name.trim();
-		this.surname = surname.trim();
-		this.email = email.trim();
-		this.phoneNumber = phoneNumber.trim();
-		this.role = role.trim();
-		this.profilePicture = profilePicture;
-		this.status = status.trim();
-
-	}
-
-	public UserDto(Long id, String name, String surname, String email, String phoneNumber,
-	              byte[] profilePicture, String role, String status,
-	              Double weightKg, Double heightCm, String gender, Double bmi, Boolean trainerPremium) {
-	   this(id, name, surname, email, phoneNumber, profilePicture, role, status);
-	   this.weightKg = weightKg;
-	   this.heightCm = heightCm;
-	   this.gender = gender;
-	   this.bmi = bmi;
-	   this.trainerPremium = trainerPremium;
-}
 	
 	public Long getId() {
 		return id;

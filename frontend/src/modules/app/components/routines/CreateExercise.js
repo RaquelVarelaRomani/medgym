@@ -111,12 +111,16 @@ const CreateExercise = () => {
         <div className={styles['contenedor-create-exercise']}>
             <div className={styles['header-crear-ejercicio']}>
                 <h2>Estás creando un nuevo ejercicio...</h2>
-                <img
-                    src={process.env.PUBLIC_URL + "/assets/logo.svg"}
-                    alt="Foto de perfil"
+                <button
+                    type="button"
                     className={styles['foto-perfil']}
                     onClick={() => navigate("/users/profile/" + currentUser.id)}
-                />
+                >
+                    <img
+                        src={process.env.PUBLIC_URL + "/assets/logo.svg"}
+                        alt="Foto de perfil"
+                    />
+                </button>
             </div>
 
             <div className={styles['form-crear-ejercicio']}>

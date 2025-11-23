@@ -17,18 +17,9 @@ public class ExerciseDto {
     private String status;
     private Long creatorId;
 
-    public ExerciseDto() {}
+    // No parameter constructor because of sonarqube restrictions
 
-    public ExerciseDto(Long id, String name, String description, String muscleGroup, String equipment, byte[] image, String status, Long creatorId) {
-        this.id = id;
-        this.name = name == null ? null : name.trim();
-        this.description = description == null ? null : description.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.status = status == null ? null : status.trim();
-        this.creatorId = creatorId;
-    }
+    public ExerciseDto() {}
 
     public Long getId() {
         return id;

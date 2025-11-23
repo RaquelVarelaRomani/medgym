@@ -78,7 +78,7 @@ public class WorkoutControllerTest {
                 User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
 
-        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234", null,
+        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234",
                 User.RoleType.TRAINER, User.StatusType.ACTIVE);
         userDao.save(trainer);
 
@@ -97,7 +97,7 @@ public class WorkoutControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
             String phoneNumber, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 
