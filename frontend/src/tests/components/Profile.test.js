@@ -731,6 +731,8 @@ describe("Profile and EditProfile Components", () => {
       getWorkoutsByUser.mockImplementation((id, resolve, reject) => {
         resolve([]);
       });
+
+      console.log("Hola mundo");
     };
 
     test("handles isBlocked error callback", async () => {
