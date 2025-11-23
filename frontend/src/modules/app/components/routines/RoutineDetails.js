@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from "react";
-// OJO! Importa estilos definidos en CSS
 import styles from "./RoutineDetails.module.css";
 import stylesRoutine from "./Routines.module.css";
-//TUVE QUE AÑADIR ESTA PORQUE -> useParams lee los parametros de la URL (routiens/:id)
-//useNavigate -> funcion para cambiar de ruta (necesitamos para la foto de perfil)
 import { useParams, useNavigate } from "react-router-dom";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
@@ -25,7 +22,7 @@ const RoutineDetails = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [showActiveWorkoutPopup, setShowActiveWorkoutPopup] = useState(false);
-  //expandir/colapsar ejercicios
+
   const toggleExercise = (exerciseId) => {
     setExpandedExercises(prev => ({
       ...prev,
@@ -51,54 +48,57 @@ const RoutineDetails = () => {
     return currentUser.id === routine.trainerId;
   };
 
+    const loadRoutineExercises = (routineId) => {
+        const onSuccess = (routineExercisesPage) => {
+            console.log("Routine exercises:", routineExercisesPage);
+
+            const exercisesArray = routineExercisesPage.content
+                ? routineExercisesPage.content
+                : routineExercisesPage;
+
+            const sortedExercises = exercisesArray.sort(
+                (a, b) => a.position - b.position
+            );
+
+            setExercises(sortedExercises);
+            setLoading(false);
+        };
+
+        const onError = (exerciseErrors) => {
+            console.error("Error loading exercises:", exerciseErrors);
+            setError("Error al cargar los ejercicios");
+            setLoading(false);
+        };
+
+        routineExerciseService.getRoutineExercises(
+            routineId,
+            onSuccess,
+            onError
+        );
+    };
+
     const loadRoutine = () => {
         setLoading(true);
         setError(null);
 
-        routineService.getRoutine(
-            id,
-            (routineData) => {
-                console.log("Routine info:", routineData);
+        const onRoutineSuccess = (routineData) => {
+            console.log("Routine info:", routineData);
 
-                const routineObj = routineData.content
-                    ? routineData.content[0]
-                    : routineData;
+            const routineObj = routineData.content
+                ? routineData.content[0]
+                : routineData;
 
-                setRoutine(routineObj);
+            setRoutine(routineObj);
+            loadRoutineExercises(id);
+        };
 
-                const handleRoutineExercisesSuccess = (routineExercisesPage) => {
-                    console.log("Routine exercises:", routineExercisesPage);
+        const onRoutineError = (routineErrors) => {
+            console.error("Error loading routine:", routineErrors);
+            setError("Error al cargar la rutina");
+            setLoading(false);
+        };
 
-                    const exercisesArray = routineExercisesPage.content
-                        ? routineExercisesPage.content
-                        : routineExercisesPage;
-
-                    const sortedExercises = exercisesArray.sort(
-                        (a, b) => a.position - b.position
-                    );
-
-                    setExercises(sortedExercises);
-                    setLoading(false);
-                };
-
-                const handleRoutineExercisesError = (exerciseErrors) => {
-                    console.error("Error loading exercises:", exerciseErrors);
-                    setError("Error al cargar los ejercicios");
-                    setLoading(false);
-                };
-
-                routineExerciseService.getRoutineExercises(
-                    id,
-                    handleRoutineExercisesSuccess,
-                    handleRoutineExercisesError
-                );
-            },
-            (routineErrors) => {
-                console.error("Error loading routine:", routineErrors);
-                setError("Error al cargar la rutina");
-                setLoading(false);
-            }
-        );
+        routineService.getRoutine(id, onRoutineSuccess, onRoutineError);
     };
 
     const checkActiveWorkout = () => {
@@ -205,16 +205,10 @@ const RoutineDetails = () => {
                   </h3>
 
                   {exercise.blocked && (
-                      <div
-                          role="button"
-                          tabIndex={0}
+                      <button
+                          type="button"
                           className={styles["warning-badge"]}
                           onClick={(e) => e.stopPropagation()}
-                          onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                  e.stopPropagation();
-                              }
-                          }}
                           title={
                               isAdmin()
                                   ? "Has bloqueado este ejercicio."
@@ -227,8 +221,7 @@ const RoutineDetails = () => {
                                     ? "Has bloqueado este ejercicio."
                                     : "¡Atención! Este ejercicio ha sido bloqueado. Por favor, realízalo con precaución o consulta a tu entrenador."}
                           </span>
-                      </div>
-
+                      </button>
                   )}
 
                   <span

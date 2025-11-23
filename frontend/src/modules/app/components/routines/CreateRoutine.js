@@ -183,21 +183,21 @@ const CreateRoutine = () => {
 
             const routineId = createdRoutine.id;
 
-            const exercisesToSave = exercises
-                .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
-                .map(ex =>
-                    routineExerciseService.createRoutineExercise(
-                        routineId,
-                        ex.id,
-                        ex.position,
-                        () => {},
-                        (err) => console.error("Error adding exercise:", err)
-                    )
-                );
+            const validExercises = exercises.filter(
+                ex => ex.id !== null && ex.nombre.trim() !== ""
+            );
 
-            Promise.all(exercisesToSave).finally(() => {
-                navigate("/routines");
-            });
+            const saveRequests = validExercises.map(ex =>
+                routineExerciseService.createRoutineExercise(
+                    routineId,
+                    ex.id,
+                    ex.position,
+                    () => {},
+                    (err) => console.error("Error adding exercise:", err)
+                )
+            );
+
+            Promise.all(saveRequests).finally(() => navigate("/routines"));
         };
 
         const handleRoutineError = (error) => {

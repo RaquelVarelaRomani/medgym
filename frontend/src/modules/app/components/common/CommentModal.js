@@ -17,15 +17,19 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
     return (
         <div
             className={styles.overlay}
+            role="button"
+            tabIndex={0}
             onClick={onClose}
+            onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") onClose();
+            }}
         >
-            <div
-                role="dialog"
-                aria-modal="true"
+            <dialog
                 className={styles.modalWrapper}
-                onClick={e => e.stopPropagation()}
+                open
+                onClick={(e) => e.stopPropagation()}   // AHORA ES LEGAL: <dialog> sí es interactivo
             >
-                <dialog className={styles.modal} open>
+                <div className={styles.modal}>
                     <h3>Comentarios</h3>
 
                     <div ref={listRef} className={styles.list}>
@@ -84,8 +88,8 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
                             Enviar
                         </button>
                     </div>
-                </dialog>
-            </div>
+                </div>
+            </dialog>
         </div>
     );
 }

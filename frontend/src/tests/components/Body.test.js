@@ -15,11 +15,17 @@ jest.mock("../../modules/app/components/users/Profile", () => () => (
   <div data-testid="profile">Profile</div>
 ));
 jest.mock("../../modules/app/components/users/EditProfile", () => {
+    const mockPropTypes = require("prop-types");   // NOMBRE OBLIGATORIO: empieza con "mock"
+
     const MockEditProfile = ({ isPasswordMode }) => (
         <div data-testid="edit-profile">
             {isPasswordMode ? "Password" : "Profile"}
         </div>
     );
+
+    MockEditProfile.propTypes = {
+        isPasswordMode: mockPropTypes.bool.isRequired
+    };
 
     return MockEditProfile;
 });
@@ -66,9 +72,15 @@ jest.mock("../../modules/app/components/common/RequiresLogout", () => {
   return MockRequiresLogout;
 });
 jest.mock("../../modules/app/components/Layout", () => {
+    const mockPropTypes = require("prop-types");
+
     const MockLayout = ({ children }) => (
         <div data-testid="layout">{children}</div>
     );
+
+    MockLayout.propTypes = {
+        children: mockPropTypes.node
+    };
 
     return MockLayout;
 });

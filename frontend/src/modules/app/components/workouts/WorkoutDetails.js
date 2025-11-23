@@ -7,6 +7,7 @@ import * as workoutExerciseService from "../../../../backend/workoutExerciseServ
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import LoadingMessage from "../common/LoadingMessage";
+import PropTypes from "prop-types";
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -75,19 +76,23 @@ const WorkoutDetails = () => {
     };
 
     const loadWorkout = () => {
-        workoutService.getWorkout(
-            id,
-            (w) => {
-                setWorkout(w);
-                loadRoutineExercises(w.routineId, () =>
-                    loadWorkoutExercises(id, () => setLoading(false))
-                );
-            },
-            () => {
-                setError("Error al cargar el entrenamiento");
-                setLoading(false);
-            }
-        );
+        const handleWorkoutLoadError = () => {
+            setError("Error al cargar el entrenamiento");
+            setLoading(false);
+        };
+
+        const finishLoading = () => setLoading(false);
+
+        const handleRoutineLoaded = () => {
+            loadWorkoutExercises(id, finishLoading);
+        };
+
+        const handleWorkoutLoaded = (w) => {
+            setWorkout(w);
+            loadRoutineExercises(w.routineId, handleRoutineLoaded);
+        };
+
+        workoutService.getWorkout(id, handleWorkoutLoaded, handleWorkoutLoadError);
     };
 
     useEffect(() => {
@@ -256,3 +261,73 @@ const SetItem = ({ set, index }) => (
         </div>
     </div>
 );
+
+WorkoutHeader.propTypes = {
+    workout: PropTypes.shape({
+        routineName: PropTypes.string.isRequired,
+        startTime: PropTypes.string.isRequired,
+        endTime: PropTypes.string,
+    }).isRequired,
+    handleBack: PropTypes.func.isRequired,
+    formatDate: PropTypes.func.isRequired,
+    duration: PropTypes.func.isRequired,
+};
+
+HeaderRow.propTypes = {
+    label: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+ExerciseList.propTypes = {
+    routineExercises: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+                .isRequired,
+            exerciseName: PropTypes.string,
+            position: PropTypes.number,
+        })
+    ).isRequired,
+    expandedExercises: PropTypes.object.isRequired,
+    toggleExercise: PropTypes.func.isRequired,
+    logged: PropTypes.func.isRequired,
+};
+
+ExerciseItem.propTypes = {
+    exercise: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
+        exerciseName: PropTypes.string.isRequired,
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+    expanded: PropTypes.bool,
+    toggleExercise: PropTypes.func.isRequired,
+    loggedSets: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+                .isRequired,
+            reps: PropTypes.number,
+            weight: PropTypes.number,
+            durationSeconds: PropTypes.number,
+            routineExerciseId: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+            ]).isRequired,
+        })
+    ).isRequired,
+};
+
+ExerciseContent.propTypes = {
+    hasData: PropTypes.bool.isRequired,
+    loggedSets: PropTypes.array.isRequired,
+};
+
+SetItem.propTypes = {
+    set: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            .isRequired,
+        reps: PropTypes.number,
+        weight: PropTypes.number,
+        durationSeconds: PropTypes.number,
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+};

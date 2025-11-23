@@ -72,12 +72,16 @@ const UserSearch = ({ isOpen, onClose }) => {
             aria-label="Cerrar buscador"
         >
             <div
+                role="button"
+                tabIndex={0}
                 className={styles.container}
                 onClick={e => e.stopPropagation()}
+                onKeyDown={e => {
+                    if (e.key === "Enter" || e.key === " ") e.stopPropagation();
+                }}
             >
                 <div
                     className={styles.modal}
-                    role="presentation"
                     tabIndex={-1}
                     onClick={e => e.stopPropagation()}
                     onMouseDown={e => e.stopPropagation()}
@@ -97,28 +101,29 @@ const UserSearch = ({ isOpen, onClose }) => {
                         {!loading && results.length === 0 && query.trim() && (
                             <div className={styles.noResults}>No se encontraron usuarios</div>
                         )}
-                        {!loading && results.map((user) => (
-                            <div key={user.id} className={styles.userItem}>
-                                <ProfilePhoto
-                                    profilePicture={user.profilePicture}
-                                    alt={`${user.firstName} ${user.lastName}`}
-                                    size="small"
-                                />
-                                <div className={styles.userInfo}>
-                                    <div className={styles.userName}>
-                                        {user.name} {user.surname}
+                        {!loading &&
+                            results.map(user => (
+                                <div key={user.id} className={styles.userItem}>
+                                    <ProfilePhoto
+                                        profilePicture={user.profilePicture}
+                                        alt={`${user.firstName} ${user.lastName}`}
+                                        size="small"
+                                    />
+                                    <div className={styles.userInfo}>
+                                        <div className={styles.userName}>
+                                            {user.name} {user.surname}
+                                        </div>
+                                    </div>
+                                    <div className={styles.userActions}>
+                                        <button
+                                            className={styles.viewProfileBtn}
+                                            onClick={() => handleViewProfile(user.id)}
+                                        >
+                                            Ver Perfil
+                                        </button>
                                     </div>
                                 </div>
-                                <div className={styles.userActions}>
-                                    <button
-                                        className={styles.viewProfileBtn}
-                                        onClick={() => handleViewProfile(user.id)}
-                                    >
-                                        Ver Perfil
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </div>
             </div>

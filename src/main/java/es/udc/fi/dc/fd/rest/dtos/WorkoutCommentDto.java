@@ -13,11 +13,12 @@ public class WorkoutCommentDto {
     String userSurname;
     byte[] userProfilePicture;
 
-    // No-args constructor required for Jackson and frameworks.
-    // Nested comment: implementation intentionally empty because the DTO
-    // is only used as a data carrier and all fields are set via setters,
-    // satisfying SonarQube rules regarding unused or empty methods.
-    public WorkoutCommentDto() {}
+    public WorkoutCommentDto() {
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
+    }
 
     public Long getId() {
         return id;

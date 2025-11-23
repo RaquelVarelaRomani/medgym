@@ -693,6 +693,11 @@ describe("Common Components", () => {
 
           const imageError = () => new Error("Image load error");
 
+          function triggerError(img) {
+              const handler = img.onerror;
+              if (handler) handler(imageError());
+          }
+
           Object.defineProperty(global, "Image", {
               configurable: true,
               writable: true,
@@ -700,7 +705,7 @@ describe("Common Components", () => {
                   this.onload = null;
                   this.onerror = null;
 
-                  setTimeout(() => this.onerror?.(imageError()), 0);
+                  setTimeout(triggerError, 0, this);
               }
           });
 

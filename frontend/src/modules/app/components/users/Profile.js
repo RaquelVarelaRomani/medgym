@@ -288,6 +288,7 @@ const Profile = () => {
                 setIsFollowing(followingFlag);
                 setLoading(false);
             } catch (e) {
+                console.error("Error loading profile:", e);
                 if (isMounted) {
                     navigate("/users/login");
                 }

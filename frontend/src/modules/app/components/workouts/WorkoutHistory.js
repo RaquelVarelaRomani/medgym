@@ -15,6 +15,8 @@ import {
 } from "../common/statistics/utils/formatters";
 import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
 import HeartLike from "../common/HeartLike";
+import PropTypes from "prop-types";
+
 
 // ---------- Helpers puros ----------
 
@@ -410,26 +412,21 @@ const WorkoutHistory = () => {
     };
 
     const handleToggleLike = (workout, next) => {
-        setWorkouts((prev) =>
-            prev.map((w) =>
-                w.id === workout.id
-                    ? {
-                        ...w,
-                        likes: next
-                            ? [...(w.likes || []), { userId: currentUser.id }]
-                            : (w.likes || []).filter(
-                                (l) => l.userId !== currentUser.id,
-                            ),
-                    }
-                    : w,
-            ),
-        );
+        const updateLikes = (w) => {
+            if (w.id !== workout.id) return w;
 
-        if (next) {
-            likeWorkout(workout.id, () => {}, () => {});
-        } else {
-            unlikeWorkout(workout.id, () => {}, () => {});
-        }
+            const currentLikes = w.likes || [];
+            const updatedLikes = next
+                ? [...currentLikes, { userId: currentUser.id }]
+                : currentLikes.filter(l => l.userId !== currentUser.id);
+
+            return { ...w, likes: updatedLikes };
+        };
+
+        setWorkouts(prev => prev.map(updateLikes));
+
+        const action = next ? likeWorkout : unlikeWorkout;
+        action(workout.id, () => {}, () => {});
     };
 
     const handleOpenComments = (workout) => {
@@ -544,3 +541,95 @@ const WorkoutHistory = () => {
 };
 
 export default WorkoutHistory;
+
+/* ---------- HistoryHeader ---------- */
+HistoryHeader.propTypes = {
+    viewMode: PropTypes.oneOf(["list", "calendar", "stats"]).isRequired,
+    setViewMode: PropTypes.func.isRequired,
+    stats: PropTypes.object,
+    onStatsSelected: PropTypes.func.isRequired,
+};
+
+/* ---------- EmptyMessage ---------- */
+EmptyMessage.propTypes = {
+    onGoRoutines: PropTypes.func.isRequired,
+};
+
+/* ---------- WorkoutItem ---------- */
+WorkoutItem.propTypes = {
+    workout: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        routineName: PropTypes.string.isRequired,
+        startTime: PropTypes.string.isRequired,
+        endTime: PropTypes.string,
+        likes: PropTypes.arrayOf(
+            PropTypes.shape({
+                userId: PropTypes.number.isRequired
+            })
+        ),
+        comments: PropTypes.arrayOf(
+            PropTypes.shape({
+                id: PropTypes.number,
+                userId: PropTypes.number,
+                text: PropTypes.string,
+                timestamp: PropTypes.string
+            })
+        )
+    }).isRequired,
+    currentUser: PropTypes.shape({
+        id: PropTypes.number
+    }),
+    onToggleLike: PropTypes.func.isRequired,
+    onOpenComments: PropTypes.func.isRequired,
+};
+
+/* ---------- WorkoutList ---------- */
+WorkoutList.propTypes = {
+    workouts: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+        })
+    ).isRequired,
+    currentUser: PropTypes.object,
+    onToggleLike: PropTypes.func.isRequired,
+    onOpenComments: PropTypes.func.isRequired,
+};
+
+/* ---------- CalendarDayCell ---------- */
+CalendarDayCell.propTypes = {
+    year: PropTypes.number.isRequired,
+    month: PropTypes.number.isRequired,
+    day: PropTypes.number,
+    workoutsByDay: PropTypes.object.isRequired,
+};
+
+/* ---------- CalendarView ---------- */
+CalendarView.propTypes = {
+    workouts: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            startTime: PropTypes.string.isRequired,
+            endTime: PropTypes.string,
+            routineName: PropTypes.string.isRequired
+        })
+    ).isRequired,
+    currentMonth: PropTypes.number.isRequired,
+    setCurrentMonth: PropTypes.func.isRequired,
+    year: PropTypes.number.isRequired,
+};
+
+/* ---------- StatsView ---------- */
+StatsView.propTypes = {
+    stats: PropTypes.shape({
+        lastMonthWorkouts: PropTypes.number,
+        totalDurationSeconds: PropTypes.number,
+        averageDurationSeconds: PropTypes.number,
+        exercisesByMuscleGroup: PropTypes.object
+    }),
+    statsLoading: PropTypes.bool.isRequired,
+    statsError: PropTypes.string,
+    onRetry: PropTypes.func.isRequired,
+};
+
+/* ---------- WorkoutHistory (componente principal) ---------- */
+WorkoutHistory.propTypes = {};
