@@ -9,6 +9,7 @@ import CommentBubble from "../common/CommentBubble";
 import CommentModal from "../common/CommentModal";
 import { commentWorkout } from "../../../../backend/workoutCommentService";
 import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
+import PropTypes from "prop-types";
 
 /* ---------- SUBCOMPONENTES QUE REDUCEN PROFUNDIDAD ---------- */
 
@@ -148,13 +149,19 @@ const WorkoutFeed = () => {
 
     const handleLike = (workout, next) => {
         if (next) {
-            setWorkouts((prev) =>
-                prev.map((w) =>
-                    w.id === workout.id
-                        ? { ...w, likes: [...w.likes, { userId: currentUser.id }] }
-                        : w
-                )
-            );
+            setWorkouts(prev => {
+                return prev.map(w => {
+                    if (w.id !== workout.id) return w;
+
+                    const updatedLikes =
+                        w.likes.filter(like => like.userId !== currentUser.id);
+
+                    return {
+                        ...w,
+                        likes: updatedLikes
+                    };
+                });
+            });
             likeWorkout(workout.id, () => {}, () =>
                 console.error("Error al marcar como favorito")
             );
@@ -256,3 +263,22 @@ const WorkoutFeed = () => {
 };
 
 export default WorkoutFeed;
+
+WorkoutCard.propTypes = {
+    workout: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        routineName: PropTypes.string.isRequired,
+        startTime: PropTypes.string.isRequired,
+        endTime: PropTypes.string,
+        userProfilePicture: PropTypes.string.isRequired,
+        userName: PropTypes.string.isRequired,
+        userSurname: PropTypes.string.isRequired,
+        likes: PropTypes.arrayOf(PropTypes.shape({ userId: PropTypes.string.isRequired })).isRequired,
+    }),
+    navigate: PropTypes.func.isRequired,
+    currentUser: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+    }),
+    onLike: PropTypes.func.isRequired,
+    onComment: PropTypes.func.isRequired,
+}
