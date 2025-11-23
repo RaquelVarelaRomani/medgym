@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchUsers } from '../../../../backend/userService';
 import ProfilePhoto from '../common/profilePhoto';
@@ -11,6 +11,7 @@ const UserSearch = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState(null);
     const navigate = useNavigate();
+    const modalRef = useRef(null);
 
     const performSearch = useCallback((searchQuery) => {
         if (!searchQuery.trim()) {
@@ -54,34 +55,27 @@ const UserSearch = ({ isOpen, onClose }) => {
         setQuery(e.target.value);
     };
 
+    const handleOverlayClick = (e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) {
+            onClose();
+        }
+    };
     const handleViewProfile = (userId) => {
-        setQuery('');
-        setResults([]);
-        navigate(`/users/profile/${userId}`);
         onClose();
+        navigate(`/users/profile/${userId}`);
     };
 
 
     if (!isOpen) return null;
 
     return (
-        <button
-            type="button"
+        <div
             className={styles.overlay}
-            onClick={onClose}
-            aria-label="Cerrar buscador"
+            onClick={handleOverlayClick}
+            role="presentation"
         >
-            {/* container ahora es botón accesible */}
-            <button
-                type="button"
-                className={styles.container}
-                onClick={e => e.stopPropagation()}
-                onKeyDown={e => {
-                    if (e.key === "Enter" || e.key === " ") e.stopPropagation();
-                }}
-            >
-                {/* modal ya NO tiene listeners → se evita el segundo warning */}
-                <div className={styles.modal}>
+            <div className={styles.container}>
+                <div ref={modalRef} className={styles.modal}>
                     <div className={styles.searchContainer}>
                         <input
                             type="text"
@@ -131,10 +125,11 @@ const UserSearch = ({ isOpen, onClose }) => {
                             ))}
                     </div>
                 </div>
-            </button>
-        </button>
+            </div>
+        </div>
     );
 };
+UserSearch.displayName = 'UserSearch';
 
 export default UserSearch;
 

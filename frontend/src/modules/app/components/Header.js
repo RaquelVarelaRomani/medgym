@@ -22,6 +22,7 @@ const Header = () => {
     const [followersCount, setFollowersCount] = useState(0);
     const [showUserSearch, setShowUserSearch] = useState(false);
     const dropdownComponent = useRef(null);
+    const userSearchComponent = useRef(null);
 
     const handleToggleNotifications = () => {
         setShowNotifications(prev => !prev);
@@ -82,10 +83,10 @@ const Header = () => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
+
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
                 setIsDropdownOpen(false);
                 setShowNotifications(false);
-                setShowUserSearch(false);
             }
         };
 
@@ -293,6 +294,7 @@ const Header = () => {
                     </div>
                 </div>
                 <UserSearch
+                    ref={userSearchComponent}
                     isOpen={showUserSearch}
                     onClose={() => setShowUserSearch(false)}
                 />
