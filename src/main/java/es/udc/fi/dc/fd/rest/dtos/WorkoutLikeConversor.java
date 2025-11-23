@@ -17,6 +17,9 @@ public class WorkoutLikeConversor {
     }
 
     public static List<WorkoutLikeDto> toWorkoutLikeDtos(List<WorkoutLike> workoutLikes) {
+        if (workoutLikes == null) {
+            return List.of();
+        }
         return workoutLikes.stream().map(WorkoutLikeConversor::toWorkoutLikeDto).toList();
     }
 }

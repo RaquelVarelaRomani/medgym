@@ -184,7 +184,7 @@ public class UserController {
 	public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
 
 		// No se aplica bloqueo cuando pides tu propio perfil
-		if (!userId.equals(id) && userBlockService.hasBlocked(id, userId)) {
+		if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId) || userBlockService.hasBlocked(userId, id))) {
 			throw new PermissionException();
 		}
 
@@ -209,7 +209,11 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public void deleteUser(@PathVariable Long id) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteUser(@RequestAttribute Long userId, @PathVariable Long id) throws PermissionException {
+		if (!id.equals(userId)) {
+			throw new PermissionException();
+		}
 		userService.deleteUser(id);
 	}
 

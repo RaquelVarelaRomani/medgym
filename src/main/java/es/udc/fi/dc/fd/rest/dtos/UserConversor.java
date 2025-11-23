@@ -55,14 +55,14 @@ public class UserConversor {
 
 	public static User toUser(UserDto userDto) {
 		User user = new User(
-            safeTrim(userDto.getName()),
-            safeTrim(userDto.getSurname()),
-            safeTrim(userDto.getEmail()),
-            safeTrim(userDto.getPhoneNumber()),
-            userDto.getPassword(),
-            RoleType.valueOf(userDto.getRole()),
-            User.StatusType.valueOf(userDto.getStatus())
-        );
+	           safeTrim(userDto.getName()),
+	           safeTrim(userDto.getSurname()),
+	           safeTrim(userDto.getEmail()),
+	           safeTrim(userDto.getPhoneNumber()),
+	           userDto.getPassword(),
+	           userDto.getRole() != null ? RoleType.valueOf(userDto.getRole()) : RoleType.CLIENT,
+	           userDto.getStatus() != null ? User.StatusType.valueOf(userDto.getStatus()) : User.StatusType.ACTIVE
+	       );
 
         user.setProfilePicture(userDto.getProfilePicture());
 

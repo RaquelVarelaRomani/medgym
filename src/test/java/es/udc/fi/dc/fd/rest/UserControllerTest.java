@@ -252,8 +252,7 @@ public class UserControllerTest {
         AuthenticatedUserDto user = createAuthenticatedUser("token@test.com", RoleType.CLIENT);
 
         mockMvc.perform(post("/api/users/loginFromServiceToken")
-                        .header("userId", user.getUserDto().getId().toString())
-                        .header("serviceToken", user.getServiceToken()))
+                        .header("Authorization", "Bearer " + user.getServiceToken()))
                 .andExpect(status().isOk());
     }
 

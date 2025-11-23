@@ -24,6 +24,9 @@ public class WorkoutCommentConversor {
     }
 
     public static List<WorkoutCommentDto> toWorkoutCommentDtos(List<WorkoutComment> workoutComments) {
+        if (workoutComments == null) {
+            return List.of();
+        }
         return workoutComments.stream().map(WorkoutCommentConversor::toWorkoutCommentDto).toList();
     }
 }
