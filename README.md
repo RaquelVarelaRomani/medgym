@@ -1,4 +1,4 @@
-# Spring-Boot React Project
+# Spring-Boot React Project.
 
 _Example project to start building your own web application_
 
