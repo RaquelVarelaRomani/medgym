@@ -73,7 +73,7 @@ public class WorkoutController {
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userIdPath));
     }
 
-    @GetMapping("/stats")
+    @GetMapping("/stats/deprecated")
     public StatisticsDto getLastMonthStats(@RequestAttribute Long userId) {
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
         LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
