@@ -14,14 +14,15 @@ import java.util.stream.Collectors;
 @Transactional
 public class AchievementProgressServiceImpl implements AchievementProgressService {
 
-    @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final AchievementDao achievementDao;
+    private final AchievementProgressDao achievementProgressDao;
 
-    @Autowired
-    private AchievementDao achievementDao;
-
-    @Autowired
-    private AchievementProgressDao achievementProgressDao;
+    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao) {
+        this.userDao = userDao;
+        this.achievementDao = achievementDao;
+        this.achievementProgressDao = achievementProgressDao;
+    }
 
     @Override
     public void createOrUpdateAchievementProgress(Long userId, Long achievementId, Integer progressAdded) throws InstanceNotFoundException {

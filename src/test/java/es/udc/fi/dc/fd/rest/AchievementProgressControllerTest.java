@@ -82,11 +82,6 @@ class AchievementProgressControllerTest {
         sessions = achievementDao.findById(3L).orElseThrow();
     }
 
-    private AchievementProgressDto readDto(ResultActions ra) throws Exception {
-        String json = ra.andReturn().getResponse().getContentAsString();
-        return objectMapper.readValue(json, AchievementProgressDto.class);
-    }
-
     @Test
     void testCreateOrUpdateAchievementProgress() throws Exception {
 

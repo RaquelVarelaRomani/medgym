@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 public class AchievementProgressConversor {
 
+    private AchievementProgressConversor() {
+    }
+
     public static AchievementProgressDto toAchievementProgressDto(
             AchievementProgress achievementProgress,
             Achievement achievement
