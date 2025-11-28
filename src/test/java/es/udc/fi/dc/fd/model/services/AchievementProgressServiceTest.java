@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,6 +48,39 @@ class AchievementProgressServiceTest {
 
     private Achievement aSessions() {
         return achievementDao.findById(3L).orElseThrow();
+    }
+
+    @Test
+    void testConstructorAndGettersSetters() {
+
+        User user = new User();
+        Achievement ach = new Achievement("N", "D", 1, 2, 3);
+
+        AchievementProgress p = new AchievementProgress();
+
+        p.setId(5L);
+        p.setProgress(42);
+        p.setUser(user);
+        p.setAchievement(ach);
+
+        assertEquals(5L, p.getId());
+        assertEquals(42, p.getProgress());
+        assertEquals(user, p.getUser());
+        assertEquals(ach, p.getAchievement());
+    }
+
+    @Test
+    void testFullConstructor() {
+
+        User user = new User();
+        Achievement ach = new Achievement("N2", "D2", 4, 5, 6);
+
+        AchievementProgress p =
+                new AchievementProgress(77, user, ach);
+
+        assertEquals(77, p.getProgress());
+        assertEquals(user, p.getUser());
+        assertEquals(ach, p.getAchievement());
     }
 
     @Test
