@@ -72,14 +72,13 @@ public class WorkoutController {
 
         return toWorkoutDtos(workoutService.findWorkoutsFromUser(userIdPath));
     }
+    @GetMapping("/stats")
+    public StatisticsDto getStats(@RequestAttribute Long userId, @RequestParam int month, @RequestParam int year){
+        YearMonth targetMonth = YearMonth.of(year, month);
+        LocalDateTime startOfMonth = targetMonth.atDay(1).atStartOfDay();
+        LocalDateTime endOfMonth = targetMonth.atEndOfMonth().atTime(23, 59, 59);
 
-    @GetMapping("/stats/deprecated")
-    public StatisticsDto getLastMonthStats(@RequestAttribute Long userId) {
-        YearMonth lastMonth = YearMonth.now().minusMonths(1);
-        LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
-        LocalDateTime endOfLastMonth = lastMonth.atEndOfMonth().atTime(23, 59, 59);
-
-        List<Workout> workouts = workoutService.findWorkoutsByUserAndDateRange(userId, startOfLastMonth, endOfLastMonth);
+        List<Workout> workouts = workoutService.findWorkoutsByUserAndDateRange(userId, startOfMonth, endOfMonth);
         List<Long> workoutIds = workouts.stream().map(Workout::getId).toList();
         List<WorkoutExercise> performedExercises = workoutExerciseService.findWorkoutExercisesByWorkoutIds(workoutIds);
 
