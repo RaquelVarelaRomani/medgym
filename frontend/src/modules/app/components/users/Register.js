@@ -64,7 +64,7 @@ const Register = () => {
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                navigate("/routines");
+                navigate("/workouts/feed");
             },
             (errorResponse) => {
                 console.log("Error en el registro:", errorResponse);
