@@ -16,6 +16,7 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
     const [phoneError, setPhoneError] = useState("");
+    const [role, setRole] = useState("CLIENT")
     //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
     const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(null);
@@ -58,7 +59,7 @@ const Register = () => {
             email: email.trim(),
             phoneNumber: phoneNumber.trim(),
             password,
-            role: "CLIENT",
+            role: role.trim(),
             status: "ACTIVE",
         };
 
@@ -182,6 +183,22 @@ const Register = () => {
                             &#128065;
                         </span>
                     </div>
+
+                    <label style={{display:"inline-flex",alignItems:"center",cursor:"pointer",userSelect:"none",gap:"6px"}}>
+                        <input
+                            type="checkbox"
+                            checked={role==="TRAINER"}
+                            onChange={e=>setRole(e.target.checked?"TRAINER":"CLIENT")}
+                            style={{width:"16px", height:"16px", margin:0, verticalAlign:"middle", transform:"translateY(2px)"}}
+                        />
+                        <span style={{lineHeight:"1"}}>Soy entrenador</span>
+                    </label>
+
+
+
+
+
+
                     
                     <p className={styles['ir-a-login']}>
                         <Link to="/users/login" className={styles['link-login']}>
