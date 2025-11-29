@@ -17,13 +17,11 @@ const Register = () => {
     const [passwordError, setPasswordError] = useState("");
     const [phoneError, setPhoneError] = useState("");
     const [role, setRole] = useState("CLIENT")
-    //necesitamos que sea string en lugar de bool (ahora tenemos varios tipos de errores)
-    const [showPopup, setShowPopup] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     const validatePhoneNumber = (phone) => {
-        const phoneRegex = /^\+?[0-9]{9,15}$/;
+        const phoneRegex = /^\+?\d{9,15}$/;
         return phoneRegex.test(phone);
     };
 
@@ -37,7 +35,7 @@ const Register = () => {
             return;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email.trim())) {
             return;
         }
@@ -158,12 +156,14 @@ const Register = () => {
                             required
                             placeholder="Escriba aquí su contraseña..."
                         />
-                        <span
-                            className={styles['ver-password']}
+                        <button
+                            type="button"
+                            className={styles["ver-password"]}
                             onClick={() => setShowPassword(!showPassword)}
+                            aria-label="Mostrar u ocultar contraseña"
                         >
                             &#128065;
-                        </span>
+                        </button>
                     </div>
 
                     <label htmlFor="confirmPassword">Confirmar contraseña</label>
@@ -176,12 +176,14 @@ const Register = () => {
                             required
                             placeholder="Vuelva a escribir aquí su contraseña..."
                         />
-                        <span
-                            className={styles['ver-password']}
+                        <button
+                            type="button"
+                            className={styles["ver-password"]}
                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            aria-label="Mostrar u ocultar contraseña"
                         >
                             &#128065;
-                        </span>
+                        </button>
                     </div>
 
                     <label style={{display:"inline-flex",alignItems:"center",cursor:"pointer",userSelect:"none",gap:"6px"}}>

@@ -15,6 +15,7 @@ public class NotificationFollowParamsDto {
     public Long getTrainerId() {
         return trainerId;
     }
+
     public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
     }
@@ -23,6 +24,7 @@ public class NotificationFollowParamsDto {
     public Long getClientId() {
         return clientId;
     }
+
     public void setClientId(Long clientId) {
         this.clientId = clientId;
     }

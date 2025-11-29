@@ -157,3 +157,11 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}

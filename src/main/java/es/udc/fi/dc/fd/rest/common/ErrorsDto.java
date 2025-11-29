@@ -4,32 +4,32 @@ import java.util.List;
 
 public class ErrorsDto {
 
-	private String globalError;
-	
-	private List<FieldErrorDto> fieldErrors;
+    private String globalError;
 
-	public ErrorsDto(String globalError) {
-		setGlobalError(globalError);
-	}
+    private List<FieldErrorDto> fieldErrors;
 
-	public ErrorsDto(List<FieldErrorDto> fieldErrors) {
-		setFieldErrors(fieldErrors);
-	}
+    public ErrorsDto(String globalError) {
+        setGlobalError(globalError);
+    }
 
-	public String getGlobalError() {
-		return globalError;
-	}
+    public ErrorsDto(List<FieldErrorDto> fieldErrors) {
+        setFieldErrors(fieldErrors);
+    }
 
-	public void setGlobalError(String globalError) {
-		this.globalError = globalError;
-	}
+    public String getGlobalError() {
+        return globalError;
+    }
 
-	public List<FieldErrorDto> getFieldErrors() {
-		return fieldErrors;
-	}
+    public void setGlobalError(String globalError) {
+        this.globalError = globalError;
+    }
 
-	public void setFieldErrors(List<FieldErrorDto> fieldErrors) {
-		this.fieldErrors = fieldErrors;
-	}
+    public List<FieldErrorDto> getFieldErrors() {
+        return fieldErrors;
+    }
+
+    public void setFieldErrors(List<FieldErrorDto> fieldErrors) {
+        this.fieldErrors = fieldErrors;
+    }
 
 }

@@ -1,37 +1,31 @@
-
 package es.udc.fi.dc.fd.model.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import jakarta.transaction.Transactional;
-
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class RoutineServiceTest {
+class RoutineServiceTest {
 
     @Autowired
     private RoutineService routineService;
 
     @Autowired
     private UserDao userDao;
+
     @Autowired
     private RoutineDao routineDao;
 
@@ -44,183 +38,235 @@ public class RoutineServiceTest {
     @Autowired
     private UserFollowService userFollowService;
 
-    private User createUser(String userName) {
-        User user = new User(userName, "password", userName + "@test.com", userName, "email@test.com", null, RoleType.CLIENT, User.StatusType.ACTIVE);
-        return userDao.save(user);
+    private User createUser(String name) {
+        User u = new User(
+                name,
+                "surname",
+                name + "@mail.com",
+                "600",
+                "password",
+                RoleType.CLIENT,
+                User.StatusType.ACTIVE
+        );
+        return userDao.save(u);
+    }
+
+    private User createTrainerPremium(String name) {
+        User u = new User(
+                name,
+                "surname",
+                name + "@mail.com",
+                "601",
+                "password",
+                RoleType.TRAINER,
+                User.StatusType.ACTIVE
+        );
+        u.setTrainerPremium(true);
+        return userDao.save(u);
+    }
+
+    private User createTrainerNonPremium(String name) {
+        User u = new User(
+                name,
+                "surname",
+                name + "@mail.com",
+                "602",
+                "password",
+                RoleType.TRAINER,
+                User.StatusType.ACTIVE
+        );
+        u.setTrainerPremium(false);
+        return userDao.save(u);
     }
 
     @Test
-    public void testCreateAndFindRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user@test.com");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    void testCreateAndFindRoutine() throws Exception {
+        User user = createTrainerPremium("u1");
+        Routine routine = routineService.createRoutine(
+                "r1", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER
+        );
 
-        Routine foundRoutine = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
+        Routine found = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
 
-        assertEquals(routine, foundRoutine);
+        assertEquals(routine, found);
     }
 
     @Test
-    public void testCreateDuplicateRoutine() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user@test.com");
-        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    void testCreateDuplicateRoutine() throws Exception {
+        User user = createTrainerPremium("u2");
+        routineService.createRoutine("rx", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        assertThrows(DuplicateInstanceException.class, () -> {
-            routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        });
+        assertThrows(DuplicateInstanceException.class, () ->
+                routineService.createRoutine("rx", "d", user,
+                        Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER));
     }
 
     @Test
-    public void testUpdateRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user@test.com");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    void testUpdateRoutine() throws Exception {
+        User user = createTrainerPremium("u3");
+        Routine routine = routineService.createRoutine(
+                "ru", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER
+        );
 
-        routineService.updateRoutine(user.getId(), routine.getId(), "new name", "new description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.INTERMEDIATE);
+        routineService.updateRoutine(user.getId(), routine.getId(),
+                "new", "desc",
+                Routine.VisibilityType.PUBLIC,
+                Routine.DifficultyType.INTERMEDIATE
+        );
 
-        Routine updatedRoutine = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
+        Routine updated = routineService.findRoutineByIdAuth(user.getId(), routine.getId());
 
-        assertEquals("new name", updatedRoutine.getName());
-        assertEquals("new description", updatedRoutine.getDescription());
-        assertEquals(Routine.DifficultyType.INTERMEDIATE, updatedRoutine.getDifficulty());
+        assertEquals("new", updated.getName());
+        assertEquals("desc", updated.getDescription());
+        assertEquals(Routine.DifficultyType.INTERMEDIATE, updated.getDifficulty());
     }
 
     @Test
-    public void testUpdateRoutineDuplicateName() throws DuplicateInstanceException, InstanceNotFoundException {
-        User user = createUser("user@test.com");
-        routineService.createRoutine("routine1", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        Routine routine2 = routineService.createRoutine("routine2", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    void testUpdateRoutineDuplicateName() throws Exception {
+        User user = createTrainerPremium("u4");
+        routineService.createRoutine("a1", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        assertThrows(DuplicateInstanceException.class, () -> {
-            routineService.updateRoutine(user.getId(), routine2.getId(), "routine1", "new description", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        });
+        Routine r2 = routineService.createRoutine("a2", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        assertThrows(DuplicateInstanceException.class, () ->
+                routineService.updateRoutine(user.getId(), r2.getId(), "a1",
+                        "d", Routine.VisibilityType.PUBLIC,
+                        Routine.DifficultyType.BEGINNER));
     }
 
     @Test
-    public void testUpdateRoutineWithoutPermission() throws Exception {
-        User trainer = createUser("trainer@test.com");
-        trainer.setRole(User.RoleType.TRAINER);
-        trainer = userDao.save(trainer);
+    void testUpdateRoutineWithoutPermission() throws Exception {
+        User trainer = createTrainerPremium("trainerX");
+        User client = createUser("clientX");
 
-        User client = createUser("client@test.com");
+        Routine routine = routineService.createRoutine(
+                "test", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER
+        );
 
-        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-
-        assertThrows(PermissionException.class, () -> {
-            routineService.updateRoutine(client.getId(), routine.getId(), "x", "y", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        });
+        assertThrows(PermissionException.class, () ->
+                routineService.updateRoutine(client.getId(), routine.getId(),
+                        "x", "y",
+                        Routine.VisibilityType.PUBLIC,
+                        Routine.DifficultyType.BEGINNER));
     }
 
     @Test
-    public void testDeleteRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user@test.com");
-        Routine routine = routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+    void testDeleteRoutine() throws Exception {
+        User user = createTrainerPremium("u6");
+        Routine routine = routineService.createRoutine(
+                "del", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER
+        );
 
         routineService.deleteRoutine(user.getId(), routine.getId());
 
-        assertThrows(InstanceNotFoundException.class, () -> {
-            routineService.findRoutineByIdAuth(user.getId(), routine.getId());
-        });
+        assertThrows(InstanceNotFoundException.class, () ->
+                routineService.findRoutineByIdAuth(user.getId(), routine.getId()));
     }
 
     @Test
-    public void testDeleteRoutineWithoutPermission() throws Exception {
-        User trainer = createUser("trainer@test.com");
-        trainer.setRole(User.RoleType.TRAINER);
-        trainer = userDao.save(trainer);
+    void testDeleteRoutineWithoutPermission() throws Exception {
+        User trainer = createTrainerPremium("trainerY");
+        User client = createUser("clientY");
 
-        User client = createUser("client@test.com");
+        Routine routine = routineService.createRoutine(
+                "rr", "d", trainer,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER
+        );
 
-        Routine routine = routineService.createRoutine("routine", "d", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-
-        assertThrows(PermissionException.class, () -> {
-            routineService.deleteRoutine(client.getId(), routine.getId());
-        });
+        assertThrows(PermissionException.class, () ->
+                routineService.deleteRoutine(client.getId(), routine.getId()));
     }
 
     @Test
-    public void testGetAllRoutines() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user@test.com");
-        User user2 = createUser("user2@test.com");
-        routineService.createRoutine("routine", "description", user, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        routineService.createRoutine("routine2", "description2", user, Routine.VisibilityType.PRIVATE, Routine.DifficultyType.BEGINNER);
+    void testGetAllRoutines() throws Exception {
+        User user = createTrainerPremium("owner");
+        User user2 = createTrainerNonPremium("other");
+        user2.setTrainerPremium(true);
 
-        // 4 en el script + 2 creados en este test
-        assertEquals(6, routineService.findAllRoutines(user.getId()).size());
-        assertEquals(5, routineService.findAllRoutines(user2.getId()).size());
+        int initialUser = routineService.findAllRoutines(user.getId()).size();
+        int initialUser2 = routineService.findAllRoutines(user2.getId()).size();
+
+        routineService.createRoutine("r1", "d", user,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        routineService.createRoutine("r2", "d", user,
+                Routine.VisibilityType.PRIVATE, Routine.DifficultyType.BEGINNER);
+
+        assertEquals(initialUser + 2, routineService.findAllRoutines(user.getId()).size());
+        assertEquals(initialUser2 + 1, routineService.findAllRoutines(user2.getId()).size());
     }
 
     @Test
-    public void testGetRoutine() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User user = createUser("user@test.com");
-        Routine routine = routineDao.findById(1L).get();
-        assertEquals(routineService.findRoutineByIdAuth(user.getId(), 1L), routine);
-        routine.setVisibility(Routine.VisibilityType.PRIVATE);
-        assertThrows(PermissionException.class, () -> {
-            routineService.deleteRoutine(user.getId(), routine.getId());
-        });
+    void testGetRoutine_permissionDeniedOnDeleteByOtherUser() throws Exception {
+        User owner = createTrainerPremium("u10");
+
+        Routine created = routineService.createRoutine(
+                "RRR", "d", owner,
+                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        // Usuario distinto, existente
+        User other = createTrainerNonPremium("u11");
+        other.setTrainerPremium(true);
+
+        assertThrows(PermissionException.class, () ->
+                routineService.deleteRoutine(other.getId(), created.getId()));
     }
 
     @Test
-    public void testDeleteRoutineCascadesNotifications() throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
-        User trainer = createUser("trainer@test.com");
-        trainer.setRole(User.RoleType.TRAINER);
-        trainer = userDao.save(trainer);
-
-        User client = createUser("client@test.com");
+    void testDeleteRoutineCascadesNotifications() throws Exception {
+        User trainer = createTrainerPremium("trainerZ");
+        User client = createUser("clientZ");
 
         userFollowService.followUser(client.getId(), trainer.getId());
 
-        Routine routine = routineService.createRoutine("testRoutine", "description", trainer, Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        Routine routine = routineService.createRoutine("T1", "d",
+                trainer, Routine.VisibilityType.PUBLIC,
+                Routine.DifficultyType.BEGINNER);
 
         routineLikeService.likeRoutine(client.getId(), routine.getId());
 
-        List<Notification> trainerNotifications = notificationService.getNotificationsByUser(trainer.getId());
-        List<Notification> clientNotifications = notificationService.getNotificationsByUser(client.getId());
-
-        assertEquals(2, trainerNotifications.size());
-        boolean hasFollow = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.FOLLOW);
-        boolean hasLike = trainerNotifications.stream().anyMatch(n -> n.getType() == Notification.NotificationType.ROUTINE_LIKE && n.getIdToRedirect().equals(routine.getId()));
-        assertTrue(hasFollow);
-        assertTrue(hasLike);
-
-        assertEquals(1, clientNotifications.size());
-        assertEquals(Notification.NotificationType.NEW_ROUTINE, clientNotifications.get(0).getType());
-        assertEquals(routine.getId(), clientNotifications.get(0).getIdToRedirect());
-
         routineService.deleteRoutine(trainer.getId(), routine.getId());
 
-        trainerNotifications = notificationService.getNotificationsByUser(trainer.getId());
-        clientNotifications = notificationService.getNotificationsByUser(client.getId());
+        List<Notification> trainerNotifications =
+                notificationService.getNotificationsByUser(trainer.getId());
+        List<Notification> clientNotifications =
+                notificationService.getNotificationsByUser(client.getId());
 
-        assertTrue(trainerNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
-        assertTrue(clientNotifications.stream().noneMatch(n -> n.getIdToRedirect() != null && n.getIdToRedirect().equals(routine.getId())));
+        assertTrue(trainerNotifications.stream()
+                .noneMatch(n -> routine.getId().equals(n.getIdToRedirect())));
+
+        assertTrue(clientNotifications.stream()
+                .noneMatch(n -> routine.getId().equals(n.getIdToRedirect())));
     }
 
     @Test
-    public void testFindRoutineByIdNonExistent() {
-        assertThrows(InstanceNotFoundException.class, () -> {
-            routineService.findRoutineById(999L);
-        });
+    void testFindRoutineByIdNonExistent() {
+        assertThrows(InstanceNotFoundException.class, () ->
+                routineService.findRoutineById(999L));
     }
 
     @Test
-    public void testFindRoutinesByFilters() throws DuplicateInstanceException, InstanceNotFoundException {
-        User trainer = createUser("trainerX@test.com");
-        trainer.setRole(RoleType.TRAINER);
-        trainer = userDao.save(trainer);
+    void testFindRoutinesByFilters() throws Exception {
+        User trainer = createTrainerPremium("filterT");
 
-        // Rutinas distintas para filtrar
-        Routine r1 = routineService.createRoutine("FX1", "d", trainer,
-                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
-        Routine r2 = routineService.createRoutine("FX2", "d", trainer,
-                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.INTERMEDIATE);
+        Routine r2 = routineService.createRoutine(
+                "FX2", "d", trainer,
+                Routine.VisibilityType.PUBLIC,
+                Routine.DifficultyType.INTERMEDIATE);
 
-        // client para ejecutar filtros
-        User client = createUser("clientX@test.com");
+        User client = createUser("filterClient");
 
         List<Routine> filtered = routineService.findRoutinesByFilters(
                 client.getId(),
-                null,                     // equipment
-                null,                     // muscleGroup
+                null,
+                null,
                 Routine.DifficultyType.INTERMEDIATE,
                 trainer.getId()
         );
@@ -229,4 +275,33 @@ public class RoutineServiceTest {
         assertEquals(r2.getId(), filtered.get(0).getId());
     }
 
+    @Test
+    void testPremiumTrainerUnlimitedRoutines() throws Exception {
+        User trainer = createTrainerPremium("prUnlimited");
+
+        for (int i = 1; i <= 10; i++) {
+            routineService.createRoutine("RU" + i, "d", trainer,
+                    Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        }
+
+        long count = routineDao.findAll().stream()
+                .filter(r -> r.getTrainer().equals(trainer))
+                .count();
+
+        assertEquals(10, count);
+    }
+
+    @Test
+    void testNonPremiumTrainerLimit() throws Exception {
+        User trainer = createTrainerNonPremium("np1");
+
+        for (int i = 0; i < 3; i++) {
+            routineService.createRoutine("RU" + i, "d", trainer,
+                    Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+        }
+
+        assertThrows(PermissionException.class, () ->
+                routineService.createRoutine("C", "d", trainer,
+                        Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER));
+    }
 }

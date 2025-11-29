@@ -1,5 +1,7 @@
 import React, { useRef } from "react";
 import styles from "./FileUploadButton.module.css";
+import PropTypes from "prop-types";
+
 
 const FileUploadButton = ({ onFileSelect }) => {
     const fileInputRef = useRef(null);
@@ -32,3 +34,7 @@ const FileUploadButton = ({ onFileSelect }) => {
 };
 
 export default FileUploadButton;
+
+FileUploadButton.propTypes = {
+    onFileSelect: PropTypes.func.isRequired
+};

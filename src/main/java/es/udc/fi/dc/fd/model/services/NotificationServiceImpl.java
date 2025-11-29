@@ -2,35 +2,36 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static es.udc.fi.dc.fd.model.entities.Notification.NotificationType;
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
-    @Autowired
-    private NotificationDao notificationDao;
+    private static final String PROJECT_ENTITIES_USER = "entities.user";
+    private static final String PROJECT_ENTITIES_ROUTINE = "entities.routine";
+    private static final String PROJECT_ENTITIES_WORKOUT = "entities.workout";
+    private final NotificationDao notificationDao;
+    private final UserFollowDao userFollowDao;
+    private final RoutineDao routineDao;
+    private final UserDao userDao;
+    private final WorkoutDao workoutDao;
 
-    @Autowired
-    private UserFollowDao userFollowDao;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private WorkoutDao workoutDao;
+    public NotificationServiceImpl(NotificationDao notificationDao, UserFollowDao userFollowDao, RoutineDao routineDao, UserDao userDao, WorkoutDao workoutDao) {
+        this.notificationDao = notificationDao;
+        this.userFollowDao = userFollowDao;
+        this.routineDao = routineDao;
+        this.userDao = userDao;
+        this.workoutDao = workoutDao;
+    }
 
     @Override
     public void createNewRoutineNotification(Long routineId) throws InstanceNotFoundException {
-        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ROUTINE, routineId));
 
         List<UserFollow> userFollows = userFollowDao.findByFollowUser(routine.getTrainer());
 
@@ -41,8 +42,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createFollowNotification(Long clientId, Long trainerId) throws InstanceNotFoundException {
-        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException("entities.user", clientId));
-        User trainer = userDao.findById(trainerId).orElseThrow(() -> new InstanceNotFoundException("entities.user", trainerId));
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, clientId));
+        User trainer = userDao.findById(trainerId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, trainerId));
 
         notificationDao.save(new Notification(
                 client.getName() + " " + client.getSurname() + " ha comenzado a seguirte",
@@ -56,8 +57,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createRoutineLikeNotification(Long clientId, Long routineId) throws InstanceNotFoundException {
-        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException("entities.user", clientId));
-        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("entities.routine", routineId));
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, clientId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ROUTINE, routineId));
 
         if (client.getId().equals(routine.getTrainer().getId())) {
             return;
@@ -75,8 +76,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createWorkoutLikeNotification(Long userId, Long workoutId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
-        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_WORKOUT, workoutId));
 
         if (user.getId().equals(workout.getUser().getId())) {
             return;
@@ -94,8 +95,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void createWorkoutCommentNotification(Long userId, String text, Long workoutId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
-        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+        Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_WORKOUT, workoutId));
 
         if (userId.equals(workout.getUser().getId())) {
             return;

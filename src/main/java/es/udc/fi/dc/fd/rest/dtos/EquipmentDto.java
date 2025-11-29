@@ -4,7 +4,8 @@ public class EquipmentDto {
 
     private String name;
 
-    public EquipmentDto() {}
+    public EquipmentDto() {
+    }
 
     public EquipmentDto(String name) {
 
@@ -14,6 +15,7 @@ public class EquipmentDto {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }

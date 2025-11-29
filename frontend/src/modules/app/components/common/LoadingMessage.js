@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./LoadingMessage.module.css";
+import PropTypes from "prop-types";
 
 const LoadingMessage = ({ text = "Cargando..." }) => {
   return (
@@ -10,3 +11,7 @@ const LoadingMessage = ({ text = "Cargando..." }) => {
 };
 
 export default LoadingMessage;
+
+LoadingMessage.propTypes = {
+    text: PropTypes.string
+};

@@ -6,7 +6,8 @@ import java.util.List;
 
 public class RoutineLikeConversor {
 
-    private RoutineLikeConversor() {}
+    private RoutineLikeConversor() {
+    }
 
     public static final RoutineLikeDto toRoutineLikeDto(RoutineLike routineLike) {
         return new RoutineLikeDto(

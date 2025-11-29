@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchUsers, tryLoginFromServiceToken } from '../../../../backend/userService';
+import { searchUsers } from '../../../../backend/userService';
 import ProfilePhoto from '../common/profilePhoto';
 import styles from './UserSearch.module.css';
+import PropTypes from 'prop-types';
 
 const UserSearch = ({ isOpen, onClose }) => {
     const [query, setQuery] = useState('');
@@ -10,6 +11,7 @@ const UserSearch = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(false);
     const [debounceTimer, setDebounceTimer] = useState(null);
     const navigate = useNavigate();
+    const modalRef = useRef(null);
 
     const performSearch = useCallback((searchQuery) => {
         if (!searchQuery.trim()) {
@@ -53,36 +55,50 @@ const UserSearch = ({ isOpen, onClose }) => {
         setQuery(e.target.value);
     };
 
+    const handleOverlayClick = (e) => {
+        if (modalRef.current && !modalRef.current.contains(e.target)) {
+            onClose();
+        }
+    };
     const handleViewProfile = (userId) => {
-        setQuery('');
-        setResults([]);
-        navigate(`/users/profile/${userId}`);
         onClose();
+        navigate(`/users/profile/${userId}`);
     };
 
 
     if (!isOpen) return null;
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.container}>
-                <div className={styles.modal} onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
-                    <div className={styles.searchContainer}>
-                        <input
-                            type="text"
-                            placeholder="Buscar usuarios..."
-                            value={query}
-                            onChange={handleInputChange}
-                            className={styles.searchInput}
-                            autoFocus
-                        />
-                    </div>
-                    <div className={styles.resultsContainer}>
-                        {loading && <div className={styles.noResults}>Buscando...</div>}
-                        {!loading && results.length === 0 && query.trim() && (
-                            <div className={styles.noResults}>No se encontraron usuarios</div>
-                        )}
-                        {!loading && results.map((user) => (
+        <div
+            className={styles.overlay}
+            onClick={handleOverlayClick}
+            aria-hidden="true"
+        >
+            <div ref={modalRef} className={styles.modal}>
+                <div className={styles.searchContainer}>
+                    <input
+                        type="text"
+                        placeholder="Buscar usuarios..."
+                        value={query}
+                        onChange={handleInputChange}
+                        className={styles.searchInput}
+                        autoFocus
+                    />
+                </div>
+
+                <div className={styles.resultsContainer}>
+                    {loading && (
+                        <div className={styles.noResults}>Buscando...</div>
+                    )}
+
+                    {!loading && results.length === 0 && query.trim() && (
+                        <div className={styles.noResults}>
+                            No se encontraron usuarios
+                        </div>
+                    )}
+
+                    {!loading &&
+                        results.map(user => (
                             <div key={user.id} className={styles.userItem}>
                                 <ProfilePhoto
                                     profilePicture={user.profilePicture}
@@ -97,18 +113,25 @@ const UserSearch = ({ isOpen, onClose }) => {
                                 <div className={styles.userActions}>
                                     <button
                                         className={styles.viewProfileBtn}
-                                        onClick={() => handleViewProfile(user.id)}
+                                        onClick={() =>
+                                            handleViewProfile(user.id)
+                                        }
                                     >
                                         Ver Perfil
                                     </button>
                                 </div>
                             </div>
                         ))}
-                    </div>
                 </div>
             </div>
         </div>
     );
 };
+UserSearch.displayName = 'UserSearch';
 
 export default UserSearch;
+
+UserSearch.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+};

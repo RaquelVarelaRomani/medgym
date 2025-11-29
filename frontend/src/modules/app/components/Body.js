@@ -29,7 +29,7 @@ import WorkoutFeed from "./workouts/WorkoutFeed";
 const Body = () => {
     return (
         <Routes>
-            <Route path="/"> {/*Todo lo que está dentro es relativo a la raíz*/}
+            <Route path="/">
                 <Route path="/" element={<Navigate to="/users/login" />} />
                 <Route element={<RequiresLogout />}>
                     <Route path="users/register" element={<Register />} />

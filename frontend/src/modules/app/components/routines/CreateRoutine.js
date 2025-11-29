@@ -5,6 +5,8 @@ import * as exerciseService from "../../../../backend/exerciseService";
 import * as routineService from "../../../../backend/routineService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import LoadingMessage from "../common/LoadingMessage";
+import {becomePremium, tryLoginFromServiceToken} from "../../../../backend/userService";
+import GoPremiumPopup from "../common/popup/GoPremiumPopup";
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
@@ -17,10 +19,24 @@ const CreateRoutine = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const inputContainerRefs = useRef([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
 
     useEffect(() => {
-        loadExercises();
-    }, []);
+        tryLoginFromServiceToken(
+            (authenticatedUser) => {
+                const user = authenticatedUser.user;
+                setCurrentUser(user);
+                loadExercises();
+            },
+            () => {
+                console.error("Token inválido o expirado");
+                navigate("/users/login");
+            }
+        );
+
+    }, [navigate]);
+
 
     const loadExercises = () => {
         setLoading(true);
@@ -94,6 +110,12 @@ const CreateRoutine = () => {
     const handleAddExercise = () => {
         const newId = Math.max(...exercises.map(e => e.id || 0)) + 1;
         const newPosition = exercises.length + 1;
+
+        if (currentUser.trainerPremium === false && exercises.length >= 5) {
+            setShowGoPremiumPopup(true);
+            return;
+        }
+
         setExercises([...exercises, { id: newId, nombre: "", position: newPosition }]);
     };
 
@@ -156,37 +178,43 @@ const CreateRoutine = () => {
             trainerId = authUser.id;
         }
 
+        const handleRoutineCreated = (createdRoutine) => {
+            console.log("Routine created:", createdRoutine);
+
+            const routineId = createdRoutine.id;
+
+            const validExercises = exercises.filter(
+                ex => ex.id !== null && ex.nombre.trim() !== ""
+            );
+
+            const onError = (err) => console.error("Error adding exercise:", err);
+
+            const saveRequests = validExercises.map(ex =>
+                routineExerciseService.createRoutineExercise(
+                    routineId,
+                    ex.id,
+                    ex.position,
+                    null,
+                    onError
+                )
+            );
+
+            Promise.all(saveRequests).finally(() => navigate("/routines"));
+        };
+
+        const handleRoutineError = (error) => {
+            console.error("Error creating routine:", error);
+            alert("No se pudo crear la rutina. Intenta de nuevo.");
+        };
+
         routineService.createRoutine(
             routineData.titulo,
             routineData.descripcion,
             trainerId,
             routineData.visibility,
             routineData.difficulty,
-            (createdRoutine) => {
-                console.log("Routine created:", createdRoutine);
-                const routineId = createdRoutine.id;
-
-                //crear ejercicios
-                const exercisesToSave = exercises
-                    .filter(ex => ex.id !== null && ex.nombre.trim() !== "")
-                    .map(ex =>
-                    routineExerciseService.createRoutineExercise(
-                        routineId,
-                        ex.id,
-                        ex.position,
-                        () => {},
-                        (err) => console.error("Error adding exercise:", err)
-                    )
-                );
-
-                Promise.all(exercisesToSave).finally(() => {
-                    navigate("/routines");
-                });
-            },
-            (error) => {
-                console.error("Error creating routine:", error);
-                alert("No se pudo crear la rutina. Intenta de nuevo.");
-            },
+            handleRoutineCreated,
+            handleRoutineError
         );
     };
 
@@ -208,8 +236,9 @@ const CreateRoutine = () => {
 
             <div className={styles['form-crear-rutina']}>
                 <div className={styles['form-div']}>
-                    <label>Título:</label>
+                    <label htmlFor={"titulo-input"}>Título:</label>
                     <input
+                        id={"titulo-input"}
                         type="text"
                         name="titulo"
                         placeholder="Escriba aquí el título de la rutina."
@@ -221,8 +250,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Descripción de la rutina:</label>
+                    <label htmlFor={"descripcion-text-area"}>Descripción de la rutina:</label>
                     <textarea
+                        id={"descripcion-text-area"}
                         name="descripcion"
                         placeholder="Escriba aquí la descripción."
                         value={routineData.descripcion}
@@ -232,8 +262,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Dificultad:</label>
+                    <label htmlFor={"dificultad-select"}>Dificultad:</label>
                     <select
+                        id={"dificultad-select"}
                         name="difficulty"
                         value={routineData.difficulty}
                         onChange={handleInputChange}
@@ -246,8 +277,9 @@ const CreateRoutine = () => {
                 </div>
 
                 <div className={styles['form-div']}>
-                    <label>Visibilidad:</label>
+                    <label htmlFor={"visibilidad-select"}>Visibilidad:</label>
                     <select
+                        id={"visibilidad-select"}
                         name="visibility"
                         value={routineData.visibility}
                         onChange={handleInputChange}
@@ -297,13 +329,14 @@ const CreateRoutine = () => {
                             {showExerciseSearch === index && (
                                 <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((exercise, i) => (
-                                        <div
-                                            key={i}
+                                        <button
+                                            type="button"
+                                            key={exercise.id}
                                             className={styles['ejercicio-option']}
                                             onClick={() => handleSelectExercise(index, exercise)}
                                         >
                                             {exercise.name}
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             )}
@@ -345,6 +378,25 @@ const CreateRoutine = () => {
                     </button>
                 </div>
             </div>
+
+            <GoPremiumPopup
+                show={showGoPremiumPopup}
+                text="Añadir más de 5 ejercicios a una rutina es una función premium."
+                onOk={() => {
+                    becomePremium(
+                        currentUser.id,
+                        () => {
+                            setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
+                            setShowGoPremiumPopup(false);
+                            navigate("/users/profile/" + currentUser.id, { replace: true });
+                        },
+                        (err) => {
+                            alert("Error becoming premium: " + err);
+                        }
+                    );
+                }}
+                onCancel={() => setShowGoPremiumPopup(false)}
+            />
         </div>
     );
 };

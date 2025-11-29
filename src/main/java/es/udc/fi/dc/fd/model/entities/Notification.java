@@ -16,15 +16,8 @@ public class Notification {
     private boolean isRead;
     private LocalDateTime date;
 
-    public enum NotificationType {
-        NEW_ROUTINE,
-        FOLLOW,
-        ROUTINE_LIKE,
-        WORKOUT_LIKE,
-        WORKOUT_COMMENT
+    public Notification() {
     }
-
-    public Notification() {}
 
     public Notification(String message, NotificationType type, Long idToRedirect, User user, boolean isRead, LocalDateTime date) {
         this.message = message;
@@ -40,6 +33,7 @@ public class Notification {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -47,6 +41,7 @@ public class Notification {
     public String getMessage() {
         return message;
     }
+
     public void setMessage(String message) {
         this.message = message;
     }
@@ -54,6 +49,7 @@ public class Notification {
     public Long getIdToRedirect() {
         return idToRedirect;
     }
+
     public void setIdToRedirect(Long idToRedirect) {
         this.idToRedirect = idToRedirect;
     }
@@ -62,6 +58,7 @@ public class Notification {
     public NotificationType getType() {
         return type;
     }
+
     public void setType(NotificationType type) {
         this.type = type;
     }
@@ -71,6 +68,7 @@ public class Notification {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -78,6 +76,7 @@ public class Notification {
     public boolean getIsRead() {
         return isRead;
     }
+
     public void setIsRead(boolean read) {
         isRead = read;
     }
@@ -85,8 +84,17 @@ public class Notification {
     public LocalDateTime getDate() {
         return date;
     }
+
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public enum NotificationType {
+        NEW_ROUTINE,
+        FOLLOW,
+        ROUTINE_LIKE,
+        WORKOUT_LIKE,
+        WORKOUT_COMMENT
     }
 
 }

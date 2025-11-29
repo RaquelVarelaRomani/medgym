@@ -2,46 +2,50 @@ package es.udc.fi.dc.fd.rest.common;
 
 public class JwtInfo {
 
-	private Long userId;
-	private String email;
-	private String role;
-	private String status;
+    private Long userId;
+    private String email;
+    private String role;
+    private String status;
 
-	public JwtInfo(Long userId, String email, String role, String status) {
+    public JwtInfo(Long userId, String email, String role, String status) {
 
-		this.userId = userId;
-		this.email = email;
-		this.role = role;
-		this.status = status;
+        this.userId = userId;
+        this.email = email;
+        this.role = role;
+        this.status = status;
 
-	}
+    }
 
-	public Long getUserId() {
-		return userId;
-	}
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    public Long getUserId() {
+        return userId;
+    }
 
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public String getRole() {
-		return role;
-	}
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
 }

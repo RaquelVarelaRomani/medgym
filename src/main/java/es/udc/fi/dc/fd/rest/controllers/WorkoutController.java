@@ -7,15 +7,7 @@ import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
 import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
-import es.udc.fi.dc.fd.rest.dtos.StatisticsConversor;
-import es.udc.fi.dc.fd.rest.dtos.StatisticsDto;
-import es.udc.fi.dc.fd.rest.dtos.WorkoutDto;
-import es.udc.fi.dc.fd.rest.dtos.WorkoutForFeedDto;
-import es.udc.fi.dc.fd.rest.dtos.WorkoutForHistoryDto;
-import es.udc.fi.dc.fd.rest.common.JwtInfo;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import es.udc.fi.dc.fd.rest.dtos.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -27,15 +19,15 @@ import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.*;
 @RestController
 @RequestMapping("/api/workouts")
 public class WorkoutController {
+    private final WorkoutService workoutService;
+    private final WorkoutExerciseService workoutExerciseService;
+    private final UserBlockService userBlockService;
 
-    @Autowired
-    private WorkoutService workoutService;
-
-    @Autowired
-    private WorkoutExerciseService workoutExerciseService;
-
-    @Autowired
-    private UserBlockService userBlockService;
+    public WorkoutController(WorkoutService workoutService, WorkoutExerciseService workoutExerciseService, UserBlockService userBlockService) {
+        this.workoutService = workoutService;
+        this.workoutExerciseService = workoutExerciseService;
+        this.userBlockService = userBlockService;
+    }
 
     @PostMapping("/start")
     public WorkoutDto startWorkout(@RequestAttribute Long userId, @RequestBody WorkoutDto workoutDto) throws InstanceNotFoundException {
@@ -71,16 +63,14 @@ public class WorkoutController {
         return toWorkoutForFeedDtos(workoutService.findWorkoutsFromFollowing(userId));
     }
 
-    @GetMapping("/user/{userId}")
-    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userId, @RequestAttribute Long userIdRequester) throws InstanceNotFoundException, PermissionException {
-        Long requesterId = userIdRequester;
-        Long ownerId = userId;
+    @GetMapping("/user/{userIdPath}")
+    public List<WorkoutDto> getWorkoutsByUser(@PathVariable Long userIdPath, @RequestAttribute Long userId) throws PermissionException {
         // Si el dueño ha bloqueado al que hace la petición → no se permite ver
-        if (userBlockService.hasBlocked(ownerId, requesterId)) {
+        if (userBlockService.hasBlocked(userIdPath, userId)) {
             throw new PermissionException();
         }
 
-        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userId));
+        return toWorkoutDtos(workoutService.findWorkoutsFromUser(userIdPath));
     }
 
     @GetMapping("/stats")

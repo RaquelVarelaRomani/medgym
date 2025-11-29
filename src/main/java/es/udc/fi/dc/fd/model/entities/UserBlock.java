@@ -1,8 +1,8 @@
 package es.udc.fi.dc.fd.model.entities;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_block", uniqueConstraints = @UniqueConstraint(columnNames = {"blocker_id", "blocked_id"}))
@@ -19,7 +19,7 @@ public class UserBlock {
     @JoinColumn(name = "blocked_id")
     private User blocked;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Long getId() {

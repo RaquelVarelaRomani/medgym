@@ -11,24 +11,17 @@ public class UserFollowDto {
     private String userSurname;
     private String userEmail;
 
-    public UserFollowDto() {}
-
-    public UserFollowDto(Long id, Long userId, Long trainerId, String trainerUserName, String trainerUserSurname, String trainerUserEmail, String userName, String userSurname, String userEmail) {
-        this.id = id;
-        this.userId = userId;
-        this.trainerId = trainerId;
-        this.trainerUserName = trainerUserName;
-        this.trainerUserSurname = trainerUserSurname;
-        this.trainerUserEmail = trainerUserEmail;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userEmail = userEmail;
+    public UserFollowDto() {
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
     }
-
 
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -36,6 +29,7 @@ public class UserFollowDto {
     public Long getUserId() {
         return userId;
     }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -43,6 +37,7 @@ public class UserFollowDto {
     public Long getTrainerId() {
         return trainerId;
     }
+
     public void setTrainerId(Long trainerId) {
         this.trainerId = trainerId;
     }
@@ -50,6 +45,7 @@ public class UserFollowDto {
     public String getUserName() {
         return userName;
     }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -57,6 +53,7 @@ public class UserFollowDto {
     public String getUserSurname() {
         return userSurname;
     }
+
     public void setUserSurname(String userSurname) {
         this.userSurname = userSurname;
     }
@@ -64,6 +61,7 @@ public class UserFollowDto {
     public String getUserEmail() {
         return userEmail;
     }
+
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
     }

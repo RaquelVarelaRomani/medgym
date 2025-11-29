@@ -4,7 +4,7 @@ package es.udc.fi.dc.fd.model.common.exceptions;
 public class DuplicateInstanceException extends InstanceException {
 
     public DuplicateInstanceException(String name, Object key) {
-    	super(name, key); 	
+        super(name, key);
     }
-    
+
 }

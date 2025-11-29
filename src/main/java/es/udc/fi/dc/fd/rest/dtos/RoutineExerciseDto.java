@@ -12,43 +12,17 @@ public class RoutineExerciseDto {
     private Integer position;
     private boolean blocked;
 
-    public RoutineExerciseDto() {}
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String muscleGroup, String equipment, byte[] image, Integer position) {
-        this.id = id;
-        this.routineId = routineId;
-        this.exerciseId = exerciseId;
-
-        this.exerciseName = exerciseName == null ? null : exerciseName.trim();
-        this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.position = position;
-        this.blocked = false;
+    public RoutineExerciseDto() {
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
     }
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, String muscleGroup, String equipment, byte[] image, Integer position, boolean blocked) {
-        this.id = id;
-        this.routineId = routineId;
-        this.exerciseId = exerciseId;
-
-        this.exerciseName = exerciseName == null ? null : exerciseName.trim();
-        this.exerciseDescription = exerciseDescription == null ? null : exerciseDescription.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.position = position;
-        this.blocked = blocked;
-    }
-
-    public RoutineExerciseDto(Long id, Long routineId, Long exerciseId, String exerciseName, String exerciseDescription, Integer position) {
-    this(id, routineId, exerciseId, exerciseName, exerciseDescription,"", "", null, position);
-}
 
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -56,6 +30,7 @@ public class RoutineExerciseDto {
     public Long getRoutineId() {
         return routineId;
     }
+
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
     }
@@ -63,6 +38,7 @@ public class RoutineExerciseDto {
     public Long getExerciseId() {
         return exerciseId;
     }
+
     public void setExerciseId(Long exerciseId) {
         this.exerciseId = exerciseId;
     }
@@ -70,6 +46,7 @@ public class RoutineExerciseDto {
     public String getExerciseName() {
         return exerciseName;
     }
+
     public void setExerciseName(String exerciseName) {
         this.exerciseName = exerciseName;
     }
@@ -77,6 +54,7 @@ public class RoutineExerciseDto {
     public String getExerciseDescription() {
         return exerciseDescription;
     }
+
     public void setExerciseDescription(String exerciseDescription) {
         this.exerciseDescription = exerciseDescription;
     }
@@ -109,6 +87,7 @@ public class RoutineExerciseDto {
     public Integer getPosition() {
         return position;
     }
+
     public void setPosition(Integer position) {
         this.position = position;
     }
@@ -116,6 +95,7 @@ public class RoutineExerciseDto {
     public boolean isBlocked() {
         return blocked;
     }
+
     public void setBlocked(boolean blocked) {
         this.blocked = blocked;
     }

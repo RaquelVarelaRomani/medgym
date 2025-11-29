@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface WorkoutLikeService {
     void likeWorkout(Long userId, Long workoutId) throws InstanceNotFoundException;
+
     void unlikeWorkout(Long userId, Long workoutId);
+
     List<WorkoutLike> getLikesByUser(Long userId);
 }

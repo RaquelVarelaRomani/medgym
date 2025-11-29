@@ -6,8 +6,6 @@ import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.UserFollow;
 import es.udc.fi.dc.fd.model.entities.UserFollowDao;
 import es.udc.fi.dc.fd.model.services.exceptions.FollowException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,23 +16,23 @@ import java.util.Optional;
 @Service
 @Transactional
 public class UserFollowServiceImpl implements UserFollowService {
-    @Autowired
-    private UserFollowDao userFollowDao;
+    private final UserFollowDao userFollowDao;
+    private final UserService userService;
+    private final NotificationService notificationService;
+    private final UserBlockService userBlockService;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private UserBlockService userBlockService;
+    public UserFollowServiceImpl(UserFollowDao userFollowDao, UserService userService, NotificationService notificationService, UserBlockService userBlockService) {
+        this.userFollowDao = userFollowDao;
+        this.userService = userService;
+        this.notificationService = notificationService;
+        this.userBlockService = userBlockService;
+    }
 
     @Override
     public UserFollow followUser(Long userId, Long followUserId) throws InstanceNotFoundException {
         User trainer = userService.findUserById(followUserId);
 
-        if (Objects.equals(userId, followUserId)){
+        if (Objects.equals(userId, followUserId)) {
             throw new FollowException(followUserId);
         }
 
@@ -44,7 +42,7 @@ public class UserFollowServiceImpl implements UserFollowService {
             throw new FollowException(followUserId);
         }
 
-        if(userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)){
+        if (userFollowDao.existsByUserAndFollowUser(user, trainer) || user.equals(trainer)) {
             throw new FollowException(followUserId);
         }
 
@@ -60,7 +58,7 @@ public class UserFollowServiceImpl implements UserFollowService {
 
         Optional<UserFollow> userFollow = userFollowDao.findByUserAndFollowUser(user, trainer);
 
-        if(userFollow.isEmpty()){
+        if (userFollow.isEmpty()) {
             throw new FollowException(followUserId);
         }
 

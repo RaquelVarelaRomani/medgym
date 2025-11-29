@@ -14,6 +14,7 @@ public class NotificationNewRoutineParamsDto {
     public Long getRoutineId() {
         return routineId;
     }
+
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
     }

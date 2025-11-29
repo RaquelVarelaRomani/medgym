@@ -1,12 +1,9 @@
-
 package es.udc.fi.dc.fd.rest.dtos;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class ExerciseDto {
-
-    public interface AllValidations {}
 
     private Long id;
     private String name;
@@ -17,17 +14,11 @@ public class ExerciseDto {
     private String status;
     private Long creatorId;
 
-    public ExerciseDto() {}
-
-    public ExerciseDto(Long id, String name, String description, String muscleGroup, String equipment, byte[] image, String status, Long creatorId) {
-        this.id = id;
-        this.name = name == null ? null : name.trim();
-        this.description = description == null ? null : description.trim();
-        this.muscleGroup = muscleGroup == null ? "" : muscleGroup.trim();
-        this.equipment = equipment == null ? "" : equipment.trim();
-        this.image = image;
-        this.status = status == null ? null : status.trim();
-        this.creatorId = creatorId;
+    public ExerciseDto() {
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
     }
 
     public Long getId() {
@@ -38,8 +29,8 @@ public class ExerciseDto {
         this.id = id;
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, max=100, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, max = 100, groups = {AllValidations.class})
     public String getName() {
         return name;
     }
@@ -48,8 +39,8 @@ public class ExerciseDto {
         this.name = name.trim();
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, groups = {AllValidations.class})
     public String getDescription() {
         return description;
     }
@@ -58,11 +49,12 @@ public class ExerciseDto {
         this.description = description.trim();
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, max=20, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, max = 20, groups = {AllValidations.class})
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -71,6 +63,7 @@ public class ExerciseDto {
     public String getMuscleGroup() {
         return muscleGroup;
     }
+
     public void setMuscleGroup(String muscleGroup) {
         this.muscleGroup = muscleGroup;
     }
@@ -79,14 +72,15 @@ public class ExerciseDto {
     public String getEquipment() {
         return equipment;
     }
+
     public void setEquipment(String equipment) {
         this.equipment = equipment;
     }
 
-    
     public byte[] getImage() {
         return image;
     }
+
     public void setImage(byte[] image) {
         this.image = image;
     }
@@ -94,7 +88,11 @@ public class ExerciseDto {
     public Long getCreatorId() {
         return creatorId;
     }
+
     public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public interface AllValidations {
     }
 }

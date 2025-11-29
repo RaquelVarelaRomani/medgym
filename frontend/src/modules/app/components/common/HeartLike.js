@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import React from "react";
-
 import styles from "./HeartLike.module.css";
+import PropTypes from "prop-types";
 
 export default function HeartLike({
                                       count = 0,
@@ -65,3 +65,14 @@ export default function HeartLike({
         </button>
     );
 }
+
+HeartLike.propTypes = {
+    count: PropTypes.number,
+    liked: PropTypes.bool,
+    onChange: PropTypes.func,
+    initialLiked: PropTypes.bool,
+    disabled: PropTypes.bool,
+    size: PropTypes.number,
+    className: PropTypes.string,
+    ariaLabel: PropTypes.string,
+};

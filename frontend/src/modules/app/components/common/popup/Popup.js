@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Popup.module.css";
+import PropTypes from "prop-types";
 
 function Popup({ show, text, onOk }) {
     if (!show) return null;
@@ -15,3 +16,9 @@ function Popup({ show, text, onOk }) {
 }
 
 export default Popup;
+
+Popup.propTypes = {
+    show: PropTypes.bool.isRequired,
+    text: PropTypes.string.isRequired,
+    onOk: PropTypes.func.isRequired
+};

@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import UserModeration from "../../modules/app/components/users/UserModeration";
 import Exercises from "../../modules/app/components/routines/Exercises";
 
@@ -41,20 +41,27 @@ jest.mock("../../backend/exerciseService", () => ({
 }));
 
 jest.mock("../../modules/app/components/common/popup/ConfirmationPopup", () => {
-  return function MockConfirmationPopup({ text, show, onOk, onCancel }) {
-    if (!show) return null;
-    return (
-      <div data-testid="confirmation-popup">
-        <p>{text}</p>
-        <button onClick={onOk} data-testid="confirm-ok">
-          OK
-        </button>
-        <button onClick={onCancel} data-testid="confirm-cancel">
-          Cancel
-        </button>
-      </div>
-    );
-  };
+    const PropTypes = require("prop-types");
+
+    function MockConfirmationPopup({ text, show, onOk, onCancel }) {
+        if (!show) return null;
+        return (
+            <div data-testid="confirmation-popup">
+                <p>{text}</p>
+                <button onClick={onOk} data-testid="confirm-ok">OK</button>
+                <button onClick={onCancel} data-testid="confirm-cancel">Cancel</button>
+            </div>
+        );
+    }
+
+    MockConfirmationPopup.propTypes = {
+        text: PropTypes.string.isRequired,
+        show: PropTypes.bool.isRequired,
+        onOk: PropTypes.func.isRequired,
+        onCancel: PropTypes.func.isRequired,
+    };
+
+    return MockConfirmationPopup;
 });
 
 describe("Admin Components", () => {

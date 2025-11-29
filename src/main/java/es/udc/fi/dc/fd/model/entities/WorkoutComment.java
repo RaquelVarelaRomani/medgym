@@ -29,6 +29,7 @@ public class WorkoutComment {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -36,6 +37,7 @@ public class WorkoutComment {
     public String getText() {
         return text;
     }
+
     public void setText(String text) {
         this.text = text;
     }
@@ -43,6 +45,7 @@ public class WorkoutComment {
     public LocalDateTime getDate() {
         return date;
     }
+
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
@@ -52,6 +55,7 @@ public class WorkoutComment {
     public Workout getWorkout() {
         return workout;
     }
+
     public void setWorkout(Workout workout) {
         this.workout = workout;
     }
@@ -61,6 +65,7 @@ public class WorkoutComment {
     public User getUser() {
         return user;
     }
+
     public void setUser(User user) {
         this.user = user;
     }

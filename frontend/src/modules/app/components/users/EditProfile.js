@@ -5,6 +5,7 @@ import { changePassword, updateProfile, tryLoginFromServiceToken } from "../../.
 import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
+import PropTypes from "prop-types";
 
 const EditProfile = ({ isPasswordMode = false }) => {
     const [profile, setProfile] = useState(null);
@@ -217,10 +218,14 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 placeholder="Escribe tu contraseña actual..."
                                 onChange={(e) => setOldPassword(e.target.value)}
                             />
-                            <span
+                            <button
+                                type="button"
                                 className={styles['ver-password']}
                                 onClick={() => setShowOldPassword(!showOldPassword)}
-                            > &#128065; </span>
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                &#128065;
+                            </button>
                         </div>
                         {isPasswordMode && passwordError && (
                             <p className={styles['mensaje-error']} style={{ alignSelf: "flex-start" }}>
@@ -237,26 +242,32 @@ const EditProfile = ({ isPasswordMode = false }) => {
                                 placeholder="Escribe tu nueva contraseña..."
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
-                            <span
+                            <button
+                                type="button"
                                 className={styles['ver-password']}
                                 onClick={() => setShowNewPassword(!showNewPassword)}
-                            > &#128065; </span>
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                &#128065;
+                            </button>
                         </div>
                         <label htmlFor="confirmPassword">Confirmar nueva contraseña</label>
                         <div className={styles['contenedor-password']}>
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            placeholder="Vuelva a escribir su nueva contraseña..."
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                        <span
-                            className={styles['ver-password']}
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                            &#128065;
-                        </span>
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                id="confirmPassword"
+                                value={confirmPassword}
+                                placeholder="Vuelva a escribir su nueva contraseña..."
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className={styles['ver-password']}
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                aria-label="Mostrar u ocultar contraseña"
+                            >
+                                &#128065;
+                            </button>
                         </div>
 
 
@@ -277,3 +288,7 @@ const EditProfile = ({ isPasswordMode = false }) => {
 };
 
 export default EditProfile;
+
+EditProfile.propTypes = {
+    isPasswordMode: PropTypes.bool,
+};
