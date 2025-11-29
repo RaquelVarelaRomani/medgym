@@ -219,3 +219,34 @@ CREATE TABLE workout_comments
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+CREATE TABLE achievements
+(
+    id          BIGINT          NOT NULL AUTO_INCREMENT,
+    name        VARCHAR(128)    NOT NULL,
+    description TEXT            NOT NULL,
+    bronze_req  INTEGER         NOT NULL,
+    silver_req  INTEGER         NOT NULL,
+    gold_req    INTEGER         NOT NULL,
+
+    CONSTRAINT pk_achievements PRIMARY KEY (id)
+);
+
+CREATE TABLE achievement_progresses
+(
+    id              BIGINT  NOT NULL AUTO_INCREMENT,
+    progress        INTEGER NOT NULL,
+    user_id         BIGINT  NOT NULL,
+    achievement_id  BIGINT  NOT NULL,
+
+    CONSTRAINT pk_achievement_progresses PRIMARY KEY (id),
+    CONSTRAINT fk_achievement_progresses_user FOREIGN KEY (user_id)
+        REFERENCES users (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_achievement_progresses_achievement FOREIGN KEY (achievement_id)
+        REFERENCES achievements (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT uk_achievement_progresses_user_and_achievement UNIQUE (user_id, achievement_id)
+);
