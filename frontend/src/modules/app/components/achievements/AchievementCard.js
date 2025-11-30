@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './AchievementCard.module.css';
+import PropTypes from "prop-types";
 
 export default function AchievementCard({ achievement }) {
     let {name, description, bronzeReq, silverReq, goldReq, progress} = achievement;
@@ -60,3 +61,20 @@ export default function AchievementCard({ achievement }) {
         </div>
     );
 }
+
+AchievementCard.propTypes = {
+    achievement: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired,
+        bronzeReq: PropTypes.number.isRequired,
+        silverReq: PropTypes.number.isRequired,
+        goldReq: PropTypes.number.isRequired,
+        progress: PropTypes.number.isRequired,
+        convertToHours: PropTypes.bool
+    }).isRequired,
+
+    bronzeIcon: PropTypes.string.isRequired,
+    silverIcon: PropTypes.string.isRequired,
+    goldIcon: PropTypes.string.isRequired,
+    noMedalIcon: PropTypes.string.isRequired
+};

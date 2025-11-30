@@ -462,8 +462,8 @@ const Profile = () => {
                     <h3 className={styles.achievementsTitle}>Logros</h3>
 
                     <div className={styles.achievementsList}>
-                        {achievements.map((a, idx) => (
-                            <AchievementCard key={idx} achievement={a} />
+                        {achievements.map((a) => (
+                            <AchievementCard key={a.id} achievement={a} />
                         ))}
                     </div>
                 </div>
