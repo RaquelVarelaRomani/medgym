@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface RoutineLikeService {
     void likeRoutine(Long userId, Long routineId) throws InstanceNotFoundException;
+
     List<RoutineLike> getRoutineLikesByUser(Long userId);
+
     void unlikeRoutine(Long userId, Long routineId);
 }

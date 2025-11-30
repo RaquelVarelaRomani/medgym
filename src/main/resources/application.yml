@@ -10,8 +10,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/medgym?useUnicode=true&characterEncoding=UTF-8
-    username: @dataSource.user@
-    password: @dataSource.password@
+    username: ${DATASOURCE_USER:root}
+    password: ${DATASOURCE_PASSWORD:root}
     max-active: 4
     max-idle: 2
     max-wait: 10000

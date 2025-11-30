@@ -1,14 +1,13 @@
 package es.udc.fi.dc.fd.rest.common;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 public class JwtGeneratorImpl implements JwtGenerator {
@@ -29,14 +28,14 @@ public class JwtGeneratorImpl implements JwtGenerator {
         claims.put("userId", info.getUserId());
         claims.put("role", info.getRole());
         claims.put("status", info.getStatus());
-        
+
         return Jwts.builder().setClaims(claims).signWith(Keys.hmacShaKeyFor(signKey.getBytes()), SignatureAlgorithm.HS512).compact();
 
     }
 
     @Override
     public JwtInfo getInfo(String token) {
-        
+
         Claims claims = Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(signKey.getBytes())).build().parseClaimsJws(token).getBody();
 
         return new JwtInfo(((Integer) claims.get("userId")).longValue(), claims.getSubject(),

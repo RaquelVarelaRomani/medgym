@@ -4,7 +4,6 @@ import styles from './Header.module.css';
 import notificationStyles from './common/notifications/NotificationIcon.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import * as workoutService from "../../../backend/workoutService";
-import {markNotificationAsRead} from "../../../backend/notificationService";
 import { getUserNotifications } from "../../../backend/notificationService";
 import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
@@ -23,6 +22,7 @@ const Header = () => {
     const [followersCount, setFollowersCount] = useState(0);
     const [showUserSearch, setShowUserSearch] = useState(false);
     const dropdownComponent = useRef(null);
+    const userSearchComponent = useRef(null);
 
     const handleToggleNotifications = () => {
         setShowNotifications(prev => !prev);
@@ -83,10 +83,10 @@ const Header = () => {
 
     useEffect(() => {
         const handleClickOutside = (event) => {
+
             if (dropdownComponent.current && !dropdownComponent.current.contains(event.target)) {
                 setIsDropdownOpen(false);
                 setShowNotifications(false);
-                setShowUserSearch(false);
             }
         };
 
@@ -294,6 +294,7 @@ const Header = () => {
                     </div>
                 </div>
                 <UserSearch
+                    ref={userSearchComponent}
                     isOpen={showUserSearch}
                     onClose={() => setShowUserSearch(false)}
                 />

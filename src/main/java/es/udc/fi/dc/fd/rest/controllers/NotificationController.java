@@ -2,11 +2,7 @@ package es.udc.fi.dc.fd.rest.controllers;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.NotificationService;
-import es.udc.fi.dc.fd.model.services.RoutineService;
-import es.udc.fi.dc.fd.model.services.UserService;
-import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.rest.dtos.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,15 +12,18 @@ import static es.udc.fi.dc.fd.rest.dtos.NotificationConversor.toNotificationDtos
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    @PostMapping( "/newRoutine")
+    public NotificationController(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+
+    @PostMapping("/newRoutine")
     public void createNewRoutineNotification(@RequestBody NotificationNewRoutineParamsDto notificationNewRoutineParamsDto) throws InstanceNotFoundException {
         notificationService.createNewRoutineNotification(notificationNewRoutineParamsDto.getRoutineId());
     }
 
-    @PostMapping( "/follow")
+    @PostMapping("/follow")
     public void createFollowNotification(@RequestBody NotificationFollowParamsDto notificationFollowParamsDto) throws InstanceNotFoundException {
         notificationService.createFollowNotification(
                 notificationFollowParamsDto.getClientId(),

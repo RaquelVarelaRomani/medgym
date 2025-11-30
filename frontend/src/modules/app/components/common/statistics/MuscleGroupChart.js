@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import styles from './MuscleGroupChart.module.css';
 import {getMuscleGroupsText} from "../../../util/enumConversor";
+import PropTypes from "prop-types";
 
 const COLORS = [
     'var(--neon-orange)',
@@ -61,18 +62,25 @@ export default function MuscleGroupChart({ data }) {
                             type="number"
                             domain={[0, 'dataMax + 2']}
                         />
-                        <Bar
-                            dataKey="exercises"
-                            radius={[8, 8, 0, 0]}
-                            animationDuration={800}
-                        >
+                        <Bar dataKey="exercises" radius={[8, 8, 0, 0]} animationDuration={800}>
                             {formattedData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell
+                                    key={entry.originalName}
+                                    fill={COLORS[index % COLORS.length]}
+                                />
                             ))}
                         </Bar>
+
                     </BarChart>
                 </ResponsiveContainer>
             </div>
         </div>
     );
 }
+
+MuscleGroupChart.propTypes = {
+    data: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        exercises: PropTypes.number.isRequired,
+    })).isRequired,
+};

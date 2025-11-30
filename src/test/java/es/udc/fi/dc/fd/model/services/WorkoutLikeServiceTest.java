@@ -2,30 +2,24 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.WorkoutDao;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.Workout;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.WorkoutLike;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutLikeServiceTest {
+class WorkoutLikeServiceTest {
 
     @Autowired
     private WorkoutLikeService workoutLikeService;
@@ -40,12 +34,12 @@ public class WorkoutLikeServiceTest {
     private UserDao userDao;
 
     @Test
-    public void testLikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testLikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "s1", "u1@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t1", "s2", "t1@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R1", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -60,12 +54,12 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testGetLikesByUser() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u2", "s3", "u2@test.com", "600000003",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t2", "s4", "t2@test.com", "600000004",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R2", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -81,12 +75,12 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testUnlikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testUnlikeWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u3", "s5", "u3@test.com", "600000005",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t3", "s6", "t3@test.com", "600000006",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R3", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -101,42 +95,51 @@ public class WorkoutLikeServiceTest {
     }
 
     @Test
-    public void testLikeWorkoutNonExistentWorkout() {
+    void testLikeWorkoutNonExistentWorkout() {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
-        assertThrows(InstanceNotFoundException.class, () -> {
-            workoutLikeService.likeWorkout(user.getId(), 999L);
-        });
+        assertThrows(InstanceNotFoundException.class, () ->
+                workoutLikeService.likeWorkout(user.getId(), 999L));
     }
 
     @Test
-    public void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
+    void testDuplicateLikeDoesNotCreateDuplicates() throws Exception {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
         User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
         Workout workout = workoutDao.save(new Workout(LocalDateTime.now(), null, routine, user));
 
         workoutLikeService.likeWorkout(user.getId(), workout.getId());
-        workoutLikeService.likeWorkout(user.getId(), workout.getId()); // segunda llamada
+        workoutLikeService.likeWorkout(user.getId(), workout.getId()); // duplicado
 
-        List<WorkoutLike> likes = workoutLikeService.getLikesByUser(user.getId());
-        assertEquals(2, likes.size());
+        List<WorkoutLike> likesForThisWorkout =
+                workoutLikeService.getLikesByUser(user.getId()).stream()
+                        .filter(l -> l.getWorkout().getId().equals(workout.getId()))
+                        .toList();
+
+        assertEquals(1, likesForThisWorkout.size());
+        assertEquals(user.getId(), likesForThisWorkout.get(0).getUser().getId());
+        assertEquals(workout.getId(), likesForThisWorkout.get(0).getWorkout().getId());
     }
 
     @Test
-    public void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testUnlikeWorkoutWhenNotLikedDoesNothing() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u", "s", "u@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+
         User trainer = userDao.save(new User("t", "s", "t@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
 
         Routine routine = routineService.createRoutine("R", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
         Workout workout = workoutDao.save(new Workout(LocalDateTime.now(), null, routine, user));
 
         assertDoesNotThrow(() -> workoutLikeService.unlikeWorkout(user.getId(), workout.getId()));

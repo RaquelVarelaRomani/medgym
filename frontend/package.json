@@ -7,6 +7,7 @@
     "framer-motion": "^12.23.24",
     "jest-standard-reporter": "^2.0.0",
     "lucide-react": "^0.546.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-easy-crop": "^5.5.3",
@@ -28,7 +29,8 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
     "eslint": "^8.57.1",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "jest-junit": "^16.0.0"
   },
   "proxy": "http://localhost:8080/",
   "eslintConfig": {
@@ -39,5 +41,13 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "jest-junit": {
+    "outputDirectory": "../target/surefire-reports",
+    "outputName": "frontend-medgym.xml",
+    "includeConsoleOutput": true,
+    "reportTestSuiteErrors": true,
+    "classNameTemplate": "Frontend.Tests",
+    "titleTemplate": "{classname} > {title}"
+  }
 }

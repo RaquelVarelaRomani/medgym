@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styles from "./BodyMetricsCard.module.css";
 import Popup from "../common/popup/Popup";
 import { updateBodyMetrics, clearBodyMetrics } from "../../../../backend/userService";
+import PropTypes  from "prop-types";
 
 const BodyMetricsCard = ({
   userId,
@@ -162,3 +163,13 @@ const BodyMetricsCard = ({
 };
 
 export default BodyMetricsCard;
+
+BodyMetricsCard.propTypes = {
+  userId: PropTypes.string.isRequired,
+  initialWeightKg: PropTypes.number,
+  initialHeightCm: PropTypes.number,
+  initialGender: PropTypes.string,
+  initialBmi: PropTypes.number,
+  onSaved: PropTypes.func,
+  onClose: PropTypes.func,
+};

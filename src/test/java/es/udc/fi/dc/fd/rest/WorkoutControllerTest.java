@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
-import static es.udc.fi.dc.fd.model.entities.User.RoleType;
 import static es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import static es.udc.fi.dc.fd.model.entities.User.RoleType;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutControllerTest {
+class WorkoutControllerTest {
 
     private static final String PASSWORD = "password";
 
@@ -73,17 +73,20 @@ public class WorkoutControllerTest {
     private RoutineExercise routineExercise;
 
     @BeforeEach
-    public void setUp() throws IncorrectLoginException, BlockedUserException {
-        trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", User.RoleType.TRAINER);
+    void setUp() throws IncorrectLoginException, BlockedUserException {
+        trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002",
+                User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
 
-        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234", null, User.RoleType.TRAINER, User.StatusType.ACTIVE);
+        final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234",
+                User.RoleType.TRAINER, User.StatusType.ACTIVE);
         userDao.save(trainer);
 
         routine = new Routine("Name", "Description", VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
         routineDao.save(routine);
 
-        Exercise exercise = new Exercise("Sentadillas", "Ejercicio para piernas", Exercise.MuscleGroup.LEG, Exercise.Equipment.NONE, new byte[]{1,2,3}, Exercise.ExerciseStatus.APPROVED, trainer);
+        Exercise exercise = new Exercise("Sentadillas Test", "Ejercicio para piernas", Exercise.MuscleGroup.LEG,
+                Exercise.Equipment.NONE, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exerciseDao.save(exercise);
 
         routineExercise = new RoutineExercise(routine, exercise, 1);
@@ -94,7 +97,7 @@ public class WorkoutControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String surname, String email,
                                                          String phoneNumber, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
-        User user = new User(name, surname, email, phoneNumber, PASSWORD, null, roleType, User.StatusType.ACTIVE);
+        User user = new User(name, surname, email, phoneNumber, PASSWORD, roleType, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
 
@@ -128,7 +131,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testStartWorkoutAsTrainer() throws Exception {
+    void testStartWorkoutAsTrainer() throws Exception {
         startWorkout(trainerUser, routine.getId())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -137,7 +140,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testFinishWorkoutAsTrainer() throws Exception {
+    void testFinishWorkoutAsTrainer() throws Exception {
         ResultActions startAction = startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
         String json = startAction.andReturn().getResponse().getContentAsString();
         WorkoutDto dto = objectMapper.readValue(json, WorkoutDto.class);
@@ -146,19 +149,19 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testFinishWorkoutNotFound() throws Exception {
+    void testFinishWorkoutNotFound() throws Exception {
         finishWorkout(trainerUser, 999L)
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void testStartWorkoutAsClient() throws Exception {
+    void testStartWorkoutAsClient() throws Exception {
         startWorkout(clientUser, routine.getId())
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testStartWorkoutUnauthenticatedFails() throws Exception {
+    void testStartWorkoutUnauthenticatedFails() throws Exception {
         WorkoutDto dto = new WorkoutDto();
         dto.setRoutineId(routine.getId());
 
@@ -169,7 +172,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testGetWorkoutByIdExists() throws Exception {
+    void testGetWorkoutByIdExists() throws Exception {
         // Arrange: crear un workout real
         ResultActions startAction = startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
         String json = startAction.andReturn().getResponse().getContentAsString();
@@ -187,7 +190,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testGetWorkoutByIdNotFound() throws Exception {
+    void testGetWorkoutByIdNotFound() throws Exception {
         // Act & Assert: id inexistente debe devolver 404
         mockMvc.perform(get("/api/workouts/999")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
@@ -195,9 +198,8 @@ public class WorkoutControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-
     @Test
-    public void testGetWorkoutsEmpty() throws Exception {
+    void testGetWorkoutsEmpty() throws Exception {
         getUserWorkouts(trainerUser)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -205,7 +207,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testStartWorkoutRoutineNotFound() throws Exception {
+    void testStartWorkoutRoutineNotFound() throws Exception {
         WorkoutDto dto = new WorkoutDto();
         dto.setRoutineId(9999L);
 
@@ -218,9 +220,10 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testGetWorkoutsFromFollowing() throws Exception {
+    void testGetWorkoutsFromFollowing() throws Exception {
         // entrenador seguido por el cliente
-        // follow ya probado en otro test → aquí solo forzamos el feed mediante inserción directa
+        // follow ya probado en otro test → aquí solo forzamos el feed mediante
+        // inserción directa
         startWorkout(trainerUser, routine.getId()).andExpect(status().isOk());
 
         mockMvc.perform(get("/api/workouts/following")
@@ -230,7 +233,7 @@ public class WorkoutControllerTest {
                 .andExpect(jsonPath("$").isArray());
     }
 
-    public void testGetLastMonthStatsReturnsStats() throws Exception {
+    void testGetLastMonthStatsReturnsStats() throws Exception {
         YearMonth lastMonth = YearMonth.now().minusMonths(1);
         LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
         LocalDateTime midOfLastMonth = lastMonth.atDay(15).atStartOfDay();
@@ -270,7 +273,7 @@ public class WorkoutControllerTest {
     }
 
     @Test
-    public void testGetLastMonthStatsNoWorkouts() throws Exception {
+    void testGetLastMonthStatsNoWorkouts() throws Exception {
         mockMvc.perform(get("/api/workouts/stats")
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .header("X-User-Id", clientUser.getUserDto().getId()))

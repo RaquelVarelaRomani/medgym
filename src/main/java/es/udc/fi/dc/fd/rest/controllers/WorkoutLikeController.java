@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.rest.controllers;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutLikeService;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutLikeDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,9 +12,11 @@ import static es.udc.fi.dc.fd.rest.dtos.WorkoutLikeConversor.toWorkoutLikeDtos;
 @RestController
 @RequestMapping("/api")
 public class WorkoutLikeController {
+    private final WorkoutLikeService workoutLikeService;
 
-    @Autowired
-    private WorkoutLikeService workoutLikeService;
+    public WorkoutLikeController(WorkoutLikeService workoutLikeService) {
+        this.workoutLikeService = workoutLikeService;
+    }
 
     @PostMapping("/workouts/{workoutId}/like")
     public void likeWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId) throws InstanceNotFoundException {

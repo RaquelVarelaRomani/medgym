@@ -1,4 +1,3 @@
-
 package es.udc.fi.dc.fd.rest.dtos;
 
 import jakarta.validation.constraints.NotNull;
@@ -8,8 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class RoutineDto {
-    public interface AllValidations {}
-
     private Long id;
     private String name;
     private String description;
@@ -22,20 +19,11 @@ public class RoutineDto {
     private String difficulty;
     private List<RoutineLikeDto> likes;
 
-    public RoutineDto() {}
-
-    public RoutineDto(Long id, String name, String description, LocalDateTime creationDate, LocalDateTime modificationDate, Long trainerId, String trainerName, String trainerSurname, String visibility, String difficulty, List<RoutineLikeDto> likes) {
-        this.id = id;
-        this.name = name.trim();
-        this.description = description.trim();
-        this.creationDate = creationDate;
-        this.modificationDate = modificationDate;
-        this.trainerId = trainerId;
-        this.trainerName = trainerName;
-        this.trainerSurname = trainerSurname;
-        this.visibility = visibility;
-        this.difficulty = difficulty;
-        this.likes = likes;
+    public RoutineDto() {
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
     }
 
     public Long getId() {
@@ -46,8 +34,8 @@ public class RoutineDto {
         this.id = id;
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, max=100, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, max = 100, groups = {AllValidations.class})
     public String getName() {
         return name;
     }
@@ -56,8 +44,8 @@ public class RoutineDto {
         this.name = name.trim();
     }
 
-    @NotNull(groups={AllValidations.class})
-    @Size(min=1, groups={AllValidations.class})
+    @NotNull(groups = {AllValidations.class})
+    @Size(min = 1, groups = {AllValidations.class})
     public String getDescription() {
         return description;
     }
@@ -125,8 +113,12 @@ public class RoutineDto {
     public List<RoutineLikeDto> getLikes() {
         return likes;
     }
+
     public void setLikes(List<RoutineLikeDto> likes) {
         this.likes = likes;
+    }
+
+    public interface AllValidations {
     }
 
 }

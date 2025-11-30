@@ -168,6 +168,7 @@
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .header-ejercicio::before {
@@ -275,10 +276,6 @@
         0 0 40px rgba(255, 107, 53, 0.2);
 }
 
-.ejercicio-contenido {
-    animation: slideDown 0.3s ease;
-}
-
 .v-middle-align {
     vertical-align: middle;
 }
@@ -303,7 +300,7 @@
     padding: 4rem 2rem;
 }
 
-.contenedor-routine-details button:not(.boton-atras) {
+.contenedor-routine-details button:not(.boton-atras):not(.header-ejercicio) {
     background: linear-gradient(
             135deg,
             var(--neon-orange),

@@ -1,23 +1,4 @@
-
 package es.udc.fi.dc.fd.rest.controllers;
-
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -27,21 +8,29 @@ import es.udc.fi.dc.fd.model.services.RoutineService;
 import es.udc.fi.dc.fd.model.services.UserService;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.dtos.RoutineConversor;
-import static es.udc.fi.dc.fd.rest.dtos.RoutineConversor.toRoutineDto;
 import es.udc.fi.dc.fd.rest.dtos.RoutineDto;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+import static es.udc.fi.dc.fd.rest.dtos.RoutineConversor.toRoutineDto;
 
 @RestController
 @RequestMapping("/api/routines")
 public class RoutineController {
+    private final RoutineService routineService;
+    private final UserService userService;
 
-    @Autowired
-    private RoutineService routineService;
-
-    @Autowired
-    private UserService userService;
+    public RoutineController(RoutineService routineService, UserService userService) {
+        this.routineService = routineService;
+        this.userService = userService;
+    }
 
     @PostMapping
-    public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException {
+    public ResponseEntity<RoutineDto> createRoutine(@RequestAttribute Long userId, @RequestBody RoutineDto routineDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = userService.loginFromId(userId);
         Routine.DifficultyType difficulty = routineDto.getDifficulty() != null ? Routine.DifficultyType.valueOf(routineDto.getDifficulty().toUpperCase()) : Routine.DifficultyType.BEGINNER;
         Routine routine = routineService.createRoutine(routineDto.getName(), routineDto.getDescription(), user,
@@ -62,7 +51,7 @@ public class RoutineController {
         Routine.DifficultyType difficulty = routineDto.getDifficulty() != null ? Routine.DifficultyType.valueOf(routineDto.getDifficulty().toUpperCase()) : Routine.DifficultyType.BEGINNER;
         routineService.updateRoutine(userId, id, routineDto.getName(), routineDto.getDescription(),
                 Routine.VisibilityType.valueOf(routineDto.getVisibility()), difficulty);
-        return toRoutineDto(routineService.findRoutineByIdAuth(userId,id));
+        return toRoutineDto(routineService.findRoutineByIdAuth(userId, id));
     }
 
     @DeleteMapping("/{id}")

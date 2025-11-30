@@ -15,6 +15,7 @@ public class NotificationRoutineLikeParamsDto {
     public Long getClientId() {
         return clientId;
     }
+
     public void setClientId(Long clientId) {
         this.clientId = clientId;
     }
@@ -23,6 +24,7 @@ public class NotificationRoutineLikeParamsDto {
     public Long getRoutineId() {
         return routineId;
     }
+
     public void setRoutineId(Long routineId) {
         this.routineId = routineId;
     }

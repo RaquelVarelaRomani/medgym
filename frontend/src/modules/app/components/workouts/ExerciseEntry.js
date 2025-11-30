@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./ExerciseEntry.module.css";
 import * as workoutService from "../../../../backend/workoutService";
+import PropTypes from "prop-types";
 
 const ExerciseEntry = ({ exercise, sessionId, index }) => {
   const [sets, setSets] = useState([]);
@@ -56,11 +57,10 @@ const ExerciseEntry = ({ exercise, sessionId, index }) => {
       </div>
 
       <ul className={styles.setList}>
-        {sets.map((s, i) => (
-          <li key={i}>
-            Serie {i + 1}: {s.reps ? `${s.reps} reps` : ""} {s.weight ? `· ${s.weight} kg` : ""}
-            {s.time ? ` · ${s.time}s` : ""}
-          </li>
+        {sets.map((s) => (
+            <li key={s.id}>
+                Serie: {s.reps ? `${s.reps} reps` : ""} {s.weight ? `· ${s.weight} kg` : ""} {s.time ? `· ${s.time}s` : ""}
+            </li>
         ))}
       </ul>
     </div>
@@ -68,3 +68,13 @@ const ExerciseEntry = ({ exercise, sessionId, index }) => {
 };
 
 export default ExerciseEntry;
+
+ExerciseEntry.propTypes = {
+  exercise: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+  }).isRequired,
+  sessionId: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+};

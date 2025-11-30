@@ -17,7 +17,6 @@ const WorkoutSession = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [currentUser, setCurrentUser] = useState(null);
   const [notification, setNotification] = useState("");
   const [showIncompletePopup, setShowIncompletePopup] = useState(false); 
 
@@ -27,45 +26,54 @@ const WorkoutSession = () => {
       (authUser) => {
         if (authUser.user.role !== "CLIENT") {
           navigate("/routines"); 
-        } else {
-          setCurrentUser(authUser.user);
         }
       },
       () => navigate("/users/login")
     );
   }, [navigate]);
 
-  
-  useEffect(() => {
-    setLoading(true);
-    workoutService.getWorkout(
-      sessionId,
-      (workoutData) => {
-        setWorkout(workoutData);
-        routineExerciseService.getRoutineExercises(
-          workoutData.routineId,
-          (data) => {
-            const ordered = (data.content ?? data).sort(
-              (a, b) => a.position - b.position
-            );
-            setRoutineExercises(ordered);
-            setLoading(false);
-          },
-          (error) => {
-            setError("No se pudieron cargar los ejercicios.");
-            setLoading(false);
-          }
+
+    useEffect(() => {
+        setLoading(true);
+        workoutService.getWorkout(
+            sessionId,
+            handleWorkoutSuccess,
+            handleWorkoutError
         );
-      },
-      (err) => {
+    }, [sessionId]);
+
+    function handleWorkoutSuccess(workoutData) {
+        setWorkout(workoutData);
+        loadRoutineExercises(workoutData.routineId);
+    }
+
+    function handleWorkoutError() {
         setError("No se pudo cargar el entrenamiento.");
         setLoading(false);
-      }
-    );
-  }, [sessionId]);
+    }
 
-  
-  const handleChange = (routineExerciseId, field, value) => {
+    function loadRoutineExercises(routineId) {
+        routineExerciseService.getRoutineExercises(
+            routineId,
+            handleRoutineExercisesSuccess,
+            handleRoutineExercisesError
+        );
+    }
+
+    function handleRoutineExercisesSuccess(data) {
+        const ordered = (data.content ?? data).sort(
+            (a, b) => a.position - b.position
+        );
+        setRoutineExercises(ordered);
+        setLoading(false);
+    }
+
+    function handleRoutineExercisesError() {
+        setError("No se pudieron cargar los ejercicios.");
+        setLoading(false);
+    }
+
+    const handleChange = (routineExerciseId, field, value) => {
     setFormData((prev) => ({
       ...prev,
       [routineExerciseId]: {
@@ -86,14 +94,14 @@ const WorkoutSession = () => {
       durationSeconds ? Number(durationSeconds) : null,
       routineExerciseId,
       () => {
-       
-        const newSet = {
-          reps,
-          weight,
-          durationSeconds,
-          date: new Date().toLocaleTimeString(),
-        };
-        setLoggedSets((prev) => ({
+          const newSet = {
+              setNumber: (loggedSets[routineExerciseId]?.length || 0) + 1,
+              reps,
+              weight,
+              durationSeconds,
+              date: new Date().toLocaleTimeString(),
+          };
+          setLoggedSets((prev) => ({
           ...prev,
           [routineExerciseId]: [...(prev[routineExerciseId] || []), newSet],
         }));
@@ -226,31 +234,26 @@ const WorkoutSession = () => {
                 <div className={styles.headerItem}>Hora</div>
               </div>
 
-              {loggedSets[ex.id].map((s, i) => (
-                <div key={i} className={styles.setRow}>
-                  <div className={styles.setBox}>Serie {i + 1}</div>
-                  <div
-                    className={s.reps ? styles.setBox : styles.setPlaceholder}
-                  >
-                    {s.reps ? s.reps : ""}
-                  </div>
-                  <div
-                    className={s.weight ? styles.setBox : styles.setPlaceholder}
-                  >
-                    {s.weight ? s.weight : ""}
-                  </div>
-                  <div
-                    className={
-                      s.durationSeconds
-                        ? styles.setBox
-                        : styles.setPlaceholder
-                    }
-                  >
-                    {s.durationSeconds ? s.durationSeconds : ""}
-                  </div>
-                  <div className={styles.timeBox}>{s.date}</div>
-                </div>
-              ))}
+                {loggedSets[ex.id].map((s) => (
+                    <div key={s.id} className={styles.setRow}>
+                        <div className={styles.setBox}>Serie {s.setNumber}</div>
+
+                        <div className={s.reps ? styles.setBox : styles.setPlaceholder}>
+                            {s.reps || ""}
+                        </div>
+
+                        <div className={s.weight ? styles.setBox : styles.setPlaceholder}>
+                            {s.weight || ""}
+                        </div>
+
+                        <div className={s.durationSeconds ? styles.setBox : styles.setPlaceholder}>
+                            {s.durationSeconds || ""}
+                        </div>
+
+                        <div className={styles.timeBox}>{s.date}</div>
+                    </div>
+                ))}
+
             </div>
           )}
         </div>

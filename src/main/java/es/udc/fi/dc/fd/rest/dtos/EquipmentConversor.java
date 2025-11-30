@@ -6,7 +6,8 @@ import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 
 public class EquipmentConversor {
 
-    private EquipmentConversor() {}
+    private EquipmentConversor() {
+    }
 
     public static EquipmentDto toEquipmentDto(Equipment equipment) {
 

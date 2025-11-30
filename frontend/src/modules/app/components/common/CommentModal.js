@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import styles from "./CommentModal.module.css";
 
 export default function CommentModal({ open, onSend, onClose, comments }) {
@@ -14,69 +15,99 @@ export default function CommentModal({ open, onSend, onClose, comments }) {
     if (!open) return null;
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                <h3>Comentarios</h3>
+        <div className={styles.overlay}>
+            {/* Fondo clicable accesible */}
+            <button
+                type="button"
+                className={styles.backdrop}
+                aria-label="Cerrar comentarios"
+                onClick={onClose}
+            />
 
-                <div ref={listRef} className={styles.list}>
-                    {(!comments || comments.length === 0) && (
-                        <div className={styles.empty}>No hay comentarios aún</div>
-                    )}
+            {/* MODAL */}
+            <dialog className={styles.modalWrapper} open>
+                {/* NO lleva onclick → cumple la regla */}
+                <div className={styles.modal}>
+                    <h3>Comentarios</h3>
 
-                    {comments && comments.map(c => (
-                        <div key={c.id} className={styles.comment}>
-                            <div className={styles.headerRow}>
-                                <img
-                                    src={`data:image/jpeg;base64,${c.userProfilePicture}`}
-                                    className={styles.avatar}
-                                    alt=""
-                                />
-                                <div className={styles.meta}>
-                                    <span className={styles.author}>
-                                        {c.userName} {c.userSurname}
-                                    </span>
-                                    <span className={styles.date}>
-                                        {new Date(c.date).toLocaleString("es-ES", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit"
-                                        })}
-                                    </span>
+                    <div ref={listRef} className={styles.list}>
+                        {comments?.length === 0 && (
+                            <div className={styles.empty}>No hay comentarios aún</div>
+                        )}
+
+                        {comments?.map(c => (
+                            <div key={c.id} className={styles.comment}>
+                                <div className={styles.headerRow}>
+                                    <img
+                                        src={`data:image/jpeg;base64,${c.userProfilePicture}`}
+                                        className={styles.avatar}
+                                        alt=""
+                                    />
+                                    <div className={styles.meta}>
+                                        <span className={styles.author}>
+                                            {c.userName} {c.userSurname}
+                                        </span>
+                                        <span className={styles.date}>
+                                            {new Date(c.date).toLocaleString("es-ES", {
+                                                day: "2-digit",
+                                                month: "2-digit",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })}
+                                        </span>
+                                    </div>
                                 </div>
+
+                                <div className={styles.text}>{c.text}</div>
                             </div>
+                        ))}
+                    </div>
 
-                            <div className={styles.text}>
-                                {c.text}
-                            </div>
-                        </div>
-                    ))}
+                    <textarea
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        placeholder="Añadir comentario..."
+                        className={styles.input}
+                    />
+
+                    <div className={styles.actions}>
+                        <button className={styles.cancel} onClick={onClose}>
+                            Cerrar
+                        </button>
+                        <button
+                            className={styles.send}
+                            disabled={text.trim().length === 0}
+                            onClick={() => {
+                                onSend(text);
+                                setText("");
+                            }}
+                        >
+                            Enviar
+                        </button>
+                    </div>
                 </div>
-
-                <textarea
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    placeholder="Añadir comentario..."
-                    className={styles.input}
-                />
-
-                <div className={styles.actions}>
-                    <button className={styles.cancel} onClick={onClose}>
-                        Cerrar
-                    </button>
-                    <button
-                        className={styles.send}
-                        disabled={text.trim().length === 0}
-                        onClick={() => {
-                            onSend(text);
-                            setText("");
-                        }}
-                    >
-                        Enviar
-                    </button>
-                </div>
-            </div>
+            </dialog>
         </div>
     );
 }
+
+CommentModal.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onSend: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    comments: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            userProfilePicture: PropTypes.string,
+            userName: PropTypes.string,
+            userSurname: PropTypes.string,
+            date: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.number,
+                PropTypes.instanceOf(Date)
+            ]),
+            text: PropTypes.string
+        })
+    )
+};

@@ -12,7 +12,8 @@ public class NotificationDto {
     private boolean isRead;
     private LocalDateTime date;
 
-    public NotificationDto() {}
+    public NotificationDto() {
+    }
 
     public NotificationDto(Long id, String message, String type, Long idToRedirect, Long userId, boolean isRead, LocalDateTime date) {
         this.id = id;
@@ -27,6 +28,7 @@ public class NotificationDto {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -34,6 +36,7 @@ public class NotificationDto {
     public String getMessage() {
         return message;
     }
+
     public void setMessage(String message) {
         this.message = message;
     }
@@ -41,6 +44,7 @@ public class NotificationDto {
     public Long getIdToRedirect() {
         return idToRedirect;
     }
+
     public void setIdToRedirect(Long idToRedirect) {
         this.idToRedirect = idToRedirect;
     }
@@ -48,6 +52,7 @@ public class NotificationDto {
     public String getType() {
         return type;
     }
+
     public void setType(String type) {
         this.type = type;
     }
@@ -55,6 +60,7 @@ public class NotificationDto {
     public Long getUserId() {
         return userId;
     }
+
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -62,6 +68,7 @@ public class NotificationDto {
     public boolean getIsRead() {
         return isRead;
     }
+
     public void setIsRead(boolean read) {
         isRead = read;
     }
@@ -69,6 +76,7 @@ public class NotificationDto {
     public LocalDateTime getDate() {
         return date;
     }
+
     public void setDate(LocalDateTime date) {
         this.date = date;
     }

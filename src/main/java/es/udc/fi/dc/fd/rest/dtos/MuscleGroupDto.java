@@ -4,7 +4,8 @@ public class MuscleGroupDto {
 
     private String name;
 
-    public MuscleGroupDto() {}
+    public MuscleGroupDto() {
+    }
 
     public MuscleGroupDto(String name) {
         this.name = name;
@@ -13,6 +14,7 @@ public class MuscleGroupDto {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }

@@ -2,23 +2,13 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.Workout;
-import es.udc.fi.dc.fd.model.entities.WorkoutComment;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.WorkoutDao;
-import es.udc.fi.dc.fd.model.entities.RoutineDao;
-
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,11 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WorkoutCommentServiceTest {
+class WorkoutCommentServiceTest {
 
     @Autowired
     private WorkoutCommentService workoutCommentService;
@@ -51,12 +40,13 @@ public class WorkoutCommentServiceTest {
     private RoutineService routineService;
 
     @Test
-    public void testCommentWorkout() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testCommentWorkout() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "n1", "u1@test.com", "600000001",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t1", "n2", "t1@test.com", "600000002",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         Routine routine = routineService.createRoutine("R1", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -73,15 +63,16 @@ public class WorkoutCommentServiceTest {
     }
 
     @Test
-    public void testGetWorkoutCommentsMultiple() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testGetWorkoutCommentsMultiple() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User u1 = userDao.save(new User("u2", "n3", "u2@test.com", "600000003",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User u2 = userDao.save(new User("u3", "n4", "u3@test.com", "600000004",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t2", "n5", "t2@test.com", "600000005",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         Routine routine = routineService.createRoutine("R2", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -98,12 +89,13 @@ public class WorkoutCommentServiceTest {
     }
 
     @Test
-    public void testDeleteWorkoutComment() throws InstanceNotFoundException, DuplicateInstanceException {
+    void testDeleteWorkoutComment() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u4", "n6", "u4@test.com", "600000006",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("t3", "n7", "t3@test.com", "600000007",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         Routine routine = routineService.createRoutine("R3", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -122,12 +114,13 @@ public class WorkoutCommentServiceTest {
     }
 
     @Test
-    public void testFindWorkoutCommentById() throws Exception {
+    void testFindWorkoutCommentById() throws Exception {
         User user = userDao.save(new User("uX", "nX", "ux@test.com", "600000111",
-                "pass", null, User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
 
         User trainer = userDao.save(new User("tX", "nY", "tx@test.com", "600000222",
-                "pass", null, User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
 
         Routine routine = routineService.createRoutine("RX", "desc", trainer,
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
@@ -142,7 +135,7 @@ public class WorkoutCommentServiceTest {
     }
 
     @Test
-    public void testFindWorkoutCommentByIdNotFound() {
+    void testFindWorkoutCommentByIdNotFound() {
         assertThrows(InstanceNotFoundException.class, () ->
                 workoutCommentService.findWorkoutCommentById(-1L)
         );

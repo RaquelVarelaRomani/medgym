@@ -2,10 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.services.UserBlockService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -15,20 +12,19 @@ import java.util.Objects;
 @Service
 @Transactional
 public class WorkoutServiceImpl implements WorkoutService {
+    private final WorkoutDao workoutDao;
+    private final RoutineDao routineDao;
+    private final UserDao userDao;
+    private final UserFollowDao userFollowDao;
+    private final UserBlockService userBlockService;
 
-    @Autowired
-    private WorkoutDao workoutDao;
-
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private UserFollowDao userFollowDao;
-
-    @Autowired
-    private UserBlockService userBlockService;
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService) {
+        this.workoutDao = workoutDao;
+        this.routineDao = routineDao;
+        this.userDao = userDao;
+        this.userFollowDao = userFollowDao;
+        this.userBlockService = userBlockService;
+    }
 
     @Override
     public Workout startWorkout(Long routineId, Long userId) throws InstanceNotFoundException {
@@ -62,7 +58,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         List<Long> userFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList(); // mis seguidos
 
         return workoutDao.findAll().stream()
-                .filter(w ->  userFollowIds.contains(w.getUser().getId()))
+                .filter(w -> userFollowIds.contains(w.getUser().getId()))
                 .filter(w -> !Objects.equals(w.getUser().getId(), userId))
                 .filter(w -> w.getRoutine().getVisibility() == Routine.VisibilityType.PUBLIC)
                 .filter(w -> w.getEndTime() != null)
@@ -71,7 +67,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate){
+    public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startDate, endDate);
     }
 }

@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NotificationConversor {
-    private NotificationConversor() {}
+    private NotificationConversor() {
+    }
 
     public static NotificationDto toNotificationDto(Notification notification) {
 

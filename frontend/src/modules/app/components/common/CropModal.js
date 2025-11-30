@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Cropper from "react-easy-crop";
 import styles from "./CropModal.module.css";
+import PropTypes from "prop-types";
 
 const CropModal = ({ imageSrc, onCancel, onSave }) => {
     const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -35,7 +36,7 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                 resolve(canvas.toDataURL("image/jpeg"));
             };
 
-            image.onerror = (err) => reject(err);
+            image.onerror = () => reject(new Error('Image failed to load'));
         });
     };
 
@@ -65,8 +66,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
                 </div>
 
                 <div className={styles['zoom-control']}>
-                    <label>Zoom</label>
+                    <label htmlFor="zoom-control">Zoom</label>
                     <input
+                        id="zoom-control"
                         type="range"
                         min={1}
                         max={3}
@@ -86,3 +88,9 @@ const CropModal = ({ imageSrc, onCancel, onSave }) => {
 };
 
 export default CropModal;
+
+CropModal.propTypes = {
+    imageSrc: PropTypes.string.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+};

@@ -4,7 +4,6 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 
 import Header from "../../modules/app/components/Header";
-import Layout from "../../modules/app/components/Layout";
 import NotificationIcon from "../../modules/app/components/common/notifications/NotificationIcon";
 import NotificationPopup from "../../modules/app/components/common/notifications/NotificationPopup";
 import ConfirmationPopup from "../../modules/app/components/common/popup/ConfirmationPopup";
@@ -27,6 +26,7 @@ import {
 } from "../../backend/notificationService";
 import { getFollowers } from "../../backend/userFollowService";
 import { getServiceToken } from "../../backend/appFetch";
+import {noop} from "es-toolkit";
 
 const mockNavigate = jest.fn();
 
@@ -69,12 +69,11 @@ jest.mock("react-easy-crop", () => ({
         max="3"
         step="0.1"
         defaultValue="1"
-        onChange={(e) => onZoomChange && onZoomChange(Number(e.target.value))}
+        onChange={(e) => onZoomChange?.(Number(e.target.value))}
       />
       <button
         onClick={() =>
-          onCropComplete &&
-          onCropComplete({}, { x: 0, y: 0, width: 100, height: 100 })
+          onCropComplete?.({}, { x: 0, y: 0, width: 100, height: 100 })
         }
       >
         Complete Crop
@@ -430,7 +429,6 @@ describe("Common Components", () => {
 
       render(<NotificationPopup notifications={[]} onClose={mockOnClose} />);
 
-      const popup = screen.getByText("Notificaciones").closest(".popup");
       fireEvent.mouseDown(document.body);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -688,41 +686,53 @@ describe("Common Components", () => {
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
     });
 
-    test("handles error in crop save", () => {
-      const consoleSpy = jest
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      test("handles error in crop save", async () => {
+          const consoleSpy = jest
+              .spyOn(console, "error")
+              .mockImplementation(() => {});
 
-      global.Image = class {
-        constructor() {
-          setTimeout(() => this.onerror(new Error("Image load error")), 0);
-        }
-      };
+          const imageError = () => new Error("Image load error");
 
-      const mockOnSave = jest.fn();
+          function triggerError(img) {
+              const handler = img.onerror;
+              if (handler) handler(imageError());
+          }
 
-      render(
-        <CropModal
-          imageSrc={mockImageSrc}
-          onCancel={() => {}}
-          onSave={mockOnSave}
-        />,
-      );
+          Object.defineProperty(global, "Image", {
+              configurable: true,
+              writable: true,
+              value: function () {
+                  this.onload = null;
+                  this.onerror = null;
 
-      const completeCropButton = screen.getByText("Complete Crop");
-      fireEvent.click(completeCropButton);
+                  setTimeout(triggerError, 0, this);
+              }
+          });
 
-      fireEvent.click(screen.getByText("Guardar"));
+          const mockOnSave = jest.fn();
 
-      setTimeout(() => {
-        expect(consoleSpy).toHaveBeenCalledWith(
-          "Error al recortar:",
-          expect.any(Error),
-        );
-        expect(mockOnSave).not.toHaveBeenCalled();
-        consoleSpy.mockRestore();
-      }, 0);
-    });
+          render(
+              <CropModal
+                  imageSrc={mockImageSrc}
+                  onCancel={() => {}}
+                  onSave={mockOnSave}
+              />
+          );
+
+          fireEvent.click(screen.getByText("Complete Crop"));
+          fireEvent.click(screen.getByText("Guardar"));
+
+          await waitFor(() => {
+              expect(consoleSpy).toHaveBeenCalledWith(
+                  "Error al recortar:",
+                  expect.any(Error)
+              );
+              expect(mockOnSave).not.toHaveBeenCalled();
+          });
+
+          consoleSpy.mockRestore();
+      });
+
   });
 
   describe("FollowersPage Component", () => {
@@ -866,7 +876,7 @@ describe("Common Components", () => {
       });
 
       test("handles uncontrolled state", () => {
-        render(<HeartLike initialLiked={false} onChange={() => {}} />);
+        render(<HeartLike initialLiked={false} onChange={noop} />);
 
         const button = screen.getByRole("button");
         expect(button).toHaveAttribute("aria-pressed", "false");
