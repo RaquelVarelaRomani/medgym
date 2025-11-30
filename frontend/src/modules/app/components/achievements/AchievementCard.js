@@ -71,10 +71,6 @@ AchievementCard.propTypes = {
         goldReq: PropTypes.number.isRequired,
         progress: PropTypes.number.isRequired,
         convertToHours: PropTypes.bool
-    }).isRequired,
-
-    bronzeIcon: PropTypes.string.isRequired,
-    silverIcon: PropTypes.string.isRequired,
-    goldIcon: PropTypes.string.isRequired,
-    noMedalIcon: PropTypes.string.isRequired
+    }).isRequired
 };
+
