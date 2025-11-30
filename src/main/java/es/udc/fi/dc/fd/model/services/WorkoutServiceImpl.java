@@ -49,8 +49,8 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         achievementProgressService.onFinishedWorkout(
                 workout.getUser().getId(),
-                (int) ChronoUnit.SECONDS.between(workout.getEndTime(), workout.getStartTime()),
-                workoutExercises.stream().map(WorkoutExercise::getReps).toList().size()
+                (int) ChronoUnit.SECONDS.between(workout.getStartTime(), workout.getEndTime()),
+                workoutExercises.stream().mapToInt(WorkoutExercise::getReps).sum()
         );
     }
 

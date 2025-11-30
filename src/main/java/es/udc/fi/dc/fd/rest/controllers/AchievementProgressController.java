@@ -11,7 +11,7 @@ import static es.udc.fi.dc.fd.rest.dtos.AchievementProgressConversor.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/achievements")
+@RequestMapping("/api/achievements")
 public class AchievementProgressController {
 
     private final AchievementProgressService achievementProgressService;
@@ -51,7 +51,7 @@ public class AchievementProgressController {
         );
     }
 
-    @GetMapping("/progresses")
+    @GetMapping()
     public List<AchievementProgressDto> findAllAchievementProgressesByUser(@RequestAttribute Long userId) throws InstanceNotFoundException {
         return achievementProgressDtos(
                 achievementProgressService.findAchievementProgressesByUser(userId),
