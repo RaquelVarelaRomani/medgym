@@ -222,3 +222,25 @@
   border-bottom-color: var(--neon-orange-bright);
   text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
 }
+
+.trainer-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  gap: 6px;
+}
+
+.trainer-checkbox-input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  vertical-align: middle;
+  transform: translateY(2px);
+}
+
+.trainer-checkbox-span {
+  line-height: 1;
+}
+
+

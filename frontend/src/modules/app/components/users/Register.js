@@ -184,14 +184,14 @@ const Register = () => {
                         </span>
                     </div>
 
-                    <label style={{display:"inline-flex",alignItems:"center",cursor:"pointer",userSelect:"none",gap:"6px"}}>
+                    <label style={styles['trainer-checkbox-label']}>
                         <input
                             type="checkbox"
                             checked={role==="TRAINER"}
                             onChange={e=>setRole(e.target.checked?"TRAINER":"CLIENT")}
-                            style={{width:"16px", height:"16px", margin:0, verticalAlign:"middle", transform:"translateY(2px)"}}
+                            style={styles['trainer-checkbox-input']}
                         />
-                        <span style={{lineHeight:"1"}}>Soy entrenador</span>
+                        <span style={styles['trainer-checkbox-span']}>Soy entrenador</span>
                     </label>
 
 
