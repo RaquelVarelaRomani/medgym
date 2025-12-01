@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class AchievementProgressConversor {
 
+    private static final List<Long> CONVERT_TO_HOURS_IDS = List.of(1L);
     private AchievementProgressConversor() {
     }
 
@@ -22,7 +23,8 @@ public class AchievementProgressConversor {
                 achievement.getBronzeReq(),
                 achievement.getSilverReq(),
                 achievement.getGoldReq(),
-                achievementProgress.getProgress()
+                achievementProgress.getProgress(),
+                CONVERT_TO_HOURS_IDS.contains(achievement.getId())
         );
     }
 

@@ -1,4 +1,6 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS achievement_progresses;
+DROP TABLE IF EXISTS achievements;
 DROP TABLE IF EXISTS workout_comments;
 DROP TABLE IF EXISTS workout_likes;
 DROP TABLE IF EXISTS routine_likes;

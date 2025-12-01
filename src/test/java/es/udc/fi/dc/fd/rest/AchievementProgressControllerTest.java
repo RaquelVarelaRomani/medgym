@@ -83,7 +83,7 @@ class AchievementProgressControllerTest {
     @Test
     void testCreateOrUpdateAchievementProgress() throws Exception {
 
-        mockMvc.perform(post("/achievements/" + hours.getId() + "/progress")
+        mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
                         .param("progress", "15"))
@@ -97,7 +97,7 @@ class AchievementProgressControllerTest {
     @Test
     void testOnFinishWorkoutCreatesOrUpdatesProgresses() throws Exception {
 
-        mockMvc.perform(post("/achievements/onFinishWorkout")
+        mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
                         .param("seconds", "3600")
@@ -119,7 +119,7 @@ class AchievementProgressControllerTest {
 
     @Test
     void testOnFinishWorkoutUnauthorizedFails() throws Exception {
-        mockMvc.perform(post("/achievements/onFinishWorkout")
+        mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .param("seconds", "100")
                         .param("reps", "10"))
                 .andExpect(status().isForbidden());
@@ -136,7 +136,7 @@ class AchievementProgressControllerTest {
                 new AchievementProgress(20,
                         userDao.findById(userA.getUserDto().getId()).get(), reps));
 
-        mockMvc.perform(post("/achievements/onFinishWorkout")
+        mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
                         .param("seconds", "3600")
@@ -155,13 +155,13 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAchievementProgress() throws Exception {
 
-        mockMvc.perform(post("/achievements/" + reps.getId() + "/progress")
+        mockMvc.perform(post("/api/achievements/" + reps.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
                         .param("progress", "12"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/achievements/" + reps.getId())
+        mockMvc.perform(get("/api/achievements/" + reps.getId())
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId()))
                 .andExpect(status().isOk())
@@ -176,13 +176,13 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAllAchievementProgressesByUser() throws Exception {
 
-        mockMvc.perform(post("/achievements/" + hours.getId() + "/progress")
+        mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
                         .param("progress", "7"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/achievements/progresses")
+        mockMvc.perform(get("/api/achievements")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId()))
                 .andExpect(status().isOk())
@@ -192,7 +192,7 @@ class AchievementProgressControllerTest {
 
     @Test
     void testFindAchievementProgressUnknownAchievementFails() throws Exception {
-        mockMvc.perform(get("/achievements/99999")
+        mockMvc.perform(get("/api/achievements/99999")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId()))
                 .andExpect(status().isNotFound());
@@ -200,13 +200,13 @@ class AchievementProgressControllerTest {
 
     @Test
     void testGetProgressesUnauthorizedFails() throws Exception {
-        mockMvc.perform(get("/achievements/progresses"))
+        mockMvc.perform(get("/api/achievements"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void testCreateProgressUnauthorizedFails() throws Exception {
-        mockMvc.perform(post("/achievements/" + hours.getId() + "/progress")
+        mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .param("progress", "9"))
                 .andExpect(status().isForbidden());
     }

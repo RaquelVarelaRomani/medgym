@@ -1,0 +1,87 @@
+.card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all .4s cubic-bezier(0.4,0,0.2,1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.info h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.info p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.progressRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progressBar {
+    width: 160px;
+    height: 10px;
+    border-radius: 8px;
+    background: rgba(255,107,53,0.1);
+    overflow: hidden;
+    border: 1px solid rgba(255,107,53,0.3);
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    transition: width .3s ease;
+}
+
+.progressText {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.medal {
+    width: 60px;
+    height: 60px;
+    opacity: .35;
+    filter: grayscale(1);
+    transition: all .3s ease;
+}
+
+.medal.active {
+    opacity: 1;
+    filter: grayscale(0);
+    transform: scale(1.05);
+}
+
+.badge {
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255,107,53,0.25);
+    background: rgba(255,107,53,0.05);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all .3s ease;
+}
+
+.gold { border-color: rgba(255,215,0,0.7); }
+.silver { border-color: rgba(192,192,192,0.6); }
+.bronze { border-color: rgba(205,127,50,0.6); }

@@ -17,6 +17,15 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private final AchievementDao achievementDao;
     private final AchievementProgressDao achievementProgressDao;
 
+    private static final String PROJECT_ENTITIES_USER = "entities.user";
+    private static final String PROJECT_ENTITIES_ACHIEVEMENT = "entities.achievement";
+
+    private static final Long HOURS_ACHIEVEMENT_ID = 1L;
+    private static final Long REPS_ACHIEVEMENT_ID = 2L;
+    private static final Long WORKOUTS_ACHIEVEMENT_ID = 3L;
+
+    private static final Integer NO_PROGRESS = 0;
+
     public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao) {
         this.userDao = userDao;
         this.achievementDao = achievementDao;
@@ -26,11 +35,14 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     @Override
     public void createOrUpdateAchievementProgress(Long userId, Long achievementId, Integer progressAdded) throws InstanceNotFoundException {
 
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
-        Achievement achievement = achievementDao.findById(achievementId).orElseThrow(() -> new InstanceNotFoundException("project.entities.achievement", achievementId));
         AchievementProgress achievementProgress = findAchievementProgress(userId, achievementId);
 
         if (achievementProgress == null) {
+            User user = userDao.findById(userId)
+                    .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+            Achievement achievement = achievementDao.findById(achievementId)
+                    .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ACHIEVEMENT, achievementId));
+
             achievementProgressDao.save(new AchievementProgress(progressAdded, user, achievement));
         } else {
             achievementProgress.setProgress(achievementProgress.getProgress() + progressAdded);
@@ -39,9 +51,9 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
     @Override
     public void onFinishedWorkout(Long userId, Integer seconds, Integer reps) throws InstanceNotFoundException {
-        createOrUpdateAchievementProgress(userId, 1L, seconds);
-        createOrUpdateAchievementProgress(userId, 2L, reps);
-        createOrUpdateAchievementProgress(userId, 3L, 1);
+        createOrUpdateAchievementProgress(userId, HOURS_ACHIEVEMENT_ID, seconds);
+        createOrUpdateAchievementProgress(userId, REPS_ACHIEVEMENT_ID, reps);
+        createOrUpdateAchievementProgress(userId, WORKOUTS_ACHIEVEMENT_ID, 1);
     }
 
     @Override
@@ -67,7 +79,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
             for (Long achievementId : achievementIds) {
                 if (!existingAchievementIds.contains(achievementId)) {
-                    createOrUpdateAchievementProgress(userId, achievementId, 0);
+                    createOrUpdateAchievementProgress(userId, achievementId, NO_PROGRESS);
                 }
             }
 
