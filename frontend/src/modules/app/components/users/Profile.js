@@ -8,6 +8,7 @@ import {
     becomePremium
 } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import {
     getFollowedTrainers,
     getFollowers,
@@ -245,6 +246,7 @@ const Profile = () => {
     const [following, setFollowing] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [showBlockPopup, setShowBlockPopup] = useState(false);
 
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -365,15 +367,24 @@ const Profile = () => {
             return;
         }
 
+        setShowBlockPopup(true);
+    };
+
+    const confirmBlockUser = () => {
         blockUser(
             profile.id,
             () => {
                 setIsBlockedByMe(true);
-                setIsFollowing(false);
+                setShowBlockPopup(false);
             },
-            (err) => console.error(err)
+            (err) => {
+                console.error(err);
+                setShowBlockPopup(false);
+            }
         );
-    };
+    }
+
+    const cancelBlockUser = () => setShowBlockPopup(false);
 
     const handleFollowToggle = () => {
         if (!profile || loadingFollow) return;
@@ -442,6 +453,13 @@ const Profile = () => {
                     setShowPopup(false);
                     navigate("/users/login");
                 }}
+            />
+
+            <ConfirmationPopup
+                show={showBlockPopup}
+                text="¿Seguro que quieres bloquear a este usuario?"
+                onOk={confirmBlockUser}
+                onCancel={cancelBlockUser}
             />
 
             {profile && <UserWorkoutHistory id={profile.id.toString()} />}
