@@ -391,8 +391,6 @@ class WorkoutControllerTest {
         Workout completed = new Workout(startOfMonth, startOfMonth.plusHours(1), routine, client);
         completed = workoutDao.save(completed);
 
-        Workout inProgress = new Workout(startOfMonth.plusDays(1), null, routine, client);
-
         WorkoutExercise we1 = new WorkoutExercise();
         we1.setWorkout(completed);
         we1.setRoutineExercise(routineExercise);
