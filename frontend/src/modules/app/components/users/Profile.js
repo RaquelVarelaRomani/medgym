@@ -18,6 +18,8 @@ import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
+import AchievementCard from "../achievements/AchievementCard";
+import {getAllAchievementProgresses} from "../../../../backend/achievementService";
 
 /* Helpers fuera del componente para reducir profundidad de funciones */
 
@@ -52,6 +54,14 @@ const getIsFollowingTrainer = (meId, profileId) =>
     new Promise((resolve) =>
         getFollowedTrainers(meId, (trainers) =>
             resolve(trainers.some((t) => t.trainerId === profileId))
+        )
+    );
+
+const getAchievements = () =>
+    new Promise(resolve =>
+        getAllAchievementProgresses(
+            resolve,
+            () => resolve([]) // fallback seguro
         )
     );
 
@@ -245,6 +255,7 @@ const Profile = () => {
     const [following, setFollowing] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [achievements, setAchievements] = useState([]);
 
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -274,11 +285,12 @@ const Profile = () => {
                     setIsBlockedByMe(blocked);
                 }
 
-                const [followersCount, followingCount, followingFlag] =
+                const [followersCount, followingCount, followingFlag, myAchievements] =
                     await Promise.all([
                         getFollowersCount(user.id),
                         getFollowingCount(user.id),
-                        getIsFollowingTrainer(meUser.id, user.id)
+                        getIsFollowingTrainer(meUser.id, user.id),
+                        getAchievements()
                     ]);
 
                 if (!isMounted) return;
@@ -286,6 +298,7 @@ const Profile = () => {
                 setFollowers(followersCount);
                 setFollowing(followingCount);
                 setIsFollowing(followingFlag);
+                setAchievements(myAchievements);
                 setLoading(false);
             } catch (e) {
                 console.error("Error loading profile:", e);
@@ -443,6 +456,18 @@ const Profile = () => {
                     navigate("/users/login");
                 }}
             />
+
+            {profile &&
+                <div className={styles.achievementsSection}>
+                    <h3 className={styles.achievementsTitle}>Logros</h3>
+
+                    <div className={styles.achievementsList}>
+                        {achievements.map((a) => (
+                            <AchievementCard key={a.id} achievement={a} />
+                        ))}
+                    </div>
+                </div>
+            }
 
             {profile && <UserWorkoutHistory id={profile.id.toString()} />}
 
