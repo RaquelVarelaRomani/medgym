@@ -274,7 +274,11 @@ VALUES
 
     ('Completador de Sesiones',
      'Registra cada rutina terminada y sube de categoría al mantener un ritmo estable',
-     5, 20, 50);
+     5, 20, 50),
+
+    ('Racha',
+     'Completa entrenamientos consecutivos y alcanza niveles de constancia',
+     3, 7, 30);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)
 VALUES

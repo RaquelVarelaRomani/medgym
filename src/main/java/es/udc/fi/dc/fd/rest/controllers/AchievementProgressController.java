@@ -58,4 +58,9 @@ public class AchievementProgressController {
                 achievementService.findAllAchievements()
         );
     }
+
+    @GetMapping("/streak")
+    public int getCurrentStreak(@RequestAttribute Long userId) throws InstanceNotFoundException {
+        return achievementProgressService.getCurrentStreak(userId);
+    }
 }

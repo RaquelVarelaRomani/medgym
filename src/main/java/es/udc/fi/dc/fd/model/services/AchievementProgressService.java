@@ -10,4 +10,5 @@ public interface AchievementProgressService {
     void onFinishedWorkout(Long userId, Integer seconds, Integer reps) throws InstanceNotFoundException;
     AchievementProgress findAchievementProgress(Long userId, Long achievementId);
     List<AchievementProgress> findAchievementProgressesByUser(Long userId) throws InstanceNotFoundException;
+    int getCurrentStreak(Long userId) throws InstanceNotFoundException;
 }

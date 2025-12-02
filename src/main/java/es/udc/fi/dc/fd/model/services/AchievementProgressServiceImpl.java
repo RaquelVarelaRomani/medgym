@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private final UserDao userDao;
     private final AchievementDao achievementDao;
     private final AchievementProgressDao achievementProgressDao;
+    private final WorkoutService workoutService;
 
     private static final String PROJECT_ENTITIES_USER = "entities.user";
     private static final String PROJECT_ENTITIES_ACHIEVEMENT = "entities.achievement";
@@ -23,13 +25,15 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private static final Long HOURS_ACHIEVEMENT_ID = 1L;
     private static final Long REPS_ACHIEVEMENT_ID = 2L;
     private static final Long WORKOUTS_ACHIEVEMENT_ID = 3L;
+    private static final Long STREAK_ACHIEVEMENT_ID = 4L;
 
     private static final Integer NO_PROGRESS = 0;
 
-    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao) {
+    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService) {
         this.userDao = userDao;
         this.achievementDao = achievementDao;
         this.achievementProgressDao = achievementProgressDao;
+        this.workoutService = workoutService;
     }
 
     @Override
@@ -54,6 +58,9 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         createOrUpdateAchievementProgress(userId, HOURS_ACHIEVEMENT_ID, seconds);
         createOrUpdateAchievementProgress(userId, REPS_ACHIEVEMENT_ID, reps);
         createOrUpdateAchievementProgress(userId, WORKOUTS_ACHIEVEMENT_ID, 1);
+
+        int currentStreak = workoutService.calculateCurrentStreak(userId);
+        updateStreakAchievements(userId, currentStreak);
     }
 
     @Override
@@ -87,5 +94,19 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         }
 
         return achievementProgresses;
+    }
+
+    private void updateStreakAchievements(Long userId, int currentStreak) throws InstanceNotFoundException {
+        AchievementProgress ap = findAchievementProgress(userId, STREAK_ACHIEVEMENT_ID);
+        if (ap == null) {
+            createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak);
+        } else if (currentStreak > ap.getProgress()) {
+            createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak - ap.getProgress());
+        }
+    }
+
+    @Override
+    public int getCurrentStreak(Long userId) throws InstanceNotFoundException {
+        return workoutService.calculateCurrentStreak(userId);
     }
 }
