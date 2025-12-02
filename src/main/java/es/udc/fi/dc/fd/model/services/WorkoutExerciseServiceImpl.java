@@ -2,12 +2,10 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -16,7 +14,6 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     private final WorkoutExerciseDao workoutExerciseDao;
     private final WorkoutDao workoutDao;
     private final RoutineExerciseDao routineExerciseDao;
-    @Autowired
     private AchievementProgressService achievementProgressService;
 
     public WorkoutExerciseServiceImpl(WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao, RoutineExerciseDao routineExerciseDao) {
