@@ -40,8 +40,8 @@ function AchievementPopup({ show, achievements, onOk }) {
                         <>
                             <p>¡Nuevas medallas desbloqueadas!</p>
                             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
-                                {achievements.map((ach, index) => (
-                                    <div key={index} style={{ textAlign: 'center' }}>
+                                {achievements.map((ach) => (
+                                    <div key={ach.name} style={{ textAlign: 'center' }}>
                                         <img
                                             src={process.env.PUBLIC_URL + `/assets/${getMedalImage(ach.progress, ach.silverReq, ach.goldReq)}`}
                                             alt="Medalla"
