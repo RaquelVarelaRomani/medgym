@@ -98,8 +98,8 @@ describe("Profile and EditProfile Components", () => {
                 resolve([]);
             });
 
-            getAllAchievementProgresses.mockImplementation((success, error) => {
-                success([]);
+            getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {
+                onSuccess([]);
             });
         };
 
@@ -160,7 +160,7 @@ describe("Profile and EditProfile Components", () => {
             getFollowers.mockImplementation((id, resolve) => resolve([]));
             getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
             getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-            getAllAchievementProgresses.mockImplementation((success) => success([]));
+            getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
             render(
                 <MemoryRouter>
@@ -236,7 +236,7 @@ describe("Profile and EditProfile Components", () => {
                 getFollowers.mockImplementation((id, resolve) => resolve([]));
                 getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
                 getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-                getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+                getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
                 render(
                     <MemoryRouter>
@@ -730,7 +730,7 @@ describe("Profile and EditProfile Components", () => {
       getFollowers.mockImplementation((id, resolve) => resolve([]));
       getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
       getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-      getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+      getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>
@@ -768,9 +768,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -815,9 +813,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -861,9 +857,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -907,9 +901,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -955,9 +947,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -1001,9 +991,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           becomePremium.mockImplementation((id, success) => {
               success();
@@ -1053,9 +1041,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           becomePremium.mockImplementation((id, success, error) =>
               error("Premium error")
@@ -1111,7 +1097,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           blockUser.mockImplementation((id, onSuccess) => onSuccess());
 
@@ -1160,7 +1146,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           unblockUser.mockImplementation((id, onSuccess) => onSuccess());
 
@@ -1209,7 +1195,7 @@ describe("Profile and EditProfile Components", () => {
         resolve([]);
       });
 
-      getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
 
           render(
@@ -1255,7 +1241,7 @@ describe("Profile and EditProfile Components", () => {
         resolve([]);
       });
 
-        getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
         render(
         <MemoryRouter>
@@ -1298,9 +1284,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -1342,9 +1326,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
         <MemoryRouter>
@@ -1395,9 +1377,7 @@ describe("Profile and EditProfile Components", () => {
             resolve([])
         );
 
-        getAllAchievementProgresses.mockImplementation((resolve) =>
-            resolve([])
-        );
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>
@@ -1435,9 +1415,7 @@ describe("Profile and EditProfile Components", () => {
             resolve([])
         );
 
-        getAllAchievementProgresses.mockImplementation((resolve) =>
-            resolve([])
-        );
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>

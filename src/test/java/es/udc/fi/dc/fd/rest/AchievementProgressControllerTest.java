@@ -50,6 +50,7 @@ class AchievementProgressControllerTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     private AuthenticatedUserDto userA;
+    private AuthenticatedUserDto userB;
 
     private Achievement hours;
     private Achievement reps;
@@ -73,6 +74,7 @@ class AchievementProgressControllerTest {
     @BeforeEach
     void setUp() throws IncorrectLoginException, BlockedUserException {
         userA = createAuthenticatedUser("UserA", "userA@test.com");
+        userB = createAuthenticatedUser("UserB", "userB@test.com");
 
         // Recuperar achievements ya insertados por la aplicación
         hours = achievementDao.findById(1L).orElseThrow();
@@ -182,12 +184,29 @@ class AchievementProgressControllerTest {
                         .param("progress", "7"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/api/achievements")
+        mockMvc.perform(get("/api/achievements/user/" + userA.getUserDto().getId())
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").exists())
                 .andExpect(jsonPath("$[1].name").exists());
+    }
+
+    @Test
+    void testFindAllAchievementProgressesForOtherUser() throws Exception {
+
+        mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
+                        .header("Authorization", "Bearer " + userB.getServiceToken())
+                        .requestAttr("userId", userB.getUserDto().getId())
+                        .param("progress", "50"))
+                .andExpect(status().isOk());
+
+        //user a accesses user b's achievements
+        mockMvc.perform(get("/api/achievements/user/" + userB.getUserDto().getId())
+                        .header("Authorization", "Bearer " + userA.getServiceToken())
+                        .requestAttr("userId", userA.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].progress").value(50));
     }
 
     @Test

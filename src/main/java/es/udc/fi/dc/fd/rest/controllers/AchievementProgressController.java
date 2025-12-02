@@ -51,8 +51,8 @@ public class AchievementProgressController {
         );
     }
 
-    @GetMapping()
-    public List<AchievementProgressDto> findAllAchievementProgressesByUser(@RequestAttribute Long userId) throws InstanceNotFoundException {
+    @GetMapping("/user/{userId}")
+    public List<AchievementProgressDto> findAllAchievementProgressesByUserId(@PathVariable Long userId) throws InstanceNotFoundException {
         return achievementProgressDtos(
                 achievementProgressService.findAchievementProgressesByUser(userId),
                 achievementService.findAllAchievements()

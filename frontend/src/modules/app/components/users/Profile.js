@@ -57,9 +57,10 @@ const getIsFollowingTrainer = (meId, profileId) =>
         )
     );
 
-const getAchievements = () =>
+const getAchievements = (userId) =>
     new Promise(resolve =>
         getAllAchievementProgresses(
+            userId,
             resolve,
             () => resolve([]) // fallback seguro
         )
@@ -290,7 +291,7 @@ const Profile = () => {
                         getFollowersCount(user.id),
                         getFollowingCount(user.id),
                         getIsFollowingTrainer(meUser.id, user.id),
-                        getAchievements()
+                        getAchievements(user.id)
                     ]);
 
                 if (!isMounted) return;
