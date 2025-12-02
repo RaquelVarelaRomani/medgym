@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Popup.module.css";
+import achievementStyles from './AchievementPopup.module.css';
 import PropTypes from "prop-types";
 
 function AchievementPopup({ show, achievements, onOk }) {
@@ -23,31 +24,31 @@ function AchievementPopup({ show, achievements, onOk }) {
     return (
         <div className={styles['popup-overlay']}>
             <div className={styles['popup-content']}>
-                <div style={{ textAlign: 'center' }}>
+                <div className={achievementStyles.center}>
                     {isSingle ? (
                         <>
                             <img
                                 src={process.env.PUBLIC_URL + `/assets/${getMedalImage(achievement.progress, achievement.silverReq, achievement.goldReq)}`}
                                 alt="Medalla"
-                                style={{ width: '80px', height: '80px', marginBottom: '10px' }}
+                                className={achievementStyles.medalImageLarge}
                             />
                             <p>¡Nueva medalla desbloqueada: {achievement.name}!</p>
-                            <p style={{ fontSize: '1rem', fontWeight: 'normal', marginTop: '-1.5rem' }}>
+                            <p className={achievementStyles.achievementDescription}>
                                 {achievement.description} ({getMedalInfo(achievement.progress, achievement.bronzeReq, achievement.silverReq, achievement.goldReq)})
                             </p>
                         </>
                     ) : (
                         <>
                             <p>¡Nuevas medallas desbloqueadas!</p>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+                            <div className={achievementStyles.medalsContainer}>
                                 {achievements.map((ach) => (
-                                    <div key={ach.name} style={{ textAlign: 'center' }}>
+                                    <div key={ach.name} className={achievementStyles.medalItem}>
                                         <img
                                             src={process.env.PUBLIC_URL + `/assets/${getMedalImage(ach.progress, ach.silverReq, ach.goldReq)}`}
                                             alt="Medalla"
-                                            style={{ width: '60px', height: '60px' }}
+                                            className={achievementStyles.medalImageSmall}
                                         />
-                                        <p style={{ fontSize: '12px', margin: '5px 0 0 0' }}>{ach.name}</p>
+                                        <p className={achievementStyles.medalName}>{ach.name}</p>
                                     </div>
                                 ))}
                             </div>
