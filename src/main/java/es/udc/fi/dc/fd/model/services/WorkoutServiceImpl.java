@@ -49,12 +49,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setEndTime(LocalDateTime.now());
 
         List<WorkoutExercise> workoutExercises = workoutExerciseDao.findByWorkoutId(id);
-
-        achievementProgressService.onFinishedWorkout(
-                workout.getUser().getId(),
-                (int) ChronoUnit.SECONDS.between(workout.getStartTime(), workout.getEndTime()),
-                workoutExercises.stream().mapToInt(WorkoutExercise::getReps).sum()
-        );
     }
 
     @Override

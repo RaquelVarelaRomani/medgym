@@ -6,11 +6,11 @@ import es.udc.fi.dc.fd.model.services.AchievementService;
 import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
 import es.udc.fi.dc.fd.rest.dtos.AchievementProgressParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.OnFinishWorkoutParamsDto;
+
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import static es.udc.fi.dc.fd.rest.dtos.AchievementProgressConversor.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/achievements")
@@ -34,7 +34,7 @@ public class AchievementProgressController {
     }
 
     @PostMapping("/onFinishWorkout")
-    public void onFinishWorkout(
+    public List<AchievementProgressDto> onFinishWorkout(
             @RequestAttribute Long userId,
             @RequestBody OnFinishWorkoutParamsDto params
     ) throws InstanceNotFoundException {

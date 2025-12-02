@@ -2,10 +2,14 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
+
+import static es.udc.fi.dc.fd.rest.dtos.AchievementProgressConversor.*;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,13 +58,13 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     }
 
     @Override
-    public void onFinishedWorkout(Long userId, Integer seconds, Integer reps) throws InstanceNotFoundException {
+    public List<AchievementProgressDto> onFinishedWorkout(Long userId, Integer seconds, Integer reps) throws InstanceNotFoundException {
         createOrUpdateAchievementProgress(userId, HOURS_ACHIEVEMENT_ID, seconds);
         createOrUpdateAchievementProgress(userId, REPS_ACHIEVEMENT_ID, reps);
         createOrUpdateAchievementProgress(userId, WORKOUTS_ACHIEVEMENT_ID, 1);
 
         int currentStreak = workoutService.calculateCurrentStreak(userId);
-        updateStreakAchievements(userId, currentStreak);
+        return updateStreakAchievements(userId, currentStreak);
     }
 
     @Override
@@ -96,13 +100,30 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         return achievementProgresses;
     }
 
-    private void updateStreakAchievements(Long userId, int currentStreak) throws InstanceNotFoundException {
+    private List<AchievementProgressDto> updateStreakAchievements(Long userId, int currentStreak) throws InstanceNotFoundException {
+        List<AchievementProgressDto> newAchievements = new ArrayList<>();
         AchievementProgress ap = findAchievementProgress(userId, STREAK_ACHIEVEMENT_ID);
+        int oldProgress = (ap != null) ? ap.getProgress() : 0;
+
         if (ap == null) {
             createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak);
         } else if (currentStreak > ap.getProgress()) {
             createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak - ap.getProgress());
         }
+
+        AchievementProgress updatedAp = findAchievementProgress(userId, STREAK_ACHIEVEMENT_ID);
+        int newProgress = updatedAp.getProgress();
+        Achievement streakAchievement = achievementDao.findById(STREAK_ACHIEVEMENT_ID).orElseThrow(() -> new InstanceNotFoundException("Achievement", STREAK_ACHIEVEMENT_ID));
+
+        boolean reachedBronze = oldProgress < streakAchievement.getBronzeReq() && newProgress >= streakAchievement.getBronzeReq();
+        boolean reachedSilver = oldProgress < streakAchievement.getSilverReq() && newProgress >= streakAchievement.getSilverReq();
+        boolean reachedGold = oldProgress < streakAchievement.getGoldReq() && newProgress >= streakAchievement.getGoldReq();
+
+        if (reachedBronze || reachedSilver || reachedGold) {
+            newAchievements.add(toAchievementProgressDto(updatedAp, streakAchievement));
+        }
+
+        return newAchievements;
     }
 
     @Override
