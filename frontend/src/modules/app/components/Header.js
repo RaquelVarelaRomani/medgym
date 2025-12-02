@@ -160,7 +160,7 @@ const Header = () => {
 
                 {/* left section - branding */}
                 <div className={styles['header-left']}>
-                    <Link to="/routines" className={styles['logo-link']}>
+                    <Link to="/workouts/feed" className={styles['logo-link']}>
                         <img
                             src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                             alt="Logo medgym"
