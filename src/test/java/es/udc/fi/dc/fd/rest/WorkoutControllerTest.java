@@ -233,17 +233,18 @@ class WorkoutControllerTest {
                 .andExpect(jsonPath("$").isArray());
     }
 
-    void testGetLastMonthStatsReturnsStats() throws Exception {
-        YearMonth lastMonth = YearMonth.now().minusMonths(1);
-        LocalDateTime startOfLastMonth = lastMonth.atDay(1).atStartOfDay();
-        LocalDateTime midOfLastMonth = lastMonth.atDay(15).atStartOfDay();
+    @Test
+    void testGetLastMonthStats() throws Exception {
+        YearMonth targetMonth = YearMonth.now().minusMonths(1);
+        LocalDateTime startOfMonth = targetMonth.atDay(1).atStartOfDay();
+        LocalDateTime midOfMonth = targetMonth.atDay(15).atStartOfDay();
 
         User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
 
-        Workout w1 = new Workout(startOfLastMonth, startOfLastMonth.plusHours(1), routine, client);
+        Workout w1 = new Workout(startOfMonth, startOfMonth.plusHours(1), routine, client);
         w1 = workoutDao.save(w1);
 
-        Workout w2 = new Workout(midOfLastMonth, midOfLastMonth.plusHours(2), routine, client);
+        Workout w2 = new Workout(midOfMonth, midOfMonth.plusHours(2), routine, client);
         w2 = workoutDao.save(w2);
 
         WorkoutExercise we1 = new WorkoutExercise();
@@ -263,6 +264,8 @@ class WorkoutControllerTest {
         workoutExerciseDao.save(we2);
 
         mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", String.valueOf(targetMonth.getMonthValue()))
+                        .param("year", String.valueOf(targetMonth.getYear()))
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .header("X-User-Id", clientUser.getUserDto().getId()))
                 .andExpect(status().isOk())
@@ -274,7 +277,11 @@ class WorkoutControllerTest {
 
     @Test
     void testGetLastMonthStatsNoWorkouts() throws Exception {
+        YearMonth targetMonth = YearMonth.now().minusMonths(1);
+
         mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", String.valueOf(targetMonth.getMonthValue()))
+                        .param("year", String.valueOf(targetMonth.getYear()))
                         .header("Authorization", "Bearer " + clientUser.getServiceToken())
                         .header("X-User-Id", clientUser.getUserDto().getId()))
                 .andExpect(status().isOk())
@@ -282,5 +289,122 @@ class WorkoutControllerTest {
                 .andExpect(jsonPath("$.totalDurationSeconds").value(0))
                 .andExpect(jsonPath("$.averageDurationSeconds").value(0.0))
                 .andExpect(jsonPath("$.exercisesByMuscleGroup").isEmpty());
+    }
+
+    @Test
+    void testGetTwoMonthsAgoStats() throws Exception {
+        YearMonth twoMonthsAgo = YearMonth.now().minusMonths(2);
+        LocalDateTime startOfMonth = twoMonthsAgo.atDay(1).atStartOfDay();
+
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+
+        Workout w1 = new Workout(startOfMonth, startOfMonth.plusHours(1), routine, client);
+        w1 = workoutDao.save(w1);
+
+        WorkoutExercise we1 = new WorkoutExercise();
+        we1.setWorkout(w1);
+        we1.setRoutineExercise(routineExercise);
+        we1.setReps((short) 8);
+        we1.setWeight((short) 60);
+        we1.setDurationSeconds((short) 45);
+        workoutExerciseDao.save(we1);
+
+        mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", String.valueOf(twoMonthsAgo.getMonthValue()))
+                        .param("year", String.valueOf(twoMonthsAgo.getYear()))
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .header("X-User-Id", clientUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastMonthWorkouts").value(1))
+                .andExpect(jsonPath("$.totalDurationSeconds").value(3600))
+                .andExpect(jsonPath("$.averageDurationSeconds").value(3600.0))
+                .andExpect(jsonPath("$.exercisesByMuscleGroup['LEG']").value(1));
+    }
+
+    @Test
+    void testGetStatsIgnoresWorkoutsFromOtherMonths() throws Exception {
+        YearMonth targetMonth = YearMonth.now().minusMonths(1);
+        LocalDateTime startOfMonth = targetMonth.atDay(1).atStartOfDay();
+
+        YearMonth differentMonth = YearMonth.now();
+        LocalDateTime startOfDifferentMonth = differentMonth.atDay(1).atStartOfDay();
+
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+
+        Workout w1 = new Workout(startOfMonth, startOfMonth.plusHours(1), routine, client);
+        w1 = workoutDao.save(w1);
+
+        Workout w2 = new Workout(startOfDifferentMonth, startOfDifferentMonth.plusHours(1), routine, client);
+        w2 = workoutDao.save(w2);
+
+        WorkoutExercise we1 = new WorkoutExercise();
+        we1.setWorkout(w1);
+        we1.setRoutineExercise(routineExercise);
+        we1.setReps((short) 10);
+        we1.setWeight((short) 50);
+        we1.setDurationSeconds((short) 60);
+        workoutExerciseDao.save(we1);
+
+        WorkoutExercise we2 = new WorkoutExercise();
+        we2.setWorkout(w2);
+        we2.setRoutineExercise(routineExercise);
+        we2.setReps((short) 10);
+        we2.setWeight((short) 50);
+        we2.setDurationSeconds((short) 60);
+        workoutExerciseDao.save(we2);
+
+        mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", String.valueOf(targetMonth.getMonthValue()))
+                        .param("year", String.valueOf(targetMonth.getYear()))
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .header("X-User-Id", clientUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastMonthWorkouts").value(1))
+                .andExpect(jsonPath("$.totalDurationSeconds").value(3600));
+    }
+
+    @Test
+    void testGetStatsMissingMonthParameter() throws Exception {
+        mockMvc.perform(get("/api/workouts/stats")
+                        .param("year", "2024")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .header("X-User-Id", clientUser.getUserDto().getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetStatsMissingYearParameter() throws Exception {
+        mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", "11")
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .header("X-User-Id", clientUser.getUserDto().getId()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetStatsOnlyIncludesCompletedWorkouts() throws Exception {
+        YearMonth targetMonth = YearMonth.now().minusMonths(1);
+        LocalDateTime startOfMonth = targetMonth.atDay(1).atStartOfDay();
+
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+
+        Workout completed = new Workout(startOfMonth, startOfMonth.plusHours(1), routine, client);
+        completed = workoutDao.save(completed);
+
+        WorkoutExercise we1 = new WorkoutExercise();
+        we1.setWorkout(completed);
+        we1.setRoutineExercise(routineExercise);
+        we1.setReps((short) 10);
+        we1.setWeight((short) 50);
+        we1.setDurationSeconds((short) 60);
+        workoutExerciseDao.save(we1);
+
+        mockMvc.perform(get("/api/workouts/stats")
+                        .param("month", String.valueOf(targetMonth.getMonthValue()))
+                        .param("year", String.valueOf(targetMonth.getYear()))
+                        .header("Authorization", "Bearer " + clientUser.getServiceToken())
+                        .header("X-User-Id", clientUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastMonthWorkouts").value(1));
     }
 }

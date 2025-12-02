@@ -5,7 +5,7 @@ import {
     getWorkout,
     getWorkouts,
     addWorkoutExercise,
-    getWorkoutExercisesByWorkoutId
+    getWorkoutExercisesByWorkoutId, getStatsForMonth
 } from "../../backend/workoutService";
 
 // Mock appFetch and related functions
@@ -314,6 +314,101 @@ describe("workoutService", () => {
                 onSuccess,
                 onErrors
             );
+        });
+    });
+
+    describe("getStatsForMonth", () => {
+        const month = 11;
+        const year = 2025;
+
+        test("successful API call with proper parameter passing", () => {
+            const mockStats = {
+                lastMonthWorkouts: 5,
+                totalDurationSeconds: 18000,
+                averageDurationSeconds: 3600,
+                exercisesByMuscleGroup: {
+                    CHEST: 12,
+                    BACK: 10,
+                    LEGS: 8,
+                    ARMS: 6
+                }
+            };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockStats);
+            });
+
+            getStatsForMonth(month, year, onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockStats);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("error handling with onErrors callback", () => {
+            const mockError = { globalError: "Failed to load statistics" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(mockError);
+            });
+
+            getStatsForMonth(month, year, onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(mockError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+
+        test("correct appFetch call with appropriate path and method", () => {
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            getStatsForMonth(month, year, onSuccess, onErrors);
+
+            expect(mockAppFetch).toHaveBeenCalledWith(
+                `/workouts/stats?month=${month}&year=${year}`,
+                fetchConfig("GET"),
+                onSuccess,
+                onErrors
+            );
+        });
+
+        test("correct appFetch call with different month and year", () => {
+            const differentMonth = 5;
+            const differentYear = 2024;
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            getStatsForMonth(differentMonth, differentYear, onSuccess, onErrors);
+
+            expect(mockAppFetch).toHaveBeenCalledWith(
+                `/workouts/stats?month=${differentMonth}&year=${differentYear}`,
+                fetchConfig("GET"),
+                onSuccess,
+                onErrors
+            );
+        });
+
+        test("handles empty statistics response", () => {
+            const mockEmptyStats = {
+                lastMonthWorkouts: 0,
+                totalDurationSeconds: 0,
+                averageDurationSeconds: 0,
+                exercisesByMuscleGroup: {}
+            };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockEmptyStats);
+            });
+
+            getStatsForMonth(month, year, onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockEmptyStats);
+            expect(onErrors).not.toHaveBeenCalled();
         });
     });
 });
