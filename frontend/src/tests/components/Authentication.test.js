@@ -71,7 +71,7 @@ describe("Authentication Components", () => {
           expect.any(Function),
           expect.any(Function),
         );
-        expect(mockNavigate).toHaveBeenCalledWith("/routines");
+        expect(mockNavigate).toHaveBeenCalledWith("/workouts/feed");
       });
     });
 
@@ -326,7 +326,7 @@ describe("Authentication Components", () => {
           expect.any(Function),
           expect.any(Function),
         );
-        expect(mockNavigate).toHaveBeenCalledWith("/routines");
+        expect(mockNavigate).toHaveBeenCalledWith("/workouts/feed");
       });
     });
 
