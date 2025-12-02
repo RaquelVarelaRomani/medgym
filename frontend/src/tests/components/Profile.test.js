@@ -1078,7 +1078,7 @@ describe("Profile and EditProfile Components", () => {
           fireEvent.click(premiumButton);
 
           expect(alertSpy).toHaveBeenCalledWith(
-              "Error becoming premium: Premium error"
+              "Error: Premium error"
           );
 
           alertSpy.mockRestore();

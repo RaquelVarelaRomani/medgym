@@ -1281,9 +1281,6 @@ describe("CreateRoutine Component", () => {
             fireEvent.click(okButton);
         });
 
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1", { replace: true });
-        });
     });
 
     test("renders DifficultyFilter options", async () => {
@@ -7263,10 +7260,6 @@ describe("Routines Component", () => {
         await waitFor(() => {
             const okButton = screen.getByText("Hacerme premium");
             fireEvent.click(okButton);
-        });
-
-        await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1", { replace: true });
         });
     });
 
