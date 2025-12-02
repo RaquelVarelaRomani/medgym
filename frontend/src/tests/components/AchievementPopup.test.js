@@ -41,7 +41,7 @@ describe('AchievementPopup', () => {
 
         render(<AchievementPopup show={true} achievements={[achievement]} onOk={mockOnOk} />);
 
-        expect(screen.getByText('Test Description (12)')).toBeInTheDocument();
+        expect(screen.getByText('Test Description (10)')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAttribute('src', expect.stringContaining('medal-silver.svg'));
     });
 
@@ -58,7 +58,7 @@ describe('AchievementPopup', () => {
 
         render(<AchievementPopup show={true} achievements={[achievement]} onOk={mockOnOk} />);
 
-        expect(screen.getByText('Test Description (25)')).toBeInTheDocument();
+        expect(screen.getByText('Test Description (20)')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAttribute('src', expect.stringContaining('medal-gold.svg'));
     });
 

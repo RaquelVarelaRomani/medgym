@@ -11,6 +11,12 @@ function AchievementPopup({ show, achievements, onOk }) {
         return "medal-bronze.svg";
     };
 
+    const getMedalInfo = (progress, bronzeReq, silverReq, goldReq) => {
+        if (progress >= goldReq) return goldReq;
+        if (progress >= silverReq) return silverReq;
+        return bronzeReq;
+    };
+
     const isSingle = achievements.length === 1;
     const achievement = isSingle ? achievements[0] : null;
 
@@ -27,7 +33,7 @@ function AchievementPopup({ show, achievements, onOk }) {
                             />
                             <p>¡Nueva medalla desbloqueada: {achievement.name}!</p>
                             <p style={{ fontSize: '1rem', fontWeight: 'normal', marginTop: '-1.5rem' }}>
-                                {achievement.description} ({achievement.progress})
+                                {achievement.description} ({getMedalInfo(achievement.progress, achievement.bronzeReq, achievement.silverReq, achievement.goldReq)})
                             </p>
                         </>
                     ) : (
