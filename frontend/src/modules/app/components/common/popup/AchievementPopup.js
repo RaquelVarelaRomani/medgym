@@ -26,13 +26,16 @@ function AchievementPopup({ show, achievements, onOk }) {
                                 style={{ width: '80px', height: '80px', marginBottom: '10px' }}
                             />
                             <p>¡Nueva medalla desbloqueada: {achievement.name}!</p>
+                            <p style={{ fontSize: '1rem', fontWeight: 'normal', marginTop: '-1.5rem' }}>
+                                {achievement.description} ({achievement.progress})
+                            </p>
                         </>
                     ) : (
                         <>
                             <p>¡Nuevas medallas desbloqueadas!</p>
                             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
                                 {achievements.map((ach, index) => (
-                                    <div key={ach.id} style={{ textAlign: 'center' }}>
+                                    <div key={index} style={{ textAlign: 'center' }}>
                                         <img
                                             src={process.env.PUBLIC_URL + `/assets/${getMedalImage(ach.progress, ach.silverReq, ach.goldReq)}`}
                                             alt="Medalla"
