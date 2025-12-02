@@ -5,7 +5,9 @@ import * as workoutService from "../../../../backend/workoutService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import * as workoutExerciseService from "../../../../backend/workoutExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import ConfirmationPopup from "../common/popup/ConfirmationPopup"; 
+import { onFinishWorkoutAchievements } from "../../../../backend/achievementService";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import AchievementPopup from "../common/popup/AchievementPopup";
 
 const WorkoutSession = () => {
   const { sessionId } = useParams();
@@ -18,7 +20,9 @@ const WorkoutSession = () => {
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [notification, setNotification] = useState("");
-  const [showIncompletePopup, setShowIncompletePopup] = useState(false); 
+  const [showIncompletePopup, setShowIncompletePopup] = useState(false);
+  const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+  const [newAchievements, setNewAchievements] = useState([]);
 
  
   useEffect(() => {
@@ -121,6 +125,18 @@ const WorkoutSession = () => {
     return routineExercises.every((ex) => loggedSets[ex.id]?.length > 0);
   };
 
+  const calculateWorkoutStats = () => {
+    let totalSeconds = 0;
+    let totalReps = 0;
+    Object.values(loggedSets).forEach((sets) => {
+      sets.forEach((set) => {
+        if (set.durationSeconds) totalSeconds += Number(set.durationSeconds);
+        if (set.reps) totalReps += Number(set.reps);
+      });
+    });
+    return { totalSeconds, totalReps };
+  };
+
   
   const handleFinishAttempt = () => {
     if (!allExercisesCompleted()) {
@@ -135,7 +151,22 @@ const WorkoutSession = () => {
       sessionId,
       () => {
         showNotification("🏁 Entrenamiento finalizado");
-        setTimeout(() => navigate("/workouts/history"), 1000);
+        const { totalSeconds, totalReps } = calculateWorkoutStats();
+        onFinishWorkoutAchievements(
+          totalSeconds,
+          totalReps,
+          (newAchievements) => {
+            if (newAchievements && newAchievements.length > 0) {
+              setNewAchievements(newAchievements);
+              setShowAchievementPopup(true);
+            } else {
+              setTimeout(() => navigate("/workouts/history"), 1000);
+            }
+          },
+          () => {
+            setTimeout(() => navigate("/workouts/history"), 1000);
+          }
+        );
       },
       () => showNotification("⚠️ Error al finalizar el entrenamiento")
     );
@@ -273,6 +304,16 @@ const WorkoutSession = () => {
           handleFinishWorkout();
         }}
         onCancel={() => setShowIncompletePopup(false)}
+      />
+
+      <AchievementPopup
+        show={showAchievementPopup}
+        achievements={newAchievements}
+        onOk={() => {
+          setShowAchievementPopup(false);
+          setNewAchievements([]);
+          setTimeout(() => navigate("/workouts/history"), 1000);
+        }}
       />
     </div>
   );
