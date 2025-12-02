@@ -298,7 +298,7 @@ const Profile = () => {
                     return;
                 }
 
-                setShowBlockPopup(true);
+                setShowPopupBlocked(true);
                 setLoading(false);
             }
         };
