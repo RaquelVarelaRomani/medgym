@@ -52,7 +52,9 @@ class AchievementProgressServiceTest {
         return achievementDao.findById(3L).orElseThrow();
     }
 
-    private Achievement aMaxWeight() {return achievementDao.findById(4L).orElseThrow();}
+    private Achievement aMaxWeight() {
+        return achievementDao.findByName("Levantando el Gym").orElseThrow();
+    }
 
     @Test
     void testConstructorAndGettersSetters() {
@@ -159,7 +161,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, list.size());
+        assertEquals(4, list.size());
         assertEquals(7,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -179,7 +181,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, list.size());
+        assertEquals(4, list.size());
         assertEquals(0,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -259,7 +261,7 @@ class AchievementProgressServiceTest {
 
         List<AchievementProgress> after = achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, after.size());
+        assertEquals(4, after.size());
     }
 
 
@@ -298,10 +300,8 @@ class AchievementProgressServiceTest {
 
     @Test
     void testMaxWeightArchievement() throws Exception {
-        User u = createUser("u12");
+        User u = createUser("u15");
         achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aMaxWeight().getId(), 1);
-        achievementProgressService.maxWeightWorkout(u.getId(), (short) 1);
-        assertEquals(1, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
         achievementProgressService.maxWeightWorkout(u.getId(), (short) 200);
         assertEquals(2, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
     }

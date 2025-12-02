@@ -28,17 +28,21 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     @Override
     public WorkoutExercise addWorkoutExercise(Short reps, Short weight, Short durationSeconds, Long workoutId, Long routineExerciseId) throws InstanceNotFoundException {
         Optional<Workout> opWorkout = workoutDao.findById(workoutId);
-        Workout workout = opWorkout.get();
-        Long userId = workout.getUser().getId();
-        if (weight > findMaxWeightByUser(userId)) {
-            achievementProgressService.maxWeightWorkout(userId, weight);
+        if (opWorkout.isPresent()) {
+            Workout workout = opWorkout.get();
+            Long userId = workout.getUser().getId();
+            if (weight > findMaxWeightByUser(userId)) {
+                achievementProgressService.maxWeightWorkout(userId, weight);
+            }
+            return workoutExerciseDao.save(new WorkoutExercise(
+                    reps,
+                    weight,
+                    durationSeconds,
+                    workout,
+                    routineExerciseDao.findById(routineExerciseId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routineExercise", routineExerciseId))));
         }
-        return workoutExerciseDao.save(new WorkoutExercise(
-                reps,
-                weight,
-                durationSeconds,
-                workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", workoutId)),
-                routineExerciseDao.findById(routineExerciseId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routineExercise", routineExerciseId))));
+
+        throw new InstanceNotFoundException("project.entities.workout", workoutId);
     }
 
     @Override
