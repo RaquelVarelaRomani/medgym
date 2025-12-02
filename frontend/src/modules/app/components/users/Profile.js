@@ -24,7 +24,7 @@ import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlock
 
 const getAuth = () =>
     new Promise((resolve, reject) =>
-        tryLoginFromServiceToken(resolve, reject)
+        tryLoginFromServiceToken(resolve, () => reject("AUTH_ERROR"))
     );
 
 const getUserById = (id) =>
@@ -291,11 +291,15 @@ const Profile = () => {
                 setIsFollowing(followingFlag);
                 setLoading(false);
             } catch (e) {
-                console.error("Error loading profile:", e);
-                if (isMounted) {
-                    setShowPopupBlocked(true);
+                if(e === "AUTH_ERROR") {
+                    setShowPopup(true);
+                    navigate("/users/login");
                     setLoading(false);
+                    return;
                 }
+
+                setShowBlockPopup(true);
+                setLoading(false);
             }
         };
 
