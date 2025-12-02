@@ -38,7 +38,7 @@ public class AchievementProgressController {
             @RequestAttribute Long userId,
             @RequestBody OnFinishWorkoutParamsDto params
     ) throws InstanceNotFoundException {
-        achievementProgressService.onFinishedWorkout(userId, params.getSeconds(), params.getReps());
+        return achievementProgressService.onFinishedWorkout(userId, params.getSeconds(), params.getReps());
     }
 
     @GetMapping("/{achievementId}")
