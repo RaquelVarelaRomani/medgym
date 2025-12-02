@@ -298,12 +298,11 @@ class AchievementProgressServiceTest {
 
     @Test
     void testMaxWeightArchievement() throws Exception {
-        Optional<User> u = userDao.findByEmail("laura.martinez@example.com");
-        User user = u.get();
-        achievementProgressService.createOrUpdateAchievementProgress(user.getId(), aMaxWeight().getId(), 1);
-        achievementProgressService.maxWeightWorkout(user.getId(), (short) 1);
-        assertEquals(1, achievementProgressService.findAchievementProgress(user.getId(), aMaxWeight().getId()).getProgress());
-        achievementProgressService.maxWeightWorkout(user.getId(), (short) 200);
-        assertEquals(2, achievementProgressService.findAchievementProgress(user.getId(), aMaxWeight().getId()).getProgress());
+        User u = createUser("u12");
+        achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aMaxWeight().getId(), 1);
+        achievementProgressService.maxWeightWorkout(u.getId(), (short) 1);
+        assertEquals(1, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
+        achievementProgressService.maxWeightWorkout(u.getId(), (short) 200);
+        assertEquals(2, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
     }
 }
