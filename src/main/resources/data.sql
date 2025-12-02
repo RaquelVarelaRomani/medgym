@@ -274,7 +274,11 @@ VALUES
 
     ('Completador de Sesiones',
      'Registra cada rutina terminada y sube de categoría al mantener un ritmo estable',
-     5, 20, 50);
+     5, 20, 50),
+
+    ('Levantando el Gym',
+     'Levanta más peso que nunca y progresa según tu capacidad de superación.',
+     1, 10, 25);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)
 VALUES

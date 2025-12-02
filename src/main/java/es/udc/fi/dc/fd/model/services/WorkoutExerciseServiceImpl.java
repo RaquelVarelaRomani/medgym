@@ -2,10 +2,13 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -13,6 +16,8 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     private final WorkoutExerciseDao workoutExerciseDao;
     private final WorkoutDao workoutDao;
     private final RoutineExerciseDao routineExerciseDao;
+    @Autowired
+    private AchievementProgressService achievementProgressService;
 
     public WorkoutExerciseServiceImpl(WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao, RoutineExerciseDao routineExerciseDao) {
         this.workoutExerciseDao = workoutExerciseDao;
@@ -22,6 +27,12 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     @Override
     public WorkoutExercise addWorkoutExercise(Short reps, Short weight, Short durationSeconds, Long workoutId, Long routineExerciseId) throws InstanceNotFoundException {
+        Optional<Workout> opWorkout = workoutDao.findById(workoutId);
+        Workout workout = opWorkout.get();
+        Long userId = workout.getUser().getId();
+        if (weight > findMaxWeightByUser(userId)) {
+            achievementProgressService.maxWeightWorkout(userId, weight);
+        }
         return workoutExerciseDao.save(new WorkoutExercise(
                 reps,
                 weight,
@@ -39,5 +50,18 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     @Override
     public List<WorkoutExercise> findWorkoutExercisesByWorkoutIds(List<Long> workoutIds) {
         return workoutExerciseDao.findByWorkoutIdIn(workoutIds);
+    }
+
+    private Integer findMaxWeightByUser(Long userId) {
+        List<Workout> workouts = workoutDao.findAllByUserId(userId);
+        List<WorkoutExercise> workoutExercises =
+                findWorkoutExercisesByWorkoutIds( workouts.stream().map(Workout::getId).toList());
+        Integer maxWeight = 0;
+        for (WorkoutExercise we : workoutExercises) {
+            if (we.getWeight() != null && we.getWeight() > maxWeight) {
+                maxWeight = Integer.valueOf(we.getWeight());
+            }
+        }
+        return maxWeight;
     }
 }

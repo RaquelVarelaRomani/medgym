@@ -23,6 +23,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private static final Long HOURS_ACHIEVEMENT_ID = 1L;
     private static final Long REPS_ACHIEVEMENT_ID = 2L;
     private static final Long WORKOUTS_ACHIEVEMENT_ID = 3L;
+    private static final Long MAX_WEIGHT_ACHIEVEMENT_ID = 4L;
 
     private static final Integer NO_PROGRESS = 0;
 
@@ -58,7 +59,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
     @Override
     public void maxWeightWorkout(Long userId, Short maxWeight) throws InstanceNotFoundException {
-
+        createOrUpdateAchievementProgress(userId, MAX_WEIGHT_ACHIEVEMENT_ID, 1);
     }
 
     @Override
