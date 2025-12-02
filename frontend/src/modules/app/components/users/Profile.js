@@ -28,7 +28,7 @@ const getAuth = () =>
     );
 
 const getUserById = (id) =>
-    new Promise((resolve) => getUser(id, resolve));
+    new Promise((resolve, reject) => getUser(id, resolve, (err) => reject(err)));
 
 const checkIsBlocked = (userId) =>
     new Promise((resolve) =>
@@ -247,6 +247,7 @@ const Profile = () => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
     const [showBlockPopup, setShowBlockPopup] = useState(false);
+    const [showPopupBlocked, setShowPopupBlocked] = useState(false);
 
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
@@ -292,7 +293,8 @@ const Profile = () => {
             } catch (e) {
                 console.error("Error loading profile:", e);
                 if (isMounted) {
-                    navigate("/users/login");
+                    setShowPopupBlocked(true);
+                    setLoading(false);
                 }
             }
         };
@@ -460,6 +462,15 @@ const Profile = () => {
                 text="¿Seguro que quieres bloquear a este usuario?"
                 onOk={confirmBlockUser}
                 onCancel={cancelBlockUser}
+            />
+
+            <Popup
+                text="No puedes acceder al perfil de este usuario porque te ha bloqueado."
+                show={showPopupBlocked}
+                onOk={() => {
+                    setShowPopupBlocked(false);
+                    navigate("/users/profile");
+                }}
             />
 
             {profile && <UserWorkoutHistory id={profile.id.toString()} />}
