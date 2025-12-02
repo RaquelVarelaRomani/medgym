@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -21,17 +20,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserDao userDao;
     private final UserFollowDao userFollowDao;
     private final UserBlockService userBlockService;
-    private final AchievementProgressService achievementProgressService;
-    private final WorkoutExerciseDao workoutExerciseDao;
 
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, AchievementProgressService achievementProgressService, WorkoutExerciseDao workoutExerciseDao) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.userFollowDao = userFollowDao;
         this.userBlockService = userBlockService;
-        this.achievementProgressService = achievementProgressService;
-        this.workoutExerciseDao = workoutExerciseDao;
     }
 
     @Override
@@ -47,8 +42,6 @@ public class WorkoutServiceImpl implements WorkoutService {
     public void finishWorkout(Long id) throws InstanceNotFoundException {
         final Workout workout = workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
         workout.setEndTime(LocalDateTime.now());
-
-        List<WorkoutExercise> workoutExercises = workoutExerciseDao.findByWorkoutId(id);
     }
 
     @Override

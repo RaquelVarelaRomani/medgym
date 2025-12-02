@@ -146,28 +146,34 @@ const WorkoutSession = () => {
     }
   };
 
+  const handleAchievementsChecked = (newAchievements) => {
+    if (newAchievements && newAchievements.length > 0) {
+      setNewAchievements(newAchievements);
+      setShowAchievementPopup(true);
+    } else {
+      setTimeout(() => navigate("/workouts/history"), 1000);
+    }
+  };
+
+  const handleAchievementsError = () => {
+    setTimeout(() => navigate("/workouts/history"), 1000);
+  };
+
+  const handleFinishWorkoutSuccess = () => {
+    showNotification("🏁 Entrenamiento finalizado");
+    const { totalSeconds, totalReps } = calculateWorkoutStats();
+    onFinishWorkoutAchievements(
+      totalSeconds,
+      totalReps,
+      handleAchievementsChecked,
+      handleAchievementsError
+    );
+  };
+
   const handleFinishWorkout = () => {
     workoutService.finishWorkout(
       sessionId,
-      () => {
-        showNotification("🏁 Entrenamiento finalizado");
-        const { totalSeconds, totalReps } = calculateWorkoutStats();
-        onFinishWorkoutAchievements(
-          totalSeconds,
-          totalReps,
-          (newAchievements) => {
-            if (newAchievements && newAchievements.length > 0) {
-              setNewAchievements(newAchievements);
-              setShowAchievementPopup(true);
-            } else {
-              setTimeout(() => navigate("/workouts/history"), 1000);
-            }
-          },
-          () => {
-            setTimeout(() => navigate("/workouts/history"), 1000);
-          }
-        );
-      },
+      handleFinishWorkoutSuccess,
       () => showNotification("⚠️ Error al finalizar el entrenamiento")
     );
   };
