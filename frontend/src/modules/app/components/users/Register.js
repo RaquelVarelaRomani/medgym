@@ -186,14 +186,14 @@ const Register = () => {
                         </button>
                     </div>
 
-                    <label style={styles['trainer-checkbox-label']}>
+                    <label className={styles['trainer-checkbox-label']}>
                         <input
                             type="checkbox"
                             checked={role==="TRAINER"}
                             onChange={e=>setRole(e.target.checked?"TRAINER":"CLIENT")}
-                            style={styles['trainer-checkbox-input']}
+                            className={styles['trainer-checkbox-input']}
                         />
-                        <span style={styles['trainer-checkbox-span']}>Soy entrenador</span>
+                        <span className={styles['trainer-checkbox-span']}>Soy entrenador</span>
                     </label>
 
 
