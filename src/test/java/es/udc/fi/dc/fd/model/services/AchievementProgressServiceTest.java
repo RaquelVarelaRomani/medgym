@@ -3,12 +3,14 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import jakarta.transaction.Transactional;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,6 +51,8 @@ class AchievementProgressServiceTest {
     private Achievement aSessions() {
         return achievementDao.findById(3L).orElseThrow();
     }
+
+    private Achievement aMaxWeight() {return achievementDao.findById(4L).orElseThrow();}
 
     @Test
     void testConstructorAndGettersSetters() {
@@ -290,5 +294,16 @@ class AchievementProgressServiceTest {
 
         assertNotNull(ap);
         assertEquals(0, ap.getProgress());
+    }
+
+    @Test
+    void testMaxWeightArchievement() throws Exception {
+        Optional<User> u = userDao.findByEmail("laura.martinez@example.com");
+        User user = u.get();
+        achievementProgressService.createOrUpdateAchievementProgress(user.getId(), aMaxWeight().getId(), 1);
+        achievementProgressService.maxWeightWorkout(user.getId(), (short) 1);
+        assertEquals(1, achievementProgressService.findAchievementProgress(user.getId(), aMaxWeight().getId()).getProgress());
+        achievementProgressService.maxWeightWorkout(user.getId(), (short) 200);
+        assertEquals(2, achievementProgressService.findAchievementProgress(user.getId(), aMaxWeight().getId()).getProgress());
     }
 }

@@ -8,6 +8,7 @@ import java.util.List;
 public interface AchievementProgressService {
     void createOrUpdateAchievementProgress(Long userId, Long achievementId, Integer progress) throws InstanceNotFoundException;
     void onFinishedWorkout(Long userId, Integer seconds, Integer reps) throws InstanceNotFoundException;
+    void maxWeightWorkout(Long userId, Short maxWeight) throws InstanceNotFoundException;
     AchievementProgress findAchievementProgress(Long userId, Long achievementId);
     List<AchievementProgress> findAchievementProgressesByUser(Long userId) throws InstanceNotFoundException;
 }

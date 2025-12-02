@@ -57,6 +57,11 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     }
 
     @Override
+    public void maxWeightWorkout(Long userId, Short maxWeight) throws InstanceNotFoundException {
+
+    }
+
+    @Override
     public AchievementProgress findAchievementProgress(Long userId, Long achievementId) {
         return achievementProgressDao.findByUserIdAndAchievementId(userId, achievementId);
     }
