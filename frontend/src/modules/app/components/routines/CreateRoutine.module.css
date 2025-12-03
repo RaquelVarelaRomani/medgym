@@ -188,18 +188,26 @@
     overflow-y: auto;
     z-index: 1000;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    padding: 1rem;
 }
 
 .ejercicio-option {
     padding: 0.75rem;
     cursor: pointer;
     transition: background-color 0.2s;
+    background-color: var(--bg-card);
     color: var(--text-primary);
     font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
 }
 
 .ejercicio-option:hover {
-    background: rgba(255, 107, 53, 0.1);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
+    transform: translateY(-1px);
 }
 
 /* delete exercise button */

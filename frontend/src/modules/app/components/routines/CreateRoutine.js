@@ -292,7 +292,7 @@ const CreateRoutine = () => {
 
                 {exercises.sort((a, b) => a.position - b.position).map((exercise, index) => (
                     <div key={exercise.id} className={styles['ejercicio-item']}>
-                        <label>Ejercicio {index + 1}:</label>
+                        <label htmlFor={`exercise-${index}-input`}>Ejercicio {index + 1}:</label>
                         <button
                             type="button"
                             className={styles['boton-eliminar-ejercicio']}
@@ -309,12 +309,13 @@ const CreateRoutine = () => {
                              ref={(el) => inputContainerRefs.current[index] = el}>
                             <input
                                 type="text"
+                                id={`exercise-${index}-input`}
                                 placeholder="Buscar ejercicio..."
                                 value={exercise.nombre}
                                 onChange={(e) => {
                                     const newValue = e.target.value;
                                     if (newValue !== exercise.nombre) {
-                                        handleExerciseChange(index, "id", null); // Clear id if changing
+                                        handleExerciseChange(index, "id", null);
                                     }
                                     handleExerciseChange(index, "nombre", newValue);
                                     setSearchTerm(newValue);
@@ -388,7 +389,6 @@ const CreateRoutine = () => {
                         () => {
                             setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
                             setShowGoPremiumPopup(false);
-                            navigate("/users/profile/" + currentUser.id, { replace: true });
                         },
                         (err) => {
                             alert("Error becoming premium: " + err);

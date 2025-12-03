@@ -244,20 +244,24 @@ VALUES (2, 3),
 INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
 VALUES
     ('Cronista del Entreno',
-     'Acumula horas activas y avanza de nivel mostrando tu constancia en el tiempo',
+     'Acumula horas activas',
      36000, 144000, 360000), -- IMPORTANTE: VALORES EN SEGUNDOS
 
     ('Coleccionista de Repeticiones',
-     'Suma ejercicios completados y progresa según el volumen de esfuerzo acumulado',
+     'Suma ejercicios completados',
      250, 1000, 2500),
 
     ('Completador de Sesiones',
-     'Registra cada rutina terminada y sube de categoría al mantener un ritmo estable',
+     'Registra cada rutina terminada',
      5, 20, 50),
 
+    ('Énfasis en el Hábito',
+     'Completa días de entrenamiento consecutivos',
+     3, 7, 30),
+
     ('Levantando el Gym',
-        'Levanta más peso que nunca y progresa según tu capacidad de superación.',
-        1, 10, 25);
+     'Levanta más peso que nunca y progresa según tu capacidad de superación.',
+     1, 10, 25);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)
 VALUES

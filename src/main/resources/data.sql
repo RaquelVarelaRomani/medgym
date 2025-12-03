@@ -120,9 +120,8 @@ VALUES
     -- Entrenamiento antiguo de prueba
     ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2),
 
-    -- Activos
-    ('2025-10-16 07:30:00', NULL, 2, 3),
-    ('2025-10-16 21:00:00', NULL, 4, 2),
+    ('2025-10-16 07:30:00', '2025-10-16 08:30:00', 2, 3),
+    ('2025-10-16 21:00:00', '2025-10-16 21:30:00', 4, 2),
 
     -- Laura (cliente id=2) datos de octubre
     ('2025-10-05 19:30:00', '2025-10-05 20:15:00', 1, 2),
@@ -265,16 +264,20 @@ VALUES (2, 3),
 INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
 VALUES
     ('Cronista del Entreno',
-     'Acumula horas activas y avanza de nivel mostrando tu constancia en el tiempo',
+     'Acumula horas activas',
      36000, 144000, 360000), -- IMPORTANTE: VALORES EN SEGUNDOS
 
     ('Coleccionista de Repeticiones',
-     'Suma ejercicios completados y progresa según el volumen de esfuerzo acumulado',
+     'Suma ejercicios completados',
      250, 1000, 2500),
 
     ('Completador de Sesiones',
-     'Registra cada rutina terminada y sube de categoría al mantener un ritmo estable',
+     'Registra cada rutina terminada',
      5, 20, 50),
+
+    ('Énfasis en el Hábito',
+     'Completa días de entrenamiento consecutivos',
+     3, 7, 30),
 
     ('Levantando el Gym',
      'Levanta más peso que nunca y progresa según tu capacidad de superación.',
@@ -301,3 +304,29 @@ VALUES
     (216000, 4, 1),      -- Horas → silver
     (1500, 4, 2),    -- Repeticiones → silver
     (28, 4, 3);      -- Sesiones → silver
+
+
+INSERT INTO workouts (start_time, end_time, routine_id, user_id)
+VALUES
+    -- 1. Entrenamiento de Laura ayer (Racha 1)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
+
+    -- 2. Entrenamiento de Laura anteayer (Racha 2)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
+
+    -- 3. Entrenamiento de Laura Hoy (Racha 3)
+    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
+
+-- Laura (Workout 20 - Rutina 3: Cuerpo completo)
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+VALUES (10, 40, 35, 20, 9),  -- Sentadillas
+       (12, 0, 30, 20, 10), -- Flexiones
+       (10, 0, 40, 20, 11), -- Zancadas
+       (5, 0, 45, 20, 12);  -- Dominadas
+
+-- Laura (Workout 21 - Rutina 1: Fuerza inicial)
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+VALUES (10, 45, 40, 21, 1),  -- Sentadillas
+       (12, 0, 30, 21, 2),  -- Flexiones
+       (8, 60, 50, 21, 3),  -- Peso muerto
+       (10, 45, 45, 21, 4); -- Press banca

@@ -156,6 +156,31 @@ class UserControllerTest {
     }
 
     @Test
+    void testRemoveTrainerPremium_Ok() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("removeTrainer@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+
+        User user = userDao.findById(trainer.getUserDto().getId()).orElse(null);
+        assert user != null && !user.getTrainerPremium();
+    }
+
+    @Test
+    void testRemoveTrainerPremium_PermissionDenied() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("removeTrainer2@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(delete("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testSignUp_Ok() throws Exception {
         String json = """
                 {

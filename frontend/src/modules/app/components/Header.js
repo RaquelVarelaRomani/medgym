@@ -160,7 +160,7 @@ const Header = () => {
 
                 {/* left section - branding */}
                 <div className={styles['header-left']}>
-                    <Link to="/routines" className={styles['logo-link']}>
+                    <Link to="/workouts/feed" className={styles['logo-link']}>
                         <img
                             src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                             alt="Logo medgym"
@@ -182,6 +182,13 @@ const Header = () => {
                         </button>
                     )}
                     <Link
+                        to="/workouts/feed"
+                        className={location.pathname.includes('/workouts/feed') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Feed
+                    </Link>
+
+                    <Link
                         to="/routines"
                         className={location.pathname.includes('/routines') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
@@ -193,30 +200,12 @@ const Header = () => {
                     >
                         Ejercicios
                     </Link>
-                    {profile?.role === "TRAINER" && (
-                        <Link
-                            to={`/users/followers/${profile.id}`}
-                            className={location.pathname === '/users/followers'
-                                ? `${styles['nav-link']} ${styles['active']}`
-                                : styles['nav-link']}
-                        >
-                            Seguidores ({followersCount})
-                        </Link>
-                    )}
-
                     <Link
                         to="/workouts/history"
                         className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Historial
                     </Link>
-                    <Link
-                        to="/workouts/feed"
-                        className={location.pathname.includes('/workouts/feed') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
-                    >
-                        Feed
-                    </Link>
-
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"

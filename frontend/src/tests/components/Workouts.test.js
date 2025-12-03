@@ -14,7 +14,7 @@ import {
     getWorkout,
     addWorkoutActivity,
     finishWorkout,
-    getLastMonthStats,
+    getStatsForMonth,
     getWorkoutsByUser,
 } from "../../backend/workoutService";
 import {
@@ -22,6 +22,7 @@ import {
     addWorkoutExercise,
 } from "../../backend/workoutExerciseService";
 import { getRoutineExercises } from "../../backend/routineExerciseService";
+import { onFinishWorkoutAchievements } from "../../backend/achievementService";
 
 const mockNavigate = jest.fn();
 
@@ -40,7 +41,7 @@ jest.mock("../../backend/workoutService", () => ({
     getWorkout: jest.fn(),
     addWorkoutActivity: jest.fn(),
     finishWorkout: jest.fn(),
-    getLastMonthStats: jest.fn(),
+    getStatsForMonth: jest.fn(),
     getWorkoutsByUser: jest.fn(),
 }));
 
@@ -51,6 +52,10 @@ jest.mock("../../backend/workoutExerciseService", () => ({
 
 jest.mock("../../backend/routineExerciseService", () => ({
     getRoutineExercises: jest.fn(),
+}));
+
+jest.mock("../../backend/achievementService", () => ({
+    onFinishWorkoutAchievements: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -392,7 +397,7 @@ describe("WorkoutHistory Component", () => {
             success(mockWorkouts);
         });
 
-        getLastMonthStats.mockImplementation((success) => {
+        getStatsForMonth.mockImplementation((month, year, success) => {
             success(mockStats);
         });
 
@@ -456,6 +461,16 @@ describe("WorkoutHistory Component", () => {
             },
         };
 
+        const mockPreviousStats = {
+            lastMonthWorkouts: 3,
+            totalDurationSeconds: 5400,
+            averageDurationSeconds: 1800,
+            exercisesByMuscleGroup: {
+                CHEST: 4,
+                BACK: 6,
+            },
+        };
+
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({ user: { id: 1 } });
         });
@@ -464,8 +479,12 @@ describe("WorkoutHistory Component", () => {
             success(mockWorkouts);
         });
 
-        getLastMonthStats.mockImplementation((success) => {
-            success(mockStats);
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            if (getStatsForMonth.mock.calls.length === 1) {
+                success(mockStats);
+            } else {
+                success(mockPreviousStats);
+            }
         });
 
         render(
@@ -478,7 +497,7 @@ describe("WorkoutHistory Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("Estadísticas del último mes"),
+                screen.getByText(/Estadísticas de \w+/),
             ).toBeInTheDocument();
             expect(
                 screen.getByText("Entrenamientos completados"),
@@ -506,11 +525,22 @@ describe("WorkoutHistory Component", () => {
         ];
 
         const mockStats = {
-            lastMonthWorkouts: 1,
-            totalDurationSeconds: 2700,
-            averageDurationSeconds: 2700,
+            lastMonthWorkouts: 2,
+            totalDurationSeconds: 3300,
+            averageDurationSeconds: 1650,
             exercisesByMuscleGroup: {
                 CHEST: 5,
+                BACK: 8,
+            },
+        };
+
+        const mockPreviousStats = {
+            lastMonthWorkouts: 3,
+            totalDurationSeconds: 5400,
+            averageDurationSeconds: 1800,
+            exercisesByMuscleGroup: {
+                CHEST: 4,
+                BACK: 6,
             },
         };
 
@@ -522,8 +552,125 @@ describe("WorkoutHistory Component", () => {
             success(mockWorkouts);
         });
 
-        getLastMonthStats.mockImplementation((success) => {
-            success(mockStats);
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            if (getStatsForMonth.mock.calls.length === 1) {
+                success(mockStats);
+            } else {
+                success(mockPreviousStats);
+            }
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutHistory />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Estadísticas"));
+
+        await waitFor(() => {
+            const metricLabels = screen.getAllByText(
+                /Entrenamientos completados|Duración total|Duración promedio/,
+            );
+            expect(metricLabels.length).toBe(3);
+        });
+    });
+
+    test("loads both current and previous month stats", async () => {
+        const mockWorkouts = [];
+        const mockCurrentStats = {
+            lastMonthWorkouts: 2,
+            totalDurationSeconds: 3300,
+            averageDurationSeconds: 1650,
+            exercisesByMuscleGroup: {
+                CHEST: 5,
+                BACK: 8,
+            },
+        };
+
+        const mockPreviousStats = {
+            lastMonthWorkouts: 3,
+            totalDurationSeconds: 5400,
+            averageDurationSeconds: 1800,
+            exercisesByMuscleGroup: {
+                CHEST: 4,
+                BACK: 6,
+            },
+        };
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkouts.mockImplementation((success) => {
+            success(mockWorkouts);
+        });
+
+        let callCount = 0;
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            callCount++;
+            if (callCount === 1) {
+                success(mockCurrentStats);
+            } else {
+                success(mockPreviousStats);
+            }
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutHistory />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Estadísticas"));
+
+        await waitFor(() => {
+            expect(getStatsForMonth).toHaveBeenCalledTimes(2);
+        });
+    });
+
+    test("displays statistics metrics correctly", async () => {
+        const mockWorkouts = [
+            {
+                id: 1,
+                routineName: "Rutina 1",
+                startTime: "2025-10-01T19:30:00Z",
+                endTime: "2025-10-01T20:15:00Z",
+            },
+        ];
+
+        const mockStats = {
+            lastMonthWorkouts: 1,
+            totalDurationSeconds: 2700,
+            averageDurationSeconds: 2700,
+            exercisesByMuscleGroup: {
+                CHEST: 5,
+            },
+        };
+
+        const mockPreviousStats = {
+            lastMonthWorkouts: 0,
+            totalDurationSeconds: 0,
+            averageDurationSeconds: 0,
+            exercisesByMuscleGroup: {},
+        };
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkouts.mockImplementation((success) => {
+            success(mockWorkouts);
+        });
+
+        let callCount = 0;
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            callCount++;
+            if (callCount === 1) {
+                success(mockStats);
+            } else {
+                success(mockPreviousStats);
+            }
         });
 
         render(
@@ -551,6 +698,13 @@ describe("WorkoutHistory Component", () => {
             exercisesByMuscleGroup: {},
         };
 
+        const mockPreviousStats = {
+            lastMonthWorkouts: 0,
+            totalDurationSeconds: 0,
+            averageDurationSeconds: 0,
+            exercisesByMuscleGroup: {},
+        };
+
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({ user: { id: 1 } });
         });
@@ -559,8 +713,14 @@ describe("WorkoutHistory Component", () => {
             success(mockWorkouts);
         });
 
-        getLastMonthStats.mockImplementation((success) => {
-            success(mockStats);
+        let callCount = 0;
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            callCount++;
+            if (callCount === 1) {
+                success(mockStats);
+            } else {
+                success(mockPreviousStats);
+            }
         });
 
         render(
@@ -573,8 +733,77 @@ describe("WorkoutHistory Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("Estadísticas del último mes"),
+                screen.getByText(/Estadísticas de/),
             ).toBeInTheDocument();
+        });
+    });
+
+    test("toggles between normal and comparison views", async () => {
+        const mockWorkouts = [];
+        const mockCurrentStats = {
+            lastMonthWorkouts: 2,
+            totalDurationSeconds: 3300,
+            averageDurationSeconds: 1650,
+            exercisesByMuscleGroup: {
+                CHEST: 5,
+                BACK: 8,
+            },
+        };
+
+        const mockPreviousStats = {
+            lastMonthWorkouts: 3,
+            totalDurationSeconds: 5400,
+            averageDurationSeconds: 1800,
+            exercisesByMuscleGroup: {
+                CHEST: 4,
+                BACK: 6,
+            },
+        };
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1 } });
+        });
+
+        getWorkouts.mockImplementation((success) => {
+            success(mockWorkouts);
+        });
+
+        let callCount = 0;
+        getStatsForMonth.mockImplementation((month, year, success) => {
+            callCount++;
+            if (callCount === 1 || callCount === 3) {
+                success(mockCurrentStats);
+            } else {
+                success(mockPreviousStats);
+            }
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutHistory />
+            </MemoryRouter>,
+        );
+
+        fireEvent.click(screen.getByText("Estadísticas"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole("button", { name: /Comparar Meses/ }),
+            ).toBeInTheDocument();
+        });
+
+        const toggleButton = screen.getByRole("button", { name: /Comparar Meses/ });
+
+        fireEvent.click(toggleButton);
+
+        await waitFor(() => {
+            expect(toggleButton).toHaveTextContent("Vista Normal");
+        });
+
+        fireEvent.click(toggleButton);
+
+        await waitFor(() => {
+            expect(toggleButton).toHaveTextContent("Comparar Meses");
         });
     });
 });
@@ -1976,6 +2205,10 @@ describe("WorkoutSession Component", () => {
             success();
         });
 
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+            success([]);
+        });
+
         render(
             <MemoryRouter initialEntries={["/workouts/session/1"]}>
                 <Routes>
@@ -2011,6 +2244,105 @@ describe("WorkoutSession Component", () => {
                 expect.any(Function),
                 expect.any(Function),
             );
+            expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
+                0,
+                10,
+                expect.any(Function),
+                expect.any(Function),
+            );
+        });
+    });
+
+    test("shows achievement popup when new streak medal unlocked", async () => {
+        const mockWorkout = { id: 1, routineName: "Rutina 1" };
+        const mockExercises = [
+            {
+                id: 1,
+                exerciseName: "Press de banca",
+                description: "Ejercicio",
+                position: 1,
+            },
+        ];
+
+        const mockNewAchievements = [
+            {
+                id: 4,
+                name: "Racha",
+                description: "Completa entrenamientos consecutivos",
+                progress: 3,
+                bronzeReq: 3,
+                silverReq: 7,
+                goldReq: 30,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1, role: "CLIENT" } });
+        });
+
+        getWorkout.mockImplementation((id, success) => {
+            success(mockWorkout);
+        });
+
+        getRoutineExercises.mockImplementation((routineId, success) => {
+            success({ content: mockExercises });
+        });
+
+        addWorkoutExercise.mockImplementation(
+            (sessionId, reps, weight, duration, routineExerciseId, success) => {
+                success();
+            },
+        );
+
+        finishWorkout.mockImplementation((sessionId, success) => {
+            success();
+        });
+
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+            success(mockNewAchievements);
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/workouts/session/1"]}>
+                <Routes>
+                    <Route
+                        path="/workouts/session/:sessionId"
+                        element={<WorkoutSession />}
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("1. Press de banca"),
+            ).toBeInTheDocument();
+        });
+
+        const repsInput = screen.getByPlaceholderText("Reps");
+        const addButton = screen.getByText("Añadir serie");
+
+        fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.click(addButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("Serie 1")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("Finalizar entrenamiento"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("¡Nueva medalla desbloqueada: Racha!"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("OK"));
+
+        await waitFor(() => {
+            expect(
+                screen.queryByText("¡Nueva medalla desbloqueada: Racha!"),
+            ).not.toBeInTheDocument();
         });
     });
 

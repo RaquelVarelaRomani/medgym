@@ -96,6 +96,25 @@ function getWorkoutLink(workout) {
     return `/workouts/${workout.id}?returnTo=history`;
 }
 
+function getMonthsForComparison() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+
+    const lastMonthDate = new Date(currentYear, now.getMonth() - 1);
+    const lastMonth = lastMonthDate.getMonth() + 1;
+    const lastMonthYear = lastMonthDate.getFullYear();
+
+    const twoMonthsAgoDate = new Date(currentYear, now.getMonth() - 2);
+    const twoMonthsAgo = twoMonthsAgoDate.getMonth() + 1;
+    const twoMonthsAgoYear = twoMonthsAgoDate.getFullYear();
+
+
+    return {
+        current: { month: lastMonth, year: lastMonthYear },
+        previous: { month: twoMonthsAgo, year: twoMonthsAgoYear },
+    };
+}
+
 // ---------- Subcomponentes de presentación ----------
 
 function HistoryHeader({ viewMode, setViewMode, stats, onStatsSelected }) {
@@ -296,7 +315,13 @@ function CalendarView({ workouts, currentMonth, setCurrentMonth, year }) {
     );
 }
 
-function StatsView({ stats, statsLoading, statsError, onRetry }) {
+function StatsView({
+                       stats,
+                       comparisonStats,
+                       statsLoading,
+                       statsError,
+                       onRetry
+                   }) {
     if (statsLoading) {
         return <LoadingMessage text="Cargando estadísticas..." />;
     }
@@ -324,10 +349,14 @@ function StatsView({ stats, statsLoading, statsError, onRetry }) {
         );
     }
 
+    const now = new Date();
+    const targetDate = new Date(now.getFullYear(), now.getMonth() - 1);
+    const lastMonthName = targetDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+
     return (
         <div className={styles["statistics-view"]}>
             <h3 className={styles["stats-title"]}>
-                Estadísticas del último mes
+                Estadísticas de {lastMonthName}
             </h3>
 
             <StatisticMetrics
@@ -340,6 +369,13 @@ function StatsView({ stats, statsLoading, statsError, onRetry }) {
 
             <MuscleGroupChart
                 data={transformMuscleGroupData(stats.exercisesByMuscleGroup)}
+                comparisonData={
+                    comparisonStats
+                        ? transformMuscleGroupData(comparisonStats.exercisesByMuscleGroup)
+                        : null
+                }
+                lastMonthLabel="Este mes"
+                previousMonthLabel="Mes anterior"
             />
         </div>
     );
@@ -364,6 +400,7 @@ const WorkoutHistory = () => {
     const [selectedWorkout, setSelectedWorkout] = useState(null);
 
     const [stats, setStats] = useState(null);
+    const [comparisonStats, setComparisonStats] = useState(null);
     const [statsLoading, setStatsLoading] = useState(false);
     const [statsError, setStatsError] = useState(null);
 
@@ -399,13 +436,32 @@ const WorkoutHistory = () => {
         setStatsLoading(true);
         setStatsError(null);
 
-        workoutService.getLastMonthStats(
+        const { current, previous } = getMonthsForComparison();
+
+        workoutService.getStatsForMonth(
+            current.month,
+            current.year,
             (d) => {
                 setStats(d);
-                setStatsLoading(false);
+                loadPreviousMonthStats(previous);
             },
             (e) => {
                 setStatsError(e.globalError || "Error al cargar estadísticas");
+                setStatsLoading(false);
+            },
+        );
+    };
+
+    const loadPreviousMonthStats = (previousMonth) => {
+        workoutService.getStatsForMonth(
+            previousMonth.month,
+            previousMonth.year,
+            (d) => {
+                setComparisonStats(d);
+                setStatsLoading(false);
+            },
+            (e) => {
+                setComparisonStats(null);
                 setStatsLoading(false);
             },
         );
@@ -507,6 +563,7 @@ const WorkoutHistory = () => {
         mainView = (
             <StatsView
                 stats={stats}
+                comparisonStats={comparisonStats}
                 statsLoading={statsLoading}
                 statsError={statsError}
                 onRetry={loadStatistics}
@@ -626,10 +683,17 @@ StatsView.propTypes = {
         averageDurationSeconds: PropTypes.number,
         exercisesByMuscleGroup: PropTypes.object
     }),
+    comparisonStats: PropTypes.shape({
+        lastMonthWorkouts: PropTypes.number,
+        totalDurationSeconds: PropTypes.number,
+        averageDurationSeconds: PropTypes.number,
+        exercisesByMuscleGroup: PropTypes.object
+    }),
     statsLoading: PropTypes.bool.isRequired,
     statsError: PropTypes.string,
     onRetry: PropTypes.func.isRequired,
 };
+
 
 /* ---------- WorkoutHistory (componente principal) ---------- */
 WorkoutHistory.propTypes = {};

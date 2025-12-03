@@ -24,7 +24,7 @@ export const onFinishWorkoutAchievements = (
 ) =>
     appFetch(
         `/achievements/onFinishWorkout`,
-        fetchConfig("POST", { seconds, reps }),
+        fetchConfig("POST", { 'seconds': seconds, 'reps': reps }),
         onSuccess,
         onErrors
     );
@@ -42,11 +42,12 @@ export const getAchievementProgress = (
     );
 
 export const getAllAchievementProgresses = (
+    userId,
     onSuccess,
     onErrors
 ) =>
     appFetch(
-        `/achievements`,
+        `/achievements/user/${userId}`,
         fetchConfig("GET"),
         onSuccess,
         onErrors

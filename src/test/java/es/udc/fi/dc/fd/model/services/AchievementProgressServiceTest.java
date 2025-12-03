@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,12 @@ class AchievementProgressServiceTest {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private WorkoutDao workoutDao;
+
+    @Autowired
+    private RoutineDao routineDao;
 
     private User createUser(String name) {
         return userDao.save(new User(
@@ -304,5 +312,30 @@ class AchievementProgressServiceTest {
         achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aMaxWeight().getId(), 1);
         achievementProgressService.maxWeightWorkout(u.getId(), (short) 200);
         assertEquals(2, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
+    }
+
+    @Test
+    void testOnFinishedWorkoutUpdatesStreakAchievements() throws Exception {
+        User u = createUser("streakUser");
+        Routine r = routineDao.save(new Routine("R", "D", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, u));
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate twoDaysAgo = today.minusDays(2);
+
+        createWorkout(u, r, twoDaysAgo.atTime(10, 0), twoDaysAgo.atTime(11, 0));
+        createWorkout(u, r, yesterday.atTime(10, 0), yesterday.atTime(11, 0));
+        createWorkout(u, r, today.atTime(10, 0), today.atTime(11, 0));
+
+        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 10);
+
+        AchievementProgress ap = achievementProgressDao.findByUserIdAndAchievementId(u.getId(), 4L);
+        assertNotNull(ap);
+        assertEquals(3, ap.getProgress());
+    }
+
+    private void createWorkout(User user, Routine routine, LocalDateTime start, LocalDateTime end) {
+        Workout workout = new Workout(start, end, routine, user);
+        workoutDao.save(workout);
     }
 }

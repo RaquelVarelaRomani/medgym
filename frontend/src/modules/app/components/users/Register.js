@@ -16,6 +16,7 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordError, setPasswordError] = useState("");
     const [phoneError, setPhoneError] = useState("");
+    const [role, setRole] = useState("CLIENT")
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
@@ -56,7 +57,7 @@ const Register = () => {
             email: email.trim(),
             phoneNumber: phoneNumber.trim(),
             password,
-            role: "CLIENT",
+            role: role.trim(),
             status: "ACTIVE",
         };
 
@@ -64,7 +65,7 @@ const Register = () => {
             user,
             (data) => {
                 console.log("Registro correcto:", data);
-                navigate("/routines");
+                navigate("/workouts/feed");
             },
             (errorResponse) => {
                 console.log("Error en el registro:", errorResponse);
@@ -184,6 +185,22 @@ const Register = () => {
                             &#128065;
                         </button>
                     </div>
+
+                    <label className={styles['trainer-checkbox-label']}>
+                        <input
+                            type="checkbox"
+                            checked={role==="TRAINER"}
+                            onChange={e=>setRole(e.target.checked?"TRAINER":"CLIENT")}
+                            className={styles['trainer-checkbox-input']}
+                        />
+                        <span className={styles['trainer-checkbox-span']}>Soy entrenador</span>
+                    </label>
+
+
+
+
+
+
                     
                     <p className={styles['ir-a-login']}>
                         <Link to="/users/login" className={styles['link-login']}>

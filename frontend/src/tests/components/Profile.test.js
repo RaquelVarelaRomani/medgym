@@ -98,8 +98,8 @@ describe("Profile and EditProfile Components", () => {
                 resolve([]);
             });
 
-            getAllAchievementProgresses.mockImplementation((success, error) => {
-                success([]);
+            getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {
+                onSuccess([]);
             });
         };
 
@@ -160,7 +160,7 @@ describe("Profile and EditProfile Components", () => {
             getFollowers.mockImplementation((id, resolve) => resolve([]));
             getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
             getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-            getAllAchievementProgresses.mockImplementation((success) => success([]));
+            getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
             render(
                 <MemoryRouter>
@@ -236,7 +236,7 @@ describe("Profile and EditProfile Components", () => {
                 getFollowers.mockImplementation((id, resolve) => resolve([]));
                 getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
                 getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-                getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+                getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
                 render(
                     <MemoryRouter>
@@ -730,7 +730,7 @@ describe("Profile and EditProfile Components", () => {
       getFollowers.mockImplementation((id, resolve) => resolve([]));
       getFollowedTrainers.mockImplementation((id, resolve) => resolve([]));
       getWorkoutsByUser.mockImplementation((id, resolve) => resolve([]));
-      getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+      getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>
@@ -768,9 +768,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -815,9 +813,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -861,9 +857,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -907,9 +901,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -955,9 +947,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -1001,9 +991,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           becomePremium.mockImplementation((id, success) => {
               success();
@@ -1053,9 +1041,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           becomePremium.mockImplementation((id, success, error) =>
               error("Premium error")
@@ -1078,7 +1064,7 @@ describe("Profile and EditProfile Components", () => {
           fireEvent.click(premiumButton);
 
           expect(alertSpy).toHaveBeenCalledWith(
-              "Error becoming premium: Premium error"
+              "Error: Premium error"
           );
 
           alertSpy.mockRestore();
@@ -1111,7 +1097,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           blockUser.mockImplementation((id, onSuccess) => onSuccess());
 
@@ -1160,7 +1146,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           unblockUser.mockImplementation((id, onSuccess) => onSuccess());
 
@@ -1209,7 +1195,7 @@ describe("Profile and EditProfile Components", () => {
         resolve([]);
       });
 
-      getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
 
           render(
@@ -1255,7 +1241,7 @@ describe("Profile and EditProfile Components", () => {
         resolve([]);
       });
 
-        getAllAchievementProgresses.mockImplementation((resolve) => resolve([]));
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
         render(
         <MemoryRouter>
@@ -1298,9 +1284,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
           render(
               <MemoryRouter>
@@ -1342,9 +1326,7 @@ describe("Profile and EditProfile Components", () => {
               resolve([])
           );
 
-          getAllAchievementProgresses.mockImplementation((resolve) =>
-              resolve([])
-          );
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
         <MemoryRouter>
@@ -1395,9 +1377,7 @@ describe("Profile and EditProfile Components", () => {
             resolve([])
         );
 
-        getAllAchievementProgresses.mockImplementation((resolve) =>
-            resolve([])
-        );
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>
@@ -1435,9 +1415,7 @@ describe("Profile and EditProfile Components", () => {
             resolve([])
         );
 
-        getAllAchievementProgresses.mockImplementation((resolve) =>
-            resolve([])
-        );
+        getAllAchievementProgresses.mockImplementation((userId, onSuccess, onError) => {onSuccess([]);});
 
       render(
           <MemoryRouter>
@@ -1450,5 +1428,142 @@ describe("Profile and EditProfile Components", () => {
           expect(section).toBeInTheDocument();
       });
     });
+
+      test("renders achievements section when viewing other user's profile", async () => {
+          const otherUser = {
+              id: 2,
+              name: "Jane",
+              surname: "Smith",
+              email: "jane@example.com",
+              phoneNumber: "987654321",
+              role: "TRAINER",
+              profilePicture: null,
+          };
+
+          const mockAchievements = [
+              {
+                  id: 1,
+                  name: "100 Horas",
+                  description: "Entrena 100 horas",
+                  progress: 75,
+                  bronzeReq: 10,
+                  silverReq: 50,
+                  goldReq: 100,
+                  convertToHours: true
+              }
+          ];
+
+          tryLoginFromServiceToken.mockImplementation((resolve) => {
+              resolve({ user: mockUser });
+          });
+
+          getUser.mockImplementation((id, resolve) => {
+              resolve(otherUser);
+          });
+
+          isBlocked.mockImplementation((id, resolve) => {
+              resolve(false);
+          });
+
+          getFollowers.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getFollowedTrainers.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getWorkoutsByUser.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess) => {
+              onSuccess(mockAchievements);
+          });
+
+          render(
+              <MemoryRouter initialEntries={[`/users/profile/${otherUser.id}`]}>
+                  <Profile />
+              </MemoryRouter>
+          );
+
+          await waitFor(() => {
+              expect(screen.getByText("Logros")).toBeInTheDocument();
+          });
+      });
+
+      test("displays other user's achievements correctly", async () => {
+          const otherUser = {
+              id: 2,
+              name: "Jane",
+              surname: "Smith",
+              email: "jane@example.com",
+              phoneNumber: "987654321",
+              role: "TRAINER",
+              profilePicture: null,
+          };
+
+          const mockAchievements = [
+              {
+                  id: 1,
+                  name: "100 Horas",
+                  description: "Entrena 100 horas",
+                  progress: 75,
+                  bronzeReq: 10,
+                  silverReq: 50,
+                  goldReq: 100,
+                  convertToHours: true
+              },
+              {
+                  id: 2,
+                  name: "1000 Repeticiones",
+                  description: "Realiza 1000 repeticiones",
+                  progress: 950,
+                  bronzeReq: 100,
+                  silverReq: 500,
+                  goldReq: 1000,
+                  convertToHours: false
+              }
+          ];
+
+          tryLoginFromServiceToken.mockImplementation((resolve) => {
+              resolve({ user: mockUser });
+          });
+
+          getUser.mockImplementation((id, resolve) => {
+              resolve(otherUser);
+          });
+
+          isBlocked.mockImplementation((id, resolve) => {
+              resolve(false);
+          });
+
+          getFollowers.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getFollowedTrainers.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getWorkoutsByUser.mockImplementation((id, resolve) => {
+              resolve([]);
+          });
+
+          getAllAchievementProgresses.mockImplementation((userId, onSuccess) => {
+              onSuccess(mockAchievements);
+          });
+
+          render(
+              <MemoryRouter initialEntries={[`/users/profile/${otherUser.id}`]}>
+                  <Profile />
+              </MemoryRouter>
+          );
+
+          await waitFor(() => {
+              expect(screen.getByText("100 Horas")).toBeInTheDocument();
+              expect(screen.getByText("1000 Repeticiones")).toBeInTheDocument();
+          });
+      });
   });
 });
