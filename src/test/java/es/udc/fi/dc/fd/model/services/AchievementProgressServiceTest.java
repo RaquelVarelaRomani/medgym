@@ -169,7 +169,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, list.size());
+        assertEquals(5, list.size());
         assertEquals(7,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -189,7 +189,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, list.size());
+        assertEquals(5, list.size());
         assertEquals(0,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -269,7 +269,7 @@ class AchievementProgressServiceTest {
 
         List<AchievementProgress> after = achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, after.size());
+        assertEquals(5, after.size());
     }
 
 

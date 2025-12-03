@@ -222,10 +222,14 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAllAchievementProgressesForOtherUser() throws Exception {
 
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(50);
+
         mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userB.getServiceToken())
                         .requestAttr("userId", userB.getUserDto().getId())
-                        .param("progress", "50"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         //user a accesses user b's achievements

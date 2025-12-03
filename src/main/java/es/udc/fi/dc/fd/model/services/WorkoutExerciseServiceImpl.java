@@ -14,12 +14,13 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     private final WorkoutExerciseDao workoutExerciseDao;
     private final WorkoutDao workoutDao;
     private final RoutineExerciseDao routineExerciseDao;
-    private AchievementProgressService achievementProgressService;
+    private final AchievementProgressService achievementProgressService;
 
-    public WorkoutExerciseServiceImpl(WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao, RoutineExerciseDao routineExerciseDao) {
+    public WorkoutExerciseServiceImpl(WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao, RoutineExerciseDao routineExerciseDao, AchievementProgressService achievementProgressService) {
         this.workoutExerciseDao = workoutExerciseDao;
         this.workoutDao = workoutDao;
         this.routineExerciseDao = routineExerciseDao;
+        this.achievementProgressService = achievementProgressService;
     }
 
     @Override
