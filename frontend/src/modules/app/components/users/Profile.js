@@ -24,12 +24,11 @@ import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlock
 
 const getAuth = () =>
     new Promise((resolve, reject) =>
-        tryLoginFromServiceToken(resolve, () => reject("AUTH_ERROR"))
+        tryLoginFromServiceToken(resolve, () => reject(new Error("AUTH_ERROR")))
     );
 
 const getUserById = (id) =>
-    new Promise((resolve, reject) => getUser(id, resolve, (err) => reject(err)));
-
+    new Promise((resolve, reject) => getUser(id, resolve, (err) => reject(err instanceof Error ? err : new Error(err))));
 const checkIsBlocked = (userId) =>
     new Promise((resolve) =>
         isBlocked(
@@ -90,9 +89,8 @@ function ProfileHeader(props) {
     const blockText = isBlockedByMe ? "Desbloquear" : "Bloquear";
 
     const isPremiumTrainer =
-        profile &&
-        profile.role === "TRAINER" &&
-        profile.trainerPremium;
+        profile?.role === "TRAINER" &&
+        profile?.trainerPremium;
 
     const canBecomePremium =
         showSelfActions &&
@@ -291,7 +289,7 @@ const Profile = () => {
                 setIsFollowing(followingFlag);
                 setLoading(false);
             } catch (e) {
-                if(e === "AUTH_ERROR") {
+                if(e instanceof Error && e.message === "AUTH_ERROR") {
                     setShowPopup(true);
                     navigate("/users/login");
                     setLoading(false);
