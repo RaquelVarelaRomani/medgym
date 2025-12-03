@@ -25,8 +25,6 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private final AchievementDao achievementDao;
     private final AchievementProgressDao achievementProgressDao;
     private final WorkoutService workoutService;
-    private final WorkoutExerciseDao workoutExerciseDao;
-    private final WorkoutDao workoutDao;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,13 +40,11 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
     private static final Integer NO_PROGRESS = 0;
 
-    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService, WorkoutExerciseDao workoutExerciseDao, WorkoutDao workoutDao) {
+    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService) {
         this.userDao = userDao;
         this.achievementDao = achievementDao;
         this.achievementProgressDao = achievementProgressDao;
         this.workoutService = workoutService;
-        this.workoutExerciseDao = workoutExerciseDao;
-        this.workoutDao = workoutDao;
     }
 
     @Override
