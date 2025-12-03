@@ -1,15 +1,7 @@
 package es.udc.fi.dc.fd.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import es.udc.fi.dc.fd.rest.controllers.UserController;
-import es.udc.fi.dc.fd.rest.dtos.AchievementProgressParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
-import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
-import es.udc.fi.dc.fd.rest.dtos.OnFinishWorkoutParamsDto;
-import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
-import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +11,28 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import es.udc.fi.dc.fd.model.entities.Achievement;
+import es.udc.fi.dc.fd.model.entities.AchievementDao;
+import es.udc.fi.dc.fd.model.entities.AchievementProgress;
+import es.udc.fi.dc.fd.model.entities.AchievementProgressDao;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
+import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+import es.udc.fi.dc.fd.rest.controllers.UserController;
+import es.udc.fi.dc.fd.rest.dtos.AchievementProgressParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
+import es.udc.fi.dc.fd.rest.dtos.OnFinishWorkoutParamsDto;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -222,10 +231,14 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAllAchievementProgressesForOtherUser() throws Exception {
 
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(50);
+
         mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userB.getServiceToken())
                         .requestAttr("userId", userB.getUserDto().getId())
-                        .param("progress", "50"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         //user a accesses user b's achievements
