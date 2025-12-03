@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
+import es.udc.fi.dc.fd.rest.dtos.AchievementProgressParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
+import es.udc.fi.dc.fd.rest.dtos.OnFinishWorkoutParamsDto;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -85,10 +88,14 @@ class AchievementProgressControllerTest {
     @Test
     void testCreateOrUpdateAchievementProgress() throws Exception {
 
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(15);
+
         mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
-                        .param("progress", "15"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         assertNotNull(
@@ -99,11 +106,15 @@ class AchievementProgressControllerTest {
     @Test
     void testOnFinishWorkoutCreatesOrUpdatesProgresses() throws Exception {
 
+        OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
+        params.setSeconds(3600);
+        params.setReps(50);
+
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
-                        .param("seconds", "3600")
-                        .param("reps", "50"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         assertEquals(3600,
@@ -121,9 +132,13 @@ class AchievementProgressControllerTest {
 
     @Test
     void testOnFinishWorkoutUnauthorizedFails() throws Exception {
+        OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
+        params.setSeconds(100);
+        params.setReps(10);
+
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
-                        .param("seconds", "100")
-                        .param("reps", "10"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isForbidden());
     }
 
@@ -138,11 +153,15 @@ class AchievementProgressControllerTest {
                 new AchievementProgress(20,
                         userDao.findById(userA.getUserDto().getId()).get(), reps));
 
+        OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
+        params.setSeconds(3600);
+        params.setReps(50);
+
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
-                        .param("seconds", "3600")
-                        .param("reps", "50"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         assertEquals(3700,
@@ -157,10 +176,14 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAchievementProgress() throws Exception {
 
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(12);
+
         mockMvc.perform(post("/api/achievements/" + reps.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
-                        .param("progress", "12"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/achievements/" + reps.getId())
@@ -178,10 +201,14 @@ class AchievementProgressControllerTest {
     @Test
     void testFindAllAchievementProgressesByUser() throws Exception {
 
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(7);
+
         mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
                         .requestAttr("userId", userA.getUserDto().getId())
-                        .param("progress", "7"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/api/achievements/user/" + userA.getUserDto().getId())
@@ -225,8 +252,12 @@ class AchievementProgressControllerTest {
 
     @Test
     void testCreateProgressUnauthorizedFails() throws Exception {
+        AchievementProgressParamsDto params = new AchievementProgressParamsDto();
+        params.setProgress(9);
+
         mockMvc.perform(post("/api/achievements/" + hours.getId() + "/progress")
-                        .param("progress", "9"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(params)))
                 .andExpect(status().isForbidden());
     }
 }

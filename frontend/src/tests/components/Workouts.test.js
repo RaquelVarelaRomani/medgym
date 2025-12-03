@@ -22,6 +22,7 @@ import {
     addWorkoutExercise,
 } from "../../backend/workoutExerciseService";
 import { getRoutineExercises } from "../../backend/routineExerciseService";
+import { onFinishWorkoutAchievements } from "../../backend/achievementService";
 
 const mockNavigate = jest.fn();
 
@@ -51,6 +52,10 @@ jest.mock("../../backend/workoutExerciseService", () => ({
 
 jest.mock("../../backend/routineExerciseService", () => ({
     getRoutineExercises: jest.fn(),
+}));
+
+jest.mock("../../backend/achievementService", () => ({
+    onFinishWorkoutAchievements: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -2200,6 +2205,10 @@ describe("WorkoutSession Component", () => {
             success();
         });
 
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+            success([]);
+        });
+
         render(
             <MemoryRouter initialEntries={["/workouts/session/1"]}>
                 <Routes>
@@ -2235,6 +2244,105 @@ describe("WorkoutSession Component", () => {
                 expect.any(Function),
                 expect.any(Function),
             );
+            expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
+                0,
+                10,
+                expect.any(Function),
+                expect.any(Function),
+            );
+        });
+    });
+
+    test("shows achievement popup when new streak medal unlocked", async () => {
+        const mockWorkout = { id: 1, routineName: "Rutina 1" };
+        const mockExercises = [
+            {
+                id: 1,
+                exerciseName: "Press de banca",
+                description: "Ejercicio",
+                position: 1,
+            },
+        ];
+
+        const mockNewAchievements = [
+            {
+                id: 4,
+                name: "Racha",
+                description: "Completa entrenamientos consecutivos",
+                progress: 3,
+                bronzeReq: 3,
+                silverReq: 7,
+                goldReq: 30,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1, role: "CLIENT" } });
+        });
+
+        getWorkout.mockImplementation((id, success) => {
+            success(mockWorkout);
+        });
+
+        getRoutineExercises.mockImplementation((routineId, success) => {
+            success({ content: mockExercises });
+        });
+
+        addWorkoutExercise.mockImplementation(
+            (sessionId, reps, weight, duration, routineExerciseId, success) => {
+                success();
+            },
+        );
+
+        finishWorkout.mockImplementation((sessionId, success) => {
+            success();
+        });
+
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+            success(mockNewAchievements);
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/workouts/session/1"]}>
+                <Routes>
+                    <Route
+                        path="/workouts/session/:sessionId"
+                        element={<WorkoutSession />}
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("1. Press de banca"),
+            ).toBeInTheDocument();
+        });
+
+        const repsInput = screen.getByPlaceholderText("Reps");
+        const addButton = screen.getByText("Añadir serie");
+
+        fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.click(addButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("Serie 1")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("Finalizar entrenamiento"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("¡Nueva medalla desbloqueada: Racha!"),
+            ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("OK"));
+
+        await waitFor(() => {
+            expect(
+                screen.queryByText("¡Nueva medalla desbloqueada: Racha!"),
+            ).not.toBeInTheDocument();
         });
     });
 

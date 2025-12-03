@@ -18,4 +18,6 @@ public interface WorkoutService {
     List<Workout> findWorkoutsFromFollowing(Long userId) throws InstanceNotFoundException;
 
     List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate);
+
+    int calculateCurrentStreak(Long userId);
 }

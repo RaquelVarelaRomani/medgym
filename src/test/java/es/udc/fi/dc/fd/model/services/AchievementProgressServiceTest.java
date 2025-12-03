@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +30,12 @@ class AchievementProgressServiceTest {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private WorkoutDao workoutDao;
+
+    @Autowired
+    private RoutineDao routineDao;
 
     private User createUser(String name) {
         return userDao.save(new User(
@@ -155,7 +163,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, list.size());
+        assertEquals(4, list.size());
         assertEquals(7,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -175,7 +183,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, list.size());
+        assertEquals(4, list.size());
         assertEquals(0,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -255,7 +263,7 @@ class AchievementProgressServiceTest {
 
         List<AchievementProgress> after = achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(3, after.size());
+        assertEquals(4, after.size());
     }
 
 
@@ -290,5 +298,30 @@ class AchievementProgressServiceTest {
 
         assertNotNull(ap);
         assertEquals(0, ap.getProgress());
+    }
+
+    @Test
+    void testOnFinishedWorkoutUpdatesStreakAchievements() throws Exception {
+        User u = createUser("streakUser");
+        Routine r = routineDao.save(new Routine("R", "D", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, u));
+
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate twoDaysAgo = today.minusDays(2);
+
+        createWorkout(u, r, twoDaysAgo.atTime(10, 0), twoDaysAgo.atTime(11, 0));
+        createWorkout(u, r, yesterday.atTime(10, 0), yesterday.atTime(11, 0));
+        createWorkout(u, r, today.atTime(10, 0), today.atTime(11, 0));
+
+        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 10);
+
+        AchievementProgress ap = achievementProgressDao.findByUserIdAndAchievementId(u.getId(), 4L);
+        assertNotNull(ap);
+        assertEquals(3, ap.getProgress());
+    }
+
+    private void createWorkout(User user, Routine routine, LocalDateTime start, LocalDateTime end) {
+        Workout workout = new Workout(start, end, routine, user);
+        workoutDao.save(workout);
     }
 }
