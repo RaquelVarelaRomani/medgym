@@ -2205,7 +2205,7 @@ describe("WorkoutSession Component", () => {
             success();
         });
 
-        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, workoutId, success) => {
             success([]);
         });
 
@@ -2247,6 +2247,7 @@ describe("WorkoutSession Component", () => {
             expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
                 0,
                 10,
+                "1",
                 expect.any(Function),
                 expect.any(Function),
             );
@@ -2298,7 +2299,7 @@ describe("WorkoutSession Component", () => {
             success();
         });
 
-        onFinishWorkoutAchievements.mockImplementation((seconds, reps, success) => {
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, workoutId, success) => {
             success(mockNewAchievements);
         });
 
@@ -2332,8 +2333,18 @@ describe("WorkoutSession Component", () => {
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
+            expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
+                0,
+                10,
+                "1",
+                expect.any(Function),
+                expect.any(Function),
+            );
             expect(
-                screen.getByText("¡Nueva medalla desbloqueada: Racha!"),
+                screen.getByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
+            ).toBeInTheDocument();
+            expect(
+                screen.getByText("Completa entrenamientos consecutivos (3)"),
             ).toBeInTheDocument();
         });
 
@@ -2341,7 +2352,135 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.queryByText("¡Nueva medalla desbloqueada: Racha!"),
+                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
+            ).not.toBeInTheDocument();
+        });
+    });
+
+    test("shows sequential achievement popups when multiple new medals unlocked", async () => {
+        const mockWorkout = { id: 1, routineName: "Rutina 1" };
+        const mockExercises = [
+            {
+                id: 1,
+                exerciseName: "Press de banca",
+                description: "Ejercicio",
+                position: 1,
+            },
+        ];
+
+        const mockNewAchievements = [
+            {
+                id: 4,
+                name: "Racha",
+                description: "Completa entrenamientos consecutivos",
+                progress: 3,
+                bronzeReq: 3,
+                silverReq: 7,
+                goldReq: 30,
+            },
+            {
+                id: 5,
+                name: "Fuerza",
+                description: "Levanta mucho peso",
+                progress: 10,
+                bronzeReq: 10,
+                silverReq: 20,
+                goldReq: 50,
+            },
+        ];
+
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: { id: 1, role: "CLIENT" } });
+        });
+
+        getWorkout.mockImplementation((id, success) => {
+            success(mockWorkout);
+        });
+
+        getRoutineExercises.mockImplementation((routineId, success) => {
+            success({ content: mockExercises });
+        });
+
+        addWorkoutExercise.mockImplementation(
+            (sessionId, reps, weight, duration, routineExerciseId, success) => {
+                success();
+            },
+        );
+
+        finishWorkout.mockImplementation((sessionId, success) => {
+            success();
+        });
+
+        onFinishWorkoutAchievements.mockImplementation((seconds, reps, workoutId, success) => {
+            success(mockNewAchievements);
+        });
+
+        render(
+            <MemoryRouter initialEntries={["/workouts/session/1"]}>
+                <Routes>
+                    <Route
+                        path="/workouts/session/:sessionId"
+                        element={<WorkoutSession />}
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText("1. Press de banca"),
+            ).toBeInTheDocument();
+        });
+
+        const repsInput = screen.getByPlaceholderText("Reps");
+        const addButton = screen.getByText("Añadir serie");
+
+        fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.click(addButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("Serie 1")).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("Finalizar entrenamiento"));
+
+        await waitFor(() => {
+            expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
+                0,
+                10,
+                "1",
+                expect.any(Function),
+                expect.any(Function),
+            );
+            expect(
+                screen.getByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
+            ).toBeInTheDocument();
+            expect(
+                screen.getByText("Completa entrenamientos consecutivos (3)"),
+            ).toBeInTheDocument();
+        });
+
+        // Click OK to show next achievement
+        fireEvent.click(screen.getByText("OK"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Fuerza")),
+            ).toBeInTheDocument();
+            expect(
+                screen.getByText("Levanta mucho peso (10)"),
+            ).toBeInTheDocument();
+            expect(
+                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
+            ).not.toBeInTheDocument();
+        });
+
+        // Click OK to close popup
+        fireEvent.click(screen.getByText("OK"));
+
+        await waitFor(() => {
+            expect(
+                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Fuerza")),
             ).not.toBeInTheDocument();
         });
     });
@@ -2393,11 +2532,7 @@ describe("WorkoutSession Component", () => {
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
-            expect(
-                screen.getByText(
-                    "Aún faltan ejercicios por registrar. ¿Deseas finalizar igualmente?",
-                ),
-            ).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "OK" })).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("OK"));
@@ -2454,11 +2589,7 @@ describe("WorkoutSession Component", () => {
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
-            expect(
-                screen.getByText(
-                    "Aún faltan ejercicios por registrar. ¿Deseas finalizar igualmente?",
-                ),
-            ).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "OK" })).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("Cancelar"));

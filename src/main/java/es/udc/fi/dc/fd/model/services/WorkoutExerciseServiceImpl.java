@@ -28,10 +28,6 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
         Optional<Workout> opWorkout = workoutDao.findById(workoutId);
         if (opWorkout.isPresent()) {
             Workout workout = opWorkout.get();
-            Long userId = workout.getUser().getId();
-            if (weight > findMaxWeightByUser(userId)) {
-                achievementProgressService.maxWeightWorkout(userId, weight);
-            }
             return workoutExerciseDao.save(new WorkoutExercise(
                     reps,
                     weight,
@@ -54,16 +50,4 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
         return workoutExerciseDao.findByWorkoutIdIn(workoutIds);
     }
 
-    private Integer findMaxWeightByUser(Long userId) {
-        List<Workout> workouts = workoutDao.findAllByUserId(userId);
-        List<WorkoutExercise> workoutExercises =
-                findWorkoutExercisesByWorkoutIds( workouts.stream().map(Workout::getId).toList());
-        Integer maxWeight = 0;
-        for (WorkoutExercise we : workoutExercises) {
-            if (we.getWeight() != null && we.getWeight() > maxWeight) {
-                maxWeight = Integer.valueOf(we.getWeight());
-            }
-        }
-        return maxWeight;
-    }
 }

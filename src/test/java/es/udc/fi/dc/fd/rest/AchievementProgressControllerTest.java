@@ -109,6 +109,7 @@ class AchievementProgressControllerTest {
         OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
         params.setSeconds(3600);
         params.setReps(50);
+        params.setWorkoutId(1L);
 
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())
@@ -135,6 +136,7 @@ class AchievementProgressControllerTest {
         OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
         params.setSeconds(100);
         params.setReps(10);
+        params.setWorkoutId(1L);
 
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,6 +158,7 @@ class AchievementProgressControllerTest {
         OnFinishWorkoutParamsDto params = new OnFinishWorkoutParamsDto();
         params.setSeconds(3600);
         params.setReps(50);
+        params.setWorkoutId(1L);
 
         mockMvc.perform(post("/api/achievements/onFinishWorkout")
                         .header("Authorization", "Bearer " + userA.getServiceToken())

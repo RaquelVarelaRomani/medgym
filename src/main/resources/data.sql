@@ -280,7 +280,7 @@ VALUES
      3, 7, 30),
 
     ('Levantando el Gym',
-     'Levanta más peso que nunca y progresa según tu capacidad de superación.',
+     'Supera tu marca de peso levantado',
      1, 10, 25);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)

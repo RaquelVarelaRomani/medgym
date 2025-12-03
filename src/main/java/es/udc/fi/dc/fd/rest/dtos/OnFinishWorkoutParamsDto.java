@@ -6,6 +6,7 @@ public class OnFinishWorkoutParamsDto {
 
     private Integer seconds;
     private Integer reps;
+    private Long workoutId;
 
     public OnFinishWorkoutParamsDto() {
         super();
@@ -27,6 +28,15 @@ public class OnFinishWorkoutParamsDto {
 
     public void setReps(Integer reps) {
         this.reps = reps;
+    }
+
+    @NotNull
+    public Long getWorkoutId() {
+        return workoutId;
+    }
+
+    public void setWorkoutId(Long workoutId) {
+        this.workoutId = workoutId;
     }
 
 }
