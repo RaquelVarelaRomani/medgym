@@ -32,9 +32,10 @@ public class UserBlockServiceImpl implements UserBlockService {
         User blocked = userDao.findById(blockedId)
                 .orElseThrow(() -> new InstanceNotFoundException("Usuario a bloquear no encontrado.", blockedId));
 
-        if (!userBlockDao.existsByBlockerIdAndBlockedId(blockerId, blockedId)) {
-            userFollowDao.deleteByUserAndFollowUser(blocked, blocker);
+        userFollowDao.deleteByUserAndFollowUser(blocked, blocker);
+        userFollowDao.deleteByUserAndFollowUser(blocker, blocked);
 
+        if (!userBlockDao.existsByBlockerIdAndBlockedId(blockerId, blockedId)) {
             UserBlock block = new UserBlock();
             block.setBlocker(blocker);
             block.setBlocked(blocked);

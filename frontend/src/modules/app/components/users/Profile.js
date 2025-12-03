@@ -380,6 +380,11 @@ const Profile = () => {
         blockUser(
             profile.id,
             () => {
+                if (isFollowing) {
+                    setIsFollowing(false);
+                    setFollowers(n => Math.max(0, n - 1));
+                    window.dispatchEvent(new Event("followChanged"));
+                }
                 setIsBlockedByMe(true);
                 setShowBlockPopup(false);
             },

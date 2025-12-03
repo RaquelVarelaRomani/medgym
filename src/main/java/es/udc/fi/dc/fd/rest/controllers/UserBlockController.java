@@ -40,7 +40,7 @@ public class UserBlockController {
             @PathVariable Long otherUserId,
             @RequestAttribute Long userId) {
 
-        boolean blocked = userBlockService.hasBlocked(userId, otherUserId);
+        boolean blocked = userBlockService.isBlocked(userId, otherUserId);
         return ResponseEntity.ok(blocked);
     }
 }
