@@ -42,11 +42,12 @@ export const getAchievementProgress = (
     );
 
 export const getAllAchievementProgresses = (
+    userId,
     onSuccess,
     onErrors
 ) =>
     appFetch(
-        `/achievements`,
+        `/achievements/user/${userId}`,
         fetchConfig("GET"),
         onSuccess,
         onErrors

@@ -152,6 +152,7 @@ describe("achievementService", () => {
     });
 
     describe("getAllAchievementProgresses", () => {
+        const userId = 5;
 
         test("successful call", () => {
             const mockData = [{ id: 1, progress: 20 }];
@@ -160,7 +161,7 @@ describe("achievementService", () => {
 
             mockAppFetch.mockImplementation((u, c, s) => s(mockData));
 
-            getAllAchievementProgresses(onSuccess, onErrors);
+            getAllAchievementProgresses(userId, onSuccess, onErrors);
 
             expect(onSuccess).toHaveBeenCalledWith(mockData);
             expect(onErrors).not.toHaveBeenCalled();
@@ -173,7 +174,7 @@ describe("achievementService", () => {
 
             mockAppFetch.mockImplementation((u, c, s, e) => e(mockErr));
 
-            getAllAchievementProgresses(onSuccess, onErrors);
+            getAllAchievementProgresses(userId, onSuccess, onErrors);
 
             expect(onErrors).toHaveBeenCalledWith(mockErr);
             expect(onSuccess).not.toHaveBeenCalled();
@@ -183,10 +184,10 @@ describe("achievementService", () => {
             const onSuccess = jest.fn();
             const onErrors = jest.fn();
 
-            getAllAchievementProgresses(onSuccess, onErrors);
+            getAllAchievementProgresses(userId, onSuccess, onErrors);
 
             expect(mockAppFetch).toHaveBeenCalledWith(
-                `/achievements`,
+                `/achievements/user/${userId}`,
                 fetchConfig("GET"),
                 onSuccess,
                 onErrors
