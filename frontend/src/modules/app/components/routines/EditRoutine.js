@@ -544,7 +544,7 @@ function ExerciseItem({
 
     return (
         <div className={styles["ejercicio-item"]}>
-            <label>Ejercicio {index + 1}:</label>
+            <label htmlFor={`exercise-${index}-input`}>Ejercicio {index + 1}:</label>
 
             <button
                 type="button"
@@ -570,6 +570,7 @@ function ExerciseItem({
             >
                 <input
                     type="text"
+                    id={`exercise-${index}-input`}
                     value={exercise.nombre}
                     disabled={isOriginal}
                     placeholder="Buscar ejercicio..."

@@ -22,7 +22,7 @@ const Login = () => {
             password,
             (data) => {
                 console.log("Login correcto:", data);
-                navigate("/routines");
+                navigate("/workouts/feed");
             },
             (error) => {
                 if (error.body.globalError === 'project.exceptions.BlockedUserException') {

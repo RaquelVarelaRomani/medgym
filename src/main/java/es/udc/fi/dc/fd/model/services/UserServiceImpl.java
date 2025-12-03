@@ -43,10 +43,9 @@ public class UserServiceImpl implements UserService {
         if (userDao.existsByPhoneNumber(user.getPhoneNumber())) {
             throw new DuplicateInstanceException("phoneNumber", user.getPhoneNumber());
         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRole() != User.RoleType.ADMIN) {
-            user.setRole(User.RoleType.CLIENT);
+            user.setRole(user.getRole());
         }
 
         userDao.save(user);

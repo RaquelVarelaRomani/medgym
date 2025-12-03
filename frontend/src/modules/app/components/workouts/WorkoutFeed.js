@@ -9,6 +9,7 @@ import CommentBubble from "../common/CommentBubble";
 import CommentModal from "../common/CommentModal";
 import { commentWorkout } from "../../../../backend/workoutCommentService";
 import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
+import {getFollowedTrainers, getFollowers} from "../../../../backend/userFollowService"
 import PropTypes from "prop-types";
 
 /* --------- HELPERS PARA REDUCIR PROFUNDIDAD --------- */
@@ -180,12 +181,24 @@ const WorkoutFeed = () => {
     const [error, setError] = useState(null);
     const [commentModalOpen, setCommentModalOpen] = useState(false);
     const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [followers, setFollowers] = useState(0);
+    const [following, setFollowing] = useState(0);
 
     useEffect(() => {
         tryLoginFromServiceToken(
             ({ user }) => {
                 setCurrentUser(user);
                 loadWorkouts();
+                getFollowers(
+                    user.id,
+                    (data) => setFollowers(data.length),
+                    (error) => console.error(error)
+                )
+                getFollowedTrainers(
+                    user.id,
+                    (data) => setFollowing(data.length),
+                    (error) => console.error(error)
+                )
             },
             () => navigate("/users/login")
         );
@@ -239,6 +252,35 @@ const WorkoutFeed = () => {
 
     return (
         <div className={styles.contenedor}>
+            {!loading && (
+                <div className={styles["profile-info"]}>
+                    <button
+                        type="button"
+                        className={styles["follow-side"]}
+                        onClick={() => navigate(`/users/followers/${currentUser.id}`)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                navigate(`/users/followers/${currentUser.id}`);
+                            }
+                        }}
+                    >
+                        Seguidores: {followers}
+                    </button>
+
+                    <button
+                        type="button"
+                        className={styles["follow-side"]}
+                        onClick={() => navigate(`/users/following/${currentUser.id}`)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                navigate(`/users/following/${currentUser.id}`);
+                            }
+                        }}
+                    >
+                        Siguiendo: {following}
+                    </button>
+                </div>
+            )}
             <div className={styles["history-titulo-grande"]}>
                 <h2>Feed de entrenamientos</h2>
             </div>
