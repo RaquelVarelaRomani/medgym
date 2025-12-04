@@ -498,6 +498,7 @@
 }
 
 .profile-info {
+    max-width: 1400px;
     position: relative;
     width: 100%;
     display: flex;
