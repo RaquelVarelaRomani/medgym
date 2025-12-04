@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
-import notificationStyles from './common/notifications/NotificationIcon.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import * as workoutService from "../../../backend/workoutService";
 import { getUserNotifications } from "../../../backend/notificationService";
@@ -19,7 +18,6 @@ const Header = () => {
     const [activeWorkout, setActiveWorkout] = useState(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const [followersCount, setFollowersCount] = useState(0);
     const [showUserSearch, setShowUserSearch] = useState(false);
     const dropdownComponent = useRef(null);
     const userSearchComponent = useRef(null);
@@ -30,19 +28,12 @@ const Header = () => {
         setShowUserSearch(false);
     };
 
-    const handleToggleUserSearch = () => {
-        setShowUserSearch(prev => !prev);
-        setShowNotifications(false);
-        setIsDropdownOpen(false);
-    };
-
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 console.log("User data in header:", authenticatedUser.user);
                 setProfile(authenticatedUser.user);
                 checkActiveWorkout();
-                checkFollowers(authenticatedUser.user);
             },
             (error) => {
                 console.error("Failed to get user data in header:", error);
@@ -61,16 +52,6 @@ const Header = () => {
                 setActiveWorkout(null);
             }
         );
-    };
-
-    const checkFollowers = (user) => {
-        if (user.role === "TRAINER") {
-            getFollowers(
-                user.id,
-                (followers) => setFollowersCount(followers.length),
-                () => setFollowersCount(0)
-            );
-        }
     };
 
     useEffect(() => {
@@ -152,7 +133,6 @@ const Header = () => {
         }
     }
 
-
     return (
         <header className={styles['app-header']}>
             <div className={styles['header-glow']}></div>
@@ -220,17 +200,6 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
-                    <button
-                        className={notificationStyles['search-button']}
-                        onClick={handleToggleUserSearch}
-                        title="Buscar usuarios"
-                    >
-                        <img
-                            src={process.env.PUBLIC_URL + "/assets/search-icon.svg"}
-                            alt="Buscar usuarios"
-                            className={notificationStyles['notification-icon']}
-                        />
-                    </button>
                     <div className={styles['notification-wrapper']}>
                         <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />
                         {showNotifications && (

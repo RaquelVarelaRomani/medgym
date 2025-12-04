@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutFeed.module.css";
@@ -11,6 +11,7 @@ import { commentWorkout } from "../../../../backend/workoutCommentService";
 import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
 import {getFollowedTrainers, getFollowers} from "../../../../backend/userFollowService"
 import PropTypes from "prop-types";
+import UserSearch from "../users/UserSearch";
 
 /* --------- HELPERS PARA REDUCIR PROFUNDIDAD --------- */
 
@@ -183,6 +184,8 @@ const WorkoutFeed = () => {
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
+    const [showUserSearch, setShowUserSearch] = useState(false);
+    const userSearchComponent = useRef(null);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -250,34 +253,52 @@ const WorkoutFeed = () => {
             </div>
         );
 
+    const handleToggleUserSearch = () => {
+        setShowUserSearch(prev => !prev);
+    };
+
     return (
         <div className={styles.contenedor}>
             {!loading && (
                 <div className={styles["profile-info"]}>
-                    <button
-                        type="button"
-                        className={styles["follow-side"]}
-                        onClick={() => navigate(`/users/followers/${currentUser.id}`)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                navigate(`/users/followers/${currentUser.id}`);
-                            }
-                        }}
-                    >
-                        Seguidores: {followers}
-                    </button>
+
+                    <div className={styles["follow-center"]}>
+                        <button
+                            type="button"
+                            className={styles["follow-side"]}
+                            onClick={() => navigate(`/users/followers/${currentUser.id}`)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    navigate(`/users/followers/${currentUser.id}`);
+                                }
+                            }}
+                        >
+                            Seguidores: {followers}
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles["follow-side"]}
+                            onClick={() => navigate(`/users/following/${currentUser.id}`)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    navigate(`/users/following/${currentUser.id}`)};
+                            }}
+                        >
+                            Siguiendo: {following}
+                        </button>
+                    </div>
 
                     <button
-                        type="button"
-                        className={styles["follow-side"]}
-                        onClick={() => navigate(`/users/following/${currentUser.id}`)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                navigate(`/users/following/${currentUser.id}`);
-                            }
-                        }}
+                        className={`${styles["search-button-filled"]} ${styles["search-absolute"]}`}
+                        onClick={handleToggleUserSearch}
                     >
-                        Siguiendo: {following}
+                        <img
+                            src={process.env.PUBLIC_URL + "/assets/search-icon.svg"}
+                            alt=""
+                            className={styles["search-button-icon"]}
+                        />
+                        Buscar usuarios
                     </button>
                 </div>
             )}
@@ -332,6 +353,11 @@ const WorkoutFeed = () => {
                     comments={selectedWorkout?.comments || []}
                 />
             )}
+            <UserSearch
+                ref={userSearchComponent}
+                isOpen={showUserSearch}
+                onClose={() => setShowUserSearch(false)}
+            />
         </div>
     );
 };
