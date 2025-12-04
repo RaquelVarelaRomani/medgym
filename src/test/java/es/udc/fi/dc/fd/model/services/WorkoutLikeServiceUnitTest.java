@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +50,7 @@ class WorkoutLikeServiceUnitTest {
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
         when(workoutLikeDao.findByUserId(userId)).thenReturn(Collections.emptyList());
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(6L), eq(1))).thenReturn(Collections.emptyList());
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1)).thenReturn(Collections.emptyList());
 
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
@@ -120,12 +119,11 @@ class WorkoutLikeServiceUnitTest {
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
         when(workoutLikeDao.findByUserId(userId)).thenReturn(Collections.emptyList());
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(6L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1)).thenReturn(List.of(achievementDto));
 
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(1, result.size());
-        assertEquals(achievementDto, result.get(0));
     }
 
     @Test
@@ -141,11 +139,12 @@ class WorkoutLikeServiceUnitTest {
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
         when(workoutLikeDao.findByUserId(userId)).thenReturn(Collections.emptyList());
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(6L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1)).thenReturn(List.of(achievementDto));
 
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(1, result.size());
+        assertEquals(achievementDto, result.get(0));
     }
 
     @Test
@@ -161,10 +160,11 @@ class WorkoutLikeServiceUnitTest {
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
         when(workoutLikeDao.findByUserId(userId)).thenReturn(Collections.emptyList());
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(6L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1)).thenReturn(List.of(achievementDto));
 
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(1, result.size());
+        assertEquals(achievementDto, result.get(0));
     }
 }

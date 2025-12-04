@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 
 @SpringBootApplication
 public class Application {
@@ -47,13 +49,13 @@ public class Application {
     @Bean
     public CommandLineRunner recalculateAchievementsRunner(UserDao userDao, AchievementProgressService achievementProgressService) {
         return args -> {
-            userDao.findAll().forEach(user -> {
+            for (User user : userDao.findAll()) {
                 try {
                     achievementProgressService.recalculateAchievementProgressForUser(user.getId());
-                } catch (Exception e) {
+                } catch (InstanceNotFoundException e) {
                 //
                 }
-            });
+            }
         };
     }
 
