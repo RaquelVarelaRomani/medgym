@@ -8,18 +8,20 @@ public class AchievementProgressDto {
     private Integer silverReq;
     private Integer goldReq;
     private Integer progress;
+    private Integer highestProgress;
     private Boolean convertToHours;
 
     public AchievementProgressDto() {
     }
 
-    public AchievementProgressDto(String name, String description, Integer bronzeReq, Integer silverReq, Integer goldReq, Integer progress, Boolean convertToHours) {
+    public AchievementProgressDto(String name, String description, Integer bronzeReq, Integer silverReq, Integer goldReq, Integer progress, Integer highestProgress, Boolean convertToHours) {
         this.name = name;
         this.description = description;
         this.bronzeReq = bronzeReq;
         this.silverReq = silverReq;
         this.goldReq = goldReq;
         this.progress = progress;
+        this.highestProgress = highestProgress;
         this.convertToHours = convertToHours;
     }
 
@@ -63,6 +65,13 @@ public class AchievementProgressDto {
     }
     public void setProgress(Integer progress) {
         this.progress = progress;
+    }
+
+    public Integer getHighestProgress() {
+        return highestProgress;
+    }
+    public void setHighestProgress(Integer highestProgress) {
+        this.highestProgress = highestProgress;
     }
 
     public Boolean getConvertToHours() {

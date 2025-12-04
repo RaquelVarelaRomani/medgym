@@ -48,20 +48,36 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     }
 
     @Override
-    public void createOrUpdateAchievementProgress(Long userId, Long achievementId, Integer progressAdded) throws InstanceNotFoundException {
+    public List<AchievementProgressDto> createOrUpdateAchievementProgress(Long userId, Long achievementId, Integer progressAdded) throws InstanceNotFoundException {
+        List<AchievementProgressDto> newAchievements = new ArrayList<>();
+        AchievementProgress ap = findAchievementProgress(userId, achievementId);
+        int oldHighestProgress = (ap != null) ? ap.getHighestProgress() : 0;
 
-        AchievementProgress achievementProgress = findAchievementProgress(userId, achievementId);
-
-        if (achievementProgress == null) {
+        if (ap == null) {
             User user = userDao.findById(userId)
-                    .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+                        .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
             Achievement achievement = achievementDao.findById(achievementId)
-                    .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ACHIEVEMENT, achievementId));
+                        .orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ACHIEVEMENT, achievementId));
 
             achievementProgressDao.save(new AchievementProgress(progressAdded, user, achievement));
         } else {
-            achievementProgress.setProgress(achievementProgress.getProgress() + progressAdded);
+            ap.setProgress(ap.getProgress() + progressAdded);
+            ap.setHighestProgress(Math.max(ap.getHighestProgress(), ap.getProgress()));
         }
+
+        AchievementProgress updatedAp = findAchievementProgress(userId, achievementId);
+        int newHighestProgress = updatedAp.getHighestProgress();
+        Achievement achievement = achievementDao.findById(achievementId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ACHIEVEMENT, achievementId));
+
+        boolean reachedBronze = oldHighestProgress < achievement.getBronzeReq() && newHighestProgress >= achievement.getBronzeReq();
+        boolean reachedSilver = oldHighestProgress < achievement.getSilverReq() && newHighestProgress >= achievement.getSilverReq();
+        boolean reachedGold = oldHighestProgress < achievement.getGoldReq() && newHighestProgress >= achievement.getGoldReq();
+
+        if (newHighestProgress > oldHighestProgress && (reachedBronze || reachedSilver || reachedGold)) {
+            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
+        }
+
+        return newAchievements;
     }
 
     @Override
@@ -75,7 +91,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         if (currentMaxWeight > findMaxWeightByUser(userId, workoutId)) {
             newAchievements.addAll(updateAchievementProgress(userId, MAX_WEIGHT_ACHIEVEMENT_ID, 1));
         }
-        
+
         int currentStreak = workoutService.calculateCurrentStreak(userId);
         newAchievements.addAll(updateStreakAchievements(userId, currentStreak));
 
@@ -116,51 +132,19 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     }
 
     private List<AchievementProgressDto> updateAchievementProgress(Long userId, Long achievementId, Integer progressAdded) throws InstanceNotFoundException {
-        List<AchievementProgressDto> newAchievements = new ArrayList<>();
-        AchievementProgress ap = findAchievementProgress(userId, achievementId);
-        int oldProgress = (ap != null) ? ap.getProgress() : 0;
-
-        createOrUpdateAchievementProgress(userId, achievementId, progressAdded);
-
-        AchievementProgress updatedAp = findAchievementProgress(userId, achievementId);
-        int newProgress = updatedAp.getProgress();
-        Achievement achievement = achievementDao.findById(achievementId).orElseThrow(() -> new InstanceNotFoundException("Achievement", achievementId));
-
-        boolean reachedBronze = oldProgress < achievement.getBronzeReq() && newProgress >= achievement.getBronzeReq();
-        boolean reachedSilver = oldProgress < achievement.getSilverReq() && newProgress >= achievement.getSilverReq();
-        boolean reachedGold = oldProgress < achievement.getGoldReq() && newProgress >= achievement.getGoldReq();
-
-        if (reachedBronze || reachedSilver || reachedGold) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
-        }
-
-        return newAchievements;
+        return createOrUpdateAchievementProgress(userId, achievementId, progressAdded);
     }
 
     private List<AchievementProgressDto> updateStreakAchievements(Long userId, int currentStreak) throws InstanceNotFoundException {
-        List<AchievementProgressDto> newAchievements = new ArrayList<>();
         AchievementProgress ap = findAchievementProgress(userId, STREAK_ACHIEVEMENT_ID);
-        int oldProgress = (ap != null) ? ap.getProgress() : 0;
 
         if (ap == null) {
-            createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak);
+            return createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak);
         } else if (currentStreak > ap.getProgress()) {
-            createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak - ap.getProgress());
+            return createOrUpdateAchievementProgress(userId, STREAK_ACHIEVEMENT_ID, currentStreak - ap.getProgress());
+        } else {
+            return new ArrayList<>();
         }
-
-        AchievementProgress updatedAp = findAchievementProgress(userId, STREAK_ACHIEVEMENT_ID);
-        int newProgress = updatedAp.getProgress();
-        Achievement streakAchievement = achievementDao.findById(STREAK_ACHIEVEMENT_ID).orElseThrow(() -> new InstanceNotFoundException("Achievement", STREAK_ACHIEVEMENT_ID));
-
-        boolean reachedBronze = oldProgress < streakAchievement.getBronzeReq() && newProgress >= streakAchievement.getBronzeReq();
-        boolean reachedSilver = oldProgress < streakAchievement.getSilverReq() && newProgress >= streakAchievement.getSilverReq();
-        boolean reachedGold = oldProgress < streakAchievement.getGoldReq() && newProgress >= streakAchievement.getGoldReq();
-
-        if (reachedBronze || reachedSilver || reachedGold) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, streakAchievement));
-        }
-
-        return newAchievements;
     }
 
     @Override

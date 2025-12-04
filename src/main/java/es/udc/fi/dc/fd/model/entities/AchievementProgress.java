@@ -8,6 +8,7 @@ public class AchievementProgress {
 
     private Long id;
     private Integer progress;
+    private Integer highestProgress;
     private User user;
     private Achievement achievement;
 
@@ -16,6 +17,7 @@ public class AchievementProgress {
 
     public AchievementProgress(Integer progress, User user, Achievement achievement) {
         this.progress = progress;
+        this.highestProgress = progress;
         this.user = user;
         this.achievement = achievement;
     }
@@ -34,6 +36,14 @@ public class AchievementProgress {
     }
     public void setProgress(Integer progress) {
         this.progress = progress;
+    }
+
+    @Column(name = "highest_progress", nullable = false)
+    public Integer getHighestProgress() {
+        return highestProgress;
+    }
+    public void setHighestProgress(Integer highestProgress) {
+        this.highestProgress = highestProgress;
     }
 
     @ManyToOne

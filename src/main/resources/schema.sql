@@ -30,6 +30,8 @@ CREATE TABLE users
     height_cm       DOUBLE       NULL,
     gender          VARCHAR(20)  NULL,
     trainer_premium TINYINT(1)   NULL     DEFAULT NULL,
+    total_likes_given INT         NOT NULL DEFAULT 0,
+    total_comments   INT         NOT NULL DEFAULT 0,
     CONSTRAINT pk_user PRIMARY KEY (id),
     CONSTRAINT uk_user_email UNIQUE (email),
     CONSTRAINT uk_user_phone_number UNIQUE (phone_number)

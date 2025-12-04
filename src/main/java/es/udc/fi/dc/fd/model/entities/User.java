@@ -21,8 +21,12 @@ public class User {
     private Double heightCm;
     @Enumerated(EnumType.STRING)
     private GenderType gender;
-    @Column(name = "trainer_premium")
+    @Column
     private Boolean trainerPremium;
+    @Column
+    private int totalLikesGiven = 0;
+    @Column
+    private int totalComments = 0;
 
     public User() {
     }
@@ -139,6 +143,22 @@ public class User {
 
     public void setTrainerPremium(Boolean trainerPremium) {
         this.trainerPremium = trainerPremium;
+    }
+
+    public int getTotalLikesGiven() {
+        return totalLikesGiven;
+    }
+
+    public void setTotalLikesGiven(int totalLikesGiven) {
+        this.totalLikesGiven = totalLikesGiven;
+    }
+
+    public int getTotalComments() {
+        return totalComments;
+    }
+
+    public void setTotalComments(int totalComments) {
+        this.totalComments = totalComments;
     }
 
     public enum RoleType {

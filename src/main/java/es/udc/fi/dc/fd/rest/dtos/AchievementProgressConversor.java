@@ -24,6 +24,7 @@ public class AchievementProgressConversor {
                 achievement.getSilverReq(),
                 achievement.getGoldReq(),
                 achievementProgress.getProgress(),
+                achievementProgress.getHighestProgress(),
                 CONVERT_TO_HOURS_IDS.contains(achievement.getId())
         );
     }

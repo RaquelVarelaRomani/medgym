@@ -2,9 +2,11 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,21 +16,23 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
     private final NotificationService notificationService;
     private final WorkoutDao workoutDao;
     private final UserDao userDao;
+    private final AchievementProgressService achievementProgressService;
 
-    public WorkoutLikeServiceImpl(WorkoutLikeDao workoutLikeDao, NotificationService notificationService, WorkoutDao workoutDao, UserDao userDao) {
+    public WorkoutLikeServiceImpl(WorkoutLikeDao workoutLikeDao, NotificationService notificationService, WorkoutDao workoutDao, UserDao userDao, AchievementProgressService achievementProgressService) {
         this.workoutLikeDao = workoutLikeDao;
         this.notificationService = notificationService;
         this.workoutDao = workoutDao;
         this.userDao = userDao;
+        this.achievementProgressService = achievementProgressService;
     }
 
     @Override
-    public void likeWorkout(Long userId, Long workoutId) throws InstanceNotFoundException {
+    public List<AchievementProgressDto> likeWorkout(Long userId, Long workoutId) throws InstanceNotFoundException {
         User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("entities.user", userId));
         Workout workout = workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("entities.workout", workoutId));
 
         if (getLikesByUser(userId).stream().anyMatch(w -> w.getWorkout().getId().equals(workoutId))) {
-            return;
+            return new ArrayList<>();
         }
 
         WorkoutLike workoutLike = new WorkoutLike(
@@ -37,15 +41,32 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
         );
         workoutLikeDao.save(workoutLike);
 
+        user.setTotalLikesGiven(user.getTotalLikesGiven() + 1);
+        userDao.save(user);
+
+        List<AchievementProgressDto> newAchievements = achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1);
+
         notificationService.createWorkoutLikeNotification(
                 user.getId(),
                 workout.getId()
         );
+
+        return newAchievements;
     }
 
     @Override
     public void unlikeWorkout(Long userId, Long workoutId) {
-        workoutLikeDao.deleteByUserIdAndWorkoutId(userId, workoutId);
+        var like = workoutLikeDao.findByUserIdAndWorkoutId(userId, workoutId);
+        if (like.isPresent()) {
+            workoutLikeDao.delete(like.get());
+            User user = like.get().getUser();
+            user.setTotalLikesGiven(user.getTotalLikesGiven() - 1);
+            userDao.save(user);
+            try {
+                achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, -1);
+            } catch (InstanceNotFoundException e) {
+            }
+        }
     }
 
     @Override

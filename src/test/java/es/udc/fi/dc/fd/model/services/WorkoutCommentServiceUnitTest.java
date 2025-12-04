@@ -197,11 +197,31 @@ class WorkoutCommentServiceUnitTest {
     }
 
     @Test
-    void testDeleteWorkoutComment() {
+    void testDeleteWorkoutComment() throws InstanceNotFoundException {
         Long commentId = 10L;
+        Long userId = 1L;
+        User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
+        user.setId(userId);
+        user.setTotalComments(5);
+        Workout workout = new Workout();
+        WorkoutComment comment = new WorkoutComment("text", LocalDateTime.now(), workout, user);
+
+        when(workoutCommentDao.findById(commentId)).thenReturn(Optional.of(comment));
 
         workoutCommentService.deleteWorkoutComment(commentId);
 
-        verify(workoutCommentDao).findById(commentId);
+        assertEquals(4, user.getTotalComments()); // decremented by 1
+        verify(userDao).save(user);
+        verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, -1);
+        verify(workoutCommentDao).delete(comment);
+    }
+
+    @Test
+    void testDeleteWorkoutComment_NotFound_ThrowsException() {
+        Long commentId = 10L;
+
+        when(workoutCommentDao.findById(commentId)).thenReturn(Optional.empty());
+
+        assertThrows(InstanceNotFoundException.class, () -> workoutCommentService.deleteWorkoutComment(commentId));
     }
 }
