@@ -297,7 +297,7 @@ const WorkoutFeed = () => {
                             src={process.env.PUBLIC_URL + "/assets/search-icon.svg"}
                             alt=""
                             className={styles["search-button-icon"]}
-                        />
+                        />{" "}
                         Buscar usuarios
                     </button>
                 </div>
