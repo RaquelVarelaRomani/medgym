@@ -59,6 +59,7 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
             try {
                 achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, -1);
             } catch (InstanceNotFoundException e) {
+                //
             }
         }
     }

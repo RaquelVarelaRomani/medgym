@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +52,7 @@ class WorkoutCommentServiceUnitTest {
 
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(7L), eq(1))).thenReturn(Collections.emptyList());
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1)).thenReturn(Collections.emptyList());
         when(workoutCommentDao.save(any(WorkoutComment.class))).thenReturn(savedComment);
 
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
@@ -101,13 +100,16 @@ class WorkoutCommentServiceUnitTest {
 
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(7L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1)).thenReturn(List.of(achievementDto));
         when(workoutCommentDao.save(any(WorkoutComment.class))).thenReturn(savedComment);
 
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
 
         assertEquals(savedComment, result);
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, 1);
+        verify(notificationService).createWorkoutCommentNotification(userId, text, workoutId);
+        verify(notificationService).createWorkoutCommentNotification(userId, text, workoutId);
+        verify(notificationService).createWorkoutCommentNotification(userId, text, workoutId);
     }
 
     @Test
@@ -123,7 +125,7 @@ class WorkoutCommentServiceUnitTest {
 
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(7L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1)).thenReturn(List.of(achievementDto));
         when(workoutCommentDao.save(any(WorkoutComment.class))).thenReturn(savedComment);
 
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
@@ -145,7 +147,7 @@ class WorkoutCommentServiceUnitTest {
 
         when(userDao.findById(userId)).thenReturn(Optional.of(user));
         when(workoutDao.findById(workoutId)).thenReturn(Optional.of(workout));
-        when(achievementProgressService.createOrUpdateAchievementProgress(eq(userId), eq(7L), eq(1))).thenReturn(List.of(achievementDto));
+        when(achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1)).thenReturn(List.of(achievementDto));
         when(workoutCommentDao.save(any(WorkoutComment.class))).thenReturn(savedComment);
 
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);

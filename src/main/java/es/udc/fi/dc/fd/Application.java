@@ -47,16 +47,13 @@ public class Application {
     @Bean
     public CommandLineRunner recalculateAchievementsRunner(UserDao userDao, AchievementProgressService achievementProgressService) {
         return args -> {
-            System.out.println("Recalculating achievement progress for all users...");
             userDao.findAll().forEach(user -> {
                 try {
                     achievementProgressService.recalculateAchievementProgressForUser(user.getId());
-                    System.out.println("Recalculated achievements for user: " + user.getName());
                 } catch (Exception e) {
-                    System.err.println("Error recalculating achievements for user " + user.getId() + ": " + e.getMessage());
+                //
                 }
             });
-            System.out.println("Achievement progress recalculation completed.");
         };
     }
 
