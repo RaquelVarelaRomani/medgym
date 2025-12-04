@@ -46,7 +46,6 @@ class WorkoutCommentServiceUnitTest {
         Long workoutId = 2L;
         String text = "Great workout!";
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
-        user.setTotalComments(4);
         Workout workout = new Workout();
         workout.setId(workoutId);
         WorkoutComment savedComment = new WorkoutComment(text, LocalDateTime.now(), workout, user);
@@ -60,9 +59,7 @@ class WorkoutCommentServiceUnitTest {
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
 
         assertEquals(savedComment, result);
-        assertEquals(5, user.getTotalComments()); // incremented by 1
         verify(workoutCommentDao).save(any(WorkoutComment.class));
-        verify(userDao).save(user);
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, 1);
         verify(notificationService).createWorkoutCommentNotification(userId, text, workoutId);
     }
@@ -97,7 +94,6 @@ class WorkoutCommentServiceUnitTest {
         Long workoutId = 2L;
         String text = "Nice!";
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
-        user.setTotalComments(4); // 4 + 1 = 5, reaches bronze
         Workout workout = new Workout();
         workout.setId(workoutId);
         WorkoutComment savedComment = new WorkoutComment(text, LocalDateTime.now(), workout, user);
@@ -111,7 +107,6 @@ class WorkoutCommentServiceUnitTest {
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
 
         assertEquals(savedComment, result);
-        assertEquals(5, user.getTotalComments());
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, 1);
     }
 
@@ -121,7 +116,6 @@ class WorkoutCommentServiceUnitTest {
         Long workoutId = 2L;
         String text = "Good job!";
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
-        user.setTotalComments(19); // 19 + 1 = 20, reaches silver
         Workout workout = new Workout();
         workout.setId(workoutId);
         WorkoutComment savedComment = new WorkoutComment(text, LocalDateTime.now(), workout, user);
@@ -135,7 +129,6 @@ class WorkoutCommentServiceUnitTest {
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
 
         assertEquals(savedComment, result);
-        assertEquals(20, user.getTotalComments());
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, 1);
     }
 
@@ -145,7 +138,6 @@ class WorkoutCommentServiceUnitTest {
         Long workoutId = 2L;
         String text = "Excellent!";
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
-        user.setTotalComments(49); // 49 + 1 = 50, reaches gold
         Workout workout = new Workout();
         workout.setId(workoutId);
         WorkoutComment savedComment = new WorkoutComment(text, LocalDateTime.now(), workout, user);
@@ -159,7 +151,6 @@ class WorkoutCommentServiceUnitTest {
         WorkoutComment result = workoutCommentService.commentWorkout(userId, text, workoutId);
 
         assertEquals(savedComment, result);
-        assertEquals(50, user.getTotalComments());
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, 1);
     }
 
@@ -202,7 +193,6 @@ class WorkoutCommentServiceUnitTest {
         Long userId = 1L;
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(userId);
-        user.setTotalComments(5);
         Workout workout = new Workout();
         WorkoutComment comment = new WorkoutComment("text", LocalDateTime.now(), workout, user);
 
@@ -210,8 +200,6 @@ class WorkoutCommentServiceUnitTest {
 
         workoutCommentService.deleteWorkoutComment(commentId);
 
-        assertEquals(4, user.getTotalComments()); // decremented by 1
-        verify(userDao).save(user);
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 7L, -1);
         verify(workoutCommentDao).delete(comment);
     }

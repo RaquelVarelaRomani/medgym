@@ -41,9 +41,6 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
         );
         workoutLikeDao.save(workoutLike);
 
-        user.setTotalLikesGiven(user.getTotalLikesGiven() + 1);
-        userDao.save(user);
-
         List<AchievementProgressDto> newAchievements = achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1);
 
         notificationService.createWorkoutLikeNotification(
@@ -59,9 +56,6 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
         var like = workoutLikeDao.findByUserIdAndWorkoutId(userId, workoutId);
         if (like.isPresent()) {
             workoutLikeDao.delete(like.get());
-            User user = like.get().getUser();
-            user.setTotalLikesGiven(user.getTotalLikesGiven() - 1);
-            userDao.save(user);
             try {
                 achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, -1);
             } catch (InstanceNotFoundException e) {

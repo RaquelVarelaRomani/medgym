@@ -281,7 +281,7 @@ VALUES
 
     ('Levantando el Gym',
      'Supera tu marca de peso levantado',
-     1, 10, 25),
+     50, 125, 250),
 
     ('Dando Likes',
      'Da likes a entrenamientos de otros usuarios',
@@ -291,27 +291,6 @@ VALUES
      'Deja comentarios en entrenamientos de otros usuarios',
      5, 20, 50);
 
-INSERT INTO achievement_progresses (progress, highest_progress, user_id, achievement_id)
-VALUES
-    -- Carlos (entrenador)
-    (432000, 432000, 1, 1), -- Horas
-    (2700, 2700, 1, 2), -- Repeticiones
-    (55, 55, 1, 3), -- Sesiones
-
-    -- Laura (cliente)
-    (126000, 126000, 2, 1),      -- Horas → bronze avanzado
-    (680, 680, 2, 2),     -- Repeticiones → bronze
-    (22, 22, 2, 3),      -- Sesiones → silver
-
-    -- Miguel (cliente)
-    (18000, 18000, 3, 1),      -- Horas → none
-    (100, 100, 3, 2),    -- Repeticiones → none
-    (5, 5, 3, 3),      -- Sesiones → bronze
-
-    -- Sofía (entrenadora)
-    (216000, 216000, 4, 1),      -- Horas → silver
-    (1500, 1500, 4, 2),    -- Repeticiones → silver
-    (28, 28, 4, 3);      -- Sesiones → silver
 
 
 INSERT INTO workouts (start_time, end_time, routine_id, user_id)

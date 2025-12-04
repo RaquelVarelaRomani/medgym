@@ -12,4 +12,5 @@ public interface AchievementProgressService {
     AchievementProgress findAchievementProgress(Long userId, Long achievementId);
     List<AchievementProgress> findAchievementProgressesByUser(Long userId) throws InstanceNotFoundException;
     int getCurrentStreak(Long userId) throws InstanceNotFoundException;
+    void recalculateAchievementProgressForUser(Long userId) throws InstanceNotFoundException;
 }

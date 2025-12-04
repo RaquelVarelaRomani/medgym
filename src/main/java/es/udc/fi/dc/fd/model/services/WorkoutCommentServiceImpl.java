@@ -49,9 +49,6 @@ public class WorkoutCommentServiceImpl implements WorkoutCommentService {
                 user
         );
 
-        user.setTotalComments(user.getTotalComments() + 1);
-        userDao.save(user);
-
         var newAchievements = achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1);
         newAchievementsThreadLocal.set(newAchievements);
 
@@ -68,8 +65,6 @@ public class WorkoutCommentServiceImpl implements WorkoutCommentService {
     public void deleteWorkoutComment(Long workoutCommentId) throws InstanceNotFoundException {
         var comment = workoutCommentDao.findById(workoutCommentId).orElseThrow(() -> new InstanceNotFoundException("entities.workoutComment", workoutCommentId));
         User user = comment.getUser();
-        user.setTotalComments(user.getTotalComments() - 1);
-        userDao.save(user);
         achievementProgressService.createOrUpdateAchievementProgress(user.getId(), 7L, -1);
         workoutCommentDao.delete(comment);
     }

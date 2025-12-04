@@ -1,15 +1,15 @@
 -- Insertar usuarios (roles: 0 = cliente, 1 = entrenador, 2 = admin; status: 0 = ACTIVE, 1 = BLOCKED)
-INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status, total_likes_given, total_comments)
+INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status)
 VALUES ('Carlos', 'Gómez', 'carlos.gomez@example.com', '600111222',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0, 0, 0), -- entrenador
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0), -- entrenador
        ('Laura', 'Martínez', 'laura.martinez@example.com', '600333444',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0, 0, 0), -- cliente
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0), -- cliente
        ('Miguel', 'Fernández', 'miguel.fernandez@example.com', '600555666',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0, 0, 0), -- cliente
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0), -- cliente
        ('Sofía', 'López', 'sofia.lopez@example.com', '600777888',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0, 0, 0), -- entrenadora
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0), -- entrenadora
        ('Ana', 'Torres', 'ana.torres@example.com', '600999000',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 2, 0, 0, 0);
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 2, 0);
 -- admin
 
 -- Insertar rutinas (entrenadores: Carlos id=1, Sofía id=4)
@@ -261,7 +261,7 @@ VALUES
 
     ('Levantando el Gym',
      'Supera tu marca de peso levantado',
-     1, 10, 25),
+     50, 125, 250),
 
     ('Dando Likes',
      'Da likes a entrenamientos de otros usuarios',
@@ -271,24 +271,3 @@ VALUES
      'Deja comentarios en entrenamientos de otros usuarios',
      5, 20, 50);
 
-INSERT INTO achievement_progresses (progress, highest_progress, user_id, achievement_id)
-VALUES
-    -- Carlos (entrenador)
-    (432000, 432000, 1, 1), -- Horas
-    (2700, 2700, 1, 2), -- Repeticiones
-    (55, 55, 1, 3), -- Sesiones
-
-    -- Laura (cliente)
-    (126000, 126000, 2, 1),      -- Horas → bronze avanzado
-    (680, 680, 2, 2),     -- Repeticiones → bronze
-    (22, 22, 2, 3),      -- Sesiones → silver
-
-    -- Miguel (cliente)
-    (18000, 18000, 3, 1),      -- Horas → none
-    (100, 100, 3, 2),    -- Repeticiones → none
-    (5, 5, 3, 3),      -- Sesiones → bronze
-
-    -- Sofía (entrenadora)
-    (216000, 216000, 4, 1),      -- Horas → silver
-    (1500, 1500, 4, 2),    -- Repeticiones → silver
-    (28, 28, 4, 3);      -- Sesiones → silver

@@ -45,7 +45,6 @@ class WorkoutLikeServiceUnitTest {
         Long workoutId = 2L;
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(userId);
-        user.setTotalLikesGiven(5);
         Workout workout = new Workout();
         workout.setId(workoutId);
 
@@ -57,9 +56,7 @@ class WorkoutLikeServiceUnitTest {
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(Collections.emptyList(), result);
-        assertEquals(6, user.getTotalLikesGiven()); // incremented by 1
         verify(workoutLikeDao).save(any(WorkoutLike.class));
-        verify(userDao).save(user);
         verify(achievementProgressService).createOrUpdateAchievementProgress(userId, 6L, 1);
         verify(notificationService).createWorkoutLikeNotification(userId, workoutId);
     }
@@ -116,7 +113,6 @@ class WorkoutLikeServiceUnitTest {
         Long workoutId = 2L;
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(userId);
-        user.setTotalLikesGiven(9); // 9 + 1 = 10, reaches bronze
         Workout workout = new Workout();
         workout.setId(workoutId);
         AchievementProgressDto achievementDto = new AchievementProgressDto();
@@ -130,7 +126,6 @@ class WorkoutLikeServiceUnitTest {
 
         assertEquals(1, result.size());
         assertEquals(achievementDto, result.get(0));
-        assertEquals(10, user.getTotalLikesGiven());
     }
 
     @Test
@@ -139,7 +134,6 @@ class WorkoutLikeServiceUnitTest {
         Long workoutId = 2L;
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(userId);
-        user.setTotalLikesGiven(49); // 49 + 1 = 50, reaches silver
         Workout workout = new Workout();
         workout.setId(workoutId);
         AchievementProgressDto achievementDto = new AchievementProgressDto();
@@ -152,7 +146,6 @@ class WorkoutLikeServiceUnitTest {
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(1, result.size());
-        assertEquals(50, user.getTotalLikesGiven());
     }
 
     @Test
@@ -161,7 +154,6 @@ class WorkoutLikeServiceUnitTest {
         Long workoutId = 2L;
         User user = new User("user", "user", "user@test.com", "123", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setId(userId);
-        user.setTotalLikesGiven(99); // 99 + 1 = 100, reaches gold
         Workout workout = new Workout();
         workout.setId(workoutId);
         AchievementProgressDto achievementDto = new AchievementProgressDto();
@@ -174,6 +166,5 @@ class WorkoutLikeServiceUnitTest {
         List<AchievementProgressDto> result = workoutLikeService.likeWorkout(userId, workoutId);
 
         assertEquals(1, result.size());
-        assertEquals(100, user.getTotalLikesGiven());
     }
 }

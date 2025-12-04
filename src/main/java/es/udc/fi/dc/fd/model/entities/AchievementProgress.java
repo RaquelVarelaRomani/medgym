@@ -38,7 +38,7 @@ public class AchievementProgress {
         this.progress = progress;
     }
 
-    @Column(name = "highest_progress", nullable = false)
+    @Column(nullable = false)
     public Integer getHighestProgress() {
         return highestProgress;
     }
