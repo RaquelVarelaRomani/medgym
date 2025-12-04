@@ -1,15 +1,15 @@
 -- Insertar usuarios (roles: 0 = cliente, 1 = entrenador, 2 = admin; status: 0 = ACTIVE, 1 = BLOCKED)
-INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status)
+INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status, total_likes_given, total_comments)
 VALUES ('Carlos', 'Gómez', 'carlos.gomez@example.com', '600111222',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0), -- entrenador
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0, 0, 0), -- entrenador
        ('Laura', 'Martínez', 'laura.martinez@example.com', '600333444',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0), -- cliente
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0, 0, 0), -- cliente
        ('Miguel', 'Fernández', 'miguel.fernandez@example.com', '600555666',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0), -- cliente
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0, 0, 0, 0), -- cliente
        ('Sofía', 'López', 'sofia.lopez@example.com', '600777888',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0), -- entrenadora
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1, 0, 0, 0), -- entrenadora
        ('Ana', 'Torres', 'ana.torres@example.com', '600999000',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 2, 0);
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 2, 0, 0, 0);
 -- admin
 
 -- Insertar rutinas (entrenadores: Carlos id=1, Sofía id=4)
@@ -261,7 +261,15 @@ VALUES
 
     ('Levantando el Gym',
      'Supera tu marca de peso levantado',
-     1, 10, 25);
+     1, 10, 25),
+
+    ('Dando Likes',
+     'Da likes a entrenamientos de otros usuarios',
+     10, 50, 100),
+
+    ('Comentando Entrenos',
+     'Deja comentarios en entrenamientos de otros usuarios',
+     5, 20, 50);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)
 VALUES
