@@ -5,6 +5,7 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
 
 import static es.udc.fi.dc.fd.rest.dtos.AchievementProgressConversor.*;
+import es.udc.fi.dc.fd.model.services.NotificationService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private final WorkoutService workoutService;
     private final WorkoutLikeDao workoutLikeDao;
     private final WorkoutCommentDao workoutCommentDao;
+    private final NotificationService notificationService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -46,13 +48,14 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
     private static final String USER_ID = "userId";
 
-    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService, WorkoutLikeDao workoutLikeDao, WorkoutCommentDao workoutCommentDao) {
+    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService, WorkoutLikeDao workoutLikeDao, WorkoutCommentDao workoutCommentDao, NotificationService notificationService) {
         this.userDao = userDao;
         this.achievementDao = achievementDao;
         this.achievementProgressDao = achievementProgressDao;
         this.workoutService = workoutService;
         this.workoutLikeDao = workoutLikeDao;
         this.workoutCommentDao = workoutCommentDao;
+        this.notificationService = notificationService;
     }
 
     public void setAchievementProgress(Long userId, Long achievementId, Integer progress) throws InstanceNotFoundException {
@@ -111,6 +114,15 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         newAchievements.addAll(updateAchievementProgress(userId, WORKOUTS_ACHIEVEMENT_ID, 1));
         newAchievements.addAll(updateMaxWeightAchievements(userId, workoutId));
         newAchievements.addAll(updateStreakAchievements(userId));
+
+        for (AchievementProgressDto dto : newAchievements) {
+            String message = "Logro desbloqueado: " + dto.getName();
+            try {
+                notificationService.createAchievementNotification(userId, message, userId);
+            } catch (InstanceNotFoundException e) {
+                // User should exist since validated earlier
+            }
+        }
 
         return newAchievements;
     }

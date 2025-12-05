@@ -83,7 +83,7 @@ class AchievementProgressServiceUnitTest {
         List<AchievementProgressDto> result = achievementProgressService.createOrUpdateAchievementProgress(userId, achievementId, 5);
 
         assertEquals(1, result.size());
-        verify(notificationService).createAchievementNotification(userId, "Logo desbloqueado: Test Achievement", userId);
+        verify(notificationService).createAchievementNotification(userId, "Logro desbloqueado: Test Achievement", userId);
     }
 
     @Test
