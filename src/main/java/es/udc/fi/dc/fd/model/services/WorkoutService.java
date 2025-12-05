@@ -20,4 +20,6 @@ public interface WorkoutService {
     List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     int calculateCurrentStreak(Long userId);
+
+    void remindStreak();
 }

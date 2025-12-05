@@ -16,6 +16,8 @@ public interface NotificationService {
 
     void createWorkoutCommentNotification(Long userId, String text, Long workoutId) throws InstanceNotFoundException;
 
+    void createStreakRemindNotification(Long clientId, int streak) throws InstanceNotFoundException;
+
     List<Notification> getNotificationsByUser(Long userId);
 
     void markNotificationAsRead(Long notificationId);

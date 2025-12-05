@@ -183,7 +183,11 @@ VALUES
     -- Notificación por like en rutina (LIKE = 2)
     ("Laura ha dado like a tu rutina 'Rutina fuerza inicial'", 2, 1, 1, FALSE, '2025-10-16 09:00:00'),
     ("Miguel ha dado like a tu rutina 'Rutina cardio avanzado'", 2, 2, 1, FALSE, '2025-10-16 09:10:00'),
-    ("Ana ha dado like a tu rutina 'Rutina cuerpo completo'", 2, 3, 4, TRUE, '2025-10-16 09:15:00');
+    ("Ana ha dado like a tu rutina 'Rutina cuerpo completo'", 2, 3, 4, TRUE, '2025-10-16 09:15:00'),
+
+    -- Notificación de racha
+    ("Llevas una racha de 3 días. ¡No la pierdas!", 5, 2, 2, FALSE, '2025-10-16 09:15:00');
+
 
 
 INSERT INTO routine_likes (routine_id, user_id)
