@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -36,6 +38,8 @@ class WorkoutServiceTest {
     private UserFollowService userFollowService;
     @Autowired
     private RoutineService routineService;
+    @MockBean
+    private NotificationService notificationService;
 
     @BeforeEach
     void setUp() {
@@ -306,6 +310,18 @@ class WorkoutServiceTest {
 
         int streak = workoutService.calculateCurrentStreak(user.getId());
         assertEquals(0, streak); // Not recent
+    }
+
+    @Test
+    void testStreakNotificationReminder() throws InstanceNotFoundException {
+        createWorkoutOnDate(user, routine, LocalDate.now().minusDays(3));
+        createWorkoutOnDate(user, routine, LocalDate.now().minusDays(2));
+        createWorkoutOnDate(user, routine, LocalDate.now().minusDays(1));
+
+        workoutService.remindStreak();
+
+        verify(notificationService).createStreakRemindNotification(user.getId(), 3);
+
     }
 
     private void createWorkoutOnDate(User user, Routine routine, LocalDate date) {
