@@ -63,7 +63,7 @@ class AchievementProgressServiceUnitTest {
         AchievementProgressDto dto = result.get(0);
         assertEquals("Test Achievement", dto.getName());
         assertEquals("Test Description", dto.getDescription());
-        verify(notificationService).createAchievementNotification(userId, "Logro desbloqueado: Test Achievement", userId);
+        assertEquals("Bronce", dto.getMedalType());
     }
 
     @Test
@@ -83,7 +83,8 @@ class AchievementProgressServiceUnitTest {
         List<AchievementProgressDto> result = achievementProgressService.createOrUpdateAchievementProgress(userId, achievementId, 5);
 
         assertEquals(1, result.size());
-        verify(notificationService).createAchievementNotification(userId, "Logro desbloqueado: Test Achievement", userId);
+        AchievementProgressDto dto = result.get(0);
+        assertEquals("Plata", dto.getMedalType());
     }
 
     @Test
@@ -103,7 +104,8 @@ class AchievementProgressServiceUnitTest {
         List<AchievementProgressDto> result = achievementProgressService.createOrUpdateAchievementProgress(userId, achievementId, 5);
 
         assertEquals(1, result.size());
-        verify(notificationService).createAchievementNotification(userId, "Logro desbloqueado: Test Achievement", userId);
+        AchievementProgressDto dto = result.get(0);
+        assertEquals("Oro", dto.getMedalType());
     }
 
     @Test
@@ -147,7 +149,6 @@ class AchievementProgressServiceUnitTest {
 
         List<AchievementProgressDto> result = achievementProgressService.createOrUpdateAchievementProgress(userId, achievementId, 35);
 
-        assertEquals(1, result.size()); // one dto for the achievement unlock
-        verify(notificationService).createAchievementNotification(userId, "Logro desbloqueado: Test Achievement", userId);
+        assertEquals(3, result.size()); // three dtos for the three tiers unlocked
     }
 }

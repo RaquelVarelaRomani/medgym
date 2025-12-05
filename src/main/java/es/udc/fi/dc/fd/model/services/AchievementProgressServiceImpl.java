@@ -5,7 +5,6 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
 
 import static es.udc.fi.dc.fd.rest.dtos.AchievementProgressConversor.*;
-import es.udc.fi.dc.fd.model.services.NotificationService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,8 +98,20 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         boolean reachedSilver = oldHighestProgress < achievement.getSilverReq() && newHighestProgress >= achievement.getSilverReq();
         boolean reachedGold = oldHighestProgress < achievement.getGoldReq() && newHighestProgress >= achievement.getGoldReq();
 
-        if (newHighestProgress > oldHighestProgress && (reachedBronze || reachedSilver || reachedGold)) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
+        if (reachedBronze) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Bronce");
+            newAchievements.add(dto);
+        }
+        if (reachedSilver) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Plata");
+            newAchievements.add(dto);
+        }
+        if (reachedGold) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Oro");
+            newAchievements.add(dto);
         }
 
         return newAchievements;
@@ -116,7 +127,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         newAchievements.addAll(updateStreakAchievements(userId));
 
         for (AchievementProgressDto dto : newAchievements) {
-            String message = "Logro desbloqueado: " + dto.getName();
+            String message = "Logro desbloqueado: " + dto.getName() + " (" + dto.getMedalType() + ")";
             try {
                 notificationService.createAchievementNotification(userId, message, userId);
             } catch (InstanceNotFoundException e) {
@@ -285,8 +296,20 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         boolean reachedBronze = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getBronzeReq());
         boolean reachedSilver = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getSilverReq());
         boolean reachedGold = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getGoldReq());
-        if (newHighestProgress > oldHighestProgress && (reachedBronze || reachedSilver || reachedGold)) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
+        if (reachedBronze) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Bronce");
+            newAchievements.add(dto);
+        }
+        if (reachedSilver) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Plata");
+            newAchievements.add(dto);
+        }
+        if (reachedGold) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Oro");
+            newAchievements.add(dto);
         }
         return newAchievements;
     }

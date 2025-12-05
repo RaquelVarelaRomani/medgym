@@ -5,6 +5,7 @@ public class AchievementProgressDto {
     private AchievementInfoDto info;
     private AchievementRequirementsDto requirements;
     private AchievementProgressInfoDto progressInfo;
+    private String medalType;
 
     public AchievementProgressDto() {
     }
@@ -101,5 +102,13 @@ public class AchievementProgressDto {
 
     public void setProgressInfo(AchievementProgressInfoDto progressInfo) {
         this.progressInfo = progressInfo;
+    }
+
+    public String getMedalType() {
+        return medalType;
+    }
+
+    public void setMedalType(String medalType) {
+        this.medalType = medalType;
     }
 }
