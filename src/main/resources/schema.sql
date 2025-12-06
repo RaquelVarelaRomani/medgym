@@ -238,6 +238,7 @@ CREATE TABLE achievement_progresses
 (
     id              BIGINT  NOT NULL AUTO_INCREMENT,
     progress        INTEGER NOT NULL,
+    highest_progress INTEGER NOT NULL,
     user_id         BIGINT  NOT NULL,
     achievement_id  BIGINT  NOT NULL,
 

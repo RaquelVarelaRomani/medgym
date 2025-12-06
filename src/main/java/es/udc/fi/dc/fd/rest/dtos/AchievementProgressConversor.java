@@ -17,15 +17,21 @@ public class AchievementProgressConversor {
             AchievementProgress achievementProgress,
             Achievement achievement
     ) {
-        return new AchievementProgressDto(
+        AchievementInfoDto info = new AchievementInfoDto(
                 achievement.getName(),
-                achievement.getDescription(),
+                achievement.getDescription()
+        );
+        AchievementRequirementsDto requirements = new AchievementRequirementsDto(
                 achievement.getBronzeReq(),
                 achievement.getSilverReq(),
-                achievement.getGoldReq(),
+                achievement.getGoldReq()
+        );
+        AchievementProgressInfoDto progressInfo = new AchievementProgressInfoDto(
                 achievementProgress.getProgress(),
+                achievementProgress.getHighestProgress(),
                 CONVERT_TO_HOURS_IDS.contains(achievement.getId())
         );
+        return new AchievementProgressDto(info, requirements, progressInfo);
     }
 
     public static List<AchievementProgressDto> achievementProgressDtos(

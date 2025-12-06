@@ -7,6 +7,7 @@ import LoadingMessage from "../common/LoadingMessage";
 import HeartLike from "../common/HeartLike";
 import CommentBubble from "../common/CommentBubble";
 import CommentModal from "../common/CommentModal";
+import AchievementPopup from "../common/popup/AchievementPopup";
 import { commentWorkout } from "../../../../backend/workoutCommentService";
 import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
 import {getFollowedTrainers, getFollowers} from "../../../../backend/userFollowService"
@@ -183,6 +184,8 @@ const WorkoutFeed = () => {
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
+    const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+    const [newAchievements, setNewAchievements] = useState([]);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -230,7 +233,12 @@ const WorkoutFeed = () => {
         const api = next ? likeWorkout : unlikeWorkout;
         api(
             workout.id,
-            () => {},
+            (achievements) => {
+                if (next && achievements && achievements.length > 0) {
+                    setNewAchievements(achievements);
+                    setShowAchievementPopup(true);
+                }
+            },
             () => console.error(next ? "Error al marcar favorito" : "Error al desmarcar favorito")
         );
     };
@@ -314,7 +322,8 @@ const WorkoutFeed = () => {
                         commentWorkout(
                             selectedWorkout.id,
                             comment,
-                            addedComment => {
+                            response => {
+                                const addedComment = response;
                                 setSelectedWorkout(prev => ({
                                     ...prev,
                                     comments: [...(prev.comments || []), addedComment]
@@ -323,6 +332,11 @@ const WorkoutFeed = () => {
                                 setWorkouts(prev =>
                                     appendCommentToWorkout(prev, selectedWorkout.id, addedComment)
                                 );
+
+                                if (response.newAchievements && response.newAchievements.length > 0) {
+                                    setNewAchievements(response.newAchievements);
+                                    setShowAchievementPopup(true);
+                                }
                             },
                             () => console.error("Error al enviar comentario")
                         );
@@ -332,6 +346,12 @@ const WorkoutFeed = () => {
                     comments={selectedWorkout?.comments || []}
                 />
             )}
+
+            <AchievementPopup
+                show={showAchievementPopup}
+                achievements={newAchievements}
+                onOk={() => setShowAchievementPopup(false)}
+            />
         </div>
     );
 };

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface WorkoutCommentDao extends JpaRepository<WorkoutComment, Long> {
     List<WorkoutComment> findByWorkoutId(Long workoutId);
+    List<WorkoutComment> findByUserId(Long userId);
 }

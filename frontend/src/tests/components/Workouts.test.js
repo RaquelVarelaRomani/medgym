@@ -7,6 +7,7 @@ import WorkoutDetails from "../../modules/app/components/workouts/WorkoutDetails
 import ExerciseEntry from "../../modules/app/components/workouts/ExerciseEntry";
 import WorkoutSession from "../../modules/app/components/workouts/WorkoutSession";
 import UserWorkoutHistory from "../../modules/app/components/workouts/UserWorkoutHistory";
+import WorkoutFeed from "../../modules/app/components/workouts/WorkoutFeed";
 
 import { tryLoginFromServiceToken } from "../../backend/userService";
 import {
@@ -16,6 +17,7 @@ import {
     finishWorkout,
     getStatsForMonth,
     getWorkoutsByUser,
+    getWorkoutsFromFollowing,
 } from "../../backend/workoutService";
 import {
     getWorkoutExercisesByWorkoutId,
@@ -23,6 +25,9 @@ import {
 } from "../../backend/workoutExerciseService";
 import { getRoutineExercises } from "../../backend/routineExerciseService";
 import { onFinishWorkoutAchievements } from "../../backend/achievementService";
+import { likeWorkout, unlikeWorkout } from "../../backend/workoutLikeService";
+import { commentWorkout } from "../../backend/workoutCommentService";
+import { getFollowedTrainers, getFollowers } from "../../backend/userFollowService";
 
 const mockNavigate = jest.fn();
 
@@ -43,6 +48,7 @@ jest.mock("../../backend/workoutService", () => ({
     finishWorkout: jest.fn(),
     getStatsForMonth: jest.fn(),
     getWorkoutsByUser: jest.fn(),
+    getWorkoutsFromFollowing: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutExerciseService", () => ({
@@ -56,6 +62,20 @@ jest.mock("../../backend/routineExerciseService", () => ({
 
 jest.mock("../../backend/achievementService", () => ({
     onFinishWorkoutAchievements: jest.fn(),
+}));
+
+jest.mock("../../backend/workoutLikeService", () => ({
+    likeWorkout: jest.fn(),
+    unlikeWorkout: jest.fn(),
+}));
+
+jest.mock("../../backend/workoutCommentService", () => ({
+    commentWorkout: jest.fn(),
+}));
+
+jest.mock("../../backend/userFollowService", () => ({
+    getFollowedTrainers: jest.fn(),
+    getFollowers: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -1308,6 +1328,346 @@ describe("WorkoutDetails Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("30 min")).toBeInTheDocument();
+        });
+    });
+});
+
+describe("WorkoutFeed Component", () => {
+    const mockUser = { id: "1", name: "User" };
+    const mockWorkouts = [
+        {
+            id: 1,
+            routineName: "Rutina 1",
+            userName: "John",
+            userSurname: "Doe",
+            userProfilePicture: "base64image",
+            startTime: "2023-10-01T10:00:00Z",
+            endTime: "2023-10-01T11:00:00Z",
+            likes: [],
+            comments: [],
+        },
+    ];
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        tryLoginFromServiceToken.mockImplementation((success) => {
+            success({ user: mockUser });
+        });
+        getWorkoutsFromFollowing.mockImplementation((success) => {
+            success(mockWorkouts);
+        });
+        getFollowers.mockImplementation((userId, success, error) => {
+            success([]);
+        });
+        getFollowedTrainers.mockImplementation((userId, success, error) => {
+            success([]);
+        });
+    });
+
+    test("displays achievement popup when liking a workout earns achievements", async () => {
+        const mockAchievements = [
+            {
+                id: 1,
+                name: "Like Master",
+                description: "Like 10 workouts",
+                progress: 10,
+                bronzeReq: 10,
+                silverReq: 20,
+                goldReq: 50,
+            },
+        ];
+
+        likeWorkout.mockImplementation((workoutId, success, error) => {
+            success(mockAchievements);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const heartButton = screen.getByRole("button", { name: /dar me gusta/i });
+        fireEvent.click(heartButton);
+
+        await waitFor(() => {
+            expect(screen.getByText((content) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Like Master"))).toBeInTheDocument();
+        });
+    });
+
+    test("does not display achievement popup when liking a workout earns no achievements", async () => {
+        likeWorkout.mockImplementation((workoutId, success, error) => {
+            success([]);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const heartButton = screen.getByRole("button", { name: /dar me gusta/i });
+        fireEvent.click(heartButton);
+
+        await waitFor(() => {
+            expect(likeWorkout).toHaveBeenCalledWith(1, expect.any(Function), expect.any(Function));
+        });
+
+        expect(screen.queryByText((content) => content.includes("¡Nueva medalla desbloqueada!"))).not.toBeInTheDocument();
+    });
+
+    test("displays achievement popup when commenting on a workout earns new achievements", async () => {
+        const mockResponse = {
+            id: 1,
+            text: "Great workout!",
+            userName: "User",
+            userSurname: "Test",
+            date: new Date().toISOString(),
+            newAchievements: [
+                {
+                    id: 2,
+                    name: "Commentator",
+                    description: "Comment on 5 workouts",
+                    progress: 5,
+                    bronzeReq: 5,
+                    silverReq: 10,
+                    goldReq: 25,
+                },
+            ],
+        };
+
+        commentWorkout.mockImplementation((workoutId, comment, success) => {
+            success(mockResponse);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const commentButton = screen.getByRole("button", { name: /comentarios/i });
+        fireEvent.click(commentButton);
+
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText("Añadir comentario...")).toBeInTheDocument();
+        });
+
+        const commentInput = screen.getByPlaceholderText("Añadir comentario...");
+        const sendButton = screen.getByText("Enviar");
+
+        fireEvent.change(commentInput, { target: { value: "Great workout!" } });
+        fireEvent.click(sendButton);
+
+        await waitFor(() => {
+            expect(screen.getByText((content) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Commentator"))).toBeInTheDocument();
+        });
+    });
+
+    test("does not display achievement popup when commenting on a workout earns no new achievements", async () => {
+        const mockResponse = {
+            id: 1,
+            text: "Great workout!",
+            userName: "User",
+            userSurname: "Test",
+            date: new Date().toISOString(),
+            newAchievements: [],
+        };
+
+        commentWorkout.mockImplementation((workoutId, comment, success) => {
+            success(mockResponse);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const commentButton = screen.getByRole("button", { name: /comentarios/i });
+        fireEvent.click(commentButton);
+
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText("Añadir comentario...")).toBeInTheDocument();
+        });
+
+        const commentInput = screen.getByPlaceholderText("Añadir comentario...");
+        const sendButton = screen.getByText("Enviar");
+
+        fireEvent.change(commentInput, { target: { value: "Great workout!" } });
+        fireEvent.click(sendButton);
+
+        await waitFor(() => {
+            expect(commentWorkout).toHaveBeenCalledWith(1, "Great workout!", expect.any(Function), expect.any(Function));
+        });
+
+        expect(screen.queryByText((content) => content.includes("¡Nueva medalla desbloqueada!"))).not.toBeInTheDocument();
+    });
+
+    test("achievement popup can be dismissed after appearing", async () => {
+        const mockAchievements = [
+            {
+                id: 1,
+                name: "Like Master",
+                description: "Like 10 workouts",
+                progress: 10,
+                bronzeReq: 10,
+                silverReq: 20,
+                goldReq: 50,
+            },
+        ];
+
+        likeWorkout.mockImplementation((workoutId, success, error) => {
+            success(mockAchievements);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const heartButton = screen.getByRole("button", { name: /dar me gusta/i });
+        fireEvent.click(heartButton);
+
+        await waitFor(() => {
+            expect(screen.getByText((content) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Like Master"))).toBeInTheDocument();
+        });
+
+        const okButton = screen.getByText("OK");
+        fireEvent.click(okButton);
+
+        await waitFor(() => {
+            expect(screen.queryByText((content) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Like Master"))).not.toBeInTheDocument();
+        });
+    });
+
+    test("handles multiple achievements from liking", async () => {
+        const mockAchievements = [
+            {
+                id: 1,
+                name: "Like Master",
+                description: "Like 10 workouts",
+                progress: 10,
+                bronzeReq: 10,
+                silverReq: 20,
+                goldReq: 50,
+            },
+            {
+                id: 3,
+                name: "Social Butterfly",
+                description: "Interact with 20 workouts",
+                progress: 20,
+                bronzeReq: 20,
+                silverReq: 40,
+                goldReq: 100,
+            },
+        ];
+
+        likeWorkout.mockImplementation((workoutId, success, error) => {
+            success(mockAchievements);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const heartButton = screen.getByRole("button", { name: /dar me gusta/i });
+        fireEvent.click(heartButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("¡Nuevas medallas desbloqueadas!")).toBeInTheDocument();
+            expect(screen.getByText("Like Master")).toBeInTheDocument();
+            expect(screen.getByText("Social Butterfly")).toBeInTheDocument();
+        });
+    });
+
+    test("handles multiple achievements from commenting", async () => {
+        const mockResponse = {
+            id: 1,
+            text: "Great workout!",
+            userName: "User",
+            userSurname: "Test",
+            date: new Date().toISOString(),
+            newAchievements: [
+                {
+                    id: 2,
+                    name: "Commentator",
+                    description: "Comment on 5 workouts",
+                    progress: 5,
+                    bronzeReq: 5,
+                    silverReq: 10,
+                    goldReq: 25,
+                },
+                {
+                    id: 4,
+                    name: "Engaged User",
+                    description: "Engage with 15 workouts",
+                    progress: 15,
+                    bronzeReq: 15,
+                    silverReq: 30,
+                    goldReq: 75,
+                },
+            ],
+        };
+
+        commentWorkout.mockImplementation((workoutId, comment, success) => {
+            success(mockResponse);
+        });
+
+        render(
+            <MemoryRouter>
+                <WorkoutFeed />
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina 1")).toBeInTheDocument();
+        });
+
+        const commentButton = screen.getByRole("button", { name: /comentarios/i });
+        fireEvent.click(commentButton);
+
+        await waitFor(() => {
+            expect(screen.getByPlaceholderText("Añadir comentario...")).toBeInTheDocument();
+        });
+
+        const commentInput = screen.getByPlaceholderText("Añadir comentario...");
+        const sendButton = screen.getByText("Enviar");
+
+        fireEvent.change(commentInput, { target: { value: "Great workout!" } });
+        fireEvent.click(sendButton);
+
+        await waitFor(() => {
+            expect(screen.getByText("¡Nuevas medallas desbloqueadas!")).toBeInTheDocument();
+            expect(screen.getByText("Commentator")).toBeInTheDocument();
+            expect(screen.getByText("Engaged User")).toBeInTheDocument();
         });
     });
 });
