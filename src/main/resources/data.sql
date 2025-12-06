@@ -277,7 +277,11 @@ VALUES
 
     ('Énfasis en el Hábito',
      'Completa días de entrenamiento consecutivos',
-     3, 7, 30);
+     3, 7, 30),
+
+    ('Levantando el Gym',
+     'Supera tu marca de peso levantado',
+     1, 10, 25);
 
 INSERT INTO achievement_progresses (progress, user_id, achievement_id)
 VALUES

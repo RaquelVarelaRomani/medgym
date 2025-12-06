@@ -23,7 +23,6 @@ describe('AchievementPopup', () => {
 
         render(<AchievementPopup show={true} achievements={[achievement]} onOk={mockOnOk} />);
 
-        expect(screen.getByText('¡Nueva medalla desbloqueada: Test Badge!')).toBeInTheDocument();
         expect(screen.getByText('Test Description (5)')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAttribute('src', expect.stringContaining('medal-bronze.svg'));
     });

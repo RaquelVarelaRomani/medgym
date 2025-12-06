@@ -32,7 +32,7 @@ function AchievementPopup({ show, achievements, onOk }) {
                                 alt="Medalla"
                                 className={achievementStyles.medalImageLarge}
                             />
-                            <p>¡Nueva medalla desbloqueada: {achievement.name}!</p>
+                            <p>¡Nueva medalla desbloqueada!<br/>{achievement.name}</p>
                             <p className={achievementStyles.achievementDescription}>
                                 {achievement.description} ({getMedalInfo(achievement.progress, achievement.bronzeReq, achievement.silverReq, achievement.goldReq)})
                             </p>

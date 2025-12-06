@@ -65,6 +65,7 @@ describe("achievementService", () => {
     describe("onFinishWorkoutAchievements", () => {
         const seconds = 1200;
         const reps = 30;
+        const workoutId = 1;
 
         test("successful call", () => {
             const mockData = { ok: true };
@@ -73,7 +74,7 @@ describe("achievementService", () => {
 
             mockAppFetch.mockImplementation((u, c, s) => s(mockData));
 
-            onFinishWorkoutAchievements(seconds, reps, onSuccess, onErrors);
+            onFinishWorkoutAchievements(seconds, reps, workoutId, onSuccess, onErrors);
 
             expect(onSuccess).toHaveBeenCalledWith(mockData);
             expect(onErrors).not.toHaveBeenCalled();
@@ -86,7 +87,7 @@ describe("achievementService", () => {
 
             mockAppFetch.mockImplementation((u, c, s, e) => e(mockErr));
 
-            onFinishWorkoutAchievements(seconds, reps, onSuccess, onErrors);
+            onFinishWorkoutAchievements(seconds, reps, workoutId, onSuccess, onErrors);
 
             expect(onErrors).toHaveBeenCalledWith(mockErr);
             expect(onSuccess).not.toHaveBeenCalled();
@@ -96,11 +97,11 @@ describe("achievementService", () => {
             const onSuccess = jest.fn();
             const onErrors = jest.fn();
 
-            onFinishWorkoutAchievements(seconds, reps, onSuccess, onErrors);
+            onFinishWorkoutAchievements(seconds, reps, workoutId, onSuccess, onErrors);
 
             expect(mockAppFetch).toHaveBeenCalledWith(
                 `/achievements/onFinishWorkout`,
-                fetchConfig("POST", { seconds, reps }),
+                fetchConfig("POST", { seconds, reps, workoutId }),
                 onSuccess,
                 onErrors
             );

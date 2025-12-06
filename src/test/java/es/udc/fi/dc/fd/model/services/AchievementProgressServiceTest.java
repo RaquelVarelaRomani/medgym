@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
 import jakarta.transaction.Transactional;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,6 +58,10 @@ class AchievementProgressServiceTest {
 
     private Achievement aSessions() {
         return achievementDao.findById(3L).orElseThrow();
+    }
+
+    private Achievement aMaxWeight() {
+        return achievementDao.findByName("Levantando el Gym").orElseThrow();
     }
 
     @Test
@@ -163,7 +169,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, list.size());
+        assertEquals(5, list.size());
         assertEquals(7,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -183,7 +189,7 @@ class AchievementProgressServiceTest {
         List<AchievementProgress> list =
                 achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, list.size());
+        assertEquals(5, list.size());
         assertEquals(0,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId())
                         .getProgress());
@@ -220,7 +226,7 @@ class AchievementProgressServiceTest {
     void testOnFinishedWorkoutCreatesProgressForThreeAchievements() throws Exception {
         User u = createUser("u8");
 
-        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 50);
+        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 50, 1L);
 
         assertEquals(3600,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId()).getProgress());
@@ -239,7 +245,7 @@ class AchievementProgressServiceTest {
         achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aReps().getId(), 20);
         achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aSessions().getId(), 1);
 
-        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 50);
+        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 50, 1L);
 
         assertEquals(100 + 3600,
                 achievementProgressDao.findByUserIdAndAchievementId(u.getId(), aHours().getId()).getProgress());
@@ -263,7 +269,7 @@ class AchievementProgressServiceTest {
 
         List<AchievementProgress> after = achievementProgressService.findAchievementProgressesByUser(u.getId());
 
-        assertEquals(4, after.size());
+        assertEquals(5, after.size());
     }
 
 
@@ -301,6 +307,13 @@ class AchievementProgressServiceTest {
     }
 
     @Test
+    void testMaxWeightArchievement() throws Exception {
+        User u = createUser("u15");
+        achievementProgressService.createOrUpdateAchievementProgress(u.getId(), aMaxWeight().getId(), 1);
+        assertEquals(1, achievementProgressService.findAchievementProgress(u.getId(), aMaxWeight().getId()).getProgress());
+    }
+
+    @Test
     void testOnFinishedWorkoutUpdatesStreakAchievements() throws Exception {
         User u = createUser("streakUser");
         Routine r = routineDao.save(new Routine("R", "D", Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, u));
@@ -313,7 +326,7 @@ class AchievementProgressServiceTest {
         createWorkout(u, r, yesterday.atTime(10, 0), yesterday.atTime(11, 0));
         createWorkout(u, r, today.atTime(10, 0), today.atTime(11, 0));
 
-        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 10);
+        achievementProgressService.onFinishedWorkout(u.getId(), 3600, 10, 1L);
 
         AchievementProgress ap = achievementProgressDao.findByUserIdAndAchievementId(u.getId(), 4L);
         assertNotNull(ap);

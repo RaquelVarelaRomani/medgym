@@ -9,9 +9,10 @@
 }
 
 .achievementDescription {
-  font-size: 1rem;
-  font-weight: normal;
-  margin-top: -1.5rem;
+    font-size: 1rem !important;
+    font-weight: normal !important;
+    color: #c9c3c3 !important;
+    margin-top: -1.5rem;
 }
 
 .medalsContainer {

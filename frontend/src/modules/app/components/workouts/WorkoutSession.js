@@ -22,7 +22,8 @@ const WorkoutSession = () => {
   const [notification, setNotification] = useState("");
   const [showIncompletePopup, setShowIncompletePopup] = useState(false);
   const [showAchievementPopup, setShowAchievementPopup] = useState(false);
-  const [newAchievements, setNewAchievements] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+  const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
 
  
   useEffect(() => {
@@ -126,15 +127,18 @@ const WorkoutSession = () => {
   };
 
   const calculateWorkoutStats = () => {
-    let totalSeconds = 0;
-    let totalReps = 0;
-    Object.values(loggedSets).forEach((sets) => {
-      sets.forEach((set) => {
-        if (set.durationSeconds) totalSeconds += Number(set.durationSeconds);
-        if (set.reps) totalReps += Number(set.reps);
-      });
-    });
-    return { totalSeconds, totalReps };
+    const processSet = (set, stats) => {
+      if (set.durationSeconds) stats.totalSeconds += Number(set.durationSeconds);
+      if (set.reps) stats.totalReps += Number(set.reps);
+    };
+
+    let stats = { totalSeconds: 0, totalReps: 0 };
+    for (const sets of Object.values(loggedSets)) {
+      for (const set of sets) {
+        processSet(set, stats);
+      }
+    }
+    return stats;
   };
 
   
@@ -148,15 +152,16 @@ const WorkoutSession = () => {
 
   const handleAchievementsChecked = (newAchievements) => {
     if (newAchievements && newAchievements.length > 0) {
-      setNewAchievements(newAchievements);
+      setAchievements(newAchievements);
+      setCurrentAchievementIndex(0);
       setShowAchievementPopup(true);
     } else {
-      setTimeout(() => navigate("/workouts/history"), 1000);
+      navigate("/workouts/history");
     }
   };
 
   const handleAchievementsError = () => {
-    setTimeout(() => navigate("/workouts/history"), 1000);
+    navigate("/workouts/history");
   };
 
   const handleFinishWorkoutSuccess = () => {
@@ -165,6 +170,7 @@ const WorkoutSession = () => {
     onFinishWorkoutAchievements(
       totalSeconds,
       totalReps,
+      sessionId,
       handleAchievementsChecked,
       handleAchievementsError
     );
@@ -272,7 +278,7 @@ const WorkoutSession = () => {
               </div>
 
                 {loggedSets[ex.id].map((s) => (
-                    <div key={s.id} className={styles.setRow}>
+                    <div key={s.setNumber} className={styles.setRow}>
                         <div className={styles.setBox}>Serie {s.setNumber}</div>
 
                         <div className={s.reps ? styles.setBox : styles.setPlaceholder}>
@@ -314,11 +320,16 @@ const WorkoutSession = () => {
 
       <AchievementPopup
         show={showAchievementPopup}
-        achievements={newAchievements}
+        achievements={achievements.length > 0 ? [achievements[currentAchievementIndex]] : []}
         onOk={() => {
-          setShowAchievementPopup(false);
-          setNewAchievements([]);
-          setTimeout(() => navigate("/workouts/history"), 1000);
+          if (currentAchievementIndex < achievements.length - 1) {
+            setCurrentAchievementIndex(currentAchievementIndex + 1);
+          } else {
+            setShowAchievementPopup(false);
+            setAchievements([]);
+            setCurrentAchievementIndex(0);
+            navigate("/workouts/history");
+          }
         }}
       />
     </div>
