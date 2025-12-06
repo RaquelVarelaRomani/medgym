@@ -43,6 +43,15 @@ public class WorkoutLikeServiceImpl implements WorkoutLikeService {
 
         List<AchievementProgressDto> newAchievements = achievementProgressService.createOrUpdateAchievementProgress(userId, 6L, 1);
 
+        for (AchievementProgressDto dto : newAchievements) {
+            String message = "Logro desbloqueado: " + dto.getName() + " (" + dto.getMedalType() + ")";
+            try {
+                notificationService.createAchievementNotification(userId, message, userId);
+            } catch (InstanceNotFoundException e) {
+                // User should exist since validated earlier
+            }
+        }
+
         notificationService.createWorkoutLikeNotification(
                 user.getId(),
                 workout.getId()
