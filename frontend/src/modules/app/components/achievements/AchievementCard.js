@@ -3,7 +3,8 @@ import styles from './AchievementCard.module.css';
 import PropTypes from "prop-types";
 
 export default function AchievementCard({ achievement }) {
-    let {name, description, bronzeReq, silverReq, goldReq, progress} = achievement;
+    let {name, description, bronzeReq, silverReq, goldReq, highestProgress} = achievement;
+    let progress = highestProgress;
     if (achievement.convertToHours) {
         progress = Math.floor(progress / 3600);
         bronzeReq /= 3600;
@@ -70,6 +71,7 @@ AchievementCard.propTypes = {
         silverReq: PropTypes.number.isRequired,
         goldReq: PropTypes.number.isRequired,
         progress: PropTypes.number.isRequired,
+        highestProgress: PropTypes.number.isRequired,
         convertToHours: PropTypes.bool
     }).isRequired
 };

@@ -38,6 +38,7 @@ class AchievementProgressDtoTest {
         assertEquals(achievement.getSilverReq(), dto.getSilverReq());
         assertEquals(achievement.getGoldReq(), dto.getGoldReq());
         assertEquals(progress.getProgress(), dto.getProgress());
+        assertEquals(progress.getHighestProgress(), dto.getHighestProgress());
     }
 
     @Test
@@ -97,6 +98,7 @@ class AchievementProgressDtoTest {
         dto.setSilverReq(20);
         dto.setGoldReq(30);
         dto.setProgress(40);
+        dto.setHighestProgress(45);
 
         assertEquals("N", dto.getName());
         assertEquals("D", dto.getDescription());
@@ -104,5 +106,6 @@ class AchievementProgressDtoTest {
         assertEquals(20, dto.getSilverReq());
         assertEquals(30, dto.getGoldReq());
         assertEquals(40, dto.getProgress());
+        assertEquals(45, dto.getHighestProgress());
     }
 }

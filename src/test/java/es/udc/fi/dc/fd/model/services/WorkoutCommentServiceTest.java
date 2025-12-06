@@ -25,16 +25,10 @@ class WorkoutCommentServiceTest {
     private WorkoutCommentService workoutCommentService;
 
     @Autowired
-    private WorkoutService workoutService;
-
-    @Autowired
     private UserDao userDao;
 
     @Autowired
     private WorkoutDao workoutDao;
-
-    @Autowired
-    private RoutineDao routineDao;
 
     @Autowired
     private RoutineService routineService;

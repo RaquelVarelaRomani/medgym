@@ -42,9 +42,6 @@ class UserFollowControllerTest {
     @Autowired
     private UserController userController;
 
-    @Autowired
-    private UserFollowController userFollowController;
-
     private AuthenticatedUserDto clientUser;
     private AuthenticatedUserDto trainerUser;
 
