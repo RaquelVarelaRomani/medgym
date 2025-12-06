@@ -55,7 +55,7 @@ function AchievementPopup({ show, achievements, onOk }) {
                         </>
                     )}
                 </div>
-                <button onClick={onOk}>OK</button>
+                <button onClick={() => { onOk(); window.dispatchEvent(new CustomEvent('routineDeleted')); }}>OK</button>
             </div>
         </div>
     );
