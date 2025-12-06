@@ -31,7 +31,9 @@ public class AchievementProgressConversor {
                 achievementProgress.getHighestProgress(),
                 CONVERT_TO_HOURS_IDS.contains(achievement.getId())
         );
-        return new AchievementProgressDto(info, requirements, progressInfo);
+        AchievementProgressDto dto = new AchievementProgressDto(info, requirements, progressInfo);
+        dto.setMedalType(null);
+        return dto;
     }
 
     public static List<AchievementProgressDto> achievementProgressDtos(

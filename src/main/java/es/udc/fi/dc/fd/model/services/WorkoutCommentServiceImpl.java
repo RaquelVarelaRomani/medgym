@@ -52,6 +52,15 @@ public class WorkoutCommentServiceImpl implements WorkoutCommentService {
         var newAchievements = achievementProgressService.createOrUpdateAchievementProgress(userId, 7L, 1);
         newAchievementsThreadLocal.set(newAchievements);
 
+        for (AchievementProgressDto dto : newAchievements) {
+            String message = "Logro desbloqueado: " + dto.getName() + " (" + dto.getMedalType() + ")";
+            try {
+                notificationService.createAchievementNotification(userId, message, userId);
+            } catch (InstanceNotFoundException e) {
+                // User should exist since validated earlier
+            }
+        }
+
         notificationService.createWorkoutCommentNotification(
                 userId,
                 text,

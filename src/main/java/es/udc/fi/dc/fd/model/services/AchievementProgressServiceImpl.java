@@ -27,6 +27,7 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
     private final WorkoutService workoutService;
     private final WorkoutLikeDao workoutLikeDao;
     private final WorkoutCommentDao workoutCommentDao;
+    private final NotificationService notificationService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -46,13 +47,14 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
 
     private static final String USER_ID = "userId";
 
-    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService, WorkoutLikeDao workoutLikeDao, WorkoutCommentDao workoutCommentDao) {
+    public AchievementProgressServiceImpl(UserDao userDao, AchievementDao achievementDao, AchievementProgressDao achievementProgressDao, @Lazy WorkoutService workoutService, WorkoutLikeDao workoutLikeDao, WorkoutCommentDao workoutCommentDao, NotificationService notificationService) {
         this.userDao = userDao;
         this.achievementDao = achievementDao;
         this.achievementProgressDao = achievementProgressDao;
         this.workoutService = workoutService;
         this.workoutLikeDao = workoutLikeDao;
         this.workoutCommentDao = workoutCommentDao;
+        this.notificationService = notificationService;
     }
 
     public void setAchievementProgress(Long userId, Long achievementId, Integer progress) throws InstanceNotFoundException {
@@ -96,8 +98,20 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         boolean reachedSilver = oldHighestProgress < achievement.getSilverReq() && newHighestProgress >= achievement.getSilverReq();
         boolean reachedGold = oldHighestProgress < achievement.getGoldReq() && newHighestProgress >= achievement.getGoldReq();
 
-        if (newHighestProgress > oldHighestProgress && (reachedBronze || reachedSilver || reachedGold)) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
+        if (reachedBronze) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Bronce");
+            newAchievements.add(dto);
+        }
+        if (reachedSilver) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Plata");
+            newAchievements.add(dto);
+        }
+        if (reachedGold) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Oro");
+            newAchievements.add(dto);
         }
 
         return newAchievements;
@@ -111,6 +125,15 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         newAchievements.addAll(updateAchievementProgress(userId, WORKOUTS_ACHIEVEMENT_ID, 1));
         newAchievements.addAll(updateMaxWeightAchievements(userId, workoutId));
         newAchievements.addAll(updateStreakAchievements(userId));
+
+        for (AchievementProgressDto dto : newAchievements) {
+            String message = "Logro desbloqueado: " + dto.getName() + " (" + dto.getMedalType() + ")";
+            try {
+                notificationService.createAchievementNotification(userId, message, userId);
+            } catch (InstanceNotFoundException e) {
+                // User should exist since validated earlier
+            }
+        }
 
         return newAchievements;
     }
@@ -273,8 +296,20 @@ public class AchievementProgressServiceImpl implements AchievementProgressServic
         boolean reachedBronze = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getBronzeReq());
         boolean reachedSilver = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getSilverReq());
         boolean reachedGold = isTierNewlyReached(oldHighestProgress, newHighestProgress, achievement.getGoldReq());
-        if (newHighestProgress > oldHighestProgress && (reachedBronze || reachedSilver || reachedGold)) {
-            newAchievements.add(toAchievementProgressDto(updatedAp, achievement));
+        if (reachedBronze) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Bronce");
+            newAchievements.add(dto);
+        }
+        if (reachedSilver) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Plata");
+            newAchievements.add(dto);
+        }
+        if (reachedGold) {
+            AchievementProgressDto dto = toAchievementProgressDto(updatedAp, achievement);
+            dto.setMedalType("Oro");
+            newAchievements.add(dto);
         }
         return newAchievements;
     }
