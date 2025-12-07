@@ -5455,8 +5455,7 @@ describe("Routines Component", () => {
 
     });
 
-
-    test("does not allow trainer to edit routine", async () => {
+    test("allows trainer to edit own routine", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "TRAINER"}});
         });
@@ -5498,7 +5497,7 @@ describe("Routines Component", () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByText("Editar")).not.toBeInTheDocument();
+            expect(screen.queryByText("Editar")).toBeInTheDocument();
         });
     });
 //TEST donde SOLO admins pueden editar
