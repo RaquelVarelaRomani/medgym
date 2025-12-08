@@ -65,10 +65,15 @@ class WorkoutControllerTest {
     private WorkoutExerciseDao workoutExerciseDao;
 
     @Autowired
+    private UserFollowDao userFollowDao;
+
+    @Autowired
     private UserController userController;
 
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
+    private AuthenticatedUserDto followedUser1;
+    private AuthenticatedUserDto followedUser2;
     private Routine routine;
     private RoutineExercise routineExercise;
 
@@ -77,6 +82,9 @@ class WorkoutControllerTest {
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002",
                 User.RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
+
+        followedUser1 = createAuthenticatedUser("Followed", "One", "followed1@test.com", "600000005", RoleType.CLIENT);
+        followedUser2 = createAuthenticatedUser("Followed", "Two", "followed2@test.com", "600000006", RoleType.CLIENT);
 
         final User trainer = new User("Trainer", "Two", "trainer2@test.com", "600000003", "1234",
                 User.RoleType.TRAINER, User.StatusType.ACTIVE);
@@ -126,6 +134,12 @@ class WorkoutControllerTest {
 
     private ResultActions getUserWorkouts(AuthenticatedUserDto user) throws Exception {
         return mockMvc.perform(get("/api/workouts")
+                .header("Authorization", "Bearer " + user.getServiceToken())
+                .header("X-User-Id", user.getUserDto().getId()));
+    }
+
+    private ResultActions getVolumeRankingForRoutine(AuthenticatedUserDto user, Long routineId) throws Exception {
+        return mockMvc.perform(get("/api/workouts/routine/" + routineId + "/volume-ranking")
                 .header("Authorization", "Bearer " + user.getServiceToken())
                 .header("X-User-Id", user.getUserDto().getId()));
     }
@@ -406,5 +420,158 @@ class WorkoutControllerTest {
                         .header("X-User-Id", clientUser.getUserDto().getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lastMonthWorkouts").value(1));
+    }
+
+    @Test
+    void testGetVolumeRankingForRoutineNoWorkouts() throws Exception {
+        getVolumeRankingForRoutine(clientUser, routine.getId())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void testGetVolumeRankingForRoutineWithoutFollowedUsers() throws Exception {
+        ResultActions start = startWorkout(clientUser, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout = objectMapper.readValue(start.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+
+        WorkoutExercise we = new WorkoutExercise();
+        we.setWorkout(workoutDao.findById(workout.getId()).orElseThrow());
+        we.setRoutineExercise(routineExercise);
+        we.setReps((short) 10);
+        we.setWeight((short) 50);
+        workoutExerciseDao.save(we);
+
+        finishWorkout(clientUser, workout.getId()).andExpect(status().isOk());
+
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+        
+        getVolumeRankingForRoutine(clientUser, routine.getId())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].userId").value(client.getId().intValue()))
+                .andExpect(jsonPath("$[0].totalVolume").value(500));
+    }
+
+    @Test
+    void testGetVolumeRankingForRoutineWithMultipleFollowedUsers() throws Exception {
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+        User followed1 = userDao.findById(followedUser1.getUserDto().getId()).orElseThrow();
+        User followed2 = userDao.findById(followedUser2.getUserDto().getId()).orElseThrow();
+
+        userFollowDao.save(new UserFollow(client, followed1));
+        userFollowDao.save(new UserFollow(client, followed2));
+
+        ResultActions start1 = startWorkout(followedUser1, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout1 = objectMapper.readValue(start1.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+
+        WorkoutExercise we1 = new WorkoutExercise();
+        we1.setWorkout(workoutDao.findById(workout1.getId()).orElseThrow());
+        we1.setRoutineExercise(routineExercise);
+        we1.setReps((short) 10);
+        we1.setWeight((short) 50);
+        workoutExerciseDao.save(we1);
+
+        finishWorkout(followedUser1, workout1.getId()).andExpect(status().isOk());
+
+        ResultActions start2 = startWorkout(followedUser2, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout2 = objectMapper.readValue(start2.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+
+        WorkoutExercise we2 = new WorkoutExercise();
+        we2.setWorkout(workoutDao.findById(workout2.getId()).orElseThrow());
+        we2.setRoutineExercise(routineExercise);
+        we2.setReps((short) 10);
+        we2.setWeight((short) 100);
+        workoutExerciseDao.save(we2);
+
+        finishWorkout(followedUser2, workout2.getId()).andExpect(status().isOk());
+
+        ResultActions startClient = startWorkout(clientUser, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workoutClient = objectMapper.readValue(startClient.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+
+        WorkoutExercise weClient = new WorkoutExercise();
+        weClient.setWorkout(workoutDao.findById(workoutClient.getId()).orElseThrow());
+        weClient.setRoutineExercise(routineExercise);
+        weClient.setReps((short) 10);
+        weClient.setWeight((short) 75);
+        workoutExerciseDao.save(weClient);
+
+        finishWorkout(clientUser, workoutClient.getId()).andExpect(status().isOk());
+
+        getVolumeRankingForRoutine(clientUser, routine.getId())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].userId").value(followed2.getId().intValue()))
+                .andExpect(jsonPath("$[0].totalVolume").value(1000))
+                .andExpect(jsonPath("$[1].userId").value(client.getId().intValue()))
+                .andExpect(jsonPath("$[1].totalVolume").value(750))
+                .andExpect(jsonPath("$[2].userId").value(followed1.getId().intValue()))
+                .andExpect(jsonPath("$[2].totalVolume").value(500));
+    }
+
+    @Test
+    void testGetVolumeRankingForRoutineWithUnfollowedUsers() throws Exception {
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+        User followed1 = userDao.findById(followedUser1.getUserDto().getId()).orElseThrow();
+
+        userFollowDao.save(new UserFollow(client, followed1));
+
+        ResultActions startClient = startWorkout(clientUser, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workoutClient = objectMapper.readValue(startClient.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+        WorkoutExercise weClient = new WorkoutExercise();
+        weClient.setWorkout(workoutDao.findById(workoutClient.getId()).orElseThrow());
+        weClient.setRoutineExercise(routineExercise);
+        weClient.setReps((short) 10);
+        weClient.setWeight((short) 30);
+        workoutExerciseDao.save(weClient);
+        finishWorkout(clientUser, workoutClient.getId()).andExpect(status().isOk());
+
+        ResultActions start1 = startWorkout(followedUser1, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout1 = objectMapper.readValue(start1.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+        WorkoutExercise we1 = new WorkoutExercise();
+        we1.setWorkout(workoutDao.findById(workout1.getId()).orElseThrow());
+        we1.setRoutineExercise(routineExercise);
+        we1.setReps((short) 10);
+        we1.setWeight((short) 50);
+        workoutExerciseDao.save(we1);
+        finishWorkout(followedUser1, workout1.getId()).andExpect(status().isOk());
+
+        ResultActions start2 = startWorkout(followedUser2, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout2 = objectMapper.readValue(start2.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+        WorkoutExercise we2 = new WorkoutExercise();
+        we2.setWorkout(workoutDao.findById(workout2.getId()).orElseThrow());
+        we2.setRoutineExercise(routineExercise);
+        we2.setReps((short) 10);
+        we2.setWeight((short) 100);
+        workoutExerciseDao.save(we2);
+        finishWorkout(followedUser2, workout2.getId()).andExpect(status().isOk());
+
+        getVolumeRankingForRoutine(clientUser, routine.getId())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].userId").value(followed1.getId().intValue()))
+                .andExpect(jsonPath("$[1].userId").value(client.getId().intValue()));
+    }
+
+    @Test
+    void testGetVolumeRankingForRoutineOnlyIncludesFinishedWorkouts() throws Exception {
+        User client = userDao.findById(clientUser.getUserDto().getId()).orElseThrow();
+        User followed = userDao.findById(followedUser1.getUserDto().getId()).orElseThrow();
+
+        userFollowDao.save(new UserFollow(client, followed));
+
+        ResultActions start = startWorkout(followedUser1, routine.getId()).andExpect(status().isOk());
+        WorkoutDto workout = objectMapper.readValue(start.andReturn().getResponse().getContentAsString(), WorkoutDto.class);
+
+        WorkoutExercise we = new WorkoutExercise();
+        we.setWorkout(workoutDao.findById(workout.getId()).orElseThrow());
+        we.setRoutineExercise(routineExercise);
+        we.setReps((short) 10);
+        we.setWeight((short) 50);
+        workoutExerciseDao.save(we);
+
+        getVolumeRankingForRoutine(clientUser, routine.getId())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 }
