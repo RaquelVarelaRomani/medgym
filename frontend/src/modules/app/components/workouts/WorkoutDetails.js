@@ -166,20 +166,44 @@ const WorkoutDetails = () => {
         );
     };
 
+    const optimisticToggleLike = (currentUser, next) => {
+        setWorkout(prev => ({
+            ...prev,
+            likes: next
+                ? [...prev.likes, { userId: currentUser.id }]
+                : prev.likes.filter(l => l.userId !== currentUser.id)
+        }));
+    };
+
+    const noop = () => {};
+
     const handleLike = (currentUser, workout, next) => {
         triggerWithAchievements(
             next ? likeWorkout : unlikeWorkout,
             [workout.id],
-            () => {
-                setWorkout(prev => ({
-                    ...prev,
-                    likes: next
-                        ? [...prev.likes, { userId: currentUser.id }]
-                        : prev.likes.filter(l => l.userId !== currentUser.id)
-                }));
-            },
-            () => {}
+            () => optimisticToggleLike(currentUser, next),
+            noop
         );
+    };
+
+    const optimisticAddComment = (text) => {
+        setWorkout(prev => ({
+            ...prev,
+            comments: [
+                ...(prev.comments || []),
+                { id: "__temp__", text, pending: true }
+            ]
+        }));
+        setNewComment("");
+    };
+
+    const finalizeAddComment = (response) => {
+        setWorkout(prev => ({
+            ...prev,
+            comments: prev.comments
+                .filter(c => c.id !== "__temp__")
+                .concat(response)
+        }));
     };
 
     const handleSendComment = () => {
@@ -188,28 +212,8 @@ const WorkoutDetails = () => {
         triggerWithAchievements(
             commentWorkout,
             [workout.id, text],
-
-            // optimistic
-            () => {
-                setWorkout(prev => ({
-                    ...prev,
-                    comments: [
-                        ...(prev.comments || []),
-                        { id: "__temp__", text, pending: true }
-                    ]
-                }));
-                setNewComment("");
-            },
-
-            (response) => {
-                setWorkout(prev => ({
-                    ...prev,
-                    comments: prev.comments
-                        .filter(c => c.id !== "__temp__")
-                        .concat(response)
-                }));
-            }
-
+            () => optimisticAddComment(text),
+            finalizeAddComment
         );
     };
 
