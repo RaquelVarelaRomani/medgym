@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -20,13 +21,15 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserDao userDao;
     private final UserFollowDao userFollowDao;
     private final UserBlockService userBlockService;
+    private final WorkoutExerciseService workoutExerciseService;
 
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, WorkoutExerciseService workoutExerciseService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.userFollowDao = userFollowDao;
         this.userBlockService = userBlockService;
+        this.workoutExerciseService = workoutExerciseService;
     }
 
     @Override
@@ -42,6 +45,14 @@ public class WorkoutServiceImpl implements WorkoutService {
     public void finishWorkout(Long id) throws InstanceNotFoundException {
         final Workout workout = workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
         workout.setEndTime(LocalDateTime.now());
+
+        List<WorkoutExercise> exercises = workoutExerciseService.findWorkoutExercisesByWorkoutId(id);
+
+        int totalVolume = exercises.stream()
+                .filter(we -> we.getReps() != null && we.getWeight() != null)
+                .mapToInt(we -> we.getReps() * we.getWeight())
+                .sum();
+        workout.setTotalVolume(totalVolume);
     }
 
     @Override
@@ -71,6 +82,20 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startDate, endDate);
+    }
+
+    @Override
+    public List<Workout> getVolumeRankingForRoutine(Long routineId, Long userId) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        List<Long> tmpUserFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList();
+        List<Long> userFollowIds = new ArrayList<>(tmpUserFollowIds);
+        userFollowIds.add(userId);
+
+        List<Workout> workouts = workoutDao.findByRoutineIdAndUserIdIn(routineId, userFollowIds);
+        return workouts.stream()
+                .filter(w -> w.getEndTime() != null && w.getTotalVolume() != null)
+                .sorted((a, b) -> b.getTotalVolume().compareTo(a.getTotalVolume()))
+                .collect(Collectors.toList());
     }
 
     @Override

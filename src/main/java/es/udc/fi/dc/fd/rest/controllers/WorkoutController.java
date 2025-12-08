@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.*;
 
@@ -83,5 +84,12 @@ public class WorkoutController {
         List<WorkoutExercise> performedExercises = workoutExerciseService.findWorkoutExercisesByWorkoutIds(workoutIds);
 
         return StatisticsConversor.toStatisticsDto(workouts, performedExercises);
+    }
+
+    @GetMapping("/routine/{routineId}/volume-ranking")
+    public List<WorkoutForRankingDto> getVolumeRanking(@PathVariable Long routineId, @RequestAttribute Long userId) throws InstanceNotFoundException {
+        List<Workout> workouts = workoutService.getVolumeRankingForRoutine(routineId, userId);
+
+        return WorkoutConversor.toWorkoutForRankingDtos(workouts);
     }
 }

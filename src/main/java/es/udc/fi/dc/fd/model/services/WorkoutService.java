@@ -19,5 +19,7 @@ public interface WorkoutService {
 
     List<Workout> findWorkoutsByUserAndDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
+    List<Workout> getVolumeRankingForRoutine(Long routineId, Long userId) throws InstanceNotFoundException;
+
     int calculateCurrentStreak(Long userId);
 }

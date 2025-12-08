@@ -18,4 +18,6 @@ public interface WorkoutDao extends JpaRepository<Workout, Long> {
     void deleteByRoutineId(Long routineId);
 
     List<Workout> findByUserIdAndStartTimeBetweenAndEndTimeNotNull(Long userId, LocalDateTime startTime, LocalDateTime endTime);
+
+    List<Workout> findByRoutineIdAndUserIdIn(Long routineId, List<Long> userIds);
 }
