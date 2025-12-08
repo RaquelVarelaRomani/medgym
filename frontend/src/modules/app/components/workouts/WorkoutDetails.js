@@ -1,5 +1,5 @@
 // WorkoutDetails.js
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 import styles from "./WorkoutDetails.module.css";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import * as workoutService from "../../../../backend/workoutService";
@@ -8,6 +8,10 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import LoadingMessage from "../common/LoadingMessage";
 import PropTypes from "prop-types";
+import HeartLike from "../common/HeartLike";
+import {likeWorkout, unlikeWorkout} from "../../../../backend/workoutLikeService";
+import AchievementPopup from "../common/popup/AchievementPopup";
+import {commentWorkout} from "../../../../backend/workoutCommentService";
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -21,6 +25,12 @@ const WorkoutDetails = () => {
     const [expandedExercises, setExpandedExercises] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+    const [newAchievements, setNewAchievements] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const commentsRef = useRef(null);
+    const lastCommentRef = useRef(null);
 
     const toggleExercise = (id) =>
         setExpandedExercises(prev => ({ ...prev, [id]: !prev[id] }));
@@ -95,15 +105,113 @@ const WorkoutDetails = () => {
         workoutService.getWorkout(id, handleWorkoutLoaded, handleWorkoutLoadError);
     };
 
+    const scrollToBottom = () => {
+        // preferimos scrollIntoView sobre el último elemento cuando exista
+        if (lastCommentRef.current) {
+            lastCommentRef.current.scrollIntoView({ block: "end", behavior: "auto" });
+            return;
+        }
+        if (commentsRef.current) {
+            commentsRef.current.scrollTop = commentsRef.current.scrollHeight;
+        }
+    };
+
     useEffect(() => {
         tryLoginFromServiceToken(
-            () => loadWorkout(),
+            ({user}) => {
+                setCurrentUser(user);
+                loadWorkout();
+            },
             () => navigate("/users/login")
         );
     }, [id, navigate]);
 
+    useLayoutEffect(() => {
+        scrollToBottom();
+
+        if (!commentsRef.current) return;
+
+        // observa cambios de tamaño del contenedor (imágenes, fuentes, etc.)
+        const ro = new ResizeObserver(() => {
+            scrollToBottom();
+        });
+        ro.observe(commentsRef.current);
+
+        return () => ro.disconnect();
+    }, [workout?.comments]);
+
     const logged = (id) =>
         workoutExercises.filter((x) => x.routineExerciseId === id);
+
+    const triggerWithAchievements = (apiFn, args, optimisticUpdate, finalUpdate) => {
+        if (optimisticUpdate) optimisticUpdate();
+
+        apiFn(
+            ...args,
+            (response) => {
+                // achievements puede venir en distintas formas
+                const ach =
+                    response?.newAchievements ||
+                    response?.achievements ||
+                    (Array.isArray(response) ? response : []);
+
+                if (finalUpdate) finalUpdate(response);
+
+                if (ach && ach.length > 0) {
+                    setNewAchievements(ach);
+                    setShowAchievementPopup(true);
+                }
+            },
+            (err) => console.error(err)
+        );
+    };
+
+    const handleLike = (currentUser, workout, next) => {
+        triggerWithAchievements(
+            next ? likeWorkout : unlikeWorkout,
+            [workout.id],
+            () => {
+                setWorkout(prev => ({
+                    ...prev,
+                    likes: next
+                        ? [...prev.likes, { userId: currentUser.id }]
+                        : prev.likes.filter(l => l.userId !== currentUser.id)
+                }));
+            },
+            () => {}
+        );
+    };
+
+    const handleSendComment = () => {
+        const text = newComment;
+
+        triggerWithAchievements(
+            commentWorkout,
+            [workout.id, text],
+
+            // optimistic
+            () => {
+                setWorkout(prev => ({
+                    ...prev,
+                    comments: [
+                        ...(prev.comments || []),
+                        { id: "__temp__", text, pending: true }
+                    ]
+                }));
+                setNewComment("");
+            },
+
+            (response) => {
+                setWorkout(prev => ({
+                    ...prev,
+                    comments: prev.comments
+                        .filter(c => c.id !== "__temp__")
+                        .concat(response)
+                }));
+            }
+
+        );
+    };
 
     if (loading) return <LoadingMessage text="Cargando detalles del entrenamiento..." />;
     if (error)
@@ -122,6 +230,8 @@ const WorkoutDetails = () => {
     return (
         <div className={styles["contenedor-workout-details"]}>
             <WorkoutHeader
+                currentUser={currentUser}
+                handleLike={handleLike}
                 workout={workout}
                 handleBack={handleBack}
                 formatDate={formatDate}
@@ -134,22 +244,98 @@ const WorkoutDetails = () => {
                 toggleExercise={toggleExercise}
                 logged={logged}
             />
+
+            <AchievementPopup
+                show={showAchievementPopup}
+                achievements={newAchievements}
+                onOk={() => setShowAchievementPopup(false)}
+            />
+
+            {/* ------------------ CAJA DE COMENTARIOS (reemplazar) ------------------ */}
+            <div className={styles.commentsBox}>
+                <h3 className={styles.commentsTitle}>Comentarios ({workout.comments? workout.comments.length : "-"})</h3>
+
+                <div ref={commentsRef} className={styles.commentsList}>
+                    {(workout.comments || []).length === 0 ? (
+                        <div className={styles.noComments}>No hay comentarios aún</div>
+                    ) : (
+                        (workout.comments || []).map(c => (
+                            <div key={c.id} className={styles.commentItem}>
+                                <img
+                                    src={`data:image/jpeg;base64,${c.userProfilePicture}`}
+                                    className={styles.commentAvatar}
+                                    alt=""
+                                    onLoad={() => {
+                                        // asegura que, cuando la img se cargue y cambie altura, scrollemos
+                                        setTimeout(scrollToBottom, 0);
+                                    }}
+                                />
+
+                                <div className={styles.commentContent}>
+                                    <div className={styles.commentHeader}>
+              <span className={styles.commentAuthor}>
+                {c.userName} {c.userSurname}
+              </span>
+                                        <span className={styles.commentDate}>
+                {new Date(c.date).toLocaleString("es-ES", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                })}
+              </span>
+                                    </div>
+
+                                    <div className={styles.commentText}>{c.text}</div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                <div className={styles.commentInputBox}>
+    <textarea
+        className={styles.commentTextarea}
+        placeholder="Añadir comentario..."
+        value={newComment}
+        onChange={e => setNewComment(e.target.value)}
+    />
+
+                    <button
+                        className={styles.sendCommentButton}
+                        disabled={newComment.trim().length === 0}
+                        onClick={handleSendComment}
+                    >
+                        Enviar
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
 
 export default WorkoutDetails;
 
-
 // ------------------ COMPONENTES EXTRAIDOS ------------------
 
-const WorkoutHeader = ({ workout, handleBack, formatDate, duration }) => (
+const WorkoutHeader = ({ currentUser, handleLike, workout, handleBack, formatDate, duration }) => (
     <div className={styles["caja-workout-details"]}>
         <button className={styles["boton-atras"]} onClick={handleBack}>
             ←
         </button>
-        <h1 className={styles["titulo-workout"]}>{workout.routineName}</h1>
+        <div className={styles.headerRow}>
+            <h1 className={styles["titulo-workout"]}>{workout.routineName}</h1>
 
+            <div className={styles.headerRowIcons}>
+                <HeartLike
+                    count={workout.likes ? workout.likes.length : "-"}
+                    liked={workout.likes ? workout.likes.some(l => l.userId === currentUser?.id) : false}
+                    onChange={next => handleLike(currentUser, workout, next)}
+                    size={30}
+                />
+            </div>
+        </div>
         <div className={styles["workout-info"]}>
             <HeaderRow label="Fecha:" value={formatDate(workout.startTime)} />
             <HeaderRow
@@ -263,71 +449,82 @@ const SetItem = ({ set, index }) => (
 );
 
 WorkoutHeader.propTypes = {
+    currentUser: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    }),
+    handleLike: PropTypes.func.isRequired,
     workout: PropTypes.shape({
         routineName: PropTypes.string.isRequired,
-        startTime: PropTypes.string.isRequired,
-        endTime: PropTypes.string,
+        startTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]).isRequired,
+        endTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.instanceOf(Date)]),
+        likes: PropTypes.arrayOf(
+            PropTypes.shape({
+                userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+            })
+        ).isRequired
     }).isRequired,
     handleBack: PropTypes.func.isRequired,
     formatDate: PropTypes.func.isRequired,
-    duration: PropTypes.func.isRequired,
+    duration: PropTypes.func.isRequired
 };
 
 HeaderRow.propTypes = {
     label: PropTypes.string.isRequired,
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+    ]).isRequired
 };
 
 ExerciseList.propTypes = {
     routineExercises: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-                .isRequired,
-            exerciseName: PropTypes.string,
-            position: PropTypes.number,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            exerciseName: PropTypes.string.isRequired,
+            position: PropTypes.number
         })
     ).isRequired,
     expandedExercises: PropTypes.object.isRequired,
     toggleExercise: PropTypes.func.isRequired,
-    logged: PropTypes.func.isRequired,
+    logged: PropTypes.func.isRequired
 };
 
 ExerciseItem.propTypes = {
     exercise: PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-            .isRequired,
-        exerciseName: PropTypes.string.isRequired,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        exerciseName: PropTypes.string.isRequired
     }).isRequired,
     index: PropTypes.number.isRequired,
     expanded: PropTypes.bool,
     toggleExercise: PropTypes.func.isRequired,
     loggedSets: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-                .isRequired,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
             reps: PropTypes.number,
             weight: PropTypes.number,
-            durationSeconds: PropTypes.number,
-            routineExerciseId: PropTypes.oneOfType([
-                PropTypes.string,
-                PropTypes.number,
-            ]).isRequired,
+            durationSeconds: PropTypes.number
         })
-    ).isRequired,
+    ).isRequired
 };
 
 ExerciseContent.propTypes = {
     hasData: PropTypes.bool.isRequired,
-    loggedSets: PropTypes.array.isRequired,
+    loggedSets: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            reps: PropTypes.number,
+            weight: PropTypes.number,
+            durationSeconds: PropTypes.number
+        })
+    ).isRequired
 };
 
 SetItem.propTypes = {
     set: PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-            .isRequired,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         reps: PropTypes.number,
         weight: PropTypes.number,
-        durationSeconds: PropTypes.number,
+        durationSeconds: PropTypes.number
     }).isRequired,
-    index: PropTypes.number.isRequired,
+    index: PropTypes.number.isRequired
 };

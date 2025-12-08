@@ -4,31 +4,13 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutFeed.module.css";
 import LoadingMessage from "../common/LoadingMessage";
-import HeartLike from "../common/HeartLike";
-import CommentBubble from "../common/CommentBubble";
-import CommentModal from "../common/CommentModal";
-import AchievementPopup from "../common/popup/AchievementPopup";
-import { commentWorkout } from "../../../../backend/workoutCommentService";
-import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
 import {getFollowedTrainers, getFollowers} from "../../../../backend/userFollowService"
 import PropTypes from "prop-types";
 
 /* --------- HELPERS PARA REDUCIR PROFUNDIDAD --------- */
 
-function removeUserLike(likes, userId) {
-    return likes.filter(like => like.userId !== userId);
-}
-
 function replaceWorkout(prevWorkouts, workoutId, updater) {
     return prevWorkouts.map(w => (w.id === workoutId ? updater(w) : w));
-}
-
-function appendCommentToWorkout(prev, workoutId, addedComment) {
-    return prev.map(w =>
-        w.id === workoutId
-            ? { ...w, comments: [...(w.comments || []), addedComment] }
-            : w
-    );
 }
 
 function sortByStartTimeDesc(arr) {
@@ -58,24 +40,11 @@ WorkoutHeader.propTypes = {
     }).isRequired,
 };
 
-function WorkoutTitleLine({ workout, currentUser, onLike, onComment }) {
-    const liked = workout.likes.some(like => like.userId === currentUser?.id);
+function WorkoutTitleLine({ workout, currentUser }) {
 
     return (
         <div className={styles["workout-title-line"]}>
             <h3>{workout.routineName}</h3>
-
-            <HeartLike
-                count={workout.likes.length}
-                liked={liked}
-                onChange={onLike}
-                size={22}
-            />
-
-            <CommentBubble
-                count={(workout.comments || []).length}
-                onClick={onComment}
-            />
         </div>
     );
 }
@@ -88,13 +57,10 @@ WorkoutTitleLine.propTypes = {
                 userId: PropTypes.string.isRequired
             })
         ).isRequired,
-        comments: PropTypes.array
     }).isRequired,
     currentUser: PropTypes.shape({
         id: PropTypes.string
     }),
-    onLike: PropTypes.func.isRequired,
-    onComment: PropTypes.func.isRequired
 };
 
 function WorkoutStats({ duration }) {
@@ -109,7 +75,7 @@ WorkoutStats.propTypes = {
     duration: PropTypes.string
 };
 
-function WorkoutCard({ workout, currentUser, navigate, onLike, onComment }) {
+function WorkoutCard({ workout, currentUser }) {
     const duration =
         workout.endTime ? formatDuration(workout.startTime, workout.endTime) : null;
 
@@ -124,8 +90,6 @@ function WorkoutCard({ workout, currentUser, navigate, onLike, onComment }) {
                 <WorkoutTitleLine
                     workout={workout}
                     currentUser={currentUser}
-                    onLike={onLike}
-                    onComment={onComment}
                 />
 
                 <p className={styles["workout-date"]}>
@@ -141,9 +105,6 @@ function WorkoutCard({ workout, currentUser, navigate, onLike, onComment }) {
 WorkoutCard.propTypes = {
     workout: PropTypes.object.isRequired,
     currentUser: PropTypes.object,
-    navigate: PropTypes.func.isRequired,
-    onLike: PropTypes.func.isRequired,
-    onComment: PropTypes.func.isRequired
 };
 
 /* ---------- FORMATTERS ---------- */
@@ -180,12 +141,8 @@ const WorkoutFeed = () => {
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
-    const [commentModalOpen, setCommentModalOpen] = useState(false);
-    const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
-    const [showAchievementPopup, setShowAchievementPopup] = useState(false);
-    const [newAchievements, setNewAchievements] = useState([]);
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -219,27 +176,6 @@ const WorkoutFeed = () => {
                 setError(errors.globalError || "Error al cargar los entrenamientos");
                 setLoading(false);
             }
-        );
-    };
-
-    const handleLike = (workout, next) => {
-        const updateLikes = w => ({
-            ...w,
-            likes: removeUserLike(w.likes, currentUser.id)
-        });
-
-        setWorkouts(prev => replaceWorkout(prev, workout.id, updateLikes));
-
-        const api = next ? likeWorkout : unlikeWorkout;
-        api(
-            workout.id,
-            (achievements) => {
-                if (next && achievements && achievements.length > 0) {
-                    setNewAchievements(achievements);
-                    setShowAchievementPopup(true);
-                }
-            },
-            () => console.error(next ? "Error al marcar favorito" : "Error al desmarcar favorito")
         );
     };
 
@@ -305,53 +241,10 @@ const WorkoutFeed = () => {
                             workout={workout}
                             currentUser={currentUser}
                             navigate={navigate}
-                            onLike={(next) => handleLike(workout, next)}
-                            onComment={() => {
-                                setSelectedWorkout(workout);
-                                setCommentModalOpen(true);
-                            }}
                         />
                     ))}
                 </div>
             )}
-
-            {commentModalOpen && (
-                <CommentModal
-                    open={commentModalOpen}
-                    onSend={(comment) => {
-                        commentWorkout(
-                            selectedWorkout.id,
-                            comment,
-                            response => {
-                                const addedComment = response;
-                                setSelectedWorkout(prev => ({
-                                    ...prev,
-                                    comments: [...(prev.comments || []), addedComment]
-                                }));
-
-                                setWorkouts(prev =>
-                                    appendCommentToWorkout(prev, selectedWorkout.id, addedComment)
-                                );
-
-                                if (response.newAchievements && response.newAchievements.length > 0) {
-                                    setNewAchievements(response.newAchievements);
-                                    setShowAchievementPopup(true);
-                                }
-                            },
-                            () => console.error("Error al enviar comentario")
-                        );
-                    }}
-                    onClose={() => setCommentModalOpen(false)}
-                    workoutId={selectedWorkout?.id}
-                    comments={selectedWorkout?.comments || []}
-                />
-            )}
-
-            <AchievementPopup
-                show={showAchievementPopup}
-                achievements={newAchievements}
-                onOk={() => setShowAchievementPopup(false)}
-            />
         </div>
     );
 };
