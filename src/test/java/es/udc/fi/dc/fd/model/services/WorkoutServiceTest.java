@@ -1,23 +1,35 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
-import es.udc.fi.dc.fd.model.entities.User.RoleType;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
+import es.udc.fi.dc.fd.model.entities.User;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.Workout;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -38,11 +50,14 @@ class WorkoutServiceTest {
     private UserFollowService userFollowService;
     @Autowired
     private RoutineService routineService;
-    @MockBean
+    @Mock
     private NotificationService notificationService;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+        ReflectionTestUtils.setField(workoutService, "notificationService", notificationService);
+
         user = new User("Name", "Surname", "user@example.com", "1234567890", "1234", RoleType.TRAINER, User.StatusType.ACTIVE);
         user.setName("Name");
         user.setEmail("user@example.com");
