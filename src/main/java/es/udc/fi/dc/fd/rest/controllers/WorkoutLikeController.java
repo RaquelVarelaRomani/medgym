@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.rest.controllers;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.services.WorkoutLikeService;
+import es.udc.fi.dc.fd.rest.dtos.AchievementProgressDto;
 import es.udc.fi.dc.fd.rest.dtos.WorkoutLikeDto;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,8 @@ public class WorkoutLikeController {
     }
 
     @PostMapping("/workouts/{workoutId}/like")
-    public void likeWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId) throws InstanceNotFoundException {
-        workoutLikeService.likeWorkout(
+    public List<AchievementProgressDto> likeWorkout(@RequestAttribute Long userId, @PathVariable Long workoutId) throws InstanceNotFoundException {
+        return workoutLikeService.likeWorkout(
                 userId,
                 workoutId
         );

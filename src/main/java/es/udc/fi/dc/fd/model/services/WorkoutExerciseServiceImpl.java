@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -22,12 +23,18 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
 
     @Override
     public WorkoutExercise addWorkoutExercise(Short reps, Short weight, Short durationSeconds, Long workoutId, Long routineExerciseId) throws InstanceNotFoundException {
-        return workoutExerciseDao.save(new WorkoutExercise(
-                reps,
-                weight,
-                durationSeconds,
-                workoutDao.findById(workoutId).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", workoutId)),
-                routineExerciseDao.findById(routineExerciseId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routineExercise", routineExerciseId))));
+        Optional<Workout> opWorkout = workoutDao.findById(workoutId);
+        if (opWorkout.isPresent()) {
+            Workout workout = opWorkout.get();
+            return workoutExerciseDao.save(new WorkoutExercise(
+                    reps,
+                    weight,
+                    durationSeconds,
+                    workout,
+                    routineExerciseDao.findById(routineExerciseId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routineExercise", routineExerciseId))));
+        }
+
+        throw new InstanceNotFoundException("project.entities.workout", workoutId);
     }
 
     @Override
@@ -40,4 +47,5 @@ public class WorkoutExerciseServiceImpl implements WorkoutExerciseService {
     public List<WorkoutExercise> findWorkoutExercisesByWorkoutIds(List<Long> workoutIds) {
         return workoutExerciseDao.findByWorkoutIdIn(workoutIds);
     }
+
 }

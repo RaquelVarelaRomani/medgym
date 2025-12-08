@@ -21,7 +21,7 @@ public class User {
     private Double heightCm;
     @Enumerated(EnumType.STRING)
     private GenderType gender;
-    @Column(name = "trainer_premium")
+    @Column
     private Boolean trainerPremium;
 
     public User() {
