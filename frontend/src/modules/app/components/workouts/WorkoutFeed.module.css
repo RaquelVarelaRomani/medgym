@@ -498,7 +498,64 @@
 }
 
 .profile-info {
+    max-width: 1400px;
+    position: relative;
+    width: 100%;
     display: flex;
+    justify-content: center;
     align-items: center;
+    margin-bottom: 1rem;
+}
+
+.search-absolute {
+    position: absolute;
+    right: 0;
+    top: 50%;
+}
+
+.follow-center {
+    display: flex;
     gap: 2rem;
+    margin: 0 auto;
+}
+
+.search-button-filled {
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange),
+            var(--neon-orange-dark)
+    );
+    color: white;
+    border: none;
+    padding: 0.55rem 1.3rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-shadow: 0 0 16px rgba(255, 107, 53, 0.35);
+    display: flex;                 /* alinear icono + texto */
+    align-items: center;
+    gap: 0.55rem;                  /* separación icono-texto */
+    white-space: nowrap;           /* no romper línea */
+    transform: translateY(-50%);
+}
+
+.search-button-filled:hover {
+    transform: translateY(calc(-50% - 2px));   /* igual que follow-side */
+    box-shadow:
+            0 0 18px rgba(255, 107, 53, 0.45),
+            0 0 28px rgba(255, 107, 53, 0.3);
+}
+
+.search-button-filled:active {
+    transform: translateY(calc(-50% + 0px));
+}
+
+.search-button-icon {
+    width: 18px;                   /* tamaño uniforme */
+    height: 18px;
+    opacity: 0.85;
+    filter: invert(1) brightness(1.4);
 }
