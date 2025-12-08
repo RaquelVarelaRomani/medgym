@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutFeed.module.css";
