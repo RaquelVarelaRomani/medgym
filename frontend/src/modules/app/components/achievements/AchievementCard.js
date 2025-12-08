@@ -12,6 +12,11 @@ export default function AchievementCard({ achievement }) {
         goldReq /= 3600;
     }
 
+    let divisor;
+    if (progress < bronzeReq) divisor = bronzeReq;
+    else if (progress < silverReq) divisor = silverReq;
+    else divisor = goldReq;
+
     return (
         <div className={`${styles.card}`}>
             <div className={styles.info}>
@@ -22,10 +27,10 @@ export default function AchievementCard({ achievement }) {
                     <div className={styles.progressBar}>
                         <div
                             className={styles.progressFill}
-                            style={{ width: `${Math.min((progress / goldReq) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((progress / divisor) * 100, 100)}%` }}
                         />
                     </div>
-                    <span className={styles.progressText}>{progress}/{goldReq}</span>
+                    <span className={styles.progressText}>{progress}/{divisor}</span>
                 </div>
             </div>
 

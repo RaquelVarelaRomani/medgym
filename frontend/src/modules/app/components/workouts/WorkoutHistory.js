@@ -4,21 +4,17 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import styles from "./WorkoutHistory.module.css";
 import LoadingMessage from "../common/LoadingMessage";
-import CommentBubble from "../common/CommentBubble";
-import CommentModal from "../common/CommentModal";
-import { commentWorkout } from "../../../../backend/workoutCommentService";
 import StatisticMetrics from "../common/statistics/Metrics";
 import MuscleGroupChart from "../common/statistics/MuscleGroupChart";
 import {
     formatDuration,
     transformMuscleGroupData,
 } from "../common/statistics/utils/formatters";
-import { likeWorkout, unlikeWorkout } from "../../../../backend/workoutLikeService";
-import HeartLike from "../common/HeartLike";
 import PropTypes from "prop-types";
 
-
-// ---------- Helpers puros ----------
+/* ============================================================
+   HELPERS
+   ============================================================ */
 
 const MODE_LABELS = {
     list: "Lista",
@@ -30,49 +26,44 @@ const WEEK_DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sab", "Dom"];
 
 function sortWorkoutsByDate(workouts) {
     return [...workouts].sort(
-        (a, b) => new Date(b.startTime) - new Date(a.startTime),
+        (a, b) => new Date(b.startTime) - new Date(a.startTime)
     );
 }
 
 function calculateDuration(startTime, endTime) {
     if (!endTime) return null;
 
-    const diffMinutes = Math.floor(
-        (new Date(endTime) - new Date(startTime)) / 60000,
-    );
+    const diffMinutes =
+        (new Date(endTime) - new Date(startTime)) / 60000;
     const hours = Math.floor(diffMinutes / 60);
-    const minutes = diffMinutes % 60;
+    const minutes = Math.floor(diffMinutes % 60);
 
-    if (hours > 0) {
-        return `${hours}h ${minutes}min`;
-    }
-    return `${minutes} min`;
+    return hours > 0 ? `${hours}h ${minutes}min` : `${minutes} min`;
 }
 
 function getCalendarDays(year, month) {
-    const first = new Date(year, month, 1).getDay();
-    const start = first === 0 ? 6 : first - 1;
+    const firstDayWeek = new Date(year, month, 1).getDay();
+    const startOffset = firstDayWeek === 0 ? 6 : firstDayWeek - 1;
     const totalDays = new Date(year, month + 1, 0).getDate();
 
-    const days = [];
+    const result = [];
 
-    for (let i = 0; i < start; i += 1) {
-        days.push({ key: `empty-${year}-${month}-${i}`, day: null });
+    for (let i = 0; i < startOffset; i++) {
+        result.push({ key: `empty-${year}-${month}-${i}`, day: null });
     }
 
-    for (let d = 1; d <= totalDays; d += 1) {
-        days.push({ key: `day-${year}-${month}-${d}`, day: d });
+    for (let d = 1; d <= totalDays; d++) {
+        result.push({ key: `day-${year}-${month}-${d}`, day: d });
     }
 
-    return days;
+    return result;
 }
 
 function workoutDateKey(dateString) {
     const d = new Date(dateString);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+        d.getDate()
+    ).padStart(2, "0")}`;
 }
 
 function buildWorkoutsByDay(workouts) {
@@ -87,35 +78,36 @@ function buildWorkoutsByDay(workouts) {
 function dayKey(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(
         2,
-        "0",
+        "0"
     )}`;
 }
 
 function getWorkoutLink(workout) {
-    if (!workout.endTime) return `/workouts/session/${workout.id}`;
-    return `/workouts/${workout.id}?returnTo=history`;
+    return workout.endTime
+        ? `/workouts/${workout.id}?returnTo=history`
+        : `/workouts/session/${workout.id}`;
 }
 
 function getMonthsForComparison() {
     const now = new Date();
-    const currentYear = now.getFullYear();
-
-    const lastMonthDate = new Date(currentYear, now.getMonth() - 1);
-    const lastMonth = lastMonthDate.getMonth() + 1;
-    const lastMonthYear = lastMonthDate.getFullYear();
-
-    const twoMonthsAgoDate = new Date(currentYear, now.getMonth() - 2);
-    const twoMonthsAgo = twoMonthsAgoDate.getMonth() + 1;
-    const twoMonthsAgoYear = twoMonthsAgoDate.getFullYear();
-
+    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
+    const twoAgoDate = new Date(now.getFullYear(), now.getMonth() - 2);
 
     return {
-        current: { month: lastMonth, year: lastMonthYear },
-        previous: { month: twoMonthsAgo, year: twoMonthsAgoYear },
+        current: {
+            month: lastMonthDate.getMonth() + 1,
+            year: lastMonthDate.getFullYear(),
+        },
+        previous: {
+            month: twoAgoDate.getMonth() + 1,
+            year: twoAgoDate.getFullYear(),
+        },
     };
 }
 
-// ---------- Subcomponentes de presentación ----------
+/* ============================================================
+   SUBCOMPONENTES
+   ============================================================ */
 
 function HistoryHeader({ viewMode, setViewMode, stats, onStatsSelected }) {
     return (
@@ -157,15 +149,8 @@ function EmptyMessage({ onGoRoutines }) {
     );
 }
 
-function WorkoutItem({ workout, currentUser, onToggleLike, onOpenComments }) {
+function WorkoutItem({ workout }) {
     const isInProgress = !workout.endTime;
-    const duration = calculateDuration(workout.startTime, workout.endTime);
-    const link = getWorkoutLink(workout);
-    const likes = workout.likes || [];
-    const liked = likes.some((l) => l.userId === currentUser?.id);
-
-    const likeCount = likes.length;
-    const commentCount = (workout.comments || []).length;
 
     const formattedDate = new Date(workout.startTime).toLocaleDateString(
         "es-ES",
@@ -175,13 +160,12 @@ function WorkoutItem({ workout, currentUser, onToggleLike, onOpenComments }) {
             year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
-        },
+        }
     );
 
     return (
         <Link
-            key={workout.id}
-            to={link}
+            to={getWorkoutLink(workout)}
             className={`${styles["caja-workout"]} ${
                 isInProgress ? styles["active-workout"] : ""
             }`}
@@ -189,51 +173,30 @@ function WorkoutItem({ workout, currentUser, onToggleLike, onOpenComments }) {
             <div className={styles["workout-info"]}>
                 <div className={styles["workout-title-line"]}>
                     <h3>{workout.routineName}</h3>
-
-                    <HeartLike
-                        count={likeCount}
-                        liked={liked}
-                        onChange={(next) => onToggleLike(workout, next)}
-                        size={22}
-                    />
-
-                    <CommentBubble
-                        count={commentCount}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            onOpenComments(workout);
-                        }}
-                    />
                 </div>
-
                 <p className={styles["workout-date"]}>{formattedDate}</p>
             </div>
 
             <div className={styles["workout-stats"]}>
-        <span
-            className={
-                isInProgress ? styles["in-progress"] : styles["duration"]
-            }
-        >
-          {isInProgress ? "En progreso" : duration}
-        </span>
+                <span
+                    className={
+                        isInProgress ? styles["in-progress"] : styles["duration"]
+                    }
+                >
+                    {isInProgress
+                        ? "En progreso"
+                        : calculateDuration(workout.startTime, workout.endTime)}
+                </span>
             </div>
         </Link>
     );
 }
 
-function WorkoutList({ workouts, currentUser, onToggleLike, onOpenComments }) {
+function WorkoutList({ workouts }) {
     return (
         <div className={styles["lista-workouts"]}>
             {workouts.map((w) => (
-                <WorkoutItem
-                    key={w.id}
-                    workout={w}
-                    currentUser={currentUser}
-                    onToggleLike={onToggleLike}
-                    onOpenComments={onOpenComments}
-                />
+                <WorkoutItem key={w.id} workout={w} />
             ))}
         </div>
     );
@@ -267,27 +230,19 @@ function CalendarView({ workouts, currentMonth, setCurrentMonth, year }) {
     const days = getCalendarDays(year, currentMonth);
     const workoutsByDay = buildWorkoutsByDay(workouts);
 
-    const monthLabel = new Date(year, currentMonth).toLocaleDateString("es-ES", {
-        month: "long",
-        year: "numeric",
-    });
-
-    const goPrevMonth = () => {
-        setCurrentMonth((m) => (m === 0 ? 11 : m - 1));
-    };
-
-    const goNextMonth = () => {
-        setCurrentMonth((m) => (m === 11 ? 0 : m + 1));
-    };
-
     return (
         <div className={styles["calendario-container"]}>
             <div className={styles["calendario-header"]}>
-                <button type="button" onClick={goPrevMonth}>
+                <button onClick={() => setCurrentMonth((m) => (m === 0 ? 11 : m - 1))}>
                     {"<"}
                 </button>
-                <span>{monthLabel}</span>
-                <button type="button" onClick={goNextMonth}>
+                <span>
+                    {new Date(year, currentMonth).toLocaleDateString("es-ES", {
+                        month: "long",
+                        year: "numeric",
+                    })}
+                </span>
+                <button onClick={() => setCurrentMonth((m) => (m === 11 ? 0 : m + 1))}>
                     {">"}
                 </button>
             </div>
@@ -315,13 +270,7 @@ function CalendarView({ workouts, currentMonth, setCurrentMonth, year }) {
     );
 }
 
-function StatsView({
-                       stats,
-                       comparisonStats,
-                       statsLoading,
-                       statsError,
-                       onRetry
-                   }) {
+function StatsView({ stats, comparisonStats, statsLoading, statsError, onRetry }) {
     if (statsLoading) {
         return <LoadingMessage text="Cargando estadísticas..." />;
     }
@@ -330,11 +279,7 @@ function StatsView({
         return (
             <div className={styles["error-message"]}>
                 {statsError}
-                <button
-                    type="button"
-                    onClick={onRetry}
-                    className={styles["retry-button"]}
-                >
+                <button className={styles["retry-button"]} onClick={onRetry}>
                     Intentar de nuevo
                 </button>
             </div>
@@ -351,20 +296,19 @@ function StatsView({
 
     const now = new Date();
     const targetDate = new Date(now.getFullYear(), now.getMonth() - 1);
-    const lastMonthName = targetDate.toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+    const lastMonthName = targetDate.toLocaleDateString("es-ES", {
+        month: "long",
+        year: "numeric",
+    });
 
     return (
         <div className={styles["statistics-view"]}>
-            <h3 className={styles["stats-title"]}>
-                Estadísticas de {lastMonthName}
-            </h3>
+            <h3 className={styles["stats-title"]}>Estadísticas de {lastMonthName}</h3>
 
             <StatisticMetrics
                 lastMonthWorkouts={stats.lastMonthWorkouts}
                 totalDuration={formatDuration(stats.totalDurationSeconds)}
-                averageDuration={formatDuration(
-                    Math.round(stats.averageDurationSeconds),
-                )}
+                averageDuration={formatDuration(Math.round(stats.averageDurationSeconds))}
             />
 
             <MuscleGroupChart
@@ -381,45 +325,38 @@ function StatsView({
     );
 }
 
-// ---------- Componente principal ----------
+/* ============================================================
+   COMPONENTE PRINCIPAL
+   ============================================================ */
 
 const WorkoutHistory = () => {
     const navigate = useNavigate();
 
     const [workouts, setWorkouts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentUser, setCurrentUser] = useState(null);
     const [error, setError] = useState(null);
 
     const [viewMode, setViewMode] = useState("list");
-    const [currentMonth, setCurrentMonth] = useState(
-        new Date().getMonth(),
-    );
-
-    const [commentModalOpen, setCommentModalOpen] = useState(false);
-    const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
     const [stats, setStats] = useState(null);
     const [comparisonStats, setComparisonStats] = useState(null);
     const [statsLoading, setStatsLoading] = useState(false);
     const [statsError, setStatsError] = useState(null);
 
-    const currentYear = new Date().getFullYear();
+    const year = new Date().getFullYear();
 
     useEffect(() => {
         tryLoginFromServiceToken(
-            (user) => {
-                setCurrentUser(user.user);
+            () => {
                 loadWorkoutHistory();
             },
-            () => navigate("/users/login"),
+            () => navigate("/users/login")
         );
     }, [navigate]);
 
     const loadWorkoutHistory = () => {
         setLoading(true);
-        setError(null);
-
         workoutService.getWorkouts(
             (data) => {
                 setWorkouts(sortWorkoutsByDate(data));
@@ -428,14 +365,13 @@ const WorkoutHistory = () => {
             (err) => {
                 setError(err.globalError || "Error al cargar el historial");
                 setLoading(false);
-            },
+            }
         );
     };
 
     const loadStatistics = () => {
         setStatsLoading(true);
         setStatsError(null);
-
         const { current, previous } = getMonthsForComparison();
 
         workoutService.getStatsForMonth(
@@ -443,91 +379,34 @@ const WorkoutHistory = () => {
             current.year,
             (d) => {
                 setStats(d);
-                loadPreviousMonthStats(previous);
+                workoutService.getStatsForMonth(
+                    previous.month,
+                    previous.year,
+                    (d2) => {
+                        setComparisonStats(d2);
+                        setStatsLoading(false);
+                    },
+                    () => {
+                        setComparisonStats(null);
+                        setStatsLoading(false);
+                    }
+                );
             },
             (e) => {
                 setStatsError(e.globalError || "Error al cargar estadísticas");
                 setStatsLoading(false);
-            },
+            }
         );
     };
 
-    const loadPreviousMonthStats = (previousMonth) => {
-        workoutService.getStatsForMonth(
-            previousMonth.month,
-            previousMonth.year,
-            (d) => {
-                setComparisonStats(d);
-                setStatsLoading(false);
-            },
-            (e) => {
-                setComparisonStats(null);
-                setStatsLoading(false);
-            },
-        );
-    };
-
-    const handleToggleLike = (workout, next) => {
-        const updateLikes = (w) => {
-            if (w.id !== workout.id) return w;
-
-            const currentLikes = w.likes || [];
-            const updatedLikes = next
-                ? [...currentLikes, { userId: currentUser.id }]
-                : currentLikes.filter(l => l.userId !== currentUser.id);
-
-            return { ...w, likes: updatedLikes };
-        };
-
-        setWorkouts(prev => prev.map(updateLikes));
-
-        const action = next ? likeWorkout : unlikeWorkout;
-        action(workout.id, () => {}, () => {});
-    };
-
-    const handleOpenComments = (workout) => {
-        setSelectedWorkout(workout);
-        setCommentModalOpen(true);
-    };
-
-    const handleCommentAdded = (added) => {
-        setSelectedWorkout((prev) =>
-            prev
-                ? {
-                    ...prev,
-                    comments: [...(prev.comments || []), added],
-                }
-                : prev,
-        );
-
-        setWorkouts((prev) =>
-            prev.map((w) =>
-                w.id === selectedWorkout.id
-                    ? {
-                        ...w,
-                        comments: [...(w.comments || []), added],
-                    }
-                    : w,
-            ),
-        );
-    };
-
-    if (loading) {
-        return (
-            <LoadingMessage text="Cargando historial de entrenamientos..." />
-        );
-    }
+    if (loading) return <LoadingMessage text="Cargando historial de entrenamientos..." />;
 
     if (error) {
         return (
             <div className={styles.contenedor}>
                 <div className={styles["error-message"]}>
                     {error}
-                    <button
-                        type="button"
-                        onClick={loadWorkoutHistory}
-                        className={styles["retry-button"]}
-                    >
+                    <button className={styles["retry-button"]} onClick={loadWorkoutHistory}>
                         Intentar de nuevo
                     </button>
                 </div>
@@ -538,25 +417,16 @@ const WorkoutHistory = () => {
     let mainView;
 
     if (workouts.length === 0 && viewMode !== "stats") {
-        mainView = (
-            <EmptyMessage onGoRoutines={() => navigate("/routines")} />
-        );
+        mainView = <EmptyMessage onGoRoutines={() => navigate("/routines")} />;
     } else if (viewMode === "list") {
-        mainView = (
-            <WorkoutList
-                workouts={workouts}
-                currentUser={currentUser}
-                onToggleLike={handleToggleLike}
-                onOpenComments={handleOpenComments}
-            />
-        );
+        mainView = <WorkoutList workouts={workouts} />;
     } else if (viewMode === "calendar") {
         mainView = (
             <CalendarView
                 workouts={workouts}
                 currentMonth={currentMonth}
                 setCurrentMonth={setCurrentMonth}
-                year={currentYear}
+                year={year}
             />
         );
     } else {
@@ -579,95 +449,76 @@ const WorkoutHistory = () => {
                 stats={stats}
                 onStatsSelected={loadStatistics}
             />
-
             {mainView}
-
-            {commentModalOpen && selectedWorkout && (
-                <CommentModal
-                    open={commentModalOpen}
-                    onSend={(text) =>
-                        commentWorkout(selectedWorkout.id, text, handleCommentAdded)
-                    }
-                    onClose={() => setCommentModalOpen(false)}
-                    workoutId={selectedWorkout.id}
-                    comments={selectedWorkout.comments || []}
-                />
-            )}
         </div>
     );
 };
 
 export default WorkoutHistory;
 
-/* ---------- HistoryHeader ---------- */
+/* ============================================================
+   PROP TYPES (TODOS, CORRECTOS, SIN DUPLICADOS)
+   ============================================================ */
+
 HistoryHeader.propTypes = {
     viewMode: PropTypes.oneOf(["list", "calendar", "stats"]).isRequired,
     setViewMode: PropTypes.func.isRequired,
-    stats: PropTypes.object,
+    stats: PropTypes.shape({
+        lastMonthWorkouts: PropTypes.number,
+        totalDurationSeconds: PropTypes.number,
+        averageDurationSeconds: PropTypes.number,
+        exercisesByMuscleGroup: PropTypes.object,
+    }),
     onStatsSelected: PropTypes.func.isRequired,
 };
 
-/* ---------- EmptyMessage ---------- */
 EmptyMessage.propTypes = {
     onGoRoutines: PropTypes.func.isRequired,
 };
 
-/* ---------- WorkoutItem ---------- */
 WorkoutItem.propTypes = {
     workout: PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         routineName: PropTypes.string.isRequired,
         startTime: PropTypes.string.isRequired,
         endTime: PropTypes.string,
-        likes: PropTypes.arrayOf(
-            PropTypes.shape({
-                userId: PropTypes.number.isRequired
-            })
-        ),
-        comments: PropTypes.arrayOf(
-            PropTypes.shape({
-                id: PropTypes.number,
-                userId: PropTypes.number,
-                text: PropTypes.string,
-                timestamp: PropTypes.string
-            })
-        )
     }).isRequired,
-    currentUser: PropTypes.shape({
-        id: PropTypes.number
-    }),
-    onToggleLike: PropTypes.func.isRequired,
-    onOpenComments: PropTypes.func.isRequired,
 };
 
-/* ---------- WorkoutList ---------- */
 WorkoutList.propTypes = {
     workouts: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.number.isRequired,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            routineName: PropTypes.string.isRequired,
+            startTime: PropTypes.string.isRequired,
+            endTime: PropTypes.string,
         })
     ).isRequired,
-    currentUser: PropTypes.object,
-    onToggleLike: PropTypes.func.isRequired,
-    onOpenComments: PropTypes.func.isRequired,
 };
 
-/* ---------- CalendarDayCell ---------- */
 CalendarDayCell.propTypes = {
     year: PropTypes.number.isRequired,
     month: PropTypes.number.isRequired,
     day: PropTypes.number,
-    workoutsByDay: PropTypes.object.isRequired,
+    workoutsByDay: PropTypes.objectOf(
+        PropTypes.arrayOf(
+            PropTypes.shape({
+                id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+                routineName: PropTypes.string.isRequired,
+                startTime: PropTypes.string,
+                endTime: PropTypes.string,
+            })
+        )
+    ).isRequired,
 };
 
-/* ---------- CalendarView ---------- */
 CalendarView.propTypes = {
     workouts: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.number.isRequired,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            routineName: PropTypes.string.isRequired,
             startTime: PropTypes.string.isRequired,
             endTime: PropTypes.string,
-            routineName: PropTypes.string.isRequired
         })
     ).isRequired,
     currentMonth: PropTypes.number.isRequired,
@@ -675,25 +526,22 @@ CalendarView.propTypes = {
     year: PropTypes.number.isRequired,
 };
 
-/* ---------- StatsView ---------- */
 StatsView.propTypes = {
     stats: PropTypes.shape({
-        lastMonthWorkouts: PropTypes.number,
-        totalDurationSeconds: PropTypes.number,
-        averageDurationSeconds: PropTypes.number,
-        exercisesByMuscleGroup: PropTypes.object
+        lastMonthWorkouts: PropTypes.number.isRequired,
+        totalDurationSeconds: PropTypes.number.isRequired,
+        averageDurationSeconds: PropTypes.number.isRequired,
+        exercisesByMuscleGroup: PropTypes.objectOf(PropTypes.number).isRequired,
     }),
     comparisonStats: PropTypes.shape({
-        lastMonthWorkouts: PropTypes.number,
-        totalDurationSeconds: PropTypes.number,
-        averageDurationSeconds: PropTypes.number,
-        exercisesByMuscleGroup: PropTypes.object
+        lastMonthWorkouts: PropTypes.number.isRequired,
+        totalDurationSeconds: PropTypes.number.isRequired,
+        averageDurationSeconds: PropTypes.number.isRequired,
+        exercisesByMuscleGroup: PropTypes.objectOf(PropTypes.number).isRequired,
     }),
     statsLoading: PropTypes.bool.isRequired,
     statsError: PropTypes.string,
     onRetry: PropTypes.func.isRequired,
 };
 
-
-/* ---------- WorkoutHistory (componente principal) ---------- */
 WorkoutHistory.propTypes = {};

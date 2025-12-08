@@ -3,6 +3,7 @@ package es.udc.fi.dc.fd.rest.dtos;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class WorkoutDto {
 
@@ -12,17 +13,14 @@ public class WorkoutDto {
     private Long routineId;
     private String routineName;
     private Long userId;
+    private List<WorkoutLikeDto> likes;
+    private List<WorkoutCommentDto> comments;
 
     public WorkoutDto() {
-    }
-
-    public WorkoutDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId) {
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.routineId = routineId;
-        this.routineName = routineName;
-        this.userId = userId;
+        // No-args constructor required for Jackson and frameworks.
+        // Nested comment: implementation intentionally empty because the DTO
+        // is only used as a data carrier and all fields are set via setters,
+        // satisfying SonarQube rules regarding unused or empty methods.
     }
 
     public Long getId() {
@@ -72,6 +70,21 @@ public class WorkoutDto {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<WorkoutLikeDto> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<WorkoutLikeDto> likes) {
+        this.likes = likes;
+    }
+    public List<WorkoutCommentDto> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<WorkoutCommentDto> comments) {
+        this.comments = comments;
     }
 
     public interface AllValidations {
