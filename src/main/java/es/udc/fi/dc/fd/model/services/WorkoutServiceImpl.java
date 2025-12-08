@@ -115,17 +115,14 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     @Scheduled(cron = "0 0 9 * * ?")
-    public void remindStreak() {
+    public void remindStreak() throws InstanceNotFoundException {
         List<User> users = userDao.findAll();
-        users.forEach(user -> {
+        for (User user : users) {
             int currentStreak = calculateCurrentStreak(user.getId());
             if (currentStreak > 1) {
-                try {
-                    notificationService.createStreakRemindNotification(user.getId(), currentStreak);
-                } catch (InstanceNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+                notificationService.createStreakRemindNotification(user.getId(), currentStreak);
             }
-        });
+        }
     }
+
 }

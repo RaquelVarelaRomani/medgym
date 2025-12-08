@@ -21,5 +21,5 @@ public interface WorkoutService {
 
     int calculateCurrentStreak(Long userId);
 
-    void remindStreak();
+    void remindStreak() throws InstanceNotFoundException;
 }
