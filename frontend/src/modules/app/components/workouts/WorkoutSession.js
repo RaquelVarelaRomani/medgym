@@ -5,7 +5,9 @@ import * as workoutService from "../../../../backend/workoutService";
 import * as routineExerciseService from "../../../../backend/routineExerciseService";
 import * as workoutExerciseService from "../../../../backend/workoutExerciseService";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import ConfirmationPopup from "../common/popup/ConfirmationPopup"; 
+import { onFinishWorkoutAchievements } from "../../../../backend/achievementService";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
+import AchievementPopup from "../common/popup/AchievementPopup";
 
 const WorkoutSession = () => {
   const { sessionId } = useParams();
@@ -18,7 +20,10 @@ const WorkoutSession = () => {
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({});
   const [notification, setNotification] = useState("");
-  const [showIncompletePopup, setShowIncompletePopup] = useState(false); 
+  const [showIncompletePopup, setShowIncompletePopup] = useState(false);
+  const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+  const [achievements, setAchievements] = useState([]);
+  const [currentAchievementIndex, setCurrentAchievementIndex] = useState(0);
 
  
   useEffect(() => {
@@ -121,6 +126,21 @@ const WorkoutSession = () => {
     return routineExercises.every((ex) => loggedSets[ex.id]?.length > 0);
   };
 
+  const calculateWorkoutStats = () => {
+    const processSet = (set, stats) => {
+      if (set.durationSeconds) stats.totalSeconds += Number(set.durationSeconds);
+      if (set.reps) stats.totalReps += Number(set.reps);
+    };
+
+    let stats = { totalSeconds: 0, totalReps: 0 };
+    for (const sets of Object.values(loggedSets)) {
+      for (const set of sets) {
+        processSet(set, stats);
+      }
+    }
+    return stats;
+  };
+
   
   const handleFinishAttempt = () => {
     if (!allExercisesCompleted()) {
@@ -130,13 +150,36 @@ const WorkoutSession = () => {
     }
   };
 
+  const handleAchievementsChecked = (newAchievements) => {
+    if (newAchievements && newAchievements.length > 0) {
+      setAchievements(newAchievements);
+      setCurrentAchievementIndex(0);
+      setShowAchievementPopup(true);
+    } else {
+      navigate("/workouts/history");
+    }
+  };
+
+  const handleAchievementsError = () => {
+    navigate("/workouts/history");
+  };
+
+  const handleFinishWorkoutSuccess = () => {
+    showNotification("🏁 Entrenamiento finalizado");
+    const { totalSeconds, totalReps } = calculateWorkoutStats();
+    onFinishWorkoutAchievements(
+      totalSeconds,
+      totalReps,
+      sessionId,
+      handleAchievementsChecked,
+      handleAchievementsError
+    );
+  };
+
   const handleFinishWorkout = () => {
     workoutService.finishWorkout(
       sessionId,
-      () => {
-        showNotification("🏁 Entrenamiento finalizado");
-        setTimeout(() => navigate("/workouts/history"), 1000);
-      },
+      handleFinishWorkoutSuccess,
       () => showNotification("⚠️ Error al finalizar el entrenamiento")
     );
   };
@@ -235,7 +278,7 @@ const WorkoutSession = () => {
               </div>
 
                 {loggedSets[ex.id].map((s) => (
-                    <div key={s.id} className={styles.setRow}>
+                    <div key={s.setNumber} className={styles.setRow}>
                         <div className={styles.setBox}>Serie {s.setNumber}</div>
 
                         <div className={s.reps ? styles.setBox : styles.setPlaceholder}>
@@ -273,6 +316,21 @@ const WorkoutSession = () => {
           handleFinishWorkout();
         }}
         onCancel={() => setShowIncompletePopup(false)}
+      />
+
+      <AchievementPopup
+        show={showAchievementPopup}
+        achievements={achievements.length > 0 ? [achievements[currentAchievementIndex]] : []}
+        onOk={() => {
+          if (currentAchievementIndex < achievements.length - 1) {
+            setCurrentAchievementIndex(currentAchievementIndex + 1);
+          } else {
+            setShowAchievementPopup(false);
+            setAchievements([]);
+            setCurrentAchievementIndex(0);
+            navigate("/workouts/history");
+          }
+        }}
       />
     </div>
   );

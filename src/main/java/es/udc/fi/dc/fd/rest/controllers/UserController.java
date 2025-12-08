@@ -259,4 +259,16 @@ public class UserController {
 
         userService.setTrainerPremium(id, true);
     }
+
+    @DeleteMapping("/{id}/premium")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTrainerPremium(@RequestAttribute Long userId, @PathVariable Long id)
+            throws PermissionException, InstanceNotFoundException {
+
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
+
+        userService.setTrainerPremium(id, false);
+    }
 }

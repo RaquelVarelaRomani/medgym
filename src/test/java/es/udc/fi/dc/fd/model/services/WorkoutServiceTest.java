@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -261,5 +262,56 @@ class WorkoutServiceTest {
         List<Workout> list = workoutService.findWorkoutsFromFollowing(client1.getId());
 
         assertEquals(0, list.size());
+    }
+
+    @Test
+    void testCalculateCurrentStreakNoWorkouts() {
+        int streak = workoutService.calculateCurrentStreak(user.getId());
+        assertEquals(0, streak);
+    }
+
+    @Test
+    void testCalculateCurrentStreakWithWorkouts() {
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate twoDaysAgo = today.minusDays(2);
+        LocalDate threeDaysAgo = today.minusDays(3);
+
+        createWorkoutOnDate(user, routine, threeDaysAgo);
+        createWorkoutOnDate(user, routine, twoDaysAgo);
+        createWorkoutOnDate(user, routine, yesterday);
+
+        int streak = workoutService.calculateCurrentStreak(user.getId());
+        assertEquals(3, streak);
+    }
+
+    @Test
+    void testCalculateCurrentStreakBroken() {
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate threeDaysAgo = today.minusDays(3);
+
+        createWorkoutOnDate(user, routine, threeDaysAgo);
+        createWorkoutOnDate(user, routine, yesterday);
+
+        int streak = workoutService.calculateCurrentStreak(user.getId());
+        assertEquals(1, streak); // Only yesterday
+    }
+
+    @Test
+    void testCalculateCurrentStreakOldWorkout() {
+        LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
+
+        createWorkoutOnDate(user, routine, fiveDaysAgo);
+
+        int streak = workoutService.calculateCurrentStreak(user.getId());
+        assertEquals(0, streak); // Not recent
+    }
+
+    private void createWorkoutOnDate(User user, Routine routine, LocalDate date) {
+        LocalDateTime start = date.atTime(10, 0);
+        LocalDateTime end = date.atTime(11, 0);
+        Workout workout = new Workout(start, end, routine, user);
+        workoutDao.save(workout);
     }
 }

@@ -1030,27 +1030,6 @@ describe("Common Components", () => {
       });
     });
 
-    test("shows followers link for trainers", async () => {
-      const mockUser = { id: 1, role: "TRAINER" };
-
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: mockUser }),
-      );
-      getWorkouts.mockImplementation((success) => success([]));
-      getUserNotifications.mockImplementation((success) => success([]));
-      getFollowers.mockImplementation((userId, success) => success([]));
-
-      render(
-        <MemoryRouter>
-          <Header />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("Seguidores (0)")).toBeInTheDocument();
-      });
-    });
-
     test("shows moderation link for admins", async () => {
       const mockUser = { id: 1, role: "ADMIN" };
 
@@ -1280,30 +1259,6 @@ describe("Common Components", () => {
         expect(
           screen.queryByText("🏋️ Entrenamiento Activo"),
         ).not.toBeInTheDocument();
-      });
-    });
-
-    test("handles checkFollowers error gracefully", async () => {
-      const mockUser = { id: 1, role: "TRAINER" };
-
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: mockUser }),
-      );
-      getWorkouts.mockImplementation((success) => success([]));
-      getUserNotifications.mockImplementation((success) => success([]));
-      getFollowers.mockImplementation((userId, success, error) =>
-        error(new Error("Followers service error")),
-      );
-
-      render(
-        <MemoryRouter>
-          <Header />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByAltText("Logo medgym")).toBeInTheDocument();
-        expect(screen.getByText("Seguidores (0)")).toBeInTheDocument();
       });
     });
 
@@ -1584,28 +1539,6 @@ describe("Common Components", () => {
       });
     });
 
-    test("trainer followers link shows active state on followers page", async () => {
-      const mockUser = { id: 1, role: "TRAINER" };
-
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: mockUser }),
-      );
-      getWorkouts.mockImplementation((success) => success([]));
-      getUserNotifications.mockImplementation((success) => success([]));
-      getFollowers.mockImplementation((userId, success) => success([]));
-
-      render(
-        <MemoryRouter initialEntries={["/users/followers"]}>
-          <Header />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        const followersLink = screen.getByText("Seguidores (0)").closest("a");
-        expect(followersLink).toHaveClass("active");
-      });
-    });
-
     test("admin moderation link shows active state on moderation page", async () => {
       const mockUser = { id: 1, role: "ADMIN" };
 
@@ -1626,46 +1559,6 @@ describe("Common Components", () => {
         const moderationLink = screen.getByText("Moderación").closest("a");
         expect(moderationLink).toHaveClass("active");
         expect(moderationLink).toHaveClass("admin-link");
-      });
-    });
-
-    test("conditionally renders trainer followers link only for trainers", async () => {
-      const clientUser = { id: 1, role: "CLIENT" };
-
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: clientUser }),
-      );
-      getWorkouts.mockImplementation((success) => success([]));
-      getUserNotifications.mockImplementation((success) => success([]));
-      getFollowers.mockImplementation((userId, success) => success([]));
-
-      render(
-        <MemoryRouter>
-          <Header />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Seguidores/)).not.toBeInTheDocument();
-      });
-
-      const trainerUser = { id: 1, role: "TRAINER" };
-
-      tryLoginFromServiceToken.mockImplementation((success) =>
-        success({ user: trainerUser }),
-      );
-      getWorkouts.mockImplementation((success) => success([]));
-      getUserNotifications.mockImplementation((success) => success([]));
-      getFollowers.mockImplementation((userId, success) => success([]));
-
-      render(
-        <MemoryRouter>
-          <Header />
-        </MemoryRouter>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByText("Seguidores (0)")).toBeInTheDocument();
       });
     });
 

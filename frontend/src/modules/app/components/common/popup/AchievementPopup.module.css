@@ -1,0 +1,38 @@
+.center {
+  text-align: center;
+}
+
+.medalImageLarge {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+.achievementDescription {
+    font-size: 1rem !important;
+    font-weight: normal !important;
+    color: #c9c3c3 !important;
+    margin-top: -1.5rem;
+}
+
+.medalsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.medalItem {
+  text-align: center;
+}
+
+.medalImageSmall {
+  width: 60px;
+  height: 60px;
+}
+
+.medalName {
+  font-size: 12px;
+  margin: 5px 0 0 0;
+}

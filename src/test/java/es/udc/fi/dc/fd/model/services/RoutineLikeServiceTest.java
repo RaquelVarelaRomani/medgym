@@ -29,12 +29,6 @@ class RoutineLikeServiceTest {
     @Autowired
     private UserDao userDao;
 
-    @Autowired
-    private RoutineDao routineDao;
-
-    @Autowired
-    private RoutineLikeDao routineLikeDao;
-
     @Test
     void testLikeRoutine() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
         User user = userDao.save(new User("u1", "n1", "u1@test.com", "600000001",

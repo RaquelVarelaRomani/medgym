@@ -7,7 +7,6 @@
     width: 100%;
     padding: 2rem;
     background: var(--bg-primary) !important;
-    box-sizing: border-box;
 }
 
 .history-titulo-grande {

@@ -5,7 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
     tryLoginFromServiceToken,
     getUser,
-    becomePremium
+    becomePremium,
+    deletePremium
 } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
 import ConfirmationPopup from "../common/popup/ConfirmationPopup";
@@ -19,6 +20,8 @@ import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
+import AchievementCard from "../achievements/AchievementCard";
+import {getAllAchievementProgresses} from "../../../../backend/achievementService";
 
 /* Helpers fuera del componente para reducir profundidad de funciones */
 
@@ -52,6 +55,15 @@ const getIsFollowingTrainer = (meId, profileId) =>
     new Promise((resolve) =>
         getFollowedTrainers(meId, (trainers) =>
             resolve(trainers.some((t) => t.trainerId === profileId))
+        )
+    );
+
+const getAchievements = (userId) =>
+    new Promise(resolve =>
+        getAllAchievementProgresses(
+            userId,
+            resolve,
+            () => resolve([]) // fallback seguro
         )
     );
 
@@ -94,8 +106,7 @@ function ProfileHeader(props) {
 
     const canBecomePremium =
         showSelfActions &&
-        me.role === "TRAINER" &&
-        !me.trainerPremium;
+        me.role === "TRAINER";
 
     return (
         <div className={styles["profile-header"]}>
@@ -181,13 +192,12 @@ function ProfileHeader(props) {
                         >
                             Métricas corporales
                         </button>
-
                         {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}
                                 onClick={handleBecomePremium}
                             >
-                                Hacerme Entrenador premium
+                                {isPremiumTrainer ? "Dejar de ser premium" : "Hacerme Entrenador premium"}
                             </button>
                         )}
                     </>
@@ -246,9 +256,10 @@ const Profile = () => {
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
     const [showBlockPopup, setShowBlockPopup] = useState(false);
     const [showPopupBlocked, setShowPopupBlocked] = useState(false);
-
+    const [achievements, setAchievements] = useState([]);
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [loadingFollow, setLoadingFollow] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -275,11 +286,12 @@ const Profile = () => {
                     setIsBlockedByMe(blocked);
                 }
 
-                const [followersCount, followingCount, followingFlag] =
+                const [followersCount, followingCount, followingFlag, myAchievements] =
                     await Promise.all([
                         getFollowersCount(user.id),
                         getFollowingCount(user.id),
-                        getIsFollowingTrainer(meUser.id, user.id)
+                        getIsFollowingTrainer(meUser.id, user.id),
+                        getAchievements(user.id)
                     ]);
 
                 if (!isMounted) return;
@@ -287,6 +299,7 @@ const Profile = () => {
                 setFollowers(followersCount);
                 setFollowing(followingCount);
                 setIsFollowing(followingFlag);
+                setAchievements(myAchievements);
                 setLoading(false);
             } catch (e) {
                 if(e instanceof Error && e.message === "AUTH_ERROR") {
@@ -349,13 +362,31 @@ const Profile = () => {
     const handleBecomePremium = () => {
         if (!me) return;
 
-        becomePremium(
+        if (me.trainerPremium) {
+            setShowConfirmationPopup(true);
+        } else {
+            becomePremium(
+                me.id,
+                () => {
+                    const newPremium = !me.trainerPremium;
+                    setMe((prev) => ({ ...prev, trainerPremium: newPremium }));
+                    setProfile((prev) => ({ ...prev, trainerPremium: newPremium }));
+                },
+                (err) => alert("Error: " + err)
+            );
+        }
+    };
+
+    const handleConfirmStopPremium = () => {
+        setShowConfirmationPopup(false);
+        deletePremium(
             me.id,
             () => {
-                setMe((prev) => ({ ...prev, trainerPremium: true }));
-                setProfile((prev) => ({ ...prev, trainerPremium: true }));
+                const newPremium = !me.trainerPremium;
+                setMe((prev) => ({ ...prev, trainerPremium: newPremium }));
+                setProfile((prev) => ({ ...prev, trainerPremium: newPremium }));
             },
-            (err) => alert("Error becoming premium: " + err)
+            (err) => alert("Error: " + err)
         );
     };
 
@@ -479,6 +510,25 @@ const Profile = () => {
                     navigate("/users/profile");
                 }}
             />
+            
+            <ConfirmationPopup
+                show={showConfirmationPopup}
+                text="¿Estás seguro de que quieres dejar de ser premium?"
+                onOk={handleConfirmStopPremium}
+                onCancel={() => setShowConfirmationPopup(false)}
+            />
+
+            {profile &&
+                <div className={styles.achievementsSection}>
+                    <h3 className={styles.achievementsTitle}>Logros</h3>
+
+                    <div className={styles.achievementsList}>
+                        {achievements.map((a) => (
+                            <AchievementCard key={a.id} achievement={a} />
+                        ))}
+                    </div>
+                </div>
+            }
 
             {profile && <UserWorkoutHistory id={profile.id.toString()} />}
 
