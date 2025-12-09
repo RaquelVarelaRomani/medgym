@@ -273,3 +273,14 @@ VALUES
      'Deja comentarios en entrenamientos de otros usuarios',
      5, 20, 50);
 
+-- Contenido random coherente para exercise_max_weights
+INSERT INTO exercise_max_weights (max_weight_kg, user_id, exercise_id)
+VALUES
+    (85.0, 2, 1),   -- Laura, Sentadillas
+    (60.0, 2, 8),   -- Laura, Press banca
+    (70.0, 3, 7),   -- Miguel, Peso muerto
+    (12.0, 3, 2),   -- Miguel, Flexiones con lastre simbólico
+    (95.0, 1, 1),   -- Carlos, Sentadillas
+    (110.0, 1, 7),  -- Carlos, Peso muerto
+    (55.0, 4, 5),   -- Sofía, Zancadas
+    (40.0, 4, 9);   -- Sofía, Dominadas con lastre
