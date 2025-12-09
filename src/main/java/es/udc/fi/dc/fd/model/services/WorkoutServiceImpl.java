@@ -23,6 +23,10 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserBlockService userBlockService;
     private final WorkoutExerciseService workoutExerciseService;
 
+    private final String userInstance = "project.entities.user";
+    private final String routineInstance = "project.entities.routine";
+    private final String workoutInstance = "project.entities.workout";
+
     public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, WorkoutExerciseService workoutExerciseService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
@@ -37,13 +41,13 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutDao.save(new Workout(
                 LocalDateTime.now(),
                 null,
-                routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException("project.entities.routine", routineId)),
-                userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId))));
+                routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(routineInstance, routineId)),
+                userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(userInstance, userId))));
     }
 
     @Override
     public void finishWorkout(Long id) throws InstanceNotFoundException {
-        final Workout workout = workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
+        final Workout workout = workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException(workoutInstance, id));
         workout.setEndTime(LocalDateTime.now());
 
         List<WorkoutExercise> exercises = workoutExerciseService.findWorkoutExercisesByWorkoutId(id);
@@ -57,7 +61,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public Workout findWorkoutById(Long id) throws InstanceNotFoundException {
-        return workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
+        return workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException(workoutInstance, id));
     }
 
     @Override
@@ -67,7 +71,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<Workout> findWorkoutsFromFollowing(Long userId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(userInstance, userId));
         List<Long> userFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList(); // mis seguidos
 
         return workoutDao.findAll().stream()
@@ -86,7 +90,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<Workout> getVolumeRankingForRoutine(Long routineId, Long userId) throws InstanceNotFoundException {
-        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException("project.entities.user", userId));
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(userInstance, userId));
         List<Long> tmpUserFollowIds = userFollowDao.findByUser(user).stream().map(uf -> uf.getFollowUser().getId()).toList();
         List<Long> userFollowIds = new ArrayList<>(tmpUserFollowIds);
         userFollowIds.add(userId);

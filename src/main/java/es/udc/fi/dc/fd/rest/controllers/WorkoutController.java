@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutConversor.*;
 

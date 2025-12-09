@@ -22,19 +22,6 @@ public class WorkoutForRankingDto {
         // satisfying SonarQube rules regarding unused or empty methods.
     }
 
-    public WorkoutForRankingDto(Long id, LocalDateTime startTime, LocalDateTime endTime, Long routineId, String routineName, Long userId, String userName, String userSurname, byte[] userProfilePicture, Integer totalVolume) {
-        this.id = id;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.routineId = routineId;
-        this.routineName = routineName;
-        this.userId = userId;
-        this.userName = userName;
-        this.userSurname = userSurname;
-        this.userProfilePicture = userProfilePicture;
-        this.totalVolume = totalVolume;
-    }
-
     public Long getId() {
         return id;
     }
