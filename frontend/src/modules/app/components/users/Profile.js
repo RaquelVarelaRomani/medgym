@@ -27,12 +27,11 @@ import {getAllAchievementProgresses} from "../../../../backend/achievementServic
 
 const getAuth = () =>
     new Promise((resolve, reject) =>
-        tryLoginFromServiceToken(resolve, reject)
+        tryLoginFromServiceToken(resolve, () => reject(new Error("AUTH_ERROR")))
     );
 
 const getUserById = (id) =>
-    new Promise((resolve) => getUser(id, resolve));
-
+    new Promise((resolve, reject) => getUser(id, resolve, (err) => reject(err instanceof Error ? err : new Error(err))));
 const checkIsBlocked = (userId) =>
     new Promise((resolve) =>
         isBlocked(
@@ -255,8 +254,9 @@ const Profile = () => {
     const [following, setFollowing] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
+    const [showBlockPopup, setShowBlockPopup] = useState(false);
+    const [showPopupBlocked, setShowPopupBlocked] = useState(false);
     const [achievements, setAchievements] = useState([]);
-
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
@@ -302,10 +302,15 @@ const Profile = () => {
                 setAchievements(myAchievements);
                 setLoading(false);
             } catch (e) {
-                console.error("Error loading profile:", e);
-                if (isMounted) {
+                if(e instanceof Error && e.message === "AUTH_ERROR") {
+                    setShowPopup(true);
                     navigate("/users/login");
+                    setLoading(false);
+                    return;
                 }
+
+                setShowPopupBlocked(true);
+                setLoading(false);
             }
         };
 
@@ -397,15 +402,29 @@ const Profile = () => {
             return;
         }
 
+        setShowBlockPopup(true);
+    };
+
+    const confirmBlockUser = () => {
         blockUser(
             profile.id,
             () => {
+                if (isFollowing) {
+                    setIsFollowing(false);
+                    setFollowers(n => Math.max(0, n - 1));
+                    window.dispatchEvent(new Event("followChanged"));
+                }
                 setIsBlockedByMe(true);
-                setIsFollowing(false);
+                setShowBlockPopup(false);
             },
-            (err) => console.error(err)
+            (err) => {
+                console.error(err);
+                setShowBlockPopup(false);
+            }
         );
-    };
+    }
+
+    const cancelBlockUser = () => setShowBlockPopup(false);
 
     const handleFollowToggle = () => {
         if (!profile || loadingFollow) return;
@@ -476,6 +495,22 @@ const Profile = () => {
                 }}
             />
 
+            <ConfirmationPopup
+                show={showBlockPopup}
+                text="¿Seguro que quieres bloquear a este usuario?"
+                onOk={confirmBlockUser}
+                onCancel={cancelBlockUser}
+            />
+
+            <Popup
+                text="No puedes acceder al perfil de este usuario porque te ha bloqueado."
+                show={showPopupBlocked}
+                onOk={() => {
+                    setShowPopupBlocked(false);
+                    navigate("/users/profile");
+                }}
+            />
+            
             <ConfirmationPopup
                 show={showConfirmationPopup}
                 text="¿Estás seguro de que quieres dejar de ser premium?"

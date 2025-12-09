@@ -1111,6 +1111,8 @@ describe("Profile and EditProfile Components", () => {
 
           const blockButton = screen.getByRole("button", { name: "Bloquear" });
           fireEvent.click(blockButton);
+          const okButton = screen.getByRole("button", { name: "OK" });
+          fireEvent.click(okButton);
 
           expect(blockUser).toHaveBeenCalledWith(
               2,
