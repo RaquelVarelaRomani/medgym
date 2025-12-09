@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.max;
+
 @Service
 @Transactional
 public class WorkoutServiceImpl implements WorkoutService {
@@ -22,14 +24,18 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserFollowDao userFollowDao;
     private final UserBlockService userBlockService;
     private final NotificationService notificationService;
+    private final WorkoutExerciseDao workoutExerciseDao;
+    private final ExerciseMaxWeightService exerciseMaxWeightService;
 
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, NotificationService notificationService) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, NotificationService notificationService, WorkoutExerciseDao workoutExerciseDao, ExerciseMaxWeightService exerciseMaxWeightService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.userFollowDao = userFollowDao;
         this.userBlockService = userBlockService;
         this.notificationService = notificationService;
+        this.workoutExerciseDao = workoutExerciseDao;
+        this.exerciseMaxWeightService = exerciseMaxWeightService;
     }
 
     @Override
@@ -45,6 +51,12 @@ public class WorkoutServiceImpl implements WorkoutService {
     public void finishWorkout(Long id) throws InstanceNotFoundException {
         final Workout workout = workoutDao.findById(id).orElseThrow(() -> new InstanceNotFoundException("project.entities.workout", id));
         workout.setEndTime(LocalDateTime.now());
+
+        List<WorkoutExercise> workoutExercises = workoutExerciseDao.findByWorkoutId(id);
+
+        for (WorkoutExercise workoutExercise : workoutExercises) {
+            exerciseMaxWeightService.addOrUpdateMaxWeight(workout.getUser().getId(), workoutExercise.getRoutineExercise().getExercise().getId(), workoutExercise.getWeight());
+        }
     }
 
     @Override

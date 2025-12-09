@@ -176,3 +176,19 @@
         max-width: 600px;
     }
 }
+
+.rankingBox {
+    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.rankingTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
