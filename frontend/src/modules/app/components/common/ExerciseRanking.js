@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./ExerciseRanking.module.css";
+import PropTypes from "prop-types";
 
 const ExerciseRanking = ({ ranking, currentUser }) => {
     if (!ranking) return null;
@@ -43,3 +44,22 @@ const ExerciseRanking = ({ ranking, currentUser }) => {
 };
 
 export default ExerciseRanking;
+
+ExerciseRanking.propTypes = {
+    ranking: PropTypes.arrayOf(
+        PropTypes.shape({
+            userId: PropTypes.number.isRequired,
+            userName: PropTypes.string.isRequired,
+            userSurname: PropTypes.string.isRequired,
+            userProfilePicture: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.object,
+                PropTypes.instanceOf(Uint8Array)
+            ]),
+            maxWeightKg: PropTypes.number.isRequired
+        })
+    ).isRequired,
+    currentUser: PropTypes.shape({
+        id: PropTypes.number.isRequired
+    })
+};

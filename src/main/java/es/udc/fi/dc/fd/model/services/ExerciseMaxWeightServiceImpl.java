@@ -2,7 +2,6 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,17 +12,22 @@ import java.util.List;
 @Transactional
 public class ExerciseMaxWeightServiceImpl implements ExerciseMaxWeightService {
 
-    @Autowired
-    private ExerciseMaxWeightDao exerciseMaxWeightDao;
+    private final ExerciseMaxWeightDao exerciseMaxWeightDao;
+    private final UserDao userDao;
+    private final ExerciseDao exerciseDao;
+    private final UserFollowService userFollowService;
 
-    @Autowired
-    private UserDao userDao;
+    public ExerciseMaxWeightServiceImpl(
+            ExerciseMaxWeightDao exerciseMaxWeightDao,
+            UserDao userDao,
+            ExerciseDao exerciseDao,
+            UserFollowService userFollowService) {
 
-    @Autowired
-    private ExerciseDao exerciseDao;
-
-    @Autowired
-    private UserFollowService userFollowService;
+        this.exerciseMaxWeightDao = exerciseMaxWeightDao;
+        this.userDao = userDao;
+        this.exerciseDao = exerciseDao;
+        this.userFollowService = userFollowService;
+    }
 
     @Override
     public void addOrUpdateMaxWeight(Long userId, Long exerciseId, Short maxWeightKg) throws InstanceNotFoundException {
