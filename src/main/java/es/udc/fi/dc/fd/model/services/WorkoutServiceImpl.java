@@ -2,6 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,15 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserDao userDao;
     private final UserFollowDao userFollowDao;
     private final UserBlockService userBlockService;
+    private final NotificationService notificationService;
 
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, NotificationService notificationService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.userFollowDao = userFollowDao;
         this.userBlockService = userBlockService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -109,4 +112,17 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         return streak;
     }
+
+    @Override
+    @Scheduled(cron = "0 0 9 * * ?")
+    public void remindStreak() throws InstanceNotFoundException {
+        List<User> users = userDao.findAll();
+        for (User user : users) {
+            int currentStreak = calculateCurrentStreak(user.getId());
+            if (currentStreak > 1) {
+                notificationService.createStreakRemindNotification(user.getId(), currentStreak);
+            }
+        }
+    }
+
 }

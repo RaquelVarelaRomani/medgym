@@ -95,6 +95,7 @@ public class Notification {
         ROUTINE_LIKE,
         WORKOUT_LIKE,
         WORKOUT_COMMENT,
+        STREAK_REMINDER,
         ACHIEVEMENT
     }
 
