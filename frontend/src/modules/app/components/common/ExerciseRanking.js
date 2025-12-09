@@ -11,15 +11,15 @@ const ExerciseRanking = ({ ranking, currentUser }) => {
 
     return (
         <ul className={styles.list}>
-            {sorted.map((p, index) => {
+            {sorted.map((p) => {
                 const highlight = currentUser && p.userId === currentUser.id;
 
                 return (
                     <li
-                        key={index}
+                        key={p.id}
                         className={highlight ? styles.itemHighlight : styles.item}
                     >
-                        <span className={styles.position}>{index + 1}.</span>
+                        <span className={styles.position}>{sorted.indexOf(p) + 1}.</span>
 
                         <img
                             className={styles.avatar}
