@@ -12,6 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Workout;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import es.udc.fi.dc.fd.model.entities.WorkoutExercise;
+import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
+import java.util.List;
 
 @SpringBootApplication
 public class Application {
@@ -54,6 +59,25 @@ public class Application {
                     achievementProgressService.recalculateAchievementProgressForUser(user.getId());
                 } catch (InstanceNotFoundException e) {
                 //
+                }
+            }
+        };
+    }
+    @Bean
+    public CommandLineRunner calculateTotalVolumeRunner(WorkoutDao workoutDao, WorkoutExerciseService workoutExerciseService) {
+        return args -> {
+            for (Workout workout : workoutDao.findAll()) {
+                try {
+                    List<WorkoutExercise> exercises = workoutExerciseService.findWorkoutExercisesByWorkoutId(workout.getId());
+
+                    int totalVolume = exercises.stream()
+                            .filter(we -> we.getReps() != null && we.getWeight() != null)
+                            .mapToInt(we -> we.getReps() * we.getWeight())
+                            .sum();
+                    workout.setTotalVolume(totalVolume);
+                    workoutDao.save(workout);
+                } catch (InstanceNotFoundException e) {
+                    //
                 }
             }
         };
