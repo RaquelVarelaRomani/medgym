@@ -1000,7 +1000,7 @@ describe("Common Components", () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText("🏋️ Entrenamiento Activo")).toBeInTheDocument();
+        expect(screen.getByText("Entrenamiento Activo")).toBeInTheDocument();
       });
     });
 
@@ -1024,7 +1024,7 @@ describe("Common Components", () => {
       );
 
       await waitFor(() => {
-        const activeWorkoutButton = screen.getByText("🏋️ Entrenamiento Activo");
+        const activeWorkoutButton = screen.getByText("Entrenamiento Activo");
         fireEvent.click(activeWorkoutButton);
         expect(mockNavigate).toHaveBeenCalledWith("/workouts/session/123");
       });

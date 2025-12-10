@@ -84,4 +84,11 @@ public class WorkoutController {
 
         return StatisticsConversor.toStatisticsDto(workouts, performedExercises);
     }
+
+    @GetMapping("/routine/{routineId}/volume-ranking")
+    public List<WorkoutForRankingDto> getVolumeRanking(@PathVariable Long routineId, @RequestAttribute Long userId) throws InstanceNotFoundException {
+        List<Workout> workouts = workoutService.getVolumeRankingForRoutine(routineId, userId);
+
+        return WorkoutConversor.toWorkoutForRankingDtos(workouts);
+    }
 }

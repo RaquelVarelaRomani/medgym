@@ -80,3 +80,10 @@ export const getStatsForMonth = (month, year, onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 );
+
+export const getVolumeRankingForRoutine = (routineId, onSuccess, onErrors) => appFetch(
+    `/workouts/routine/${routineId}/volume-ranking`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

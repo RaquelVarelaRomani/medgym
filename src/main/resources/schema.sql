@@ -96,6 +96,7 @@ CREATE TABLE workouts
     id         BIGINT   NOT NULL AUTO_INCREMENT,
     start_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     end_time   DATETIME,
+    total_volume BIGINT,
     routine_id BIGINT   NOT NULL,
     user_id    BIGINT   NOT NULL,
 

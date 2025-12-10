@@ -2,7 +2,10 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 import es.udc.fi.dc.fd.model.entities.Workout;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutCommentConversor.toWorkoutCommentDtos;
 import static es.udc.fi.dc.fd.rest.dtos.WorkoutLikeConversor.toWorkoutLikeDtos;
@@ -62,6 +65,23 @@ public class WorkoutConversor {
         return workoutForHistoryDto;
     }
 
+    public static WorkoutForRankingDto toWorkoutForRankingDto(Workout workout){
+        WorkoutForRankingDto workoutForRankingDto = new WorkoutForRankingDto();
+
+        workoutForRankingDto.setId((workout.getId()));
+        workoutForRankingDto.setStartTime(workout.getStartTime());
+        workoutForRankingDto.setEndTime(workout.getEndTime());
+        workoutForRankingDto.setRoutineId(workout.getRoutine().getId());
+        workoutForRankingDto.setRoutineName(workout.getRoutine().getName());
+        workoutForRankingDto.setUserId(workout.getUser().getId());
+        workoutForRankingDto.setUserName(workout.getUser().getName());
+        workoutForRankingDto.setUserSurname(workout.getUser().getSurname());
+        workoutForRankingDto.setUserProfilePicture(workout.getUser().getProfilePicture());
+        workoutForRankingDto.setTotalVolume(workout.getTotalVolume());
+
+        return workoutForRankingDto;
+    }
+
     public static List<WorkoutDto> toWorkoutDtos(List<Workout> workouts) {
         return workouts.stream().map(WorkoutConversor::toWorkoutDto).toList();
     }
@@ -72,6 +92,17 @@ public class WorkoutConversor {
 
     public static List<WorkoutForHistoryDto> toWorkoutForHistoryDtos(List<Workout> workouts) {
         return workouts.stream().map(WorkoutConversor::toWorkoutForHistoryDto).toList();
+    }
+
+    public static List<WorkoutForRankingDto> toWorkoutForRankingDtos(List<Workout> workouts) {
+        return workouts.stream()
+            .collect(Collectors.groupingBy(w -> w.getUser().getId()))
+            .values().stream()
+            .map(group -> group.stream().max(Comparator.comparing(Workout::getTotalVolume)).orElse(null))
+            .filter(Objects::nonNull)
+            .map(WorkoutConversor::toWorkoutForRankingDto)
+            .sorted(Comparator.comparing(WorkoutForRankingDto::getTotalVolume).reversed())
+            .toList();
     }
 
 }

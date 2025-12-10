@@ -158,7 +158,7 @@ const Header = () => {
                             onClick={handleActiveWorkoutClick}
                             title={`Entrenamiento activo: ${activeWorkout.routineName}`}
                         >
-                            🏋️ Entrenamiento Activo
+                            Entrenamiento Activo
                         </button>
                     )}
                     <Link
@@ -185,6 +185,12 @@ const Header = () => {
                         className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Historial
+                    </Link>
+                    <Link
+                        to="/workouts/rankings"
+                        className={location.pathname.includes('/workouts/rankings') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Rankings
                     </Link>
                     {isAdmin() && (
                         <Link
