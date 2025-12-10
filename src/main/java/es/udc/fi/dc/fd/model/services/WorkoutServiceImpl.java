@@ -22,29 +22,21 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserDao userDao;
     private final UserFollowDao userFollowDao;
     private final UserBlockService userBlockService;
-<<<<<<< HEAD
+    private final NotificationService notificationService;
     private final WorkoutExerciseService workoutExerciseService;
 
     private final static String userInstance = "project.entities.user";
     private final static String routineInstance = "project.entities.routine";
     private final static String workoutInstance = "project.entities.workout";
 
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, WorkoutExerciseService workoutExerciseService) {
-=======
-    private final NotificationService notificationService;
-
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, NotificationService notificationService) {
->>>>>>> develop
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService,  NotificationService notificationService, WorkoutExerciseService workoutExerciseService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.userFollowDao = userFollowDao;
         this.userBlockService = userBlockService;
-<<<<<<< HEAD
-        this.workoutExerciseService = workoutExerciseService;
-=======
         this.notificationService = notificationService;
->>>>>>> develop
+        this.workoutExerciseService = workoutExerciseService;
     }
 
     @Override

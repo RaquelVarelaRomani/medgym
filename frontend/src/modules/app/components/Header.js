@@ -188,7 +188,7 @@ const Header = () => {
                     </Link>
                     <Link
                         to="/workouts/rankings"
-                        className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                        className={location.pathname.includes('/workouts/rankings') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
                         Rankings
                     </Link>
