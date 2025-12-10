@@ -151,7 +151,7 @@ const RoutinesList = ({ routines, onRoutineClick }) => {
                     key={routine.id}
                     className={styles["routine-card"]}
                     onClick={() => onRoutineClick(routine)}
-                    tabIndex={0}
+                    aria-hidden="true"
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             onRoutineClick(routine);
