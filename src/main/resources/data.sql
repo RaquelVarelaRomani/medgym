@@ -120,9 +120,8 @@ VALUES
     -- Entrenamiento antiguo de prueba
     ('2025-08-10 10:00:00', '2025-08-10 11:00:00', 1, 2),
 
-    -- Activos
-    ('2025-10-16 07:30:00', NULL, 2, 3),
-    ('2025-10-16 21:00:00', NULL, 4, 2),
+    ('2025-10-16 07:30:00', '2025-10-16 08:30:00', 2, 3),
+    ('2025-10-16 21:00:00', '2025-10-16 21:30:00', 4, 2),
 
     -- Laura (cliente id=2) datos de octubre
     ('2025-10-05 19:30:00', '2025-10-05 20:15:00', 1, 2),
@@ -184,7 +183,11 @@ VALUES
     -- Notificación por like en rutina (LIKE = 2)
     ("Laura ha dado like a tu rutina 'Rutina fuerza inicial'", 2, 1, 1, FALSE, '2025-10-16 09:00:00'),
     ("Miguel ha dado like a tu rutina 'Rutina cardio avanzado'", 2, 2, 1, FALSE, '2025-10-16 09:10:00'),
-    ("Ana ha dado like a tu rutina 'Rutina cuerpo completo'", 2, 3, 4, TRUE, '2025-10-16 09:15:00');
+    ("Ana ha dado like a tu rutina 'Rutina cuerpo completo'", 2, 3, 4, TRUE, '2025-10-16 09:15:00'),
+
+    -- Notificación de racha
+    ("Llevas una racha de 3 días. ¡No la pierdas!", 5, 2, 2, FALSE, '2025-10-16 09:15:00');
+
 
 
 INSERT INTO routine_likes (routine_id, user_id)
@@ -261,3 +264,99 @@ VALUES ('Buena sesión, ritmo suave pero constante.', '2025-02-01 19:42:00', 3, 
 INSERT INTO user_block (blocker_id, blocked_id)
 VALUES (2, 3),
        (1, 3);
+
+INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
+VALUES
+    ('Cronista del Entreno',
+     'Acumula horas activas',
+     36000, 144000, 360000), -- IMPORTANTE: VALORES EN SEGUNDOS
+
+    ('Coleccionista de Repeticiones',
+     'Suma ejercicios completados',
+     250, 1000, 2500),
+
+    ('Completador de Sesiones',
+     'Registra cada rutina terminada',
+     5, 20, 50),
+
+    ('Énfasis en el Hábito',
+     'Completa días de entrenamiento consecutivos',
+     3, 7, 30),
+
+    ('Levantando el Gym',
+     'Supera tu marca de peso levantado',
+     50, 125, 250),
+
+    ('Dando Likes',
+     'Da likes a entrenamientos de otros usuarios',
+     10, 50, 100),
+
+    ('Comentando Entrenos',
+     'Deja comentarios en entrenamientos de otros usuarios',
+     5, 20, 50);
+
+
+
+INSERT INTO workouts (start_time, end_time, routine_id, user_id)
+VALUES
+    -- 1. Entrenamiento de Laura ayer (Racha 1)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
+
+    -- 2. Entrenamiento de Laura anteayer (Racha 2)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
+
+    -- 3. Entrenamiento de Laura Hoy (Racha 3)
+    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
+
+-- Laura (Workout 20 - Rutina 3: Cuerpo completo)
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+VALUES (10, 40, 35, 20, 9),  -- Sentadillas
+       (12, 0, 30, 20, 10), -- Flexiones
+       (10, 0, 40, 20, 11), -- Zancadas
+       (5, 0, 45, 20, 12);  -- Dominadas
+
+-- Laura (Workout 21 - Rutina 1: Fuerza inicial)
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+VALUES (10, 45, 40, 21, 1),  -- Sentadillas
+       (12, 0, 30, 21, 2),  -- Flexiones
+       (8, 60, 50, 21, 3),  -- Peso muerto
+       (10, 45, 45, 21, 4); -- Press banca
+
+-- Contenido random coherente para exercise_max_weights
+-- Carlos (1), Laura (2), Miguel (3), Sofía (4), Andrés (5)
+INSERT INTO exercise_max_weights (max_weight_kg, user_id, exercise_id)
+VALUES
+    -- SENTADILLAS (exercise_id = 1)
+    (95.0, 1, 1),   -- Carlos
+    (85.0, 2, 1),   -- Laura
+    (70.0, 3, 1),   -- Miguel
+    (55.0, 4, 1),   -- Sofía
+    (80.0, 5, 1),   -- Andrés
+
+    -- PRESS BANCA (exercise_id = 8)
+    (75.0, 1, 8),   -- Carlos
+    (60.0, 2, 8),   -- Laura
+    (82.0, 5, 8),   -- Andrés
+    (50.0, 3, 8),   -- Miguel
+    (40.0, 4, 8),   -- Sofía
+
+    -- PESO MUERTO (exercise_id = 7)
+    (110.0, 1, 7),  -- Carlos
+    (95.0, 5, 7),   -- Andrés
+    (70.0, 3, 7),   -- Miguel
+    (65.0, 2, 7),   -- Laura
+    (55.0, 4, 7),   -- Sofía
+
+    -- DOMINADAS CON LASTRE (exercise_id = 9)
+    (25.0, 1, 9),   -- Carlos
+    (12.0, 3, 9),   -- Miguel
+    (18.0, 5, 9),   -- Andrés
+    (8.0, 4, 9),    -- Sofía
+    (10.0, 2, 9),   -- Laura
+
+    -- ZANCADAS (exercise_id = 5)
+    (55.0, 4, 5),   -- Sofía
+    (65.0, 1, 5),   -- Carlos
+    (50.0, 2, 5),   -- Laura
+    (45.0, 3, 5),   -- Miguel
+    (58.0, 5, 5);   -- Andrés

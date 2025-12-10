@@ -5,9 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
     tryLoginFromServiceToken,
     getUser,
-    becomePremium
+    becomePremium,
+    deletePremium
 } from "../../../../backend/userService";
 import Popup from "../common/popup/Popup";
+import ConfirmationPopup from "../common/popup/ConfirmationPopup";
 import {
     getFollowedTrainers,
     getFollowers,
@@ -18,17 +20,18 @@ import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
+import AchievementCard from "../achievements/AchievementCard";
+import {getAllAchievementProgresses} from "../../../../backend/achievementService";
 
 /* Helpers fuera del componente para reducir profundidad de funciones */
 
 const getAuth = () =>
     new Promise((resolve, reject) =>
-        tryLoginFromServiceToken(resolve, reject)
+        tryLoginFromServiceToken(resolve, () => reject(new Error("AUTH_ERROR")))
     );
 
 const getUserById = (id) =>
-    new Promise((resolve) => getUser(id, resolve));
-
+    new Promise((resolve, reject) => getUser(id, resolve, (err) => reject(err instanceof Error ? err : new Error(err))));
 const checkIsBlocked = (userId) =>
     new Promise((resolve) =>
         isBlocked(
@@ -52,6 +55,15 @@ const getIsFollowingTrainer = (meId, profileId) =>
     new Promise((resolve) =>
         getFollowedTrainers(meId, (trainers) =>
             resolve(trainers.some((t) => t.trainerId === profileId))
+        )
+    );
+
+const getAchievements = (userId) =>
+    new Promise(resolve =>
+        getAllAchievementProgresses(
+            userId,
+            resolve,
+            () => resolve([]) // fallback seguro
         )
     );
 
@@ -89,14 +101,12 @@ function ProfileHeader(props) {
     const blockText = isBlockedByMe ? "Desbloquear" : "Bloquear";
 
     const isPremiumTrainer =
-        profile &&
-        profile.role === "TRAINER" &&
-        profile.trainerPremium;
+        profile?.role === "TRAINER" &&
+        profile?.trainerPremium;
 
     const canBecomePremium =
         showSelfActions &&
-        me.role === "TRAINER" &&
-        !me.trainerPremium;
+        me.role === "TRAINER";
 
     return (
         <div className={styles["profile-header"]}>
@@ -120,6 +130,16 @@ function ProfileHeader(props) {
                 <div>
                     <h2 className={styles["profile-name"]}>
                         {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
+                        {profile?.streak > 0 && (
+                             <span className={profile?.trainedToday ? styles["training-indicator"] : styles["training-indicator-gray"]} title="Racha de entrenamientos">
+                                🔥 {profile.streak}
+                             </span>
+                        )}
+                        {!profile?.trainedToday && profile?.streak > 0 && (
+                             <span className={styles["training-indicator-clock"]} title="¡No has entrenado hoy!">
+                                🕒
+                             </span>
+                        )}
                         {isPremiumTrainer && (
                             <span className={styles["premium-badge"]}>
                                 Entrenador premium
@@ -182,13 +202,12 @@ function ProfileHeader(props) {
                         >
                             Métricas corporales
                         </button>
-
                         {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}
                                 onClick={handleBecomePremium}
                             >
-                                Hacerme Entrenador premium
+                                {isPremiumTrainer ? "Dejar de ser premium" : "Hacerme Entrenador premium"}
                             </button>
                         )}
                     </>
@@ -245,9 +264,12 @@ const Profile = () => {
     const [following, setFollowing] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isBlockedByMe, setIsBlockedByMe] = useState(false);
-
+    const [showBlockPopup, setShowBlockPopup] = useState(false);
+    const [showPopupBlocked, setShowPopupBlocked] = useState(false);
+    const [achievements, setAchievements] = useState([]);
     const [showMetrics, setShowMetrics] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
+    const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [loadingFollow, setLoadingFollow] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -274,11 +296,12 @@ const Profile = () => {
                     setIsBlockedByMe(blocked);
                 }
 
-                const [followersCount, followingCount, followingFlag] =
+                const [followersCount, followingCount, followingFlag, myAchievements] =
                     await Promise.all([
                         getFollowersCount(user.id),
                         getFollowingCount(user.id),
-                        getIsFollowingTrainer(meUser.id, user.id)
+                        getIsFollowingTrainer(meUser.id, user.id),
+                        getAchievements(user.id)
                     ]);
 
                 if (!isMounted) return;
@@ -286,12 +309,18 @@ const Profile = () => {
                 setFollowers(followersCount);
                 setFollowing(followingCount);
                 setIsFollowing(followingFlag);
+                setAchievements(myAchievements);
                 setLoading(false);
             } catch (e) {
-                console.error("Error loading profile:", e);
-                if (isMounted) {
+                if(e instanceof Error && e.message === "AUTH_ERROR") {
+                    setShowPopup(true);
                     navigate("/users/login");
+                    setLoading(false);
+                    return;
                 }
+
+                setShowPopupBlocked(true);
+                setLoading(false);
             }
         };
 
@@ -343,13 +372,31 @@ const Profile = () => {
     const handleBecomePremium = () => {
         if (!me) return;
 
-        becomePremium(
+        if (me.trainerPremium) {
+            setShowConfirmationPopup(true);
+        } else {
+            becomePremium(
+                me.id,
+                () => {
+                    const newPremium = !me.trainerPremium;
+                    setMe((prev) => ({ ...prev, trainerPremium: newPremium }));
+                    setProfile((prev) => ({ ...prev, trainerPremium: newPremium }));
+                },
+                (err) => alert("Error: " + err)
+            );
+        }
+    };
+
+    const handleConfirmStopPremium = () => {
+        setShowConfirmationPopup(false);
+        deletePremium(
             me.id,
             () => {
-                setMe((prev) => ({ ...prev, trainerPremium: true }));
-                setProfile((prev) => ({ ...prev, trainerPremium: true }));
+                const newPremium = !me.trainerPremium;
+                setMe((prev) => ({ ...prev, trainerPremium: newPremium }));
+                setProfile((prev) => ({ ...prev, trainerPremium: newPremium }));
             },
-            (err) => alert("Error becoming premium: " + err)
+            (err) => alert("Error: " + err)
         );
     };
 
@@ -365,15 +412,29 @@ const Profile = () => {
             return;
         }
 
+        setShowBlockPopup(true);
+    };
+
+    const confirmBlockUser = () => {
         blockUser(
             profile.id,
             () => {
+                if (isFollowing) {
+                    setIsFollowing(false);
+                    setFollowers(n => Math.max(0, n - 1));
+                    window.dispatchEvent(new Event("followChanged"));
+                }
                 setIsBlockedByMe(true);
-                setIsFollowing(false);
+                setShowBlockPopup(false);
             },
-            (err) => console.error(err)
+            (err) => {
+                console.error(err);
+                setShowBlockPopup(false);
+            }
         );
-    };
+    }
+
+    const cancelBlockUser = () => setShowBlockPopup(false);
 
     const handleFollowToggle = () => {
         if (!profile || loadingFollow) return;
@@ -443,6 +504,41 @@ const Profile = () => {
                     navigate("/users/login");
                 }}
             />
+
+            <ConfirmationPopup
+                show={showBlockPopup}
+                text="¿Seguro que quieres bloquear a este usuario?"
+                onOk={confirmBlockUser}
+                onCancel={cancelBlockUser}
+            />
+
+            <Popup
+                text="No puedes acceder al perfil de este usuario porque te ha bloqueado."
+                show={showPopupBlocked}
+                onOk={() => {
+                    setShowPopupBlocked(false);
+                    navigate("/users/profile");
+                }}
+            />
+            
+            <ConfirmationPopup
+                show={showConfirmationPopup}
+                text="¿Estás seguro de que quieres dejar de ser premium?"
+                onOk={handleConfirmStopPremium}
+                onCancel={() => setShowConfirmationPopup(false)}
+            />
+
+            {profile &&
+                <div className={styles.achievementsSection}>
+                    <h3 className={styles.achievementsTitle}>Logros</h3>
+
+                    <div className={styles.achievementsList}>
+                        {achievements.map((a) => (
+                            <AchievementCard key={a.id} achievement={a} />
+                        ))}
+                    </div>
+                </div>
+            }
 
             {profile && <UserWorkoutHistory id={profile.id.toString()} />}
 

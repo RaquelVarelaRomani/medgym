@@ -156,6 +156,31 @@ class UserControllerTest {
     }
 
     @Test
+    void testRemoveTrainerPremium_Ok() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("removeTrainer@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(put("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/users/" + trainer.getUserDto().getId() + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isNoContent());
+
+        User user = userDao.findById(trainer.getUserDto().getId()).orElse(null);
+        assert user != null && !user.getTrainerPremium();
+    }
+
+    @Test
+    void testRemoveTrainerPremium_PermissionDenied() throws Exception {
+        AuthenticatedUserDto trainer = createAuthenticatedUser("removeTrainer2@test.com", RoleType.TRAINER);
+
+        mockMvc.perform(delete("/api/users/" + (trainer.getUserDto().getId() + 1) + "/premium")
+                        .header("Authorization", "Bearer " + trainer.getServiceToken()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void testSignUp_Ok() throws Exception {
         String json = """
                 {
@@ -295,16 +320,24 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUser_Blocked() throws Exception {
+        void testGetUser_Blocked_Unilateral() throws Exception {
         AuthenticatedUserDto blocker = createAuthenticatedUser("blocker@test.com", RoleType.CLIENT);
         AuthenticatedUserDto blocked = createAuthenticatedUser("blocked2@test.com", RoleType.CLIENT);
 
+        // A bloquea a B
         userBlockService.blockUser(blocker.getUserDto().getId(), blocked.getUserDto().getId());
 
+        // A puede ver a B → debe devolver 200
         mockMvc.perform(get("/api/users/" + blocked.getUserDto().getId())
                         .header("Authorization", "Bearer " + blocker.getServiceToken()))
+                .andExpect(status().isOk());
+
+        // B NO puede ver a A → debe devolver 403
+        mockMvc.perform(get("/api/users/" + blocker.getUserDto().getId())
+                        .header("Authorization", "Bearer " + blocked.getServiceToken()))
                 .andExpect(status().isForbidden());
-    }
+        }
+
 
     @Test
     void testGetAllUsers_Ok() throws Exception {

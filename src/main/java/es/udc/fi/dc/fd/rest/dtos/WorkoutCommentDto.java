@@ -1,6 +1,7 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class WorkoutCommentDto {
 
@@ -12,6 +13,7 @@ public class WorkoutCommentDto {
     private LocalDateTime date;
     private Long userId;
     private Long workoutId;
+    private List<AchievementProgressDto> newAchievements;
 
     public WorkoutCommentDto() {
         // No-args constructor required for Jackson and frameworks.
@@ -82,5 +84,13 @@ public class WorkoutCommentDto {
 
     public void setUserProfilePicture(byte[] userProfilePicture) {
         this.userProfilePicture = userProfilePicture;
+    }
+
+    public List<AchievementProgressDto> getNewAchievements() {
+        return newAchievements;
+    }
+
+    public void setNewAchievements(List<AchievementProgressDto> newAchievements) {
+        this.newAchievements = newAchievements;
     }
 }

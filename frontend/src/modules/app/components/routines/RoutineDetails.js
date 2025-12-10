@@ -22,6 +22,7 @@ const RoutineDetails = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [showActiveWorkoutPopup, setShowActiveWorkoutPopup] = useState(false);
+  const isTrainer = () => currentUser?.role === "TRAINER";
 
   const toggleExercise = (exerciseId) => {
     setExpandedExercises(prev => ({
@@ -47,6 +48,14 @@ const RoutineDetails = () => {
     if (!currentUser || !routine.trainerId) return false;
     return currentUser.id === routine.trainerId;
   };
+
+  const canEditRoutine = (routine) =>
+      isAdmin() || (isTrainer() && isRoutineCreator(routine));
+
+  const handleEditRoutine = () => {
+      navigate(`/routines/edit/${routine.id}`);
+  };
+
 
     const loadRoutineExercises = (routineId) => {
         const onSuccess = (routineExercisesPage) => {
@@ -159,6 +168,10 @@ const RoutineDetails = () => {
 
     if (!routine) return null;
 
+  const trainerFullName =
+      `${routine.trainerName ?? ""} ${routine.trainerSurname ?? ""}`.trim() ||
+      "Entrenador desconocido";
+
    return (
     <div className={styles["contenedor-routine-details"]}>
       <div className={styles["caja-routine-details"]}>
@@ -177,14 +190,30 @@ const RoutineDetails = () => {
               )}
           </h1>
 
-          {isClient() && (
-            <button
-              className={stylesRoutine["boton-empezar-redondo"]}
-              onClick={handleStartWorkout}
-            >
-              Empezar
-            </button>
-          )}
+          <div className={styles["acciones-rutina"]}>
+            {isClient() && (
+              <button
+                className={stylesRoutine["boton-empezar-redondo"]}
+                onClick={handleStartWorkout}
+              >
+                Empezar
+              </button>
+            )}
+
+            {canEditRoutine(routine) && (
+              <button
+                type="button"
+                className={stylesRoutine["boton-editar"]}
+                onClick={handleEditRoutine}
+              >
+                Editar
+              </button>
+            )}
+          </div>
+         </div>
+
+        <div className={styles["trainer-line"]}>
+          Generado por <strong>{trainerFullName}</strong>
         </div>
 
         <div className={styles["descripcion-rutina"]}>

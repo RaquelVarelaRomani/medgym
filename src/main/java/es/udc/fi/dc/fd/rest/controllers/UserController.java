@@ -5,8 +5,10 @@ import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.model.services.UserService;
+import es.udc.fi.dc.fd.model.services.WorkoutService;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
+
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectPasswordException;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import es.udc.fi.dc.fd.rest.common.ErrorsDto;
@@ -41,12 +43,14 @@ public class UserController {
     private final JwtGenerator jwtGenerator;
     private final UserService userService;
     private final UserBlockService userBlockService;
+    private final WorkoutService workoutService;
 
-    public UserController(MessageSource messageSource, JwtGenerator jwtGenerator, UserService userService, UserBlockService userBlockService) {
+    public UserController(MessageSource messageSource, JwtGenerator jwtGenerator, UserService userService, UserBlockService userBlockService, WorkoutService workoutService) {
         this.messageSource = messageSource;
         this.jwtGenerator = jwtGenerator;
         this.userService = userService;
         this.userBlockService = userBlockService;
+        this.workoutService = workoutService;
     }
 
     @ExceptionHandler(IncorrectLoginException.class)
@@ -102,7 +106,9 @@ public class UserController {
 
         User user = userService.login(params.getEmail(), params.getPassword());
 
-        return toAuthenticatedUserDto(generateServiceToken(user), user);
+        AuthenticatedUserDto authenticatedUserDto = toAuthenticatedUserDto(generateServiceToken(user), user);
+        populateStreakInfo(authenticatedUserDto.getUserDto(), user.getId());
+        return authenticatedUserDto;
 
     }
 
@@ -112,7 +118,9 @@ public class UserController {
 
         User user = userService.loginFromId(userId);
 
-        return toAuthenticatedUserDto(serviceToken, user);
+        AuthenticatedUserDto authenticatedUserDto = toAuthenticatedUserDto(serviceToken, user);
+        populateStreakInfo(authenticatedUserDto.getUserDto(), user.getId());
+        return authenticatedUserDto;
 
     }
 
@@ -155,11 +163,11 @@ public class UserController {
     public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
 
         // No se aplica bloqueo cuando pides tu propio perfil
-        if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId) || userBlockService.hasBlocked(userId, id))) {
+        if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId))) {
             throw new PermissionException();
         }
 
-        return toUserDto(userService.findUserById(id));
+        return populateStreakInfo(toUserDto(userService.findUserById(id)), id);
     }
 
     @GetMapping
@@ -258,5 +266,23 @@ public class UserController {
         }
 
         userService.setTrainerPremium(id, true);
+    }
+
+    @DeleteMapping("/{id}/premium")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTrainerPremium(@RequestAttribute Long userId, @PathVariable Long id)
+            throws PermissionException, InstanceNotFoundException {
+
+        if (!id.equals(userId)) {
+            throw new PermissionException();
+        }
+
+        userService.setTrainerPremium(id, false);
+    }
+
+    private UserDto populateStreakInfo(UserDto userDto, Long userId) {
+        userDto.setStreak(workoutService.calculateCurrentStreak(userId));
+        userDto.setTrainedToday(workoutService.trainedToday(userId));
+        return userDto;
     }
 }

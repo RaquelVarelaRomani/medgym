@@ -117,3 +117,10 @@ export const becomePremium = (id, onSuccess, onErrors) => appFetch(
   onSuccess,
   onErrors
 );
+
+export const deletePremium = (id, onSuccess, onErrors) => appFetch(
+  `/users/${id}/premium`,
+  fetchConfig("DELETE"),
+  onSuccess,
+  onErrors
+);

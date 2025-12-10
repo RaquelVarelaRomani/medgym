@@ -75,3 +75,10 @@ export const getEquipments = (onSuccess, onErrors) => appFetch(
     onSuccess,
     onErrors
 );
+
+export const getExerciseStats = (exerciseId, onSuccess, onErrors) => appFetch(
+    `/stats/exercise/${exerciseId}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);

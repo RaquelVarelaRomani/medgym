@@ -490,7 +490,6 @@ const Routines = () => {
                         () => {
                             setCurrentUser(prev => ({ ...prev, trainerPremium: true }));
                             setShowGoPremiumPopup(false);
-                            navigate("/users/profile/" + currentUser.id, { replace: true });
                         },
                         (err) => alert("Error becoming premium: " + err)
                     );
@@ -1050,7 +1049,7 @@ function RoutineCard({
                 </span>
             )}
 
-            {isAdmin() && (
+            {(isAdmin() || isRoutineCreator(routine)) && (
                 <div>
                     <button
                         className={styles["boton-editar"]}

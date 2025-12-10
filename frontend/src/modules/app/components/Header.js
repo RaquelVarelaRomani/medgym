@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import styles from './Header.module.css';
-import notificationStyles from './common/notifications/NotificationIcon.module.css';
 import {logout, tryLoginFromServiceToken} from "../../../backend/userService";
 import * as workoutService from "../../../backend/workoutService";
 import { getUserNotifications } from "../../../backend/notificationService";
@@ -9,7 +8,6 @@ import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
 import NotificationPopup from "./common/notifications/NotificationPopup";
 import UserSearch from "./users/UserSearch";
-import { getFollowers } from '../../../backend/userFollowService';
 
 const Header = () => {
     const location = useLocation();
@@ -19,7 +17,6 @@ const Header = () => {
     const [activeWorkout, setActiveWorkout] = useState(null);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const [followersCount, setFollowersCount] = useState(0);
     const [showUserSearch, setShowUserSearch] = useState(false);
     const dropdownComponent = useRef(null);
     const userSearchComponent = useRef(null);
@@ -30,19 +27,12 @@ const Header = () => {
         setShowUserSearch(false);
     };
 
-    const handleToggleUserSearch = () => {
-        setShowUserSearch(prev => !prev);
-        setShowNotifications(false);
-        setIsDropdownOpen(false);
-    };
-
     useEffect(() => {
         tryLoginFromServiceToken(
             (authenticatedUser) => {
                 console.log("User data in header:", authenticatedUser.user);
                 setProfile(authenticatedUser.user);
                 checkActiveWorkout();
-                checkFollowers(authenticatedUser.user);
             },
             (error) => {
                 console.error("Failed to get user data in header:", error);
@@ -61,16 +51,6 @@ const Header = () => {
                 setActiveWorkout(null);
             }
         );
-    };
-
-    const checkFollowers = (user) => {
-        if (user.role === "TRAINER") {
-            getFollowers(
-                user.id,
-                (followers) => setFollowersCount(followers.length),
-                () => setFollowersCount(0)
-            );
-        }
     };
 
     useEffect(() => {
@@ -152,7 +132,6 @@ const Header = () => {
         }
     }
 
-
     return (
         <header className={styles['app-header']}>
             <div className={styles['header-glow']}></div>
@@ -160,7 +139,7 @@ const Header = () => {
 
                 {/* left section - branding */}
                 <div className={styles['header-left']}>
-                    <Link to="/routines" className={styles['logo-link']}>
+                    <Link to="/workouts/feed" className={styles['logo-link']}>
                         <img
                             src={process.env.PUBLIC_URL + "/assets/logo.svg"}
                             alt="Logo medgym"
@@ -178,9 +157,16 @@ const Header = () => {
                             onClick={handleActiveWorkoutClick}
                             title={`Entrenamiento activo: ${activeWorkout.routineName}`}
                         >
-                            🏋️ Entrenamiento Activo
+                            Entrenamiento Activo
                         </button>
                     )}
+                    <Link
+                        to="/workouts/feed"
+                        className={location.pathname.includes('/workouts/feed') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                    >
+                        Feed
+                    </Link>
+
                     <Link
                         to="/routines"
                         className={location.pathname.includes('/routines') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
@@ -193,17 +179,6 @@ const Header = () => {
                     >
                         Ejercicios
                     </Link>
-                    {profile?.role === "TRAINER" && (
-                        <Link
-                            to={`/users/followers/${profile.id}`}
-                            className={location.pathname === '/users/followers'
-                                ? `${styles['nav-link']} ${styles['active']}`
-                                : styles['nav-link']}
-                        >
-                            Seguidores ({followersCount})
-                        </Link>
-                    )}
-
                     <Link
                         to="/workouts/history"
                         className={location.pathname.includes('/workouts/history') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
@@ -211,12 +186,11 @@ const Header = () => {
                         Historial
                     </Link>
                     <Link
-                        to="/workouts/feed"
-                        className={location.pathname.includes('/workouts/feed') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
+                        to="/workouts/rankings"
+                        className={location.pathname.includes('/workouts/rankings') ? `${styles['nav-link']} ${styles['active']}` : styles['nav-link']}
                     >
-                        Feed
+                        Rankings
                     </Link>
-
                     {isAdmin() && (
                         <Link
                             to="/users/moderation"
@@ -231,17 +205,6 @@ const Header = () => {
 
                 {/* right section - profile */}
                 <div className={styles['header-actions']} ref={dropdownComponent}>
-                    <button
-                        className={notificationStyles['search-button']}
-                        onClick={handleToggleUserSearch}
-                        title="Buscar usuarios"
-                    >
-                        <img
-                            src={process.env.PUBLIC_URL + "/assets/search-icon.svg"}
-                            alt="Buscar usuarios"
-                            className={notificationStyles['notification-icon']}
-                        />
-                    </button>
                     <div className={styles['notification-wrapper']}>
                         <NotificationIcon onClick={handleToggleNotifications} refreshTrigger={notifications} />
                         {showNotifications && (

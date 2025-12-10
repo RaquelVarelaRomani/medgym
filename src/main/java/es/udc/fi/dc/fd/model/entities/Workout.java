@@ -12,6 +12,7 @@ public class Workout {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private Integer totalVolume;
     private Routine routine;
     private User user;
     private List<WorkoutComment> comments;
@@ -51,6 +52,14 @@ public class Workout {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public Integer getTotalVolume() {
+        return totalVolume;
+    }
+
+    public void setTotalVolume(Integer totalVolume) {
+        this.totalVolume = totalVolume;
     }
 
     @ManyToOne

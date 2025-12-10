@@ -163,7 +163,9 @@ VALUES
     -- Notificación por like en rutina (LIKE = 2)
     ('Laura ha dado like a tu rutina ''Rutina fuerza inicial''', 2, 1, 1, FALSE, '2025-10-16 09:00:00'),
     ('Miguel ha dado like a tu rutina ''Rutina cardio avanzado''', 2, 2, 1, FALSE, '2025-10-16 09:10:00'),
-    ('Ana ha dado like a tu rutina ''Rutina cuerpo completo''', 2, 3, 4, TRUE, '2025-10-16 09:15:00');
+    ('Ana ha dado like a tu rutina ''Rutina cuerpo completo''', 2, 3, 4, TRUE, '2025-10-16 09:15:00'),
+    -- Notificación de racha
+    ('Llevas una racha de 3 días. ¡No la pierdas!', 5, 2, 2, FALSE, '2025-10-16 09:15:00');
 
 
 INSERT INTO routine_likes (routine_id, user_id)
@@ -240,3 +242,45 @@ VALUES ('Buena sesión, ritmo suave pero constante.', '2025-02-01 19:42:00', 3, 
 INSERT INTO user_block (blocker_id, blocked_id)
 VALUES (2, 3),
        (1, 3);
+
+INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
+VALUES
+    ('Cronista del Entreno',
+     'Acumula horas activas',
+     36000, 144000, 360000), -- IMPORTANTE: VALORES EN SEGUNDOS
+
+    ('Coleccionista de Repeticiones',
+     'Suma ejercicios completados',
+     250, 1000, 2500),
+
+    ('Completador de Sesiones',
+     'Registra cada rutina terminada',
+     5, 20, 50),
+
+    ('Énfasis en el Hábito',
+     'Completa días de entrenamiento consecutivos',
+     3, 7, 30),
+
+    ('Levantando el Gym',
+     'Supera tu marca de peso levantado',
+     50, 125, 250),
+
+    ('Dando Likes',
+     'Da likes a entrenamientos de otros usuarios',
+     10, 50, 100),
+
+    ('Comentando Entrenos',
+     'Deja comentarios en entrenamientos de otros usuarios',
+     5, 20, 50);
+
+-- Contenido random coherente para exercise_max_weights
+INSERT INTO exercise_max_weights (max_weight_kg, user_id, exercise_id)
+VALUES
+    (85.0, 2, 1),   -- Laura, Sentadillas
+    (60.0, 2, 8),   -- Laura, Press banca
+    (70.0, 3, 7),   -- Miguel, Peso muerto
+    (12.0, 3, 2),   -- Miguel, Flexiones con lastre simbólico
+    (95.0, 1, 1),   -- Carlos, Sentadillas
+    (110.0, 1, 7),  -- Carlos, Peso muerto
+    (55.0, 4, 5),   -- Sofía, Zancadas
+    (40.0, 4, 9);   -- Sofía, Dominadas con lastre

@@ -74,8 +74,15 @@ export const getWorkoutsFromFollowing = (onSuccess, onErrors) => appFetch(
     onErrors
 );
 
-export const getLastMonthStats = (onSuccess, onErrors) => appFetch(
-    `/workouts/stats`,
+export const getStatsForMonth = (month, year, onSuccess, onErrors) => appFetch(
+    `/workouts/stats?month=${month}&year=${year}`,
+    fetchConfig("GET"),
+    onSuccess,
+    onErrors
+);
+
+export const getVolumeRankingForRoutine = (routineId, onSuccess, onErrors) => appFetch(
+    `/workouts/routine/${routineId}/volume-ranking`,
     fetchConfig("GET"),
     onSuccess,
     onErrors
