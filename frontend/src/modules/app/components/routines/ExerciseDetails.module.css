@@ -177,6 +177,22 @@
     }
 }
 
+.rankingBox {
+    margin-top: 2.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.rankingTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 .stats-container {
     margin-top: 30px;
     padding: 20px;
@@ -184,6 +200,7 @@
     border-radius: 12px;
     box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.1);
     color: white;
+    width: 75%;
 }
 .stats-title {
     margin-bottom: 10px;

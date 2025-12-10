@@ -321,3 +321,42 @@ VALUES (10, 45, 40, 21, 1),  -- Sentadillas
        (12, 0, 30, 21, 2),  -- Flexiones
        (8, 60, 50, 21, 3),  -- Peso muerto
        (10, 45, 45, 21, 4); -- Press banca
+
+-- Contenido random coherente para exercise_max_weights
+-- Carlos (1), Laura (2), Miguel (3), Sofía (4), Andrés (5)
+INSERT INTO exercise_max_weights (max_weight_kg, user_id, exercise_id)
+VALUES
+    -- SENTADILLAS (exercise_id = 1)
+    (95.0, 1, 1),   -- Carlos
+    (85.0, 2, 1),   -- Laura
+    (70.0, 3, 1),   -- Miguel
+    (55.0, 4, 1),   -- Sofía
+    (80.0, 5, 1),   -- Andrés
+
+    -- PRESS BANCA (exercise_id = 8)
+    (75.0, 1, 8),   -- Carlos
+    (60.0, 2, 8),   -- Laura
+    (82.0, 5, 8),   -- Andrés
+    (50.0, 3, 8),   -- Miguel
+    (40.0, 4, 8),   -- Sofía
+
+    -- PESO MUERTO (exercise_id = 7)
+    (110.0, 1, 7),  -- Carlos
+    (95.0, 5, 7),   -- Andrés
+    (70.0, 3, 7),   -- Miguel
+    (65.0, 2, 7),   -- Laura
+    (55.0, 4, 7),   -- Sofía
+
+    -- DOMINADAS CON LASTRE (exercise_id = 9)
+    (25.0, 1, 9),   -- Carlos
+    (12.0, 3, 9),   -- Miguel
+    (18.0, 5, 9),   -- Andrés
+    (8.0, 4, 9),    -- Sofía
+    (10.0, 2, 9),   -- Laura
+
+    -- ZANCADAS (exercise_id = 5)
+    (55.0, 4, 5),   -- Sofía
+    (65.0, 1, 5),   -- Carlos
+    (50.0, 2, 5),   -- Laura
+    (45.0, 3, 5),   -- Miguel
+    (58.0, 5, 5);   -- Andrés
