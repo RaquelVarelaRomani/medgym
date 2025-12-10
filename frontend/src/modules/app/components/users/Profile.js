@@ -131,12 +131,12 @@ function ProfileHeader(props) {
                     <h2 className={styles["profile-name"]}>
                         {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
                         {profile?.streak > 0 && (
-                             <span className={styles["training-indicator"]} title="Racha de entrenamientos">
+                             <span className={profile?.trainedToday ? styles["training-indicator"] : styles["training-indicator-gray"]} title="Racha de entrenamientos">
                                 🔥 {profile.streak}
                              </span>
                         )}
                         {profile?.trainedToday && (
-                             <span className={styles["training-indicator"]} title="¡Has entrenado hoy!">
+                             <span className={styles["training-indicator-tick"]} title="¡Has entrenado hoy!">
                                 ✅
                              </span>
                         )}

@@ -370,3 +370,14 @@
     font-size: 1.4rem;
     filter: grayscale(60%)
 }
+
+.training-indicator-tick {
+    margin-left: 4px;
+    font-size: 1.4rem;
+}
+
+.training-indicator-gray {
+    margin-left: 10px;
+    font-size: 1.5rem;
+    filter: grayscale(100%);
+}
