@@ -151,7 +151,6 @@ const RoutinesList = ({ routines, onRoutineClick }) => {
                     key={routine.id}
                     className={styles["routine-card"]}
                     onClick={() => onRoutineClick(routine)}
-                    role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -256,7 +255,7 @@ VolumeRankingView.propTypes = {
             userName: PropTypes.string.isRequired,
             userSurname: PropTypes.string.isRequired,
             workoutId: PropTypes.number.isRequired,
-            workoutDate: PropTypes.string.isRequired,
+            startTime: PropTypes.string.isRequired,
             totalVolume: PropTypes.number.isRequired
         })
     ).isRequired,
@@ -306,7 +305,7 @@ RankingEntry.propTypes = {
     entry: PropTypes.shape({
         userName: PropTypes.string.isRequired,
         userSurname: PropTypes.string.isRequired,
-        workoutDate: PropTypes.string.isRequired,
+        startTime: PropTypes.string.isRequired,
         totalVolume: PropTypes.number.isRequired,
         userId: PropTypes.number.isRequired
     }).isRequired,
