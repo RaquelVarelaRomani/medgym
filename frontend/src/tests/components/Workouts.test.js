@@ -7,6 +7,7 @@ import WorkoutDetails from "../../modules/app/components/workouts/WorkoutDetails
 import ExerciseEntry from "../../modules/app/components/workouts/ExerciseEntry";
 import WorkoutSession from "../../modules/app/components/workouts/WorkoutSession";
 import UserWorkoutHistory from "../../modules/app/components/workouts/UserWorkoutHistory";
+import VolumeRankingPage from "../../modules/app/components/workouts/VolumeRanking";
 
 import { tryLoginFromServiceToken } from "../../backend/userService";
 import {
@@ -16,6 +17,7 @@ import {
     finishWorkout,
     getStatsForMonth,
     getWorkoutsByUser,
+    getVolumeRankingForRoutine,
 } from "../../backend/workoutService";
 import {
     getWorkoutExercisesByWorkoutId,
@@ -43,6 +45,7 @@ jest.mock("../../backend/workoutService", () => ({
     finishWorkout: jest.fn(),
     getStatsForMonth: jest.fn(),
     getWorkoutsByUser: jest.fn(),
+    getVolumeRankingForRoutine: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutExerciseService", () => ({
@@ -2537,6 +2540,406 @@ describe("WorkoutSession Component", () => {
             expect(
                 screen.getByText("⚠️ Error al finalizar el entrenamiento"),
             ).toBeInTheDocument();
+        });
+    });
+
+    describe("VolumeRankingPage Component", () => {
+        test("renders loading state initially", () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {});
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            expect(
+                screen.getByText("Cargando rutinas completadas...")
+            ).toBeInTheDocument();
+        });
+
+        test("redirects to login on authentication failure", () => {
+            tryLoginFromServiceToken.mockImplementation((success, error) => {
+                error();
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            expect(mockNavigate).toHaveBeenCalledWith("/users/login");
+        });
+        test("renders error state when loading workouts fails", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success, error) => {
+                error({ message: "Error al cargar las rutinas completadas" });
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("Error al cargar las rutinas completadas")
+                ).toBeInTheDocument();
+                expect(screen.getByText("Intentar de nuevo")).toBeInTheDocument();
+            });
+        });
+
+        test("renders empty state when no routines completed", async () => {
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success([]);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("No has completado ninguna rutina todavía.")
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText("Completa una rutina para ver tu ranking.")
+                ).toBeInTheDocument();
+            });
+        });
+
+        test("renders routine list correctly", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+                {
+                    id: 2,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-02T10:00:00Z",
+                    endTime: "2023-10-02T11:00:00Z",
+                },
+                {
+                    id: 3,
+                    routineId: 2,
+                    routineName: "Rutina Cardio",
+                    startTime: "2023-10-03T10:00:00Z",
+                    endTime: "2023-10-03T11:00:00Z",
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rankings por volumen")).toBeInTheDocument();
+                expect(
+                    screen.getByText("Selecciona una rutina para ver el ranking de volumen total")
+                ).toBeInTheDocument();
+                expect(screen.getByText("Rutina Cardio")).toBeInTheDocument();
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+                expect(screen.getByText("Completada 2 veces")).toBeInTheDocument();
+                expect(screen.getByText("Completada 1 vez")).toBeInTheDocument();
+            });
+        });
+
+        test("loads ranking when routine is clicked", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+            ];
+
+            const mockRanking = [
+                {
+                    userId: 1,
+                    userName: "John",
+                    userSurname: "Doe",
+                    workoutId: 1,
+                    endTime: "2023-10-01T11:00:00Z",
+                    totalVolume: 5000,
+                },
+                {
+                    userId: 2,
+                    userName: "Jane",
+                    userSurname: "Smith",
+                    workoutId: 2,
+                    endTime: "2023-10-02T11:00:00Z",
+                    totalVolume: 4500,
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            getVolumeRankingForRoutine.mockImplementation((routineId, success) => {
+                success(mockRanking);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Rutina Fuerza"));
+
+            await waitFor(() => {
+                expect(getVolumeRankingForRoutine).toHaveBeenCalledWith(
+                    1,
+                    expect.any(Function),
+                    expect.any(Function)
+                );
+                expect(screen.getByText("←")).toBeInTheDocument();
+                expect(screen.getByText("John Doe")).toBeInTheDocument();
+                expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+                expect(screen.getByText("5000")).toBeInTheDocument();
+                expect(screen.getByText("4500")).toBeInTheDocument();
+            });
+        });
+
+        test("displays error when ranking fails to load", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            getVolumeRankingForRoutine.mockImplementation((routineId, success, error) => {
+                error({ message: "Error al cargar el ranking" });
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Rutina Fuerza"));
+
+            await waitFor(() => {
+                expect(screen.getByText("Error al cargar el ranking")).toBeInTheDocument();
+            });
+        });
+
+        test("displays empty ranking message when no data available", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            getVolumeRankingForRoutine.mockImplementation((routineId, success) => {
+                success([]);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Rutina Fuerza"));
+
+            await waitFor(() => {
+                expect(
+                    screen.getByText("No hay datos de volumen para esta rutina.")
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText("Tú o las personas que sigues aún no han completado esta rutina.")
+                ).toBeInTheDocument();
+            });
+        });
+
+        test("displays current user position in ranking", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+            ];
+
+            const mockRanking = [
+                {
+                    userId: 2,
+                    userName: "Jane",
+                    userSurname: "Smith",
+                    workoutId: 2,
+                    endTime: "2023-10-02T11:00:00Z",
+                    totalVolume: 5000,
+                },
+                {
+                    userId: 1,
+                    userName: "John",
+                    userSurname: "Doe",
+                    workoutId: 1,
+                    endTime: "2023-10-01T11:00:00Z",
+                    totalVolume: 4500,
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            getVolumeRankingForRoutine.mockImplementation((routineId, success) => {
+                success(mockRanking);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Rutina Fuerza"));
+
+            await waitFor(() => {
+                expect(screen.getByText("Tu posición: #2")).toBeInTheDocument();
+            });
+        });
+
+        test("navigates back to routine list", async () => {
+            const mockWorkouts = [
+                {
+                    id: 1,
+                    routineId: 1,
+                    routineName: "Rutina Fuerza",
+                    startTime: "2023-10-01T10:00:00Z",
+                    endTime: "2023-10-01T11:00:00Z",
+                },
+            ];
+
+            const mockRanking = [
+                {
+                    userId: 1,
+                    userName: "John",
+                    userSurname: "Doe",
+                    workoutId: 1,
+                    endTime: "2023-10-01T11:00:00Z",
+                    totalVolume: 5000,
+                },
+            ];
+
+            tryLoginFromServiceToken.mockImplementation((success) => {
+                success({ user: { id: 1 } });
+            });
+
+            getWorkoutsByUser.mockImplementation((userId, success) => {
+                success(mockWorkouts);
+            });
+
+            getVolumeRankingForRoutine.mockImplementation((routineId, success) => {
+                success(mockRanking);
+            });
+
+            render(
+                <MemoryRouter>
+                    <VolumeRankingPage />
+                </MemoryRouter>
+            );
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Rutina Fuerza"));
+
+            await waitFor(() => {
+                expect(screen.getByText("←")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("←"));
+
+            await waitFor(() => {
+                expect(screen.getByText("Rutina Fuerza")).toBeInTheDocument();
+                expect(
+                    screen.getByText("Selecciona una rutina para ver el ranking de volumen total")
+                ).toBeInTheDocument();
+            });
         });
     });
 });

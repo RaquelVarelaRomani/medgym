@@ -1,0 +1,361 @@
+/* main container */
+.contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    background: var(--bg-primary) !important;
+    box-sizing: border-box;
+}
+
+.history-titulo-grande {
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 2rem;
+    padding-left: 0;
+}
+
+.history-titulo-grande h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 0;
+    letter-spacing: 0.05em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Error message */
+.error-message {
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+    padding: 2rem;
+    color: var(--accent-red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(255, 71, 87, 0.05);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    border-radius: 16px;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.retry-button {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.retry-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.retry-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.6), 0 0 40px rgba(255, 107, 53, 0.4);
+}
+
+.retry-button:hover::before {
+    left: 100%;
+}
+
+/* routine list */
+.routines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
+}
+
+.instructions {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+}
+
+.routine-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.75rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.routine-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-orange), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.routine-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--neon-orange);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 107, 53, 0.2), inset 0 0 60px rgba(255, 107, 53, 0.05);
+    background: linear-gradient(135deg, rgba(26, 26, 36, 0.95) 0%, rgba(30, 30, 42, 0.9) 100%);
+}
+
+.routine-card:hover::before {
+    transform: translateX(100%);
+}
+
+.routine-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.completed-count {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ranking */
+.ranking-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1400px;
+    box-sizing: border-box;
+}
+
+.back-button {
+    background: transparent;
+    color: var(--neon-orange);
+    border: 2px solid var(--neon-orange);
+    padding: 0.65rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    align-self: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.back-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border-color: var(--neon-orange-bright);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+    transform: translateY(-2px);
+}
+
+.back-button:hover::before {
+    left: 100%;
+}
+
+.routine-header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.routine-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon-orange), var(--neon-orange-bright), var(--neon-orange));
+}
+
+.routine-header h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.user-position {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--neon-orange);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+/* Ranking List */
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.ranking-entry {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ranking-entry::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--neon-orange), var(--neon-orange-dark));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ranking-entry:hover {
+    transform: translateX(8px);
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ranking-entry:hover::before {
+    opacity: 1;
+}
+
+.ranking-entry.current-user {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(26, 26, 36, 0.9) 100%);
+    border-color: var(--neon-orange);
+    border-width: 2px;
+}
+
+.ranking-entry.current-user::before {
+    opacity: 1;
+    width: 6px;
+}
+
+.position {
+    font-size: 2rem;
+    font-weight: 700;
+    min-width: 80px;
+    text-align: center;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+}
+
+.user-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0 1.5rem;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.you-badge {
+    color: var(--neon-orange);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.workout-date {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.volume {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.volume-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--neon-orange);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+}
+
+.volume-unit {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.empty-message {
+    width: 100%;
+    max-width: 1400px;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.empty-message p {
+    margin: 0.75rem 0;
+    font-size: 1.1rem;
+}

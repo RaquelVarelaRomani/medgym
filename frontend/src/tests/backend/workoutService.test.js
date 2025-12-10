@@ -5,7 +5,9 @@ import {
     getWorkout,
     getWorkouts,
     addWorkoutExercise,
-    getWorkoutExercisesByWorkoutId, getStatsForMonth
+    getWorkoutExercisesByWorkoutId,
+    getStatsForMonth,
+    getVolumeRankingForRoutine
 } from "../../backend/workoutService";
 
 // Mock appFetch and related functions
@@ -409,6 +411,174 @@ describe("workoutService", () => {
 
             expect(onSuccess).toHaveBeenCalledWith(mockEmptyStats);
             expect(onErrors).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("getVolumeRankingForRoutine", () => {
+        const routineId = 1;
+
+        test("successful API call with proper parameter passing", () => {
+            const mockRanking = [
+                {
+                    userId: 1,
+                    userName: "John",
+                    userSurname: "Doe",
+                    workoutId: 10,
+                    endTime: "2025-01-10T10:00:00",
+                    totalVolume: 5000
+                },
+                {
+                    userId: 2,
+                    userName: "Jane",
+                    userSurname: "Smith",
+                    workoutId: 11,
+                    endTime: "2025-01-11T11:00:00",
+                    totalVolume: 4500
+                }
+            ];
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockRanking);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockRanking);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("error handling with onErrors callback", () => {
+            const mockError = { globalError: "Failed to load volume ranking" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(mockError);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(mockError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+
+        test("correct appFetch call with appropriate path and method", () => {
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(mockAppFetch).toHaveBeenCalledWith(
+                `/workouts/routine/${routineId}/volume-ranking`,
+                fetchConfig("GET"),
+                onSuccess,
+                onErrors
+            );
+        });
+
+        test("correct appFetch call with different routineId", () => {
+            const differentRoutineId = 42;
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            getVolumeRankingForRoutine(differentRoutineId, onSuccess, onErrors);
+
+            expect(mockAppFetch).toHaveBeenCalledWith(
+                `/workouts/routine/${differentRoutineId}/volume-ranking`,
+                fetchConfig("GET"),
+                onSuccess,
+                onErrors
+            );
+        });
+
+        test("handles empty ranking response", () => {
+            const mockEmptyRanking = [];
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockEmptyRanking);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockEmptyRanking);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("handles ranking with varying volume values", () => {
+            const mockRankingWithVariedVolumes = [
+                {
+                    userId: 1,
+                    userName: "Heavy",
+                    userSurname: "Lifter",
+                    workoutId: 201,
+                    endTime: "2025-01-20T09:00:00",
+                    totalVolume: 10000
+                },
+                {
+                    userId: 2,
+                    userName: "Light",
+                    userSurname: "Worker",
+                    workoutId: 202,
+                    endTime: "2025-01-20T10:00:00",
+                    totalVolume: 500
+                },
+                {
+                    userId: 3,
+                    userName: "Zero",
+                    userSurname: "Volume",
+                    workoutId: 203,
+                    endTime: "2025-01-20T11:00:00",
+                    totalVolume: 0
+                }
+            ];
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockRankingWithVariedVolumes);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockRankingWithVariedVolumes);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("handles network error", () => {
+            const networkError = { message: "Network request failed" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(networkError);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(networkError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+
+        test("handles 404 not found error", () => {
+            const notFoundError = {
+                status: 404,
+                message: "Routine not found"
+            };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(notFoundError);
+            });
+
+            getVolumeRankingForRoutine(routineId, onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(notFoundError);
+            expect(onSuccess).not.toHaveBeenCalled();
         });
     });
 });

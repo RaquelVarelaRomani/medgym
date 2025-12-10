@@ -25,6 +25,7 @@ import FollowingPage from "./users/FollowingPage";
 
 import WorkoutSession from "./workouts/WorkoutSession"
 import WorkoutFeed from "./workouts/WorkoutFeed";
+import VolumeRanking from "./workouts/VolumeRanking";
 
 const Body = () => {
     return (
@@ -55,6 +56,7 @@ const Body = () => {
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
                     <Route path="workouts/session/:sessionId" element={<Layout><WorkoutSession /></Layout>} />
                     <Route path="workouts/feed" element={<Layout><WorkoutFeed /></Layout>} />
+                    <Route path="workouts/rankings" element={<Layout><VolumeRanking /></Layout>} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

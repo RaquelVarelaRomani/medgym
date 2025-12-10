@@ -23,9 +23,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserBlockService userBlockService;
     private final WorkoutExerciseService workoutExerciseService;
 
-    private final String userInstance = "project.entities.user";
-    private final String routineInstance = "project.entities.routine";
-    private final String workoutInstance = "project.entities.workout";
+    private final static String userInstance = "project.entities.user";
+    private final static String routineInstance = "project.entities.routine";
+    private final static String workoutInstance = "project.entities.workout";
 
     public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, WorkoutExerciseService workoutExerciseService) {
         this.workoutDao = workoutDao;
