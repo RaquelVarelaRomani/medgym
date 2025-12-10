@@ -135,11 +135,6 @@ function ProfileHeader(props) {
                                 🔥 {profile.streak}
                              </span>
                         )}
-                        {profile?.trainedToday && (
-                             <span className={styles["training-indicator-tick"]} title="¡Has entrenado hoy!">
-                                ✅
-                             </span>
-                        )}
                         {!profile?.trainedToday && profile?.streak > 0 && (
                              <span className={styles["training-indicator-clock"]} title="¡No has entrenado hoy!">
                                 🕒
