@@ -1,6 +1,5 @@
 package es.udc.fi.dc.fd.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
@@ -35,7 +34,6 @@ class ExerciseStatsControllerTest {
     private static final String PASSWORD = "password";
 
     @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
     @Autowired private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired private UserDao userDao;

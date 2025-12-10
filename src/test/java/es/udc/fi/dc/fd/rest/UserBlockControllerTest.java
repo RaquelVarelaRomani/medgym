@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.rest;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.UserBlockDao;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
@@ -38,9 +37,6 @@ class UserBlockControllerTest {
 
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    private UserBlockDao userBlockDao;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
