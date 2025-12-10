@@ -113,6 +113,33 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void createStreakRemindNotification(Long clientId, int streak) throws InstanceNotFoundException {
+        User client = userDao.findById(clientId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, clientId));
+        notificationDao.save(new Notification(
+                "Llevas una racha de " + streak + " días. ¡No la pierdas!",
+                NotificationType.STREAK_REMINDER,
+                client.getId(),
+                client,
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
+    public void createAchievementNotification(Long userId, String message, Long idToRedirect) throws InstanceNotFoundException {
+        User user = userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, userId));
+
+        notificationDao.save(new Notification(
+                message,
+                NotificationType.ACHIEVEMENT,
+                idToRedirect,
+                user,
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
     public List<Notification> getNotificationsByUser(Long userId) {
         return notificationDao.findByUserIdOrderByDateDesc(userId);
     }

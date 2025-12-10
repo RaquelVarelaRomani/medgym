@@ -84,6 +84,7 @@ jest.mock("../../backend/exerciseService", () => ({
     getPendingExercises: jest.fn(),
     getMuscleGroups: jest.fn(),
     getEquipments: jest.fn(),
+    getExerciseStats: jest.fn(),
 }));
 
 jest.mock("../../backend/routineService", () => ({
@@ -4100,6 +4101,10 @@ describe("ExerciseDetails Component", () => {
     test("renders loading state initially", () => {
         exerciseService.getExercise.mockImplementation((id, success) => {
         });
+        
+        exerciseService.getExerciseStats.mockImplementation((id, onSuccess) => {
+            onSuccess([{ date: "2024-01-10", value: 40 }]);
+        });
 
         render(
             <MemoryRouter initialEntries={["/exercises/1"]}>
@@ -4123,6 +4128,10 @@ describe("ExerciseDetails Component", () => {
             });
         });
 
+        exerciseService.getExerciseStats.mockImplementation((id, onSuccess) => {
+            onSuccess([{ date: "2024-01-10", value: 40 }]);
+        });
+
         render(
             <MemoryRouter initialEntries={["/exercises/1"]}>
                 <Routes>
@@ -4144,6 +4153,10 @@ describe("ExerciseDetails Component", () => {
             success({name: "Test Exercise", description: "Desc"});
         });
 
+        exerciseService.getExerciseStats.mockImplementation((id, onSuccess) => {
+            onSuccess([{ date: "2024-01-10", value: 40 }]);
+        });
+
         render(
             <MemoryRouter initialEntries={["/exercises/1"]}>
                 <Routes>
@@ -4162,6 +4175,10 @@ describe("ExerciseDetails Component", () => {
     test("handles getExercise error", async () => {
         exerciseService.getExercise.mockImplementation((id, success, error) => {
             error("Error loading exercise");
+        });
+
+        exerciseService.getExerciseStats.mockImplementation((id, onSuccess) => {
+            onSuccess([{ date: "2024-01-10", value: 40 }]);
         });
 
         const consoleSpy = jest
@@ -5455,8 +5472,7 @@ describe("Routines Component", () => {
 
     });
 
-
-    test("does not allow trainer to edit routine", async () => {
+    test("allows trainer to edit own routine", async () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: {id: 1, role: "TRAINER"}});
         });
@@ -5498,7 +5514,7 @@ describe("Routines Component", () => {
         );
 
         await waitFor(() => {
-            expect(screen.queryByText("Editar")).not.toBeInTheDocument();
+            expect(screen.queryByText("Editar")).toBeInTheDocument();
         });
     });
 //TEST donde SOLO admins pueden editar

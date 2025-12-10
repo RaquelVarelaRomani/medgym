@@ -163,7 +163,9 @@ VALUES
     -- Notificación por like en rutina (LIKE = 2)
     ('Laura ha dado like a tu rutina ''Rutina fuerza inicial''', 2, 1, 1, FALSE, '2025-10-16 09:00:00'),
     ('Miguel ha dado like a tu rutina ''Rutina cardio avanzado''', 2, 2, 1, FALSE, '2025-10-16 09:10:00'),
-    ('Ana ha dado like a tu rutina ''Rutina cuerpo completo''', 2, 3, 4, TRUE, '2025-10-16 09:15:00');
+    ('Ana ha dado like a tu rutina ''Rutina cuerpo completo''', 2, 3, 4, TRUE, '2025-10-16 09:15:00'),
+    -- Notificación de racha
+    ('Llevas una racha de 3 días. ¡No la pierdas!', 5, 2, 2, FALSE, '2025-10-16 09:15:00');
 
 
 INSERT INTO routine_likes (routine_id, user_id)
@@ -244,39 +246,30 @@ VALUES (2, 3),
 INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
 VALUES
     ('Cronista del Entreno',
-     'Acumula horas activas y avanza de nivel mostrando tu constancia en el tiempo',
+     'Acumula horas activas',
      36000, 144000, 360000), -- IMPORTANTE: VALORES EN SEGUNDOS
 
     ('Coleccionista de Repeticiones',
-     'Suma ejercicios completados y progresa según el volumen de esfuerzo acumulado',
+     'Suma ejercicios completados',
      250, 1000, 2500),
 
     ('Completador de Sesiones',
-     'Registra cada rutina terminada y sube de categoría al mantener un ritmo estable',
+     'Registra cada rutina terminada',
      5, 20, 50),
 
-    ('Racha',
-     'Completa entrenamientos consecutivos y alcanza niveles de constancia',
-     3, 7, 30);
+    ('Énfasis en el Hábito',
+     'Completa días de entrenamiento consecutivos',
+     3, 7, 30),
 
-INSERT INTO achievement_progresses (progress, user_id, achievement_id)
-VALUES
-    -- Carlos (entrenador)
-    (432000, 1, 1), -- Horas
-    (2700, 1, 2), -- Repeticiones
-    (55, 1, 3), -- Sesiones
+    ('Levantando el Gym',
+     'Supera tu marca de peso levantado',
+     50, 125, 250),
 
-    -- Laura (cliente)
-    (126000, 2, 1),      -- Horas → bronze avanzado
-    (680, 2, 2),     -- Repeticiones → bronze
-    (22, 2, 3),      -- Sesiones → silver
+    ('Dando Likes',
+     'Da likes a entrenamientos de otros usuarios',
+     10, 50, 100),
 
-    -- Miguel (cliente)
-    (18000, 3, 1),      -- Horas → none
-    (100, 3, 2),    -- Repeticiones → none
-    (5, 3, 3),      -- Sesiones → bronze
+    ('Comentando Entrenos',
+     'Deja comentarios en entrenamientos de otros usuarios',
+     5, 20, 50);
 
-    -- Sofía (entrenadora)
-    (216000, 4, 1),      -- Horas → silver
-    (1500, 4, 2),    -- Repeticiones → silver
-    (28, 4, 3);      -- Sesiones → silver

@@ -2,73 +2,113 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 public class AchievementProgressDto {
 
-    private String name;
-    private String description;
-    private Integer bronzeReq;
-    private Integer silverReq;
-    private Integer goldReq;
-    private Integer progress;
-    private Boolean convertToHours;
+    private AchievementInfoDto info;
+    private AchievementRequirementsDto requirements;
+    private AchievementProgressInfoDto progressInfo;
+    private String medalType;
 
     public AchievementProgressDto() {
     }
 
-    public AchievementProgressDto(String name, String description, Integer bronzeReq, Integer silverReq, Integer goldReq, Integer progress, Boolean convertToHours) {
-        this.name = name;
-        this.description = description;
-        this.bronzeReq = bronzeReq;
-        this.silverReq = silverReq;
-        this.goldReq = goldReq;
-        this.progress = progress;
-        this.convertToHours = convertToHours;
+    public AchievementProgressDto(AchievementInfoDto info, AchievementRequirementsDto requirements, AchievementProgressInfoDto progressInfo) {
+        this.info = info;
+        this.requirements = requirements;
+        this.progressInfo = progressInfo;
     }
 
     public String getName() {
-        return name;
+        return info != null ? info.getName() : null;
     }
     public void setName(String name) {
-        this.name = name;
+        if (info == null) info = new AchievementInfoDto();
+        info.setName(name);
     }
 
     public String getDescription() {
-        return description;
+        return info != null ? info.getDescription() : null;
     }
     public void setDescription(String description) {
-        this.description = description;
+        if (info == null) info = new AchievementInfoDto();
+        info.setDescription(description);
     }
 
     public Integer getBronzeReq() {
-        return bronzeReq;
+        return requirements != null ? requirements.getBronzeReq() : null;
     }
     public void setBronzeReq(Integer bronzeReq) {
-        this.bronzeReq = bronzeReq;
+        if (requirements == null) requirements = new AchievementRequirementsDto();
+        requirements.setBronzeReq(bronzeReq);
     }
 
     public Integer getSilverReq() {
-        return silverReq;
+        return requirements != null ? requirements.getSilverReq() : null;
     }
     public void setSilverReq(Integer silverReq) {
-        this.silverReq = silverReq;
+        if (requirements == null) requirements = new AchievementRequirementsDto();
+        requirements.setSilverReq(silverReq);
     }
 
     public Integer getGoldReq() {
-        return goldReq;
+        return requirements != null ? requirements.getGoldReq() : null;
     }
     public void setGoldReq(Integer goldReq) {
-        this.goldReq = goldReq;
+        if (requirements == null) requirements = new AchievementRequirementsDto();
+        requirements.setGoldReq(goldReq);
     }
 
     public Integer getProgress() {
-        return progress;
+        return progressInfo != null ? progressInfo.getProgress() : null;
     }
     public void setProgress(Integer progress) {
-        this.progress = progress;
+        if (progressInfo == null) progressInfo = new AchievementProgressInfoDto();
+        progressInfo.setProgress(progress);
+    }
+
+    public Integer getHighestProgress() {
+        return progressInfo != null ? progressInfo.getHighestProgress() : null;
+    }
+    public void setHighestProgress(Integer highestProgress) {
+        if (progressInfo == null) progressInfo = new AchievementProgressInfoDto();
+        progressInfo.setHighestProgress(highestProgress);
     }
 
     public Boolean getConvertToHours() {
-        return convertToHours;
+        return progressInfo != null ? progressInfo.getConvertToHours() : null;
     }
     public void setConvertToHours(Boolean convertToHours) {
-        this.convertToHours = convertToHours;
+        if (progressInfo == null) progressInfo = new AchievementProgressInfoDto();
+        progressInfo.setConvertToHours(convertToHours);
+    }
+
+    public AchievementInfoDto getInfo() {
+        return info;
+    }
+
+    public void setInfo(AchievementInfoDto info) {
+        this.info = info;
+    }
+
+    public AchievementRequirementsDto getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(AchievementRequirementsDto requirements) {
+        this.requirements = requirements;
+    }
+
+    public AchievementProgressInfoDto getProgressInfo() {
+        return progressInfo;
+    }
+
+    public void setProgressInfo(AchievementProgressInfoDto progressInfo) {
+        this.progressInfo = progressInfo;
+    }
+
+    public String getMedalType() {
+        return medalType;
+    }
+
+    public void setMedalType(String medalType) {
+        this.medalType = medalType;
     }
 }

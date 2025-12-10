@@ -1049,7 +1049,7 @@ function RoutineCard({
                 </span>
             )}
 
-            {isAdmin() && (
+            {(isAdmin() || isRoutineCreator(routine)) && (
                 <div>
                     <button
                         className={styles["boton-editar"]}

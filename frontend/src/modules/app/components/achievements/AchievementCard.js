@@ -3,13 +3,19 @@ import styles from './AchievementCard.module.css';
 import PropTypes from "prop-types";
 
 export default function AchievementCard({ achievement }) {
-    let {name, description, bronzeReq, silverReq, goldReq, progress} = achievement;
+    let {name, description, bronzeReq, silverReq, goldReq, highestProgress} = achievement;
+    let progress = highestProgress;
     if (achievement.convertToHours) {
         progress = Math.floor(progress / 3600);
         bronzeReq /= 3600;
         silverReq /= 3600;
         goldReq /= 3600;
     }
+
+    let divisor;
+    if (progress < bronzeReq) divisor = bronzeReq;
+    else if (progress < silverReq) divisor = silverReq;
+    else divisor = goldReq;
 
     return (
         <div className={`${styles.card}`}>
@@ -21,10 +27,10 @@ export default function AchievementCard({ achievement }) {
                     <div className={styles.progressBar}>
                         <div
                             className={styles.progressFill}
-                            style={{ width: `${Math.min((progress / goldReq) * 100, 100)}%` }}
+                            style={{ width: `${Math.min((progress / divisor) * 100, 100)}%` }}
                         />
                     </div>
-                    <span className={styles.progressText}>{progress}/{goldReq}</span>
+                    <span className={styles.progressText}>{progress}/{divisor}</span>
                 </div>
             </div>
 
@@ -70,6 +76,7 @@ AchievementCard.propTypes = {
         silverReq: PropTypes.number.isRequired,
         goldReq: PropTypes.number.isRequired,
         progress: PropTypes.number.isRequired,
+        highestProgress: PropTypes.number.isRequired,
         convertToHours: PropTypes.bool
     }).isRequired
 };

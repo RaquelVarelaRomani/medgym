@@ -35,6 +35,9 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                     case "FOLLOW":
                         navigate(`/users/profile/${notification.idToRedirect}`);
                         break;
+                    case "ACHIEVEMENT":
+                        navigate(`/users/profile/${notification.idToRedirect}`);
+                        break;
                 }
                 onClose();
             },

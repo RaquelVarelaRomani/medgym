@@ -10,7 +10,7 @@ public interface WorkoutCommentService {
 
     WorkoutComment commentWorkout(Long userId, String text, Long workoutId) throws InstanceNotFoundException;
 
-    void deleteWorkoutComment(Long workoutCommentId);
+    void deleteWorkoutComment(Long workoutCommentId) throws InstanceNotFoundException;
 
     List<WorkoutComment> getWorkoutComments(Long workoutId);
 }

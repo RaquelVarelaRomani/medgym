@@ -13,14 +13,18 @@ public class WorkoutConversor {
     }
 
     public static WorkoutDto toWorkoutDto(Workout workout) {
-        return new WorkoutDto(
-                workout.getId(),
-                workout.getStartTime(),
-                workout.getEndTime(),
-                workout.getRoutine().getId(),
-                workout.getRoutine().getName(),
-                workout.getUser().getId()
-        );
+        WorkoutDto workoutDto = new WorkoutDto();
+
+        workoutDto.setId(workout.getId());
+        workoutDto.setStartTime(workout.getStartTime());
+        workoutDto.setEndTime(workout.getEndTime());
+        workoutDto.setRoutineId(workout.getRoutine().getId());
+        workoutDto.setRoutineName(workout.getRoutine().getName());
+        workoutDto.setUserId(workout.getUser().getId());
+        workoutDto.setLikes(toWorkoutLikeDtos(workout.getLikes()));
+        workoutDto.setComments(toWorkoutCommentDtos(workout.getComments()));
+
+        return workoutDto;
     }
 
     public static WorkoutForFeedDto toWorkoutForFeedDto(Workout workout) {

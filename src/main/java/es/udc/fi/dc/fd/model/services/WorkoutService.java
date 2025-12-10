@@ -22,4 +22,6 @@ public interface WorkoutService {
     List<Workout> getVolumeRankingForRoutine(Long routineId, Long userId) throws InstanceNotFoundException;
 
     int calculateCurrentStreak(Long userId);
+
+    void remindStreak() throws InstanceNotFoundException;
 }

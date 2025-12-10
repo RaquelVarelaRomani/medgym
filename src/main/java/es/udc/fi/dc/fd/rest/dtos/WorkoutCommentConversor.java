@@ -24,6 +24,12 @@ public class WorkoutCommentConversor {
         return workoutCommentDto;
     }
 
+    public static WorkoutCommentDto toWorkoutCommentDtoWithAchievements(WorkoutComment workoutComment, List<AchievementProgressDto> newAchievements) {
+        WorkoutCommentDto workoutCommentDto = toWorkoutCommentDto(workoutComment);
+        workoutCommentDto.setNewAchievements(newAchievements);
+        return workoutCommentDto;
+    }
+
     public static List<WorkoutCommentDto> toWorkoutCommentDtos(List<WorkoutComment> workoutComments) {
         if (workoutComments == null) {
             return List.of();

@@ -19,12 +19,13 @@ export const createOrUpdateAchievementProgress = (
 export const onFinishWorkoutAchievements = (
     seconds,
     reps,
+    workoutId,
     onSuccess,
     onErrors
 ) =>
     appFetch(
         `/achievements/onFinishWorkout`,
-        fetchConfig("POST", { 'seconds': seconds, 'reps': reps }),
+        fetchConfig("POST", { 'seconds': seconds, 'reps': reps, 'workoutId': workoutId }),
         onSuccess,
         onErrors
     );

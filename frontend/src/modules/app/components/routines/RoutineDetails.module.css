@@ -364,3 +364,19 @@
   white-space: normal;
   word-break: break-word;
 }
+
+.acciones-rutina {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.trainer-line {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0.25rem auto 1rem auto;
+  color: var(--text-secondary);
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+

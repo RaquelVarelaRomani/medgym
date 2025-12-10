@@ -155,7 +155,7 @@ public class UserController {
     public UserDto getUser(@PathVariable Long id, @RequestAttribute Long userId) throws InstanceNotFoundException, PermissionException {
 
         // No se aplica bloqueo cuando pides tu propio perfil
-        if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId) || userBlockService.hasBlocked(userId, id))) {
+        if (!userId.equals(id) && (userBlockService.hasBlocked(id, userId))) {
             throw new PermissionException();
         }
 
