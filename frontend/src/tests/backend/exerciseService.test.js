@@ -7,7 +7,8 @@ import {
   updateExerciseStatus,
   getPendingExercises,
   deleteExercise,
-  getExercisesByStatus
+  getExercisesByStatus,
+  getExerciseStats
 } from "../../backend/exerciseService";
 
 // Mock appFetch
@@ -422,6 +423,49 @@ describe("exerciseService", () => {
 
       expect(mockAppFetch).toHaveBeenCalledWith(
         "/exercises",
+        fetchConfig("GET"),
+        onSuccess,
+        onErrors
+      );
+    });
+  });
+  describe("getExerciseStats", () => {
+    const id = 999;
+
+    test("successful API call", () => {
+      const mockData = [{ date: "2024-01-10", value: 40 }];
+      const onSuccess = jest.fn();
+      const onErrors = jest.fn();
+
+      mockAppFetch.mockImplementation((_, __, success) => success(mockData));
+
+      getExerciseStats(id, onSuccess, onErrors);
+
+      expect(onSuccess).toHaveBeenCalledWith(mockData);
+      expect(onErrors).not.toHaveBeenCalled();
+    });
+
+    test("error handling", () => {
+      const mockError = { error: "stats failed" };
+      const onSuccess = jest.fn();
+      const onErrors = jest.fn();
+
+      mockAppFetch.mockImplementation((_, __, ___, errors) => errors(mockError));
+
+      getExerciseStats(id, onSuccess, onErrors);
+
+      expect(onErrors).toHaveBeenCalledWith(mockError);
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    test("correct fetch path", () => {
+      const onSuccess = jest.fn();
+      const onErrors = jest.fn();
+
+      getExerciseStats(id, onSuccess, onErrors);
+
+      expect(mockAppFetch).toHaveBeenCalledWith(
+        `/stats/exercise/${id}`,
         fetchConfig("GET"),
         onSuccess,
         onErrors

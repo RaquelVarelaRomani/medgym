@@ -7,6 +7,11 @@ import { getEquipmentText, getMuscleGroupsText } from "../../util/enumConversor"
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import { getRanking } from "../../../../backend/exerciseMaxWeightService";
 import ExerciseRanking from "../common/ExerciseRanking";
+import { h3 } from "framer-motion/client";
+import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
+import {
+    LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
+} from "recharts";
 
 const ExerciseDetails = () => {
     const { id } = useParams();
@@ -15,6 +20,8 @@ const ExerciseDetails = () => {
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
+    const [stats, setStats] = useState([]);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
 
     const [ranking, setRanking] = useState([]);
     const [rankingLoading, setRankingLoading] = useState(true);
@@ -26,6 +33,7 @@ const ExerciseDetails = () => {
             id,
             data => {
                 setExercise(data);
+                loadExerciseStats();
                 setLoading(false);
             },
             error => {
@@ -48,6 +56,8 @@ const ExerciseDetails = () => {
                     data => {
                         setRanking(data);
                         setRankingLoading(false);
+        loadExerciseStats();
+
                     },
                     err => {
                         console.error("Error cargando ranking:", err);
@@ -61,6 +71,29 @@ const ExerciseDetails = () => {
         );
     }, [exercise, navigate]);
 
+    const loadExerciseStats = () => {
+        exerciseService.getExerciseStats(
+            id,
+            handleStatsLoaded,
+            (error) => console.error("Error cargando estadísticas:", error)
+        );
+    };
+
+    const handleStatsLoaded = (data) => {
+        const formatted = data.map(s => ({
+            ...s,
+            originalDate: s.date,
+            date: new Date(s.date).toLocaleDateString()
+        }));
+        setStats(formatted);
+        setLoading(false);
+    };
+
+    const handleError = (error) => {
+        console.error("Error cargando ejercicio:", error);
+        setLoading(false);
+    };
+
     if (loading) return <LoadingMessage text="Cargando ejercicio..." />;
 
     if (!exercise)
@@ -69,6 +102,24 @@ const ExerciseDetails = () => {
                 Ejercicio no encontrado
             </div>
         );
+
+    const metric = exercise.equipment && exercise.equipment !== "NONE" ? "kg" : "reps";
+
+    const filteredStats = stats.filter(s => {
+        const d = new Date(s.originalDate);
+        return (
+            d.getMonth() === currentMonth.getMonth() &&
+            d.getFullYear() === currentMonth.getFullYear()
+        );
+    });
+
+    const goPrevMonth = () => {
+        setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    const goNextMonth = () => {
+        setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
 
     return (
         <div className={styles["contenedor-exercise-details"]}>
@@ -119,6 +170,45 @@ const ExerciseDetails = () => {
                     )}
                 </div>
             </div>
+            {stats.length > 0 && (
+            <div className={styles["stats-container"]}>
+                <h3 className={styles["stats-title"]}>Evolución del ejercicio</h3>
+
+                    <div className={styles.monthSelector}>
+                        <button className={styles.monthButton} onClick={goPrevMonth}>{'<'}</button>
+
+                        <span className={styles.monthLabel}>
+                            {currentMonth.toLocaleString("es-ES", { month: "long", year: "numeric" })}
+                        </span>
+
+                        <button className={styles.monthButton} onClick={goNextMonth}>{'>'}</button>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={filteredStats}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="date" />
+                            <YAxis
+                                label={{
+                                    value: metric,
+                                    angle: -90,
+                                    position: "insideLeft",
+                                    fill: "#fff",
+                                    dy: 30
+                                }}
+                            />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="value" stroke="#ff7b00" strokeWidth={3} />
+                        </LineChart>
+                    </ResponsiveContainer>
+
+                    {filteredStats.length === 0 && (
+                        <p className={styles["no-data"]}>
+                            No hay datos para este mes.
+                        </p>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
