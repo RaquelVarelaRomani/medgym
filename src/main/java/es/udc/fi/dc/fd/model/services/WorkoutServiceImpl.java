@@ -151,6 +151,16 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
+    public boolean trainedToday(Long userId) {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(23, 59, 59);
+
+        return workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startOfDay, endOfDay)
+                .stream().anyMatch(w -> w.getEndTime() != null);
+    }
+
+    @Override
     @Scheduled(cron = "0 0 9 * * ?")
     public void remindStreak() throws InstanceNotFoundException {
         List<User> users = userDao.findAll();

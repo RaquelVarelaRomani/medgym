@@ -130,6 +130,21 @@ function ProfileHeader(props) {
                 <div>
                     <h2 className={styles["profile-name"]}>
                         {profile ? `${profile.name} ${profile.surname}` : "Cargando..."}
+                        {profile?.streak > 0 && (
+                             <span className={styles["training-indicator"]} title="Racha de entrenamientos">
+                                🔥 {profile.streak}
+                             </span>
+                        )}
+                        {profile?.trainedToday && (
+                             <span className={styles["training-indicator"]} title="¡Has entrenado hoy!">
+                                ✅
+                             </span>
+                        )}
+                        {!profile?.trainedToday && profile?.streak > 0 && (
+                             <span className={styles["training-indicator-clock"]} title="¡No has entrenado hoy!">
+                                🕒
+                             </span>
+                        )}
                         {isPremiumTrainer && (
                             <span className={styles["premium-badge"]}>
                                 Entrenador premium
