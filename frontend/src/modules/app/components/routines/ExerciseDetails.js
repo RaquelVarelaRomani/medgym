@@ -8,7 +8,6 @@ import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import { getRanking } from "../../../../backend/exerciseMaxWeightService";
 import ExerciseRanking from "../common/ExerciseRanking";
 import { h3 } from "framer-motion/client";
-import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
 import {
     LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer
 } from "recharts";
