@@ -1,4 +1,5 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS exercise_max_weights;
 DROP TABLE IF EXISTS achievement_progresses;
 DROP TABLE IF EXISTS achievements;
 DROP TABLE IF EXISTS workout_comments;
@@ -253,4 +254,23 @@ CREATE TABLE achievement_progresses
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT uk_achievement_progresses_user_and_achievement UNIQUE (user_id, achievement_id)
+);
+
+CREATE TABLE exercise_max_weights
+(
+    id              BIGINT  NOT NULL AUTO_INCREMENT,
+    max_weight_kg   SMALLINT NOT NULL,
+    user_id         BIGINT  NOT NULL,
+    exercise_id     BIGINT  NOT NULL,
+
+    CONSTRAINT pk_exercise_max_weights PRIMARY KEY (id),
+    CONSTRAINT fk_exercise_max_weights_user FOREIGN KEY (user_id)
+        REFERENCES users (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_exercise_max_weights_exercise FOREIGN KEY (exercise_id)
+        REFERENCES exercises (id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT uk_achievement_progresses_user_and_exercise UNIQUE (user_id, exercise_id)
 );

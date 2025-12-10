@@ -24,12 +24,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final UserBlockService userBlockService;
     private final NotificationService notificationService;
     private final WorkoutExerciseService workoutExerciseService;
+    private final WorkoutExerciseDao workoutExerciseDao;
+    private final ExerciseMaxWeightService exerciseMaxWeightService;
 
     private static final String USER_INSTANCE = "project.entities.user";
     private static final String ROUTINE_INSTANCE = "project.entities.routine";
     private static final String WORKOUT_INSTANCE = "project.entities.workout";
-
-    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService,  NotificationService notificationService, WorkoutExerciseService workoutExerciseService) {
+    public WorkoutServiceImpl(WorkoutDao workoutDao, RoutineDao routineDao, UserDao userDao, UserFollowDao userFollowDao, UserBlockService userBlockService, NotificationService notificationService, WorkoutExerciseService workoutExerciseService, WorkoutExerciseDao workoutExerciseDao, ExerciseMaxWeightService exerciseMaxWeightService) {
         this.workoutDao = workoutDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
@@ -37,6 +38,8 @@ public class WorkoutServiceImpl implements WorkoutService {
         this.userBlockService = userBlockService;
         this.notificationService = notificationService;
         this.workoutExerciseService = workoutExerciseService;
+        this.workoutExerciseDao = workoutExerciseDao;
+        this.exerciseMaxWeightService = exerciseMaxWeightService;
     }
 
     @Override
@@ -54,12 +57,17 @@ public class WorkoutServiceImpl implements WorkoutService {
         workout.setEndTime(LocalDateTime.now());
 
         List<WorkoutExercise> exercises = workoutExerciseService.findWorkoutExercisesByWorkoutId(id);
-
         int totalVolume = exercises.stream()
                 .filter(we -> we.getReps() != null && we.getWeight() != null)
                 .mapToInt(we -> we.getReps() * we.getWeight())
                 .sum();
         workout.setTotalVolume(totalVolume);
+
+        List<WorkoutExercise> workoutExercises = workoutExerciseDao.findByWorkoutId(id);
+
+        for (WorkoutExercise workoutExercise : workoutExercises) {
+            exerciseMaxWeightService.addOrUpdateMaxWeight(workout.getUser().getId(), workoutExercise.getRoutineExercise().getExercise().getId(), workoutExercise.getWeight());
+        }
     }
 
     @Override
