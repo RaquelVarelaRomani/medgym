@@ -88,11 +88,6 @@ const ExerciseDetails = () => {
         setLoading(false);
     };
 
-    const handleError = (error) => {
-        console.error("Error cargando ejercicio:", error);
-        setLoading(false);
-    };
-
     if (loading) return <LoadingMessage text="Cargando ejercicio..." />;
 
     if (!exercise)
