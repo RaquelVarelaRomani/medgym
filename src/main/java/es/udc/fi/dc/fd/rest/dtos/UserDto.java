@@ -19,6 +19,8 @@ public class UserDto {
     private String gender;
     private Double bmi;
     private Boolean trainerPremium;
+    private Integer streak;
+    private Boolean trainedToday;
 
     public UserDto() {
         // No-args constructor required for Jackson and frameworks.
@@ -147,6 +149,22 @@ public class UserDto {
 
     public void setTrainerPremium(Boolean trainerPremium) {
         this.trainerPremium = trainerPremium;
+    }
+
+    public Integer getStreak() {
+        return streak;
+    }
+
+    public void setStreak(Integer streak) {
+        this.streak = streak;
+    }
+
+    public Boolean getTrainedToday() {
+        return trainedToday;
+    }
+
+    public void setTrainedToday(Boolean trainedToday) {
+        this.trainedToday = trainedToday;
     }
 
     public interface AllValidations {

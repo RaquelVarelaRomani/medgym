@@ -339,6 +339,18 @@ class WorkoutServiceTest {
 
     }
 
+    @Test
+    void testTrainedToday() {
+        createWorkoutOnDate(user, routine, LocalDate.now());
+        assertTrue(workoutService.trainedToday(user.getId()));
+    }
+
+    @Test
+    void testTrainedTodayFalse() {
+        createWorkoutOnDate(user, routine, LocalDate.now().minusDays(1));
+        assertTrue(!workoutService.trainedToday(user.getId()));
+    }
+
     private void createWorkoutOnDate(User user, Routine routine, LocalDate date) {
         LocalDateTime start = date.atTime(10, 0);
         LocalDateTime end = date.atTime(11, 0);

@@ -359,3 +359,14 @@
     flex-direction: column;
     gap: 1.25rem;
 }
+
+.training-indicator {
+    margin-left: 10px;
+    font-size: 1.5rem;
+}
+
+.training-indicator-clock {
+    margin-left: 4px;
+    font-size: 1.4rem;
+    filter: grayscale(60%)
+}
