@@ -22,18 +22,22 @@ public class WorkoutForFeedDto extends WorkoutWithUserDto {
         this.userProfilePicture = userProfilePicture;
     }
 
+    @Override
     public List<WorkoutCommentDto> getComments() {
         return comments;
     }
 
+    @Override
     public void setComments(List<WorkoutCommentDto> comments) {
         this.comments = comments;
     }
 
+    @Override
     public List<WorkoutLikeDto> getLikes() {
         return likes;
     }
 
+    @Override
     public void setLikes(List<WorkoutLikeDto> likes) {
         this.likes = likes;
     }

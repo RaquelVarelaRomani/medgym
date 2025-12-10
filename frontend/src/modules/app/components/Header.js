@@ -8,7 +8,6 @@ import ProfilePhoto from "./common/profilePhoto";
 import NotificationIcon from "./common/notifications/NotificationIcon";
 import NotificationPopup from "./common/notifications/NotificationPopup";
 import UserSearch from "./users/UserSearch";
-import { getFollowers } from '../../../backend/userFollowService';
 
 const Header = () => {
     const location = useLocation();

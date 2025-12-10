@@ -79,6 +79,7 @@ public class WorkoutDto {
     public void setLikes(List<WorkoutLikeDto> likes) {
         this.likes = likes;
     }
+
     public List<WorkoutCommentDto> getComments() {
         return comments;
     }
