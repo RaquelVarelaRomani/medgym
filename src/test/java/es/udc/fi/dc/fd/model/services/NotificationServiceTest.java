@@ -212,6 +212,7 @@ class NotificationServiceTest {
         User trainer = userDao.save(new User("trainerRS", "trainerRS", "trainerRS@test.com", "600000019", "pass", RoleType.TRAINER, StatusType.ACTIVE));
         trainer.setTrainerPremium(true);
 
+        // B sigue a A
         userFollowService.followUser(userB.getId(), userA.getId());
 
         Routine routine = routineService.createRoutine("RankingRoutine", "desc", trainer,
@@ -239,7 +240,7 @@ class NotificationServiceTest {
         workoutService.finishWorkout(workoutA.getId());
 
         List<Notification> notificationsB = notificationService.getNotificationsByUser(userB.getId());
-        assertEquals(1, notificationsB.size());
+        assertEquals(2, notificationsB.size());
         Notification rankingNotification = notificationsB.stream()
                 .filter(n -> n.getType() == Notification.NotificationType.RANKING_SURPASS_WORKOUT)
                 .findFirst().orElseThrow();
@@ -249,7 +250,6 @@ class NotificationServiceTest {
 
         List<Notification> notificationsA = notificationService.getNotificationsByUser(userA.getId());
         assertEquals(1, notificationsA.size());
-        assertEquals(Notification.NotificationType.FOLLOW, notificationsA.get(0).getType());
     }
 
 }

@@ -28,6 +28,12 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                     case "ROUTINE_LIKE":
                         navigate(`/routines/${notification.idToRedirect}`);
                         break;
+                    case "RANKING_SURPASS_WORKOUT":
+                        navigate(`/workouts/rankings/${notification.idToRedirect}`);
+                        break;
+                    case "RANKING_SURPASS_EXERCISE":
+                        navigate(`/exercises/${notification.idToRedirect}`);
+                        break;
                     case "WORKOUT_COMMENT":
                     case "WORKOUT_LIKE":
                         navigate(`/workouts/history`);
