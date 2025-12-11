@@ -2,10 +2,13 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.User.StatusType;
+
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,12 @@ class NotificationServiceTest {
     private UserDao userDao;
     @Autowired
     private WorkoutService workoutService;
+    @Autowired
+    private WorkoutExerciseDao workoutExerciseDao;
+    @Autowired
+    private RoutineExerciseDao routineExerciseDao;
+    @Autowired
+    private ExerciseDao exerciseDao;
 
     @Test
     void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
@@ -194,6 +203,53 @@ class NotificationServiceTest {
         notificationService.deleteNotificationsByIdToRedirect(r.getId());
 
         assertTrue(notificationService.getNotificationsByUser(u.getId()).isEmpty());
+    }
+
+    @Test
+    void testCreateRankingSurpassNotification() throws Exception {
+        User userA = userDao.save(new User("userA", "userA", "userA@test.com", "600000017", "pass", RoleType.CLIENT, StatusType.ACTIVE));
+        User userB = userDao.save(new User("userB", "userB", "userB@test.com", "600000018", "pass", RoleType.CLIENT, StatusType.ACTIVE));
+        User trainer = userDao.save(new User("trainerRS", "trainerRS", "trainerRS@test.com", "600000019", "pass", RoleType.TRAINER, StatusType.ACTIVE));
+        trainer.setTrainerPremium(true);
+
+        userFollowService.followUser(userB.getId(), userA.getId());
+
+        Routine routine = routineService.createRoutine("RankingRoutine", "desc", trainer,
+                VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+
+        Exercise exercise = new Exercise("Test Exercise", "desc", MuscleGroup.LEG, Equipment.NONE, new byte[]{1}, Exercise.ExerciseStatus.APPROVED, trainer);
+        exercise = exerciseDao.save(exercise);
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, 1);
+        routineExercise = routineExerciseDao.save(routineExercise);
+
+        var workoutA = workoutService.startWorkout(routine.getId(), userA.getId());
+        var workoutB = workoutService.startWorkout(routine.getId(), userB.getId());
+
+        WorkoutExercise weB = new WorkoutExercise((short)10, (short)100, null, workoutB, routineExercise);
+        workoutExerciseDao.save(weB);
+
+        WorkoutExercise weA = new WorkoutExercise((short)5, (short)100, null, workoutA, routineExercise);
+        workoutExerciseDao.save(weA);
+
+        workoutService.finishWorkout(workoutB.getId());
+
+        weA.setReps((short)15);
+        workoutExerciseDao.save(weA);
+
+        workoutService.finishWorkout(workoutA.getId());
+
+        List<Notification> notificationsB = notificationService.getNotificationsByUser(userB.getId());
+        assertEquals(1, notificationsB.size());
+        Notification rankingNotification = notificationsB.stream()
+                .filter(n -> n.getType() == Notification.NotificationType.RANKING_SURPASS_WORKOUT)
+                .findFirst().orElseThrow();
+        assertTrue(rankingNotification.getMessage().contains("te ha superado"));
+        assertTrue(rankingNotification.getMessage().contains("RankingRoutine"));
+        assertEquals(routine.getId(), rankingNotification.getIdToRedirect());
+
+        List<Notification> notificationsA = notificationService.getNotificationsByUser(userA.getId());
+        assertEquals(1, notificationsA.size());
+        assertEquals(Notification.NotificationType.FOLLOW, notificationsA.get(0).getType());
     }
 
 }
