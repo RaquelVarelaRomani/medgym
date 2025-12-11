@@ -74,7 +74,7 @@ public class Application {
             }
         };
     }
-    
+
     @Bean
     public CommandLineRunner calculateTotalVolumeRunner(WorkoutDao workoutDao, WorkoutExerciseService workoutExerciseService) {
         return args -> {

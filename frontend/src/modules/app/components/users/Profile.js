@@ -353,9 +353,9 @@ const Profile = () => {
             updateFollowInfo();
         };
 
-        globalThis.addEventListener("followChanged", onFollowChange);
+        window.addEventListener("followChanged", onFollowChange);
         return () => {
-            globalThis.removeEventListener("followChanged", onFollowChange);
+            window.removeEventListener("followChanged", onFollowChange);
         };
     }, [profile, me]);
 
@@ -422,7 +422,7 @@ const Profile = () => {
                 if (isFollowing) {
                     setIsFollowing(false);
                     setFollowers(n => Math.max(0, n - 1));
-                    globalThis.dispatchEvent(new Event("followChanged"));
+                    window.dispatchEvent(new Event("followChanged"));
                 }
                 setIsBlockedByMe(true);
                 setShowBlockPopup(false);
@@ -451,7 +451,7 @@ const Profile = () => {
         action(
             profile.id,
             () => {
-                globalThis.dispatchEvent(new Event("followChanged"));
+                window.dispatchEvent(new Event("followChanged"));
                 setTimeout(() => setLoadingFollow(false), 500);
             },
             () => {
