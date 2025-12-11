@@ -8,7 +8,7 @@
 	<!-- ********************************************** -->
 	<groupId>es.udc.fi.dc.fd</groupId>
 	<artifactId>medgym</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>FD Spring MVC MedGym App</name>
