@@ -36,7 +36,8 @@ describe("AnnualSummaryCard", () => {
         render(<AnnualSummaryCard onClose={jest.fn()} />);
 
         await waitFor(() => {
-            expect(screen.getAllByText("10 me gustas")[0]).toBeInTheDocument();
+            const likesText = screen.getAllByText("10 me gustas");
+            expect(likesText.length).toBeGreaterThan(0);
             
             expect(screen.getByText(/Esperamos que este año sigas repartiendo mucho amor/i)).toBeInTheDocument();
             expect(screen.getByText(/Nos encanta la gente sociable/i)).toBeInTheDocument();
@@ -57,7 +58,7 @@ describe("AnnualSummaryCard", () => {
 
         await waitFor(() => {
             const zeroLikes = screen.getAllByText("0 me gustas");
-            expect(zeroLikes.length).toBeGreaterThan(0);
+            expect(zeroLikes.length).toBeGreaterThan(0); 
 
             const zeroComments = screen.getAllByText("0 veces");
             expect(zeroComments.length).toBeGreaterThan(0);
@@ -75,7 +76,8 @@ describe("AnnualSummaryCard", () => {
         render(<AnnualSummaryCard onClose={handleClose} />);
 
         await waitFor(() => {
-            fireEvent.click(screen.getByText("Cerrar"));
+            const btn = screen.getByText("Cerrar");
+            fireEvent.click(btn);
         });
         expect(handleClose).toHaveBeenCalledTimes(1);
     });
