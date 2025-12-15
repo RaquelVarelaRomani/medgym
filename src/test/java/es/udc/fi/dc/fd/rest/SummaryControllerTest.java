@@ -49,7 +49,7 @@ class SummaryControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        String uniqueEmail = "summary" + System.nanoTime() + "@test.com";
+        String uniqueEmail = "summary_" + System.nanoTime() + "@test.com";
         
         User user = new User("UserSummary", "Test", uniqueEmail, "666777888", "password", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode("password"));

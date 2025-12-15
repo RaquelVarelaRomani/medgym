@@ -28,7 +28,7 @@ class SummaryServiceTest {
     private WorkoutCommentDao workoutCommentDao;
 
     @Test
-    void testGetAnnualSummary() {
+    void testGetAnnualSummary() { 
         Long userId = 1L;
 
         when(workoutLikeDao.countByUserId(userId)).thenReturn(10L);
