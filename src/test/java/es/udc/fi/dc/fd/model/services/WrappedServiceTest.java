@@ -3,14 +3,10 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.entities.*;
 import jakarta.transaction.Transactional;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -27,18 +23,9 @@ public class WrappedServiceTest {
     @Autowired
     private WrappedService wrappedService;
 
-    @MockBean
-    private WorkoutDao workoutDao;
-
-    @MockBean
-    private WorkoutExerciseDao workoutExerciseDao;
-
-    @MockBean
-    private ExerciseDao exerciseDao;
-
     @Test
     public void testGetTopExercisesByUser() {
-        Long userId = 2L; // Laura
+        Long userId = 2L;
         List<Exercise> topExercises = wrappedService.getTopExercisesByUser(userId);
 
         assertEquals(5, topExercises.size());
@@ -50,14 +37,14 @@ public class WrappedServiceTest {
 
     @Test
     public void testGetFavouriteMuscleGroup() {
-        Long userId = 2L; // Laura
+        Long userId = 2L;
         String favMuscleGroup = wrappedService.getFavouriteMuscleGroup(userId);
         assertEquals("LEG", favMuscleGroup);
     }
 
     @Test
     public void testGetFavouriteRoutine() {
-        Long userId = 2L; // Laura
+        Long userId = 2L;
         Routine favRoutine = wrappedService.getFavouriteRoutine(userId);
         assertEquals("Rutina fuerza inicial", favRoutine.getName());
     }
