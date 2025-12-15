@@ -160,7 +160,6 @@ class WrappedControllerTest {
     @Test
     void testGetWeightComparison_DefaultsToCurrentYear() throws Exception {
         User user = userDao.findById(testUser.getUserDto().getId()).orElseThrow();
-        int currentYear = LocalDateTime.now().getYear();
         LocalDateTime now = LocalDateTime.now();
 
         Workout workout = new Workout(now, now.plusHours(1), testRoutine, user);

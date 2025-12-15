@@ -43,12 +43,10 @@ public class WrappedServiceImpl implements WrappedService {
 
         List<WorkoutExercise> exercises = workoutExerciseDao.findByWorkoutIdIn(workoutIds);
 
-        long totalWeight = exercises.stream()
+        return exercises.stream()
                 .filter(we -> we.getWeight() != null && we.getReps() != null)
                 .mapToLong(we -> (long) we.getWeight() * we.getReps())
                 .sum();
-
-        return totalWeight;
     }
 
     @Override

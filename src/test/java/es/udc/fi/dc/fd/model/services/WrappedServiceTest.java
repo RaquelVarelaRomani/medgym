@@ -5,6 +5,9 @@ import es.udc.fi.dc.fd.model.entities.*;
 import es.udc.fi.dc.fd.rest.dtos.WeightComparisonDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -217,21 +221,34 @@ class WrappedServiceTest {
         }
     }
 
-    @Test
-    void testReference_SmallCat_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(4L);
+    @ParameterizedTest
+    @MethodSource("exactWeightComparisonTestCases")
+    void testReference_Exact(long weight, String expectedPhrase) throws InstanceNotFoundException {
+        createWorkoutWithWeight(weight);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(4L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Gato pequeño"));
-        assertTrue(result.getComparisonPhrase().contains("un"));
+        assertEquals(weight, result.getTotalWeightKg());
+        assertTrue(result.getComparisonPhrase().contains(expectedPhrase));
+        if (weight == 4L) {
+            assertTrue(result.getComparisonPhrase().contains("un"));
+        }
     }
 
-    @Test
-    void testReference_LargeDog_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(30L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(30L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Perro grande"));
+    static Stream<Arguments> exactWeightComparisonTestCases() {
+        return Stream.of(
+            Arguments.of(4L, "Gato pequeño"),
+            Arguments.of(30L, "Perro grande"),
+            Arguments.of(70L, "Persona"),
+            Arguments.of(200L, "Motocicleta"),
+            Arguments.of(500L, "Caballo"),
+            Arguments.of(1200L, "Coche pequeño"),
+            Arguments.of(2000L, "SUV"),
+            Arguments.of(4500L, "Elefante"),
+            Arguments.of(10000L, "Autobús escolar"),
+            Arguments.of(20000L, "Camión de bomberos"),
+            Arguments.of(40000L, "Avión pequeño"),
+            Arguments.of(150000L, "Ballena azul"),
+            Arguments.of(412000L, "Boeing 747")
+        );
     }
 
     @Test
@@ -243,35 +260,11 @@ class WrappedServiceTest {
     }
 
     @Test
-    void testReference_Person_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(70L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(70L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Persona"));
-    }
-
-    @Test
     void testReference_Person_Fractional() throws InstanceNotFoundException {
         createWorkoutWithWeight(100L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 100L && result.getTotalWeightKg() <= 110L);
         assertTrue(result.getComparisonPhrase().contains("Persona"));
-    }
-
-    @Test
-    void testReference_Motorcycle_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(200L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(200L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Motocicleta"));
-    }
-
-    @Test
-    void testReference_Horse_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(500L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(500L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Caballo"));
     }
 
     @Test
@@ -283,35 +276,11 @@ class WrappedServiceTest {
     }
 
     @Test
-    void testReference_SmallCar_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(1200L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(1200L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Coche pequeño"));
-    }
-
-    @Test
     void testReference_SmallCar_Fractional() throws InstanceNotFoundException {
         createWorkoutWithWeight(1800L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 1800L && result.getTotalWeightKg() <= 1810L);
         assertTrue(result.getComparisonPhrase().contains("Coche"));
-    }
-
-    @Test
-    void testReference_LargeCar_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(2000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(2000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("SUV"));
-    }
-
-    @Test
-    void testReference_Elephant_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(4500L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(4500L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Elefante"));
     }
 
     @Test
@@ -323,51 +292,11 @@ class WrappedServiceTest {
     }
 
     @Test
-    void testReference_SchoolBus_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(10000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(10000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Autobús escolar"));
-    }
-
-    @Test
-    void testReference_FireTruck_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(20000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(20000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Camión de bomberos"));
-    }
-
-    @Test
-    void testReference_SmallAirplane_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(40000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(40000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Avión pequeño"));
-    }
-
-    @Test
-    void testReference_BlueWhale_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(150000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(150000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Ballena azul"));
-    }
-
-    @Test
     void testReference_BlueWhale_Fractional() throws InstanceNotFoundException {
         createWorkoutWithWeight(200000L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 200000L && result.getTotalWeightKg() <= 200010L);
         assertTrue(result.getComparisonPhrase().contains("Ballena"));
-    }
-
-    @Test
-    void testReference_Boeing747_Exactly1() throws InstanceNotFoundException {
-        createWorkoutWithWeight(412000L);
-        WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertEquals(412000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Boeing 747"));
     }
 
     @Test
