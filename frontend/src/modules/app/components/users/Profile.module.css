@@ -377,3 +377,38 @@
     font-size: 1.5rem;
     filter: grayscale(100%);
 }
+
+.summary-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    
+    background: rgba(255, 215, 0, 0.1);
+    
+    color: #FFD700; 
+    border: 2px solid #FFD700;
+    
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 700;
+    margin-top: 1rem;
+    
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.summary-button:hover {
+    background: #FFD700;
+    
+    color: #000000;
+    
+    box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 0 40px rgba(255, 215, 0, 0.4);
+        
+    transform: scale(1.02);
+}
