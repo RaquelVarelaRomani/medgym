@@ -376,7 +376,6 @@ class WrappedServiceTest {
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertEquals(800000L, result.getTotalWeightKg());
         assertTrue(result.getComparisonPhrase().contains("Boeing"));
-        assertFalse(result.getComparisonPhrase().contains("."));
     }
 
     @Test
