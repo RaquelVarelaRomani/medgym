@@ -26,6 +26,7 @@ import FollowingPage from "./users/FollowingPage";
 import WorkoutSession from "./workouts/WorkoutSession"
 import WorkoutFeed from "./workouts/WorkoutFeed";
 import VolumeRanking from "./workouts/VolumeRanking";
+import Wrapped from "./wrapped/Wrapped";
 
 const Body = () => {
     return (
@@ -51,6 +52,7 @@ const Body = () => {
                     <Route path="users/profile/:id" element={<Layout><Profile /></Layout>} />
                     <Route path="users/profile/edit-profile" element={<EditProfile isPasswordMode={false}/>} />
                     <Route path="users/profile/change-password" element={<EditProfile isPasswordMode={true}/>} />
+                    <Route path="users/:id/wrapped" element={<Layout><Wrapped /></Layout>} />
                     <Route path="users/moderation" element={<Layout><UserModeration /></Layout>} />
                     <Route path="workouts/history" element={<Layout><WorkoutHistory /></Layout>} />
                     <Route path="workouts/:id" element={<Layout><WorkoutDetails /></Layout>} />
