@@ -44,7 +44,7 @@ const Wrapped = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [wrappedData, setWrappedData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [me, setMe] = useState(null);
+    const [setMe] = useState(null);
 
     const totalSlides = 8;
 
@@ -113,10 +113,11 @@ const Wrapped = () => {
             <div className={styles.progressBar}>
                 {[...Array(totalSlides)].map((_, index) => (
                     <div
-                        key={index}
+                        key={`slide-${index}`}
                         className={`${styles.progressDot} ${
                             index === currentSlide ? styles.active : ""
                         } ${index < currentSlide ? styles.completed : ""}`}
+                        aria-hidden="true"
                         onClick={() => goToSlide(index)}
                     />
                 ))}
@@ -197,7 +198,7 @@ const Wrapped = () => {
                             </h2>
                             <div className={styles.exerciseList}>
                                 {wrappedData.topExercises.map((exercise, index) => (
-                                    <div key={index} className={styles.exerciseItem}>
+                                    <div key={`slide-${index}`} className={styles.exerciseItem}>
                                         <div className={styles.exerciseRank}>
                                             {index + 1}
                                         </div>
@@ -335,7 +336,7 @@ const Wrapped = () => {
                 </button>
             )}
             
-            <div className={styles.clickArea} onClick={nextSlide} />
+            <div className={styles.clickArea} onClick={nextSlide} aria-hidden="true" />
         </div>
     );
 };
