@@ -49,7 +49,7 @@ class RoutineExerciseServiceTest {
     }
 
     private Exercise createExercise(String exerciseName, User user) throws PermissionException, DuplicateInstanceException {
-        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, new byte[]{1, 2, 3}, user);
+        return exerciseService.createExercise(exerciseName, "The description", MuscleGroup.LEG, Equipment.DUMBBELL, Exercise.ExerciseType.STRENGTH, new byte[]{1, 2, 3}, user);
     }
 
     private Routine createRoutine(String name, User user) {
@@ -79,7 +79,7 @@ class RoutineExerciseServiceTest {
                 exerciseService.createExercise(
                         "Ex NP", "Desc",
                         MuscleGroup.LEG, Equipment.DUMBBELL,
-                        new byte[]{1}, trainer
+                        Exercise.ExerciseType.STRENGTH, new byte[]{1}, trainer
                 )
         );
     }
@@ -90,7 +90,7 @@ class RoutineExerciseServiceTest {
 
         Exercise ex = exerciseService.createExercise(
                 "Ex P", "Desc",
-                MuscleGroup.CHEST, Equipment.BARBELL,
+                MuscleGroup.CHEST, Equipment.BARBELL, Exercise.ExerciseType.STRENGTH,
                 new byte[]{1}, trainer
         );
 
@@ -111,7 +111,7 @@ class RoutineExerciseServiceTest {
                 exerciseService.createExercise(
                         "Ex C", "Desc",
                         MuscleGroup.BACK, Equipment.DUMBBELL,
-                        new byte[]{1}, finalClient
+                        Exercise.ExerciseType.STRENGTH, new byte[]{1}, finalClient
                 )
         );
     }

@@ -10,9 +10,10 @@ import java.util.List;
 
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.ExerciseType;
 
 public interface ExerciseService {
-    Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException, PermissionException;
+    Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, ExerciseType exerciseType, byte[] image, User user) throws DuplicateInstanceException, PermissionException;
 
     Exercise findExerciseById(Long exerciseId) throws InstanceNotFoundException;
 

@@ -94,7 +94,7 @@ class WorkoutControllerTest {
         routineDao.save(routine);
 
         Exercise exercise = new Exercise("Sentadillas Test", "Ejercicio para piernas", Exercise.MuscleGroup.LEG,
-                Exercise.Equipment.NONE, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, trainer);
+                Exercise.Equipment.NONE, Exercise.ExerciseType.STRENGTH, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exerciseDao.save(exercise);
 
         routineExercise = new RoutineExercise(routine, exercise, 1);

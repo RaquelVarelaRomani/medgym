@@ -1,6 +1,7 @@
 package es.udc.fi.dc.fd.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.udc.fi.dc.fd.model.entities.Exercise;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
@@ -102,6 +103,7 @@ class ExerciseControllerTest {
         exerciseDto.setDescription("A basic push-up");
         exerciseDto.setMuscleGroup(MuscleGroup.CHEST.name());
         exerciseDto.setEquipment(Equipment.NONE.name());
+        exerciseDto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         exerciseDto.setImage(new byte[]{1, 2, 3});
         exerciseDto.setStatus("PENDING");
         exerciseDto.setCreatorId(adminUser.getUserDto().getId());
@@ -127,6 +129,7 @@ class ExerciseControllerTest {
         originalDto.setDescription("A basic squat");
         originalDto.setMuscleGroup(MuscleGroup.LEG.name());
         originalDto.setEquipment(Equipment.DUMBBELL.name());
+        originalDto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         originalDto.setImage(new byte[]{1, 2, 3});
         originalDto.setStatus("PENDING");
         originalDto.setCreatorId(adminUser.getUserDto().getId());
@@ -165,6 +168,7 @@ class ExerciseControllerTest {
         dto.setDescription("A basic lunge");
         dto.setMuscleGroup(MuscleGroup.LEG.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
@@ -214,6 +218,7 @@ class ExerciseControllerTest {
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
@@ -248,6 +253,7 @@ class ExerciseControllerTest {
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
@@ -274,6 +280,7 @@ class ExerciseControllerTest {
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUser.getUserDto().getId());
@@ -302,6 +309,7 @@ class ExerciseControllerTest {
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
@@ -329,6 +337,7 @@ class ExerciseControllerTest {
         dto.setDescription("A basic lunge");
         dto.setMuscleGroup(MuscleGroup.LEG.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(adminUser.getUserDto().getId());
@@ -357,6 +366,7 @@ class ExerciseControllerTest {
         dto.setDescription("Abdominal exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUserPremium.getUserDto().getId());
@@ -372,6 +382,7 @@ class ExerciseControllerTest {
         dto.setDescription("Core exercise");
         dto.setMuscleGroup(MuscleGroup.CORE.name());
         dto.setEquipment(Equipment.NONE.name());
+        dto.setExerciseType(Exercise.ExerciseType.STRENGTH.name());
         dto.setImage(new byte[]{1, 2, 3});
         dto.setStatus("PENDING");
         dto.setCreatorId(trainerUser.getUserDto().getId());

@@ -82,6 +82,7 @@ class ExerciseStatsControllerTest {
                 "Chest exercise",
                 Exercise.MuscleGroup.CHEST,
                 Exercise.Equipment.BARBELL,
+                Exercise.ExerciseType.STRENGTH,
                 null,
                 Exercise.ExerciseStatus.APPROVED,
                 null

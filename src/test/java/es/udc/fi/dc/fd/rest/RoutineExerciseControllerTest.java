@@ -77,7 +77,7 @@ class RoutineExerciseControllerTest {
     private Exercise createExercise(String name, User user) {
         return exerciseDao.save(new Exercise(
                 name, name + " description", MuscleGroup.FULL_BODY,
-                Equipment.NONE, new byte[]{1, 2, 3},
+                Equipment.NONE, Exercise.ExerciseType.STRENGTH, new byte[]{1, 2, 3},
                 ExerciseStatus.PENDING, user));
     }
 
@@ -292,6 +292,7 @@ class RoutineExerciseControllerTest {
                 "Ejercicio de pecho con barra",
                 MuscleGroup.CHEST,
                 Equipment.BENCH_AND_BARBELL,
+                Exercise.ExerciseType.STRENGTH,
                 new byte[]{1, 2, 3, 4, 5},
                 ExerciseStatus.APPROVED,
                 trainer
@@ -320,7 +321,7 @@ class RoutineExerciseControllerTest {
 
         Exercise exercise = exerciseDao.save(new Exercise(
                 "Flexiones Test", "Ejercicio de pecho básico",
-                MuscleGroup.CHEST, Equipment.NONE,
+                MuscleGroup.CHEST, Equipment.NONE, Exercise.ExerciseType.STRENGTH,
                 null, ExerciseStatus.APPROVED, trainer
         ));
 

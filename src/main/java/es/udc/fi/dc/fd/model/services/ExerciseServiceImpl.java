@@ -18,6 +18,7 @@ import java.util.List;
 
 import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
 import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
+import static es.udc.fi.dc.fd.model.entities.Exercise.ExerciseType;
 
 @Service
 @Transactional
@@ -35,7 +36,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     }
 
     @Override
-    public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, User user) throws DuplicateInstanceException, PermissionException {
+    public Exercise createExercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, ExerciseType exerciseType, byte[] image, User user) throws DuplicateInstanceException, PermissionException {
         if (exerciseDao.existsByName(name)) {
             throw new DuplicateInstanceException("project.entities.exercise", name);
         }
@@ -51,7 +52,7 @@ public class ExerciseServiceImpl implements ExerciseService {
             throw new PermissionException();
         }
 
-        Exercise exercise = new Exercise(name, description, muscleGroup, equipment, image, status, user);
+        Exercise exercise = new Exercise(name, description, muscleGroup, equipment, exerciseType, image, status, user);
         return exerciseDao.save(exercise);
     }
 

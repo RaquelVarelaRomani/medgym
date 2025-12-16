@@ -82,7 +82,7 @@ class WorkoutExerciseControllerTest {
         routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas Test", "Ejercicio básico de piernas", MuscleGroup.LEG, Equipment.BARBELL,
+        exercise = new Exercise("Sentadillas Test", "Ejercicio básico de piernas", MuscleGroup.LEG, Equipment.BARBELL, Exercise.ExerciseType.CARDIO,
                 new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED,
                 userDao.findById(trainerUser.getUserDto().getId()).get());
         exerciseDao.save(exercise);

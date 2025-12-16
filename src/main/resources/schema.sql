@@ -61,6 +61,7 @@ CREATE TABLE exercises
     description  TEXT         NOT NULL,
     muscle_group VARCHAR(100),
     equipment    VARCHAR(100),
+    exercise_type VARCHAR(100),
     image        MEDIUMBLOB,
     status       VARCHAR(20)  NOT NULL DEFAULT 'PENDING',
     creator_id   BIGINT,

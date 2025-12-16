@@ -69,7 +69,7 @@ class WorkoutExerciseServiceTest {
         routine = routineDao.save(routine);
 
         // Crear ejercicio
-        exercise = new Exercise("Sentadillas Test", "Ejercicio para piernas", MuscleGroup.LEG, Equipment.NONE,
+        exercise = new Exercise("Sentadillas Test", "Ejercicio para piernas", MuscleGroup.LEG, Equipment.NONE, Exercise.ExerciseType.STRENGTH,
                 new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exercise = exerciseDao.save(exercise);
 

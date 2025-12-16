@@ -51,6 +51,7 @@ class ExerciseServiceTest {
                 "descripcion",
                 MuscleGroup.LEG,
                 Equipment.DUMBBELL,
+                Exercise.ExerciseType.STRENGTH,
                 new byte[]{1},
                 user
         );

@@ -20,12 +20,14 @@ const CreateExercise = () => {
     const [popupText, setPopupText] = useState("");
     const [availableEquipment, setAvailableEquipment] = useState([]);
     const [availableMuscleGroups, setAvailableMuscleGroups] = useState([]);
+    const [availableExerciseTypes, setAvailableExerciseTypes] = useState([]);
 
     const [exerciseData, setExerciseData] = useState({
         name: "",
         description: "",
         muscleGroup: "",
         equipment: "",
+        exerciseType: "",
         image: null,    //Guardamos la imgaen en base64
     });
 
@@ -218,6 +220,24 @@ const CreateExercise = () => {
                         >
                             <option value="">Seleccionar...</option>
                             {availableEquipment.map(e => (
+                                <option key={e.name} value={e.name}>{getEquipmentText(e.name)}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                </div>
+
+                <div className={styles["form-div"]}>
+                    <label htmlFor="exerciseType">Tipo de ejercicio:</label>
+                    <div className={styles["form-div"]}>
+                        <select
+                            id="exerciseType"
+                            name="exerciseType"
+                            value={exerciseData.exerciseType}
+                            onChange={handleChange}
+                        >
+                            <option value="">Seleccionar...</option>
+                            {availableExerciseTypes.map(e => (
                                 <option key={e.name} value={e.name}>{getEquipmentText(e.name)}</option>
                             ))}
                         </select>

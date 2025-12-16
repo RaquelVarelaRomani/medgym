@@ -10,6 +10,7 @@ public class ExerciseDto {
     private String description;
     private String muscleGroup;
     private String equipment;
+    private String exerciseType;
     private byte[] image;
     private String status;
     private Long creatorId;
@@ -75,6 +76,15 @@ public class ExerciseDto {
 
     public void setEquipment(String equipment) {
         this.equipment = equipment;
+    }
+
+    @Size(max = 50, groups = {AllValidations.class})
+    public String getExerciseType() {
+        return exerciseType;
+    }
+
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
     }
 
     public byte[] getImage() {

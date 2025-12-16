@@ -12,6 +12,7 @@ public class Exercise {
     private ExerciseStatus status;
     private MuscleGroup muscleGroup;
     private Equipment equipment;
+    private ExerciseType exerciseType;
     private byte[] image;
     private User creator;
 
@@ -24,11 +25,13 @@ public class Exercise {
         this.status = status;
     }
 
-    public Exercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment, byte[] image, ExerciseStatus status, User creator) {
+    public Exercise(String name, String description, MuscleGroup muscleGroup, Equipment equipment,
+                    ExerciseType exerciseType, byte[] image, ExerciseStatus status, User creator) {
         this.name = name;
         this.description = description;
         this.muscleGroup = muscleGroup;
         this.equipment = equipment;
+        this.exerciseType = exerciseType;
         this.image = image;
         this.status = status;
         this.creator = creator;
@@ -79,6 +82,16 @@ public class Exercise {
 
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exerciseType", length = 50)
+    public ExerciseType getExerciseType() {
+        return exerciseType;
+    }
+
+    public void setExerciseType(ExerciseType exerciseType) {
+        this.exerciseType = exerciseType;
     }
 
     @Lob
@@ -138,5 +151,10 @@ public class Exercise {
         MAT,
         PULLEY,
         PULL_UP_BAR
+    }
+
+    public enum ExerciseType {
+        STRENGTH,
+        CARDIO
     }
 }

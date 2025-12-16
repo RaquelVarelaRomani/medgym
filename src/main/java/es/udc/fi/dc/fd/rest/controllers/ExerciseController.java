@@ -32,9 +32,12 @@ public class ExerciseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto) throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
+    public ResponseEntity<ExerciseDto> createExercise(@RequestAttribute Long userId, @RequestBody ExerciseDto exerciseDto)
+            throws DuplicateInstanceException, InstanceNotFoundException, PermissionException {
         User user = userService.loginFromId(userId);
-        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(), MuscleGroup.valueOf(exerciseDto.getMuscleGroup()), Equipment.valueOf(exerciseDto.getEquipment()), exerciseDto.getImage(), user);
+        Exercise exercise = exerciseService.createExercise(exerciseDto.getName(), exerciseDto.getDescription(),
+                MuscleGroup.valueOf(exerciseDto.getMuscleGroup()), Equipment.valueOf(exerciseDto.getEquipment()),
+                Exercise.ExerciseType.valueOf(exerciseDto.getExerciseType()), exerciseDto.getImage(), user);
         URI location = URI.create("/api/exercises/" + exercise.getId());
         return ResponseEntity.created(location).body(toExerciseDto(exercise));
     }
