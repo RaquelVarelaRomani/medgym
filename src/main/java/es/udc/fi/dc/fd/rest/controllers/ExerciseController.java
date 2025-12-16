@@ -107,4 +107,9 @@ public class ExerciseController {
     public List<EquipmentDto> getEquipments() {
         return EquipmentConversor.toEquipmentDtos(exerciseService.findAllEquipments());
     }
+
+    @GetMapping("/exerciseTypes")
+    public List<ExerciseTypeDto> getExerciseTypes() {
+        return ExerciseTypeConversor.toExerciseTypeDtos(exerciseService.findAllExerciseTypes());
+    }
 }

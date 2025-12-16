@@ -131,4 +131,9 @@ public class ExerciseServiceImpl implements ExerciseService {
     public List<Equipment> findAllEquipments() {
         return List.of(Equipment.values());
     }
+
+    @Override
+    public List<ExerciseType> findAllExerciseTypes() {
+        return List.of(ExerciseType.values());
+    }
 }

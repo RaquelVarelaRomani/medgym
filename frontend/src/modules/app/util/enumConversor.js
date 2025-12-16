@@ -39,3 +39,11 @@ export const getEquipmentText = (equipment) => {
         default: return equipment;
     }
 };
+
+export const getExerciseTypeText = (exerciseType) => {
+    switch (exerciseType) {
+        case "STRENGTH": return "Fuerza";
+        case "CARDIO": return "Cardio";
+        default: return exerciseType;
+    }
+}

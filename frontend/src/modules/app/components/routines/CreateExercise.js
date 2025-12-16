@@ -6,8 +6,8 @@ import Popup from "../common/popup/Popup";
 import FileUploadButton from "../common/FileUploadButton";
 import CropModal from "../common/CropModal";
 import LoadingMessage from "../common/LoadingMessage";
-import {createExercise, getEquipments, getMuscleGroups} from "../../../../backend/exerciseService";
-import {getEquipmentText, getMuscleGroupsText} from "../../util/enumConversor";
+import {createExercise, getEquipments, getExerciseTypes, getMuscleGroups} from "../../../../backend/exerciseService";
+import {getEquipmentText, getExerciseTypeText, getMuscleGroupsText} from "../../util/enumConversor";
 
 
 const CreateExercise = () => {
@@ -62,6 +62,13 @@ const CreateExercise = () => {
             },
             (errors) => console.error("Error loading equipment:", errors)
         )
+
+        getExerciseTypes(
+            (data) => {
+                setAvailableExerciseTypes(data)
+            },
+            (errors) => console.error("Error loading exercise types:", errors)
+        )
     }, [])
 
     const handleChange = (e) => {
@@ -91,6 +98,7 @@ const CreateExercise = () => {
             exerciseData.description,
             exerciseData.muscleGroup,
             exerciseData.equipment,
+            exerciseData.exerciseType,
             exerciseData.image,
             () => {
                 const message =
@@ -238,7 +246,7 @@ const CreateExercise = () => {
                         >
                             <option value="">Seleccionar...</option>
                             {availableExerciseTypes.map(e => (
-                                <option key={e.name} value={e.name}>{getEquipmentText(e.name)}</option>
+                                <option key={e.name} value={e.name}>{getExerciseTypeText(e.name)}</option>
                             ))}
                         </select>
                     </div>

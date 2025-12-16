@@ -321,6 +321,12 @@ class ExerciseServiceTest {
     }
 
     @Test
+    void testFindAllExerciseTypes() {
+        var eq = exerciseService.findAllExerciseTypes();
+        assertEquals(Exercise.ExerciseType.values().length, eq.size());
+    }
+
+    @Test
     void testUpdateExerciseNonExistent() {
         assertThrows(InstanceNotFoundException.class,
                 () -> exerciseService.updateExercise(999L, "x", "y",

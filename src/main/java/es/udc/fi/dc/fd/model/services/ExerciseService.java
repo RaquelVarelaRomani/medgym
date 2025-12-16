@@ -30,4 +30,6 @@ public interface ExerciseService {
     List<MuscleGroup> findAllMuscleGroups();
 
     List<Equipment> findAllEquipments();
+
+    List<ExerciseType> findAllExerciseTypes();
 }

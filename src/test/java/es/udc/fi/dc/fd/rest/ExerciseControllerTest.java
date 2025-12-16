@@ -463,4 +463,14 @@ class ExerciseControllerTest {
                 .andExpect(jsonPath("$[0].name").exists());
     }
 
+    @Test
+    void testGetExerciseTypes() throws Exception {
+        mockMvc.perform(get("/api/exercises/exerciseTypes")
+                        .header("Authorization", "Bearer " + adminUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(Exercise.ExerciseType.values().length))
+                .andExpect(jsonPath("$[0].name").exists());
+    }
+
 }
