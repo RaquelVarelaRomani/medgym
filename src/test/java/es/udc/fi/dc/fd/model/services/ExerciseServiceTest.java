@@ -118,7 +118,7 @@ class ExerciseServiceTest {
                 Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER, trainer);
         routineDao.save(r);
 
-        RoutineExercise re = new RoutineExercise(r, e, 1);
+        RoutineExercise re = new RoutineExercise(r, e, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseDao.save(re);
 
         var exerciseId = e.getId();

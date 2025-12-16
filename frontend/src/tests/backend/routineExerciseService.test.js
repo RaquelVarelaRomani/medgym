@@ -23,10 +23,11 @@ describe("routineExerciseService", () => {
   describe("createRoutineExercise", () => {
     const routineId = 1;
     const exerciseId = 123;
+    const exerciseType = "STRENGTH";
     const position = 1;
 
     test("successful API call with proper parameter passing", () => {
-      const mockData = { id: 1, routineId, exerciseId, position };
+      const mockData = { id: 1, routineId, exerciseId, exerciseType, position };
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
@@ -34,7 +35,7 @@ describe("routineExerciseService", () => {
         success(mockData);
       });
 
-      createRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      createRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(onSuccess).toHaveBeenCalledWith(mockData);
       expect(onErrors).not.toHaveBeenCalled();
@@ -49,7 +50,7 @@ describe("routineExerciseService", () => {
         errors(mockError);
       });
 
-      createRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      createRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith(mockError);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -59,11 +60,11 @@ describe("routineExerciseService", () => {
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
-      createRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      createRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(mockAppFetch).toHaveBeenCalledWith(
         `/routines/${routineId}/exercises`,
-        fetchConfig("POST", { exerciseId, position }),
+        fetchConfig("POST", { exerciseId, exerciseType, position }),
         onSuccess,
         onErrors
       );

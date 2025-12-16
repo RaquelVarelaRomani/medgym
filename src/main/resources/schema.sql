@@ -77,6 +77,7 @@ CREATE TABLE routine_exercises
     id          BIGINT NOT NULL AUTO_INCREMENT,
     routine_id  BIGINT NOT NULL,
     exercise_id BIGINT NOT NULL,
+    exercise_type VARCHAR(100),
     position    INT,
 
     CONSTRAINT pk_routine_exercise PRIMARY KEY (id),

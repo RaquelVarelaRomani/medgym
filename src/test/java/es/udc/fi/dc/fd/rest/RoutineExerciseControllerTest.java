@@ -50,11 +50,13 @@ class RoutineExerciseControllerTest {
     private ObjectMapper objectMapper;
     @Autowired
     private UserController userController;
+    private AuthenticatedUserDto adminUser;
     private AuthenticatedUserDto trainerUser;
     private AuthenticatedUserDto clientUser;
 
     @BeforeEach
     void setUp() throws Exception {
+        adminUser = createAuthenticatedUser("Admin", "Admin", "admin1@test.com", "600000003", RoleType.ADMIN);
         trainerUser = createAuthenticatedUser("Trainer", "One", "trainer1@test.com", "600000002", RoleType.TRAINER);
         clientUser = createAuthenticatedUser("Client", "User", "client@test.com", "600000004", RoleType.CLIENT);
     }
@@ -101,6 +103,7 @@ class RoutineExerciseControllerTest {
         dto.setExerciseId(exercise.getId());
         dto.setExerciseName("");
         dto.setExerciseDescription("");
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(1);
 
         mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
@@ -122,7 +125,7 @@ class RoutineExerciseControllerTest {
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(
-                trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), 1);
+                trainerUser.getUserDto().getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         RoutineExerciseDto dto = new RoutineExerciseDto();
         dto.setRoutineId(routine.getId());
@@ -148,9 +151,9 @@ class RoutineExerciseControllerTest {
         Exercise e2 = createExercise("Ejercicio 2", trainer);
         Exercise e3 = createExercise("Ejercicio 3", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e1.getId(), 1);
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e2.getId(), 2);
-        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e3.getId(), 3);
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e1.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e2.getId(), RoutineExercise.ExerciseType.STRENGTH, 2);
+        routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(), routine.getId(), e3.getId(), RoutineExercise.ExerciseType.STRENGTH, 3);
 
         mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken())
@@ -176,7 +179,7 @@ class RoutineExerciseControllerTest {
         Routine routine = createRoutine("Rutina", trainer);
 
         routineExerciseService.addExerciseToRoutine(trainerUser.getUserDto().getId(),
-                routine.getId(), exercise.getId(), 1);
+                routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
@@ -194,6 +197,7 @@ class RoutineExerciseControllerTest {
         dto.setExerciseId(exercise.getId());
         dto.setExerciseName("ExerciseName");
         dto.setExerciseDescription("ExerciseDescription");
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(1);
 
         mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
@@ -210,7 +214,7 @@ class RoutineExerciseControllerTest {
         Exercise exercise1 = createExercise("Ejercicio 1", trainer);
 
         routineExerciseService.addExerciseToRoutine(
-                trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), 1);
+                trainerUser.getUserDto().getId(), routine.getId(), exercise1.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         mockMvc.perform(delete("/api/routines/" + routine.getId() + "/exercises/" + exercise1.getId())
                         .header("Authorization", "Bearer " + clientUser.getServiceToken()))
@@ -226,6 +230,7 @@ class RoutineExerciseControllerTest {
         dto.setExerciseId(-1L);
         dto.setExerciseName("ExerciseName");
         dto.setExerciseDescription("ExerciseDescription");
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(1);
 
         mockMvc.perform(post("/api/routines/" + routine.getId() + "/exercises")
@@ -245,6 +250,7 @@ class RoutineExerciseControllerTest {
         dto.setExerciseId(exercise.getId());
         dto.setExerciseName("ExerciseName");
         dto.setExerciseDescription("ExerciseDescription");
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(1);
 
         mockMvc.perform(post("/api/routines/-1/exercises")
@@ -301,7 +307,7 @@ class RoutineExerciseControllerTest {
 
         routineExerciseService.addExerciseToRoutine(
                 trainerUser.getUserDto().getId(), routine.getId(),
-                exercise.getId(), 1);
+                exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
@@ -328,7 +334,7 @@ class RoutineExerciseControllerTest {
 
         routineExerciseService.addExerciseToRoutine(
                 trainerUser.getUserDto().getId(), routine.getId(),
-                exercise.getId(), 1);
+                exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         mockMvc.perform(get("/api/routines/" + routine.getId() + "/exercises")
                         .header("Authorization", "Bearer " + trainerUser.getServiceToken()))
@@ -347,7 +353,7 @@ class RoutineExerciseControllerTest {
 
         routineExerciseService.addExerciseToRoutine(
                 trainerUser.getUserDto().getId(), routine.getId(),
-                exercise.getId(), 1);
+                exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         RoutineExerciseDto dto = new RoutineExerciseDto();
         dto.setPosition(2);
@@ -383,5 +389,15 @@ class RoutineExerciseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(dto)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetExerciseTypes() throws Exception {
+        mockMvc.perform(get("/api/exerciseTypes")
+                        .header("Authorization", "Bearer " + adminUser.getServiceToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(RoutineExercise.ExerciseType.values().length))
+                .andExpect(jsonPath("$[0].name").exists());
     }
 }

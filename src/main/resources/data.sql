@@ -70,28 +70,28 @@ VALUES ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'LEG',
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial
-INSERT INTO routine_exercises (routine_id, exercise_id, position)
-VALUES (1, 1, 1),
-       (1, 2, 2),
-       (1, 7, 3),
-       (1, 8, 4);
+INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
+VALUES (1, 1, 'CARDIO', 1),
+       (1, 2, 'STRENGTH', 2),
+       (1, 7, 'CARDIO', 3),
+       (1, 8, 'STRENGTH', 4);
 
 -- Rutina 2: cardio avanzado
-INSERT INTO routine_exercises (routine_id, exercise_id, position)
-VALUES (2, 3, 1),
-       (2, 6, 2),
-       (2, 10, 3);
+INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
+VALUES (2, 3, 'CARDIO', 1),
+       (2, 6, 'STRENGTH', 2),
+       (2, 10, 'STRENGTH', 3);
 
 -- Rutina 3: cuerpo completo
-INSERT INTO routine_exercises (routine_id, exercise_id, position)
-VALUES (3, 1, 1),
-       (3, 2, 2),
-       (3, 5, 3),
-       (3, 9, 4);
+INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
+VALUES (3, 1, 'CARDIO', 1),
+       (3, 2, 'CARDIO', 2),
+       (3, 5, 'STRENGTH', 3),
+       (3, 9, 'CARDIO', 4);
 
 -- Rutina 4: yoga relajación
-INSERT INTO routine_exercises (routine_id, exercise_id, position)
-VALUES (4, 4, 1);
+INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
+VALUES (4, 4, 'STRENGTH', 1);
 
 INSERT INTO workouts (start_time, end_time, routine_id, user_id)
 VALUES
