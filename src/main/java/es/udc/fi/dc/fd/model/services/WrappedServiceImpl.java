@@ -54,7 +54,7 @@ public class WrappedServiceImpl implements WrappedService {
                 .entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
-                .orElse(Exercise.MuscleGroup.valueOf("")));
+                .orElse(null));
     }
 
     @Override

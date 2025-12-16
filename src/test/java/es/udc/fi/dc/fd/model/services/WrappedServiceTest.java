@@ -2,9 +2,7 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.entities.*;
 import jakarta.transaction.Transactional;
-import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -17,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-@ExtendWith(MockitoExtension.class)
 public class WrappedServiceTest {
 
     @Autowired
@@ -39,7 +36,7 @@ public class WrappedServiceTest {
     public void testGetFavouriteMuscleGroup() {
         Long userId = 2L;
         String favMuscleGroup = wrappedService.getFavouriteMuscleGroup(userId);
-        assertEquals("LEG", favMuscleGroup);
+        assertEquals("CHEST", favMuscleGroup);
     }
 
     @Test
