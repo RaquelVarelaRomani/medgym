@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,6 +71,8 @@ public class WorkoutServiceImpl implements WorkoutService {
         for (WorkoutExercise workoutExercise : workoutExercises) {
             exerciseMaxWeightService.addOrUpdateMaxWeight(workout.getUser().getId(), workoutExercise.getRoutineExercise().getExercise().getId(), workoutExercise.getWeight());
         }
+
+        checkRankingSurpass(workout);
     }
 
     @Override
@@ -110,7 +115,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workouts.stream()
                 .filter(w -> w.getEndTime() != null && w.getTotalVolume() != null)
                 .sorted((a, b) -> b.getTotalVolume().compareTo(a.getTotalVolume()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -168,6 +173,72 @@ public class WorkoutServiceImpl implements WorkoutService {
             int currentStreak = calculateCurrentStreak(user.getId());
             if (currentStreak > 1) {
                 notificationService.createStreakRemindNotification(user.getId(), currentStreak);
+            }
+        }
+    }
+
+    private void checkRankingSurpass(Workout workout) throws InstanceNotFoundException {
+        Long userId = workout.getUser().getId();
+        Long routineId = workout.getRoutine().getId();
+
+        // 1. Retrieve followers and create user IDs list.
+        List<Long> followerIds = userFollowDao.findByFollowUser(workout.getUser()).stream()
+                .map(uf -> uf.getUser().getId())
+                .toList();
+
+        if (followerIds.isEmpty()) {
+            return;
+        }
+
+        List<Long> userIds = new ArrayList<>(followerIds);
+        userIds.add(userId);
+
+        // 2. Query workouts excluding the current one, filter valid, group by user for previous max volumes.
+        List<Workout> previousWorkouts = workoutDao.findByRoutineIdAndUserIdIn(routineId, userIds).stream()
+                .filter(w -> !w.getId().equals(workout.getId()))
+                .filter(w -> w.getEndTime() != null && w.getTotalVolume() != null)
+                .toList();
+
+        Map<Long, Optional<Double>> previousMaxVolumes = previousWorkouts.stream()
+                .collect(Collectors.groupingBy(w -> w.getUser().getId(),
+                        Collectors.mapping(w -> w.getTotalVolume().doubleValue(), Collectors.maxBy(Double::compare))));
+
+        Map<Long, Double> previousMaxVolumesWithDefaults = new HashMap<>();
+        for (Long uid : userIds) {
+            previousMaxVolumesWithDefaults.put(uid, previousMaxVolumes.getOrDefault(uid, Optional.of(0.0)).orElse(0.0));
+        }
+
+        // 3. Sort users by previous max descending, find previous position.
+        List<Long> previousRanking = previousMaxVolumesWithDefaults.entrySet().stream()
+                .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+                .map(Map.Entry::getKey)
+                .toList();
+
+        int previousPosition = previousRanking.indexOf(userId);
+
+        // 4. Include the current workout, recalculate max volumes.
+        Map<Long, Double> newMaxVolumes = new HashMap<>(previousMaxVolumesWithDefaults);
+        double currentVolume = workout.getTotalVolume();
+        double prevMaxForUser = previousMaxVolumesWithDefaults.get(userId);
+        if (currentVolume > prevMaxForUser) {
+            newMaxVolumes.put(userId, currentVolume);
+        }
+
+        // 5. Sort users by new max descending, find new position.
+        List<Long> newRanking = newMaxVolumes.entrySet().stream()
+                .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+                .map(Map.Entry::getKey)
+                .toList();
+
+        int newPosition = newRanking.indexOf(userId);
+
+        // 6. If new position < previous position, notify users from new position + 1 to previous position who are followers.
+        if (newPosition < previousPosition) {
+            for (int i = newPosition + 1; i <= previousPosition; i++) {
+                Long surpassedUserId = newRanking.get(i);
+                if (followerIds.contains(surpassedUserId)) {
+                    notificationService.createRankingSurpassNotification(surpassedUserId, userId, routineId);
+                }
             }
         }
     }

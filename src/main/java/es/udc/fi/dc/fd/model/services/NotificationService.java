@@ -20,6 +20,10 @@ public interface NotificationService {
 
     void createAchievementNotification(Long userId, String message, Long idToRedirect) throws InstanceNotFoundException;
 
+    void createRankingSurpassNotification(Long surpassedUserId, Long surpassingUserId, Long routineId) throws InstanceNotFoundException;
+
+    void createExerciseRankingSurpassNotification(Long surpassedUserId, Long surpassingUserId, Long exerciseId) throws InstanceNotFoundException;
+
     List<Notification> getNotificationsByUser(Long userId);
 
     void markNotificationAsRead(Long notificationId);
