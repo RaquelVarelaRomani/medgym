@@ -129,38 +129,81 @@ VALUES
     ('2025-10-12 19:30:00', '2025-10-12 20:20:00', 1, 2),
     ('2025-10-15 19:30:00', '2025-10-15 20:15:00', 1, 2),
     ('2025-10-17 19:30:00', '2025-10-17 20:15:00', 3, 2),
-    ('2025-10-20 19:00:00', '2025-10-20 19:50:00', 1, 2);
+    ('2025-10-20 19:00:00', '2025-10-20 19:50:00', 1, 2),
+    -- 1. Entrenamiento de Laura ayer (Racha 1)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
+
+    -- 2. Entrenamiento de Laura anteayer (Racha 2)
+    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
+
+    -- 3. Entrenamiento de Laura Hoy (Racha 3)
+    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
 
 INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
-VALUES (12, 60, 45, 1, 3),
-       (10, 50, 40, 1, 4),
-       (8, 70, 55, 2, 2),
-       (15, 30, 35, 2, 1),
-       (10, 40, 30, 3, 5),
-       (20, 25, 25, 3, 6),
-       (6, 80, 60, 4, 7),
-       (12, 55, 42, 4, 8),
-       (10, 65, 50, 4, 9),
-       (8, 75, 48, 5, 10),
-       (14, 35, 33, 5, 1),
-       (10, 45, 38, 2, 6),
-       (9, 50, 52, 3, 2),
-       -- Datos de Laura en octubre (workout_id 14-19)
-       (12, 45, 40, 14, 3),
-       (10, 55, 38, 14, 4),
-       (8, 65, 50, 14, 2),
-       (5, 28, 20, 15, 4),
-       (6, 32, 25, 15, 1),
-       (12, 50, 42, 16, 3),
-       (10, 48, 38, 16, 4),
-       (8, 60, 48, 16, 2),
-       (12, 45, 40, 17, 3),
-       (10, 55, 38, 17, 4),
-       (8, 65, 50, 17, 2),
-       (5, 32, 18, 18, 4),
-       (7, 35, 28, 18, 1),
-       (12, 50, 42, 19, 3),
-       (10, 48, 38, 19, 4);
+VALUES
+-- workout 1
+(NULL, NULL, 45, 1, 3),   -- CARDIO
+(10, 50, NULL, 1, 4),    -- STRENGTH
+
+-- workout 2
+(8, 70, NULL, 2, 2),     -- STRENGTH
+(NULL, NULL, 35, 2, 1),  -- CARDIO
+(10, 45, NULL, 2, 6),    -- STRENGTH
+
+-- workout 3
+(10, 40, NULL, 3, 5),    -- STRENGTH
+(20, 25, NULL, 3, 6),    -- STRENGTH
+(9, 50, NULL, 3, 2),     -- STRENGTH
+
+-- workout 4
+(6, 80, NULL, 4, 7),     -- STRENGTH
+(NULL, NULL, 42, 4, 8),  -- CARDIO
+(NULL, NULL, 50, 4, 9),  -- CARDIO
+
+-- workout 5
+(8, 75, NULL, 5, 10),    -- STRENGTH
+(NULL, NULL, 33, 5, 1),  -- CARDIO
+
+-- Datos de Laura en octubre
+-- workout 14
+(NULL, NULL, 40, 14, 3), -- CARDIO
+(10, 55, NULL, 14, 4),   -- STRENGTH
+(8, 65, NULL, 14, 2),    -- STRENGTH
+
+-- workout 15
+(5, 28, NULL, 15, 4),    -- STRENGTH
+(NULL, NULL, 25, 15, 1), -- CARDIO
+
+-- workout 16
+(NULL, NULL, 42, 16, 3), -- CARDIO
+(10, 48, NULL, 16, 4),   -- STRENGTH
+(8, 60, NULL, 16, 2),    -- STRENGTH
+
+-- workout 17
+(NULL, NULL, 40, 17, 3), -- CARDIO
+(10, 55, NULL, 17, 4),   -- STRENGTH
+(8, 65, NULL, 17, 2),    -- STRENGTH
+
+-- workout 18
+(5, 32, NULL, 18, 4),    -- STRENGTH
+(NULL, NULL, 28, 18, 1), -- CARDIO
+
+-- workout 19
+(NULL, NULL, 42, 19, 3), -- CARDIO
+(10, 48, NULL, 19, 4),   -- STRENGTH
+
+-- workout 21 (Rutina fuerza inicial)
+(NULL, NULL, 40, 21, 1), -- CARDIO
+(12, 0, NULL, 21, 2),    -- STRENGTH
+(NULL, NULL, 50, 21, 3), -- CARDIO
+(10, 45, NULL, 21, 4),   -- STRENGTH
+
+-- workout 20 (Rutina cuerpo completo)
+(NULL, NULL, 35, 20, 9), -- CARDIO
+(12, 0, NULL, 20, 10),   -- STRENGTH
+(10, 0, NULL, 20, 11),   -- STRENGTH
+(5, 0, NULL, 20, 12);    -- STRENGTH
+
 
 INSERT INTO user_follows (client_id, follow_user_id)
 VALUES (3, 1),
@@ -294,33 +337,6 @@ VALUES
     ('Comentando Entrenos',
      'Deja comentarios en entrenamientos de otros usuarios',
      5, 20, 50);
-
-
-
-INSERT INTO workouts (start_time, end_time, routine_id, user_id)
-VALUES
-    -- 1. Entrenamiento de Laura ayer (Racha 1)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
-
-    -- 2. Entrenamiento de Laura anteayer (Racha 2)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
-
-    -- 3. Entrenamiento de Laura Hoy (Racha 3)
-    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
-
--- Laura (Workout 20 - Rutina 3: Cuerpo completo)
-INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
-VALUES (10, 40, 35, 20, 9),  -- Sentadillas
-       (12, 0, 30, 20, 10), -- Flexiones
-       (10, 0, 40, 20, 11), -- Zancadas
-       (5, 0, 45, 20, 12);  -- Dominadas
-
--- Laura (Workout 21 - Rutina 1: Fuerza inicial)
-INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
-VALUES (10, 45, 40, 21, 1),  -- Sentadillas
-       (12, 0, 30, 21, 2),  -- Flexiones
-       (8, 60, 50, 21, 3),  -- Peso muerto
-       (10, 45, 45, 21, 4); -- Press banca
 
 -- Contenido random coherente para exercise_max_weights
 -- Carlos (1), Laura (2), Miguel (3), Sofía (4), Andrés (5)

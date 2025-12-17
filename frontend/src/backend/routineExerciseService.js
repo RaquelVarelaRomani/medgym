@@ -51,9 +51,9 @@ export const getRoutineExercises = (routineId, onSuccess, onErrors) => {
     fetchPage(0);
 }
 
-export const updateRoutineExercise = (routineId, exerciseId, position, onSuccess, onErrors) => appFetch(
+export const updateRoutineExercise = (routineId, exerciseId, exerciseType, position, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises/${exerciseId}`,
-    fetchConfig("PUT", { position }),
+    fetchConfig("PUT", { exerciseType, position }),
     onSuccess,
     onErrors
 )

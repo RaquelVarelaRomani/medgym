@@ -239,10 +239,11 @@ describe("routineExerciseService", () => {
   describe("updateRoutineExercise", () => {
     const routineId = 1;
     const exerciseId = 123;
+    const exerciseType = "CARDIO";
     const position = 2;
 
     test("successful API call with proper parameter passing", () => {
-      const mockData = { id: exerciseId, routineId, exerciseId, position };
+      const mockData = { id: exerciseId, routineId, exerciseType, exerciseId, position };
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
@@ -250,7 +251,7 @@ describe("routineExerciseService", () => {
         success(mockData);
       });
 
-      updateRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      updateRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(onSuccess).toHaveBeenCalledWith(mockData);
       expect(onErrors).not.toHaveBeenCalled();
@@ -265,7 +266,7 @@ describe("routineExerciseService", () => {
         errors(mockError);
       });
 
-      updateRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      updateRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(onErrors).toHaveBeenCalledWith(mockError);
       expect(onSuccess).not.toHaveBeenCalled();
@@ -275,11 +276,11 @@ describe("routineExerciseService", () => {
       const onSuccess = jest.fn();
       const onErrors = jest.fn();
 
-      updateRoutineExercise(routineId, exerciseId, position, onSuccess, onErrors);
+      updateRoutineExercise(routineId, exerciseId, exerciseType, position, onSuccess, onErrors);
 
       expect(mockAppFetch).toHaveBeenCalledWith(
         `/routines/${routineId}/exercises/${exerciseId}`,
-        fetchConfig("PUT", { position }),
+        fetchConfig("PUT", { exerciseType, position }),
         onSuccess,
         onErrors
       );

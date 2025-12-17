@@ -130,6 +130,7 @@ class RoutineExerciseControllerTest {
         RoutineExerciseDto dto = new RoutineExerciseDto();
         dto.setRoutineId(routine.getId());
         dto.setExerciseId(exercise.getId());
+        dto.setExerciseType("STRENGTH");
         dto.setExerciseName("");
         dto.setExerciseDescription("");
         dto.setPosition(2);
@@ -356,6 +357,7 @@ class RoutineExerciseControllerTest {
                 exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         RoutineExerciseDto dto = new RoutineExerciseDto();
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(2);
 
         mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/" + exercise.getId())
@@ -368,6 +370,7 @@ class RoutineExerciseControllerTest {
     @Test
     void testUpdateExerciseInNonExistentRoutine() throws Exception {
         RoutineExerciseDto dto = new RoutineExerciseDto();
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(2);
 
         mockMvc.perform(put("/api/routines/-1/exercises/999")
@@ -382,6 +385,7 @@ class RoutineExerciseControllerTest {
         Routine routine = createRoutine("Rutina", userDao.findById(trainerUser.getUserDto().getId()).get());
 
         RoutineExerciseDto dto = new RoutineExerciseDto();
+        dto.setExerciseType("STRENGTH");
         dto.setPosition(2);
 
         mockMvc.perform(put("/api/routines/" + routine.getId() + "/exercises/-123")

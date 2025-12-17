@@ -46,7 +46,7 @@ public class RoutineExerciseController {
     public RoutineExerciseDto updateRoutineExercise(@RequestAttribute Long userId, @PathVariable Long routineId, @PathVariable Long exerciseId, @RequestBody RoutineExerciseDto params)
             throws PermissionException, InstanceNotFoundException, DuplicateInstanceException {
         return toRoutineExerciseDto(routineExerciseService.updateExerciseInRoutine(userId, routineId, exerciseId,
-                params.getPosition()));
+                RoutineExercise.ExerciseType.valueOf(params.getExerciseType()), params.getPosition()));
     }
 
     @GetMapping("/routines/{routineId}/exercises")

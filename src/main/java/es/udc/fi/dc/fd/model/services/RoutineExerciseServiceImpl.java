@@ -81,10 +81,11 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, RoutineExercise.ExerciseType exerciseType, Integer position)
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         RoutineExercise routineExercise = this.getRoutineExercise(userId, routineId, exerciseId);
         routineExercise.setPosition(position);
+        routineExercise.setExerciseType(exerciseType);
 
         return routineExerciseDao.save(routineExercise);
     }

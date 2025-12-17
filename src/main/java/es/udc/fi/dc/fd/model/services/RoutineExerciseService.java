@@ -16,7 +16,7 @@ public interface RoutineExerciseService {
     void removeExerciseFromRoutine(Long userId, Long routineId, Long exerciseId)
             throws InstanceNotFoundException, PermissionException;
 
-    RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+    RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, RoutineExercise.ExerciseType exerciseType, Integer position)
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException;
 
     Page<RoutineExercise> getExercisesForRoutines(Long routineId, Pageable pageable);

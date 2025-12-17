@@ -162,7 +162,7 @@ class RoutineExerciseServiceTest {
 
         routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.CARDIO, 1);
 
-        RoutineExercise updated = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), 3);
+        RoutineExercise updated = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 3);
         assertEquals(Integer.valueOf(3), updated.getPosition());
     }
 
