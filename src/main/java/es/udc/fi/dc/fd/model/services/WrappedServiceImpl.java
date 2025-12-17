@@ -74,10 +74,10 @@ public class WrappedServiceImpl implements WrappedService {
         }
 
         if (ratio < 1.1) {
-            return String.format("¡Has levantado el peso de un %s!", bestMatch.getName());
+            return String.format("un %s", bestMatch.getName());
         } else {
             String plural = makePlural(bestMatch.getName());
-            return String.format("¡Has levantado el peso de %s %s!", formattedRatio, plural);
+            return String.format("%s %s", formattedRatio, plural);
         }
     }
 

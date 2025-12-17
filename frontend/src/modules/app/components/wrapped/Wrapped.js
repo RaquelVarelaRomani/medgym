@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
+import { getWeightComparison } from "../../../../backend/wrappedService";
 import styles from "./Wrapped.module.css";
 import LoadingMessage from "../common/LoadingMessage";
 
@@ -44,9 +45,10 @@ const Wrapped = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [wrappedData, setWrappedData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [setMe] = useState(null);
+    const [me, setMe] = useState(null);
 
     const totalSlides = 8;
+    const targetYear = 2025;
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -60,14 +62,36 @@ const Wrapped = () => {
                     return;
                 }
 
-                setTimeout(() => {
-                    setWrappedData(MOCK_WRAPPED_DATA);
-                    setLoading(false);
-                }, 1000);
+                loadWrappedData();
             },
             () => navigate("/users/login")
         );
     }, [id, navigate]);
+
+    const loadWrappedData = () => {
+
+        //TO BE CHANGED -> USING MIXED MOCK DATA AND BACKEND DATA THAT IS READY
+        const combinedData = { ...MOCK_WRAPPED_DATA };
+
+        getWeightComparison(
+            targetYear,
+            (weightData) => {
+                combinedData.totalWeight = {
+                    kg: weightData.totalWeightKg || 0,
+                    comparison: weightData.comparisonPhrase || "No hemos encontrado datos",
+                };
+
+                setWrappedData(combinedData);
+                setLoading(false);
+            },
+            (err) => {
+                console.error("Error loading weight comparison:", err);
+
+                setWrappedData(combinedData);
+                setLoading(false);
+            }
+        );
+    };
 
     const nextSlide = () => {
         if (currentSlide < totalSlides - 1) {
@@ -126,7 +150,7 @@ const Wrapped = () => {
             <div className={styles.slidesWrapper}>
                 <div
                     className={styles.slidesContainer}
-                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                    style={{transform: `translateX(-${currentSlide * 100}%)`}}
                 >
                     {/* slide 1 */}
                     <div className={styles.slide}>
@@ -335,8 +359,8 @@ const Wrapped = () => {
                     ›
                 </button>
             )}
-            
-            <div className={styles.clickArea} onClick={nextSlide} aria-hidden="true" />
+
+            <div className={styles.clickArea} onClick={nextSlide} aria-hidden="true"/>
         </div>
     );
 };

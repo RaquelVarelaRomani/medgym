@@ -1,20 +1,20 @@
 package es.udc.fi.dc.fd.model.entities;
 
 public enum WeightReference {
-    SMALL_CAT("Gato pequeño", 4L),
-    LARGE_DOG("Perro grande", 30L),
-    PERSON("Persona", 70L),
-    MOTORCYCLE("Motocicleta", 200L),
-    GRAND_PIANO("Piano de cola", 300L),
-    HORSE("Caballo", 500L),
-    SMALL_CAR("Coche pequeño", 1_200L),
+    SMALL_CAT("gato pequeño", 4L),
+    LARGE_DOG("perro grande", 30L),
+    PERSON("persona", 70L),
+    MOTORCYCLE("motocicleta", 200L),
+    GRAND_PIANO("piano de cola", 300L),
+    HORSE("caballo", 500L),
+    SMALL_CAR("coche pequeño", 1_200L),
     LARGE_CAR("SUV", 2_000L),
-    ELEPHANT("Elefante", 4_500L),
-    SCHOOL_BUS("Autobús escolar", 10_000L),
-    FIRE_TRUCK("Camión de bomberos", 20_000L),
-    SMALL_AIRPLANE("Avión pequeño", 40_000L),
-    BLUE_WHALE("Ballena azul", 150_000L),
-    BOEING_747("Boeing 747", 412_000L);
+    ELEPHANT("elefante", 4_500L),
+    SCHOOL_BUS("autobús escolar", 10_000L),
+    FIRE_TRUCK("camión de bomberos", 20_000L),
+    SMALL_AIRPLANE("avión pequeño", 40_000L),
+    BLUE_WHALE("ballena azul", 150_000L),
+    BOEING_747("boeing 747", 412_000L);
 
     private final String name;
     private final Long weightKg;
