@@ -8,4 +8,6 @@ public interface WrappedService {
     Long calculateYearlyTotalWeight(Long userId, int year) throws InstanceNotFoundException;
 
     WeightComparisonDto getWeightComparison(Long userId, int year) throws InstanceNotFoundException;
+
+    Integer getLongestStreak(Long userId, int year) throws InstanceNotFoundException;
 }
