@@ -487,6 +487,7 @@ ExerciseList.propTypes = {
         PropTypes.shape({
             id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
             exerciseName: PropTypes.string.isRequired,
+            exerciseType: PropTypes.string,
             position: PropTypes.number
         })
     ).isRequired,
@@ -498,7 +499,8 @@ ExerciseList.propTypes = {
 ExerciseItem.propTypes = {
     exercise: PropTypes.shape({
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-        exerciseName: PropTypes.string.isRequired
+        exerciseName: PropTypes.string.isRequired,
+        exerciseType: PropTypes.string,
     }).isRequired,
     index: PropTypes.number.isRequired,
     expanded: PropTypes.bool,

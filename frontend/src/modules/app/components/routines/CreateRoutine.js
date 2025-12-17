@@ -192,25 +192,33 @@ const CreateRoutine = () => {
 
             const routineId = createdRoutine.id;
 
-            const validExercises = exercises.filter(
-                ex => ex.id !== null && ex.nombre.trim() !== "" && ex.type !== ""
-            );
+            const validExercises = exercises.filter(isValidExercise);
 
-            const onError = (err) => console.error("Error adding exercise:", err);
-
-            validExercises.forEach(ex =>
-                routineExerciseService.createRoutineExercise(
-                    routineId,
-                    ex.id,
-                    ex.type,
-                    ex.position,
-                    () => {},
-                    onError
-                )
-            );
+            validExercises.forEach(ex => addExerciseToRoutine(routineId, ex));
 
             navigate("/routines");
         };
+
+        const isValidExercise = (ex) =>
+            ex.id !== null &&
+            ex.nombre.trim() !== "" &&
+            ex.type !== "";
+
+        const addExerciseToRoutine = (routineId, ex) => {
+            routineExerciseService.createRoutineExercise(
+                routineId,
+                ex.id,
+                ex.type,
+                ex.position,
+                noop,
+                logAddExerciseError
+            );
+        };
+
+        const noop = () => {};
+
+        const logAddExerciseError = (err) =>
+            console.error("Error adding exercise:", err);
 
         const handleRoutineError = (error) => {
             console.error("Error creating routine:", error);

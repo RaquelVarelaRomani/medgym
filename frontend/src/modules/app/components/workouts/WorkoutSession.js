@@ -41,29 +41,37 @@ const WorkoutSession = () => {
     useEffect(() => {
         workoutService.getWorkout(
             sessionId,
-            (data) => {
-                setWorkout(data);
-                routineExerciseService.getRoutineExercises(
-                    data.routineId,
-                    (res) => {
-                        const ordered = (res.content ?? res).sort(
-                            (a, b) => a.position - b.position
-                        );
-                        setRoutineExercises(ordered);
-                        setLoading(false);
-                    },
-                    () => {
-                        setError("No se pudieron cargar los ejercicios.");
-                        setLoading(false);
-                    }
-                );
-            },
-            () => {
-                setError("No se pudo cargar el entrenamiento.");
-                setLoading(false);
-            }
+            onWorkoutLoaded,
+            onWorkoutError
         );
     }, [sessionId]);
+
+    const onWorkoutLoaded = (data) => {
+        setWorkout(data);
+        routineExerciseService.getRoutineExercises(
+            data.routineId,
+            onExercisesLoaded,
+            onExercisesError
+        );
+    };
+
+    const onWorkoutError = () => {
+        setError("No se pudo cargar el entrenamiento.");
+        setLoading(false);
+    };
+
+    const onExercisesLoaded = (res) => {
+        const ordered = (res.content ?? res).sort(
+            (a, b) => a.position - b.position
+        );
+        setRoutineExercises(ordered);
+        setLoading(false);
+    };
+
+    const onExercisesError = () => {
+        setError("No se pudieron cargar los ejercicios.");
+        setLoading(false);
+    };
 
     const handleChange = (id, field, value) => {
         setFormData((prev) => ({
