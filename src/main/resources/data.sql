@@ -240,10 +240,6 @@ VALUES ('Buena sesión, ritmo suave pero constante.', '2025-02-01 19:42:00', 3, 
        ('Fluidez y calma en la ejecución.', '2025-02-02 22:05:00', 10, 5),
        ('Nada de compensaciones, muy limpio.', '2025-02-02 22:08:00', 10, 1);
 
-INSERT INTO user_block (blocker_id, blocked_id)
-VALUES (2, 3),
-       (1, 3);
-
 INSERT INTO achievements (name, description, bronze_req, silver_req, gold_req)
 VALUES
     ('Cronista del Entreno',

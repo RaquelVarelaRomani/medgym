@@ -96,7 +96,9 @@ public class Notification {
         WORKOUT_LIKE,
         WORKOUT_COMMENT,
         STREAK_REMINDER,
-        ACHIEVEMENT
+        ACHIEVEMENT,
+        RANKING_SURPASS_WORKOUT,
+        RANKING_SURPASS_EXERCISE
     }
 
 }
