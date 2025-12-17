@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import { getWeightComparison } from "../../../../backend/wrappedService";
+import { getWeightComparison, getLongestStreak } from "../../../../backend/wrappedService";
 import styles from "./Wrapped.module.css";
 import LoadingMessage from "../common/LoadingMessage";
 
@@ -72,23 +72,46 @@ const Wrapped = () => {
 
         //TO BE CHANGED -> USING MIXED MOCK DATA AND BACKEND DATA THAT IS READY
         const combinedData = { ...MOCK_WRAPPED_DATA };
+        let loadedCount = 0;
+        const totalAPIs = 2;
+
+        const checkAllLoaded = () => {
+            loadedCount++;
+            if (loadedCount === totalAPIs) {
+                setWrappedData(combinedData);
+                setLoading(false);
+            }
+        };
 
         getWeightComparison(
             targetYear,
             (weightData) => {
                 combinedData.totalWeight = {
                     kg: weightData.totalWeightKg || 0,
-                    comparison: weightData.comparisonPhrase || "No hemos encontrado datos",
+                    comparison: weightData.comparisonPhrase,
                 };
-
-                setWrappedData(combinedData);
-                setLoading(false);
+                checkAllLoaded();
             },
             (err) => {
                 console.error("Error loading weight comparison:", err);
+                checkAllLoaded();
+            }
+        );
 
-                setWrappedData(combinedData);
-                setLoading(false);
+        getLongestStreak(
+            targetYear,
+            (streakDays) => {
+                combinedData.longestStreak = {
+                    days: streakDays || 0,
+                    // Keep mock dates if you need them, or remove them since they're not displayed
+                    startDate: "2025-03-01",
+                    endDate: "2025-03-21",
+                };
+                checkAllLoaded();
+            },
+            (err) => {
+                console.error("Error loading longest streak:", err);
+                checkAllLoaded();
             }
         );
     };
