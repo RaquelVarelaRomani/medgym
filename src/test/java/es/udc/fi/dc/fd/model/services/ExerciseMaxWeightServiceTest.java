@@ -33,7 +33,8 @@ class ExerciseMaxWeightServiceTest {
     private UserFollowDao userFollowDao;
 
     private User createUser(String email) {
-        User u = new User(email, "pass", "n", "l", email, User.RoleType.CLIENT, User.StatusType.ACTIVE);
+        String uniquePhone = String.valueOf(System.nanoTime()).substring(0, 9);
+        User u = new User(email, "surname", email, uniquePhone, "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(u);
     }
 

@@ -71,7 +71,8 @@ class AchievementProgressControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String name, String email)
             throws IncorrectLoginException, BlockedUserException {
 
-        User u = new User(name, name, email, "600000000", "pass",
+        String uniquePhone = String.valueOf(System.nanoTime()).substring(0, 9);
+        User u = new User(name, name, email, uniquePhone, "pass",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         u.setPassword(passwordEncoder.encode("pass"));
         userDao.save(u);

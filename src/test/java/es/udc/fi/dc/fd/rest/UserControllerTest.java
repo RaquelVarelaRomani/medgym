@@ -51,7 +51,8 @@ class UserControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
 
-        User user = new User("user", "1", email, "+34 000 000 000", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+        String uniquePhone = String.valueOf(System.nanoTime()).substring(0, 9);
+        User user = new User("user", "1", email, uniquePhone, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleType);

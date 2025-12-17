@@ -55,7 +55,8 @@ class UserBlockControllerTest {
     private AuthenticatedUserDto createAuthenticatedUser(String email)
             throws Exception {
 
-        User user = new User("Test", "User", email, "+34 000 000 000",
+        String uniquePhone = String.valueOf(System.nanoTime()).substring(0, 9);
+        User user = new User("Test", "User", email, uniquePhone,
                 PASSWORD, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);
