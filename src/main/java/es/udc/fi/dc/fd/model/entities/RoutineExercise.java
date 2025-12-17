@@ -8,14 +8,16 @@ public class RoutineExercise {
     private Long id;
     private Routine routine;
     private Exercise exercise;
+    private ExerciseType exerciseType;
     private Integer position;
 
     public RoutineExercise() {
     }
 
-    public RoutineExercise(Routine routine, Exercise exercise, Integer position) {
+    public RoutineExercise(Routine routine, Exercise exercise, ExerciseType exerciseType, Integer position) {
         this.routine = routine;
         this.exercise = exercise;
+        this.exerciseType = exerciseType;
         this.position = position;
     }
 
@@ -49,6 +51,15 @@ public class RoutineExercise {
         this.exercise = exercise;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exercise_type", length = 50)
+    public ExerciseType getExerciseType() {
+        return exerciseType;
+    }
+
+    public void setExerciseType(ExerciseType exerciseType) {
+        this.exerciseType = exerciseType;
+    }
 
     @Column(name = "position")
     public Integer getPosition() {
@@ -57,5 +68,10 @@ public class RoutineExercise {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public enum ExerciseType {
+        STRENGTH,
+        CARDIO
     }
 }

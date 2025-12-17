@@ -20,6 +20,7 @@ public class RoutineExerciseConversor {
         routineExerciseDto.setExerciseId(routineExercise.getExercise().getId());
         routineExerciseDto.setExerciseName(routineExercise.getExercise().getName());
         routineExerciseDto.setExerciseDescription(routineExercise.getExercise().getDescription());
+        routineExerciseDto.setExerciseType(routineExercise.getExerciseType().toString());
         routineExerciseDto.setMuscleGroup(routineExercise.getExercise().getMuscleGroup().toString());
         routineExerciseDto.setEquipment(routineExercise.getExercise().getEquipment().toString());
         routineExerciseDto.setImage(routineExercise.getExercise().getImage());

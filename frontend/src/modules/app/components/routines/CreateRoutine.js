@@ -7,11 +7,12 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 import LoadingMessage from "../common/LoadingMessage";
 import {becomePremium, tryLoginFromServiceToken} from "../../../../backend/userService";
 import GoPremiumPopup from "../common/popup/GoPremiumPopup";
+import {getExerciseTypeText} from "../../util/enumConversor";
 
 const CreateRoutine = () => {
     const navigate = useNavigate();
     const [routineData, setRoutineData] = useState({titulo: "", descripcion: "", visibility: "PUBLIC", difficulty: "INTERMEDIATE"});
-    const [exercises, setExercises] = useState([{id: null, nombre: "", position: 1}]);
+    const [exercises, setExercises] = useState([{id: null, nombre: "", type: "", position: 1}]);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [showExerciseSearch, setShowExerciseSearch] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +22,8 @@ const CreateRoutine = () => {
     const inputContainerRefs = useRef([]);
     const [currentUser, setCurrentUser] = useState(null);
     const [showGoPremiumPopup, setShowGoPremiumPopup] = useState(false);
+    const [exerciseTypes, setExerciseTypes] = useState([]);
+
 
     useEffect(() => {
         tryLoginFromServiceToken(
@@ -37,6 +40,12 @@ const CreateRoutine = () => {
 
     }, [navigate]);
 
+    useEffect(() => {
+        routineExerciseService.getExerciseTypes(
+            setExerciseTypes,
+            console.error
+        );
+    }, []);
 
     const loadExercises = () => {
         setLoading(true);
@@ -116,7 +125,7 @@ const CreateRoutine = () => {
             return;
         }
 
-        setExercises([...exercises, { id: newId, nombre: "", position: newPosition }]);
+        setExercises([...exercises, { id: newId, nombre: "", type: "", position: newPosition }]);
     };
 
     const handleRemoveExercise = (id) => {
@@ -184,22 +193,23 @@ const CreateRoutine = () => {
             const routineId = createdRoutine.id;
 
             const validExercises = exercises.filter(
-                ex => ex.id !== null && ex.nombre.trim() !== ""
+                ex => ex.id !== null && ex.nombre.trim() !== "" && ex.type !== ""
             );
 
             const onError = (err) => console.error("Error adding exercise:", err);
 
-            const saveRequests = validExercises.map(ex =>
+            validExercises.forEach(ex =>
                 routineExerciseService.createRoutineExercise(
                     routineId,
                     ex.id,
+                    ex.type,
                     ex.position,
-                    null,
+                    () => {},
                     onError
                 )
             );
 
-            Promise.all(saveRequests).finally(() => navigate("/routines"));
+            navigate("/routines");
         };
 
         const handleRoutineError = (error) => {
@@ -291,8 +301,8 @@ const CreateRoutine = () => {
                 </div>
 
                 {exercises.sort((a, b) => a.position - b.position).map((exercise, index) => (
-                    <div key={exercise.id} className={styles['ejercicio-item']}>
-                        <label htmlFor={`exercise-${index}-input`}>Ejercicio {index + 1}:</label>
+                    <div key={exercise.id ?? `exercise-${index}`} className={styles['ejercicio-item']}>
+                    <label htmlFor={`exercise-${index}-input`}>Ejercicio {index + 1}:</label>
                         <button
                             type="button"
                             className={styles['boton-eliminar-ejercicio']}
@@ -326,7 +336,20 @@ const CreateRoutine = () => {
                                     setSearchTerm(exercise.nombre);
                                 }}
                             />
-
+                            <select
+                                value={exercise.type}
+                                onChange={(e) =>
+                                    handleExerciseChange(index, "type", e.target.value)
+                                }
+                                className={styles['exercise-type-select']}
+                            >
+                                <option value="">Tipo de ejercicio</option>
+                                {exerciseTypes.map((t, index) => (
+                                    <option key={`${t.name}-${index}`} value={t.name}>
+                                        {getExerciseTypeText(t.name)}
+                                    </option>
+                                ))}
+                            </select>
                             {showExerciseSearch === index && (
                                 <div className={styles['ejercicio-dropdown']}>
                                     {filteredExercises.map((exercise, i) => (

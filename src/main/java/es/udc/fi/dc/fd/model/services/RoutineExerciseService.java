@@ -7,8 +7,10 @@ import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface RoutineExerciseService {
-    RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+    RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, RoutineExercise.ExerciseType exerciseType, Integer position)
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException;
 
     void removeExerciseFromRoutine(Long userId, Long routineId, Long exerciseId)
@@ -18,4 +20,6 @@ public interface RoutineExerciseService {
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException;
 
     Page<RoutineExercise> getExercisesForRoutines(Long routineId, Pageable pageable);
+
+    List<RoutineExercise.ExerciseType> findAllExerciseTypes();
 }

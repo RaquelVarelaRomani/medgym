@@ -3,9 +3,9 @@ import {
     appFetch
 } from "./appFetch";
 
-export const createRoutineExercise = (routineId, exerciseId, position, onSuccess, onErrors) => appFetch(
+export const createRoutineExercise = (routineId, exerciseId, exerciseType, position, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises`,
-    fetchConfig("POST", { exerciseId, position }),
+    fetchConfig("POST", { exerciseId, exerciseType, position }),
     onSuccess,
     onErrors
 )
@@ -62,6 +62,13 @@ export const updateRoutineExercise = (routineId, exerciseId, position, onSuccess
 export const deleteRoutineExercise = (routineId, exerciseId, onSuccess, onErrors) => appFetch(
     `/routines/${routineId}/exercises/${exerciseId}`,
     fetchConfig("DELETE"),
+    onSuccess,
+    onErrors
+)
+
+export const getExerciseTypes = (onSuccess, onErrors) => appFetch(
+    `/exerciseTypes`,
+    fetchConfig("GET"),
     onSuccess,
     onErrors
 )

@@ -12,6 +12,7 @@ import HeartLike from "../common/HeartLike";
 import {likeWorkout, unlikeWorkout} from "../../../../backend/workoutLikeService";
 import AchievementPopup from "../common/popup/AchievementPopup";
 import {commentWorkout} from "../../../../backend/workoutCommentService";
+import {getExerciseTypeText} from "../../util/enumConversor";
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -395,6 +396,7 @@ const ExerciseItem = ({ exercise, index, expanded, toggleExercise, loggedSets })
             >
                 <h3>
                     {index + 1}. {exercise.exerciseName}
+                    {exercise.exerciseType && ` (${getExerciseTypeText(exercise.exerciseType)})`}
                     {hasData && <span className={styles["completed-tick"]}>✓</span>}
                 </h3>
 

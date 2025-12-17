@@ -31,6 +31,9 @@ public class ExerciseMaxWeightServiceImpl implements ExerciseMaxWeightService {
 
     @Override
     public void addOrUpdateMaxWeight(Long userId, Long exerciseId, Short maxWeightKg) throws InstanceNotFoundException {
+
+        if (maxWeightKg == null) return;
+
         ExerciseMaxWeight exerciseMaxWeight = exerciseMaxWeightDao.findByUserIdAndExerciseId(userId, exerciseId);
 
         if (exerciseMaxWeight == null) {
