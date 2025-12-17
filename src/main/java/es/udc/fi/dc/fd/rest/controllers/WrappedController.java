@@ -26,4 +26,14 @@ public class WrappedController {
 
         return wrappedService.getWeightComparison(userId, targetYear);
     }
+
+    @GetMapping("/longest-streak")
+    public Integer getLongestStreak(
+            @RequestAttribute Long userId,
+            @RequestParam(required = false) Integer year) throws InstanceNotFoundException {
+
+        int targetYear = (year != null) ? year : LocalDateTime.now().getYear();
+
+        return wrappedService.getLongestStreak(userId, targetYear);
+    }
 }
