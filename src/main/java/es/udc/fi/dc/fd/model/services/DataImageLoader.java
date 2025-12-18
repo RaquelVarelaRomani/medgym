@@ -124,7 +124,7 @@ public class DataImageLoader implements CommandLineRunner {
             return resource.getInputStream().readAllBytes();
         } catch (IOException e) {
             logger.error("Failed to load image: {}", filename, e);
-            return null;
+            return new byte[]{};
         }
     }
 }
