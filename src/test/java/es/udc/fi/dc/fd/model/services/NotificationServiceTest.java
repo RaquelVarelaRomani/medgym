@@ -3,12 +3,9 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.User.StatusType;
 
-import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
-import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -54,6 +51,7 @@ class NotificationServiceTest {
         @Autowired
         private ExerciseDao exerciseDao;
 
+        @SuppressWarnings("removal")
         @MockBean
         private Clock clock;
 
