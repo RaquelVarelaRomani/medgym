@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class WrappedServiceTest {
+class WrappedServiceTest {
 
     @Autowired
     private WrappedService wrappedService;
 
     @Test
-    public void testGetTopExercisesByUser() {
+    void testGetTopExercisesByUser() {
         Long userId = 2L;
         List<Exercise> topExercises = wrappedService.getTopExercisesByUser(userId);
 
@@ -33,14 +33,14 @@ public class WrappedServiceTest {
     }
 
     @Test
-    public void testGetFavouriteMuscleGroup() {
+    void testGetFavouriteMuscleGroup() {
         Long userId = 2L;
         String favMuscleGroup = wrappedService.getFavouriteMuscleGroup(userId);
         assertEquals("CHEST", favMuscleGroup);
     }
 
     @Test
-    public void testGetFavouriteRoutine() {
+    void testGetFavouriteRoutine() {
         Long userId = 2L;
         Routine favRoutine = wrappedService.getFavouriteRoutine(userId);
         assertEquals("Rutina fuerza inicial", favRoutine.getName());
