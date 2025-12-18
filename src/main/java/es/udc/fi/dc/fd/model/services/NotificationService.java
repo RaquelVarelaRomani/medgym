@@ -31,4 +31,6 @@ public interface NotificationService {
     void deleteNotification(Long notificationId);
 
     void deleteNotificationsByIdToRedirect(Long idToRedirect);
+
+    void createDailyWrappedReminders();
 }

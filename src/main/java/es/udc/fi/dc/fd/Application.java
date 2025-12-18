@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import es.udc.fi.dc.fd.model.entities.User;
@@ -19,6 +20,7 @@ import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
 import java.util.List;
 
 @SpringBootApplication
+@EnableScheduling
 public class Application {
 
     public static void main(String[] args) {

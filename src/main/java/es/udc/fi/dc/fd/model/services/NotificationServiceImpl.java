@@ -20,13 +20,15 @@ public class NotificationServiceImpl implements NotificationService {
     private final RoutineDao routineDao;
     private final UserDao userDao;
     private final WorkoutDao workoutDao;
+    private final java.time.Clock clock;
 
-    public NotificationServiceImpl(NotificationDao notificationDao, UserFollowDao userFollowDao, RoutineDao routineDao, UserDao userDao, WorkoutDao workoutDao) {
+    public NotificationServiceImpl(NotificationDao notificationDao, UserFollowDao userFollowDao, RoutineDao routineDao, UserDao userDao, WorkoutDao workoutDao, java.time.Clock clock) {
         this.notificationDao = notificationDao;
         this.userFollowDao = userFollowDao;
         this.routineDao = routineDao;
         this.userDao = userDao;
         this.workoutDao = workoutDao;
+        this.clock = clock;
     }
 
     @Override
@@ -194,5 +196,43 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteNotificationsByIdToRedirect(Long idToRedirect) {
         notificationDao.deleteByIdToRedirect(idToRedirect);
     }
+
+    @Override
+    public void createDailyWrappedReminders() {
+
+        java.time.LocalDate today = java.time.LocalDate.now(clock);
+        java.time.LocalDate start = java.time.LocalDate.of(today.getYear(), 12, 22);
+
+        if (today.isBefore(start)) {
+            return;
+        }
+
+        long year = today.getYear();
+
+        List<User> users = userDao.findAll();
+
+        for (User user : users) {
+
+            boolean alreadyExists = notificationDao.existsByUser_IdAndTypeAndIdToRedirectAndTargetDate(
+                    user.getId(),
+                    NotificationType.WRAPPED_REMINDER,
+                    year,
+                    today
+            );
+
+            if (!alreadyExists) {
+                notificationDao.save(new Notification(
+                        "¡Tu Wrapped" + year + " está aquí! Mira tu resumen de entrenamiento del año",
+                        NotificationType.WRAPPED_REMINDER,
+                        year,
+                        user,
+                        false,
+                        LocalDateTime.now(clock).withNano(0),
+                        today
+                ));
+            }
+        }
+    }
+
 
 }
