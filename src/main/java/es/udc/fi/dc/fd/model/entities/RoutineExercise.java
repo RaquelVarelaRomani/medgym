@@ -3,7 +3,7 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "routine_exercises")
+@Table(name = "routine_exercises", uniqueConstraints = @UniqueConstraint(columnNames = {"routine_id", "exercise_id"}))
 public class RoutineExercise {
     private Long id;
     private Routine routine;

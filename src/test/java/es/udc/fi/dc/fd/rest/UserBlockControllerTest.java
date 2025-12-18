@@ -47,11 +47,14 @@ class UserBlockControllerTest {
     @Autowired
     private UserBlockService userBlockService;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     /** Crea usuario real, lo guarda y devuelve su token */
     private AuthenticatedUserDto createAuthenticatedUser(String email)
             throws Exception {
 
-        User user = new User("Test", "User", email, "+34 000 000 000",
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User user = new User("Test", "User", email, uniquePhone,
                 PASSWORD, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);

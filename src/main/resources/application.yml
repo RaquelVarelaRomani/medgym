@@ -4,21 +4,15 @@ logging:
       hibernate:
         SQL: debug
 spring:
-  sql:
-    init:
-      mode: always
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/medgym?useUnicode=true&characterEncoding=UTF-8
-    username: ${DATASOURCE_USER:root}
-    password: ${DATASOURCE_PASSWORD:root}
-    max-active: 4
-    max-idle: 2
-    max-wait: 10000
-    remove-abandoned: true
-    remove-abandoned-timeout: 60
-    log-abandoned: true
-    validation-query: SELECT 1
+    url: jdbc:h2:mem:medgym;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
   devtools:
     restart:
       trigger-file: reload
@@ -27,13 +21,20 @@ spring:
   jackson:
     default-property-inclusion: NON_NULL
   jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: none
-      show-sql: true
-      format-sql: true
-      use-sql-comments: true
+      ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+    properties:
+      hibernate:
+        "[format_sql]": true
+        "[use_sql_comments]": true
+  sql:
+    init:
+      mode: always
 
 server:
   servlet:
@@ -46,4 +47,3 @@ project:
   jwt:
     signKey: WzROun12eUiDvko3UrJ74gNeJz2TWEWPMTh6DxyE8HWXIf4hETUrkM4IUGqqHq66PuVS
     expirationMinutes: 1440
-

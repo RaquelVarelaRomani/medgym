@@ -1,19 +1,19 @@
 -- Insertar usuarios (roles: 0 = cliente, 1 = entrenador, 2 = admin; status: 0 = ACTIVE, 1 = BLOCKED)
 INSERT INTO users (name, surname, email, phone_number, password, profile_picture, role, status)
 VALUES ('Carlos', 'Gómez', 'carlos.gomez@example.com', '600111222',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/carlos.jpg'), 1,
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1,
         0), -- entrenador
        ('Laura', 'Martínez', 'laura.martinez@example.com', '600333444',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/laura.jpg'), 0,
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0,
         0), -- cliente
        ('Miguel', 'Fernández', 'miguel.fernandez@example.com', '600555666',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/miguel.jpg'), 0,
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 0,
         0), -- cliente
        ('Sofía', 'López', 'sofia.lopez@example.com', '600777888',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/sofia.jpg'), 1,
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 1,
         0), -- entrenadora
        ('Ana', 'Torres', 'ana.torres@example.com', '600999000',
-        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', LOAD_FILE('/var/lib/mysql-files/ana.jpg'), 2,
+        '$2a$10$WZKg4rDofawZDLYC3XNhg.DWpTJOtNZiZKlMyOYeMyGv9m2ccoGIS', NULL, 2,
         0);
 -- admin
 
@@ -34,39 +34,23 @@ VALUES ('Rutina fuerza inicial',
        ('Rutina privada Carlos',
         'Rutina privada de fuerza avanzada para clientes premium. Incluye ejercicios intensos de fuerza.', 1, 1);
 
--- Insertar ejercicios
 -- Insertar ejercicios (con nuevos campos muscle_group, equipment, image)
 INSERT INTO exercises (name, description, muscle_group, equipment, image, creator_id, status)
-VALUES ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'LEG', 'NONE',
-        LOAD_FILE('/var/lib/mysql-files/sentadilla.jpg'), 1, 'APPROVED'),
-       ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'CHEST', 'NONE',
-        LOAD_FILE('/var/lib/mysql-files/flexiones.jpg'), 4, 'APPROVED'),
-       ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'FULL_BODY', 'NONE',
-        LOAD_FILE('/var/lib/mysql-files/burpees.jpg'), 1, 'APPROVED'),
-       ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'CORE', 'MAT',
-        LOAD_FILE('/var/lib/mysql-files/plancha.jpg'), 4, 'APPROVED'),
-       ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'LEG', 'NONE',
-        LOAD_FILE('/var/lib/mysql-files/zancadas.jpg'), 1, 'APPROVED'),
-       ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'FULL_BODY', 'JUMP_ROPE',
-        LOAD_FILE('/var/lib/mysql-files/salto_comba.jpg'), 4, 'APPROVED'),
-       ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'BACK', 'BARBELL',
-        LOAD_FILE('/var/lib/mysql-files/peso_muerto.jpg'), 1, 'APPROVED'),
-       ('Press banca', 'Ejercicio de fuerza para el pecho.', 'CHEST', 'BENCH_AND_BARBELL',
-        LOAD_FILE('/var/lib/mysql-files/press_banca.jpg'), 4, 'APPROVED'),
-       ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'BACK', 'PULL_UP_BAR',
-        LOAD_FILE('/var/lib/mysql-files/dominadas.jpg'), 1, 'APPROVED'),
-       ('Mountain climbers', 'Ejercicio de cardio y core.', 'CORE', 'NONE',
-        LOAD_FILE('/var/lib/mysql-files/mountain_climbers.jpg'), 4, 'APPROVED'),
-       ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 'BICEPS', 'DUMBBELL',
-        LOAD_FILE('/var/lib/mysql-files/curl_biceps.jpg'), 1, 'PENDING'),
-       ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 'TRICEPS', 'PULLEY',
-        LOAD_FILE('/var/lib/mysql-files/extensiones_triceps.jpg'), 1, 'REJECTED'),
-       ('Elevaciones laterales', 'Ejercicio para hombros.', 'SHOULDERS', 'DUMBBELL',
-        LOAD_FILE('/var/lib/mysql-files/elevaciones_laterales.jpg'), 4, 'PENDING'),
-       ('Elevaciones laterales 2', 'Ejercicio para hombros.', 'SHOULDERS', 'DUMBBELL',
-        LOAD_FILE('/var/lib/mysql-files/elevaciones_laterales.jpg'), 4, 'BLOCKED'),
-       ('Remo con mancuerna', 'Ejercicio para espalda.', 'BACK', 'DUMBBELL',
-        LOAD_FILE('/var/lib/mysql-files/remo_mancuerna.jpg'), 4, 'REJECTED');
+VALUES ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'LEG', 'NONE', NULL, 1, 'APPROVED'),
+       ('Flexiones', 'Ejercicio de empuje para trabajar pectorales y tríceps.', 'CHEST', 'NONE', NULL, 4, 'APPROVED'),
+       ('Burpees', 'Ejercicio completo que combina fuerza y cardio.', 'FULL_BODY', 'NONE', NULL, 1, 'APPROVED'),
+       ('Plancha abdominal', 'Ejercicio isométrico para el core.', 'CORE', 'MAT', NULL, 4, 'APPROVED'),
+       ('Zancadas', 'Ejercicio unilateral para trabajar las piernas.', 'LEG', 'NONE', NULL, 1, 'APPROVED'),
+       ('Saltos de comba', 'Cardio con cuerda, mejora la resistencia.', 'FULL_BODY', 'JUMP_ROPE', NULL, 4, 'APPROVED'),
+       ('Peso muerto', 'Ejercicio compuesto para espalda baja y femorales.', 'BACK', 'BARBELL', NULL, 1, 'APPROVED'),
+       ('Press banca', 'Ejercicio de fuerza para el pecho.', 'CHEST', 'BENCH_AND_BARBELL', NULL, 4, 'APPROVED'),
+       ('Dominadas', 'Ejercicio de tracción para espalda y bíceps.', 'BACK', 'PULL_UP_BAR', NULL, 1, 'APPROVED'),
+       ('Mountain climbers', 'Ejercicio de cardio y core.', 'CORE', 'NONE', NULL, 4, 'APPROVED'),
+       ('Curl de bíceps', 'Ejercicio para trabajar los bíceps.', 'BICEPS', 'DUMBBELL', NULL, 1, 'PENDING'),
+       ('Extensiones de tríceps', 'Ejercicio para trabajar los tríceps.', 'TRICEPS', 'PULLEY', NULL, 1, 'REJECTED'),
+       ('Elevaciones laterales', 'Ejercicio para hombros.', 'SHOULDERS', 'DUMBBELL', NULL, 4, 'PENDING'),
+       ('Elevaciones laterales 2', 'Ejercicio para hombros.', 'SHOULDERS', 'DUMBBELL', NULL, 4, 'BLOCKED'),
+       ('Remo con mancuerna', 'Ejercicio para espalda.', 'BACK', 'DUMBBELL', NULL, 4, 'REJECTED');
 
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial
@@ -168,6 +152,7 @@ VALUES (3, 1),
        (3, 2),
        (2, 1),
        (2, 3);
+
 
 INSERT INTO routine_likes (routine_id, user_id)
 VALUES (1, 2),
@@ -275,13 +260,13 @@ VALUES
 INSERT INTO workouts (start_time, end_time, routine_id, user_id)
 VALUES
     -- 1. Entrenamiento de Laura ayer (Racha 1)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
+    (DATEADD('DAY', -1, CURRENT_DATE) || ' 00:01:00', DATEADD('DAY', -1, CURRENT_DATE) || ' 00:02:00', 3, 2),
 
     -- 2. Entrenamiento de Laura anteayer (Racha 2)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
+    (DATEADD('DAY', -2, CURRENT_DATE) || ' 00:01:00', DATEADD('DAY', -2, CURRENT_DATE) || ' 00:02:00', 1, 2),
 
     -- 3. Entrenamiento de Laura Hoy (Racha 3)
-    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
+    (CURRENT_DATE || ' 00:01:00', NULL, 1, 2);
 
 -- Laura (Workout 20 - Rutina 3: Cuerpo completo)
 INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
@@ -298,40 +283,40 @@ VALUES (10, 45, 40, 21, 1),  -- Sentadillas
        (10, 45, 45, 21, 4); -- Press banca
 
 -- Contenido random coherente para exercise_max_weights
--- Carlos (1), Laura (2), Miguel (3), Sofía (4), Andrés (5)
+-- Carlos (1), Laura (2), Miguel (3), Sofía (4), Ana (5)
 INSERT INTO exercise_max_weights (max_weight_kg, user_id, exercise_id)
 VALUES
     -- SENTADILLAS (exercise_id = 1)
-    (95.0, 1, 1),   -- Carlos
-    (85.0, 2, 1),   -- Laura
-    (70.0, 3, 1),   -- Miguel
-    (55.0, 4, 1),   -- Sofía
-    (80.0, 5, 1),   -- Andrés
+    (95, 1, 1),   -- Carlos
+    (85, 2, 1),   -- Laura
+    (70, 3, 1),   -- Miguel
+    (55, 4, 1),   -- Sofía
+    (80, 5, 1),   -- Ana
 
     -- PRESS BANCA (exercise_id = 8)
-    (75.0, 1, 8),   -- Carlos
-    (60.0, 2, 8),   -- Laura
-    (82.0, 5, 8),   -- Andrés
-    (50.0, 3, 8),   -- Miguel
-    (40.0, 4, 8),   -- Sofía
+    (75, 1, 8),   -- Carlos
+    (60, 2, 8),   -- Laura
+    (82, 5, 8),   -- Ana
+    (50, 3, 8),   -- Miguel
+    (40, 4, 8),   -- Sofía
 
     -- PESO MUERTO (exercise_id = 7)
-    (110.0, 1, 7),  -- Carlos
-    (95.0, 5, 7),   -- Andrés
-    (70.0, 3, 7),   -- Miguel
-    (65.0, 2, 7),   -- Laura
-    (55.0, 4, 7),   -- Sofía
+    (110, 1, 7),  -- Carlos
+    (95, 5, 7),   -- Ana
+    (70, 3, 7),   -- Miguel
+    (65, 2, 7),   -- Laura
+    (55, 4, 7),   -- Sofía
 
     -- DOMINADAS CON LASTRE (exercise_id = 9)
-    (25.0, 1, 9),   -- Carlos
-    (12.0, 3, 9),   -- Miguel
-    (18.0, 5, 9),   -- Andrés
-    (8.0, 4, 9),    -- Sofía
-    (10.0, 2, 9),   -- Laura
+    (25, 1, 9),   -- Carlos
+    (12, 3, 9),   -- Miguel
+    (18, 5, 9),   -- Ana
+    (8, 4, 9),    -- Sofía
+    (10, 2, 9),   -- Laura
 
     -- ZANCADAS (exercise_id = 5)
-    (55.0, 4, 5),   -- Sofía
-    (65.0, 1, 5),   -- Carlos
-    (50.0, 2, 5),   -- Laura
-    (45.0, 3, 5),   -- Miguel
-    (58.0, 5, 5);   -- Andrés
+    (55, 4, 5),   -- Sofía
+    (65, 1, 5),   -- Carlos
+    (50, 2, 5),   -- Laura
+    (45, 3, 5),   -- Miguel
+    (58, 5, 5);   -- Ana
