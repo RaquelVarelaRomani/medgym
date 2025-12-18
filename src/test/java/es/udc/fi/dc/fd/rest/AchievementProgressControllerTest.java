@@ -68,10 +68,13 @@ class AchievementProgressControllerTest {
     private Achievement reps;
     private Achievement sessions;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     private AuthenticatedUserDto createAuthenticatedUser(String name, String email)
             throws IncorrectLoginException, BlockedUserException {
 
-        User u = new User(name, name, email, "600000000", "pass",
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User u = new User(name, name, email, uniquePhone, "pass",
                 RoleType.CLIENT, User.StatusType.ACTIVE);
         u.setPassword(passwordEncoder.encode("pass"));
         userDao.save(u);
