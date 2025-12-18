@@ -3,29 +3,25 @@ package es.udc.fi.dc.fd.model.services;
 import es.udc.fi.dc.fd.model.entities.WorkoutCommentDao;
 import es.udc.fi.dc.fd.model.entities.WorkoutLikeDao;
 import es.udc.fi.dc.fd.rest.dtos.AnnualSummaryDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
 class SummaryServiceTest {
 
-    @Autowired
+    private WorkoutLikeDao workoutLikeDao;
+    private WorkoutCommentDao workoutCommentDao;
     private SummaryService summaryService;
 
-    @MockBean
-    private WorkoutLikeDao workoutLikeDao;
-
-    @MockBean
-    private WorkoutCommentDao workoutCommentDao;
+    @BeforeEach
+    void setUp() {
+        workoutLikeDao = Mockito.mock(WorkoutLikeDao.class);
+        workoutCommentDao = Mockito.mock(WorkoutCommentDao.class);
+        summaryService = new SummaryServiceImpl(workoutLikeDao, workoutCommentDao);
+    }
 
     @Test
     void testGetAnnualSummary() {
