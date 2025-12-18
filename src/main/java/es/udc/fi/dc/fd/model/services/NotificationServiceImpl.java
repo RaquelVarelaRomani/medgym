@@ -140,6 +140,37 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void createRankingSurpassNotification(Long surpassedUserId, Long surpassingUserId, Long routineId) throws InstanceNotFoundException {
+        User surpassedUser = userDao.findById(surpassedUserId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, surpassedUserId));
+        User surpassingUser = userDao.findById(surpassingUserId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, surpassingUserId));
+        Routine routine = routineDao.findById(routineId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_ROUTINE, routineId));
+
+        notificationDao.save(new Notification(
+                surpassingUser.getName() + " " + surpassingUser.getSurname() + " te ha superado en el ranking de '" + routine.getName() + "'",
+                NotificationType.RANKING_SURPASS_WORKOUT,
+                routineId,
+                surpassedUser,
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
+    public void createExerciseRankingSurpassNotification(Long surpassedUserId, Long surpassingUserId, Long exerciseId) throws InstanceNotFoundException {
+        User surpassedUser = userDao.findById(surpassedUserId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, surpassedUserId));
+        User surpassingUser = userDao.findById(surpassingUserId).orElseThrow(() -> new InstanceNotFoundException(PROJECT_ENTITIES_USER, surpassingUserId));
+
+        notificationDao.save(new Notification(
+                surpassingUser.getName() + " " + surpassingUser.getSurname() + " te ha superado en el ranking de peso para este ejercicio",
+                NotificationType.RANKING_SURPASS_EXERCISE,
+                exerciseId,
+                surpassedUser,
+                false,
+                LocalDateTime.now().withNano(0)
+        ));
+    }
+
+    @Override
     public List<Notification> getNotificationsByUser(Long userId) {
         return notificationDao.findByUserIdOrderByDateDesc(userId);
     }

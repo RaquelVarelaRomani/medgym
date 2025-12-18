@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher("/static/**")).permitAll()
                 .requestMatchers(antMatcher("/assets/**")).permitAll()
                 .requestMatchers(antMatcher("/api/users/signUp")).permitAll()
+                .requestMatchers(antMatcher("/actuator/**")).permitAll()
                 .requestMatchers(antMatcher("/api/users/login")).permitAll()
                 .requestMatchers(antMatcher("/api/users/loginFromServiceToken")).permitAll()
                 .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/users/*")).authenticated()
