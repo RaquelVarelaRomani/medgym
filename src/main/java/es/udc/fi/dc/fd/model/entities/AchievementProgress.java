@@ -3,7 +3,7 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "achievement_progresses")
+@Table(name = "achievement_progresses", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "achievement_id"}))
 public class AchievementProgress {
 
     private Long id;
