@@ -18,7 +18,6 @@ import {
 } from "../../../../backend/userFollowService";
 import UserWorkoutHistory from "../workouts/UserWorkoutHistory";
 import BodyMetricsCard from "./BodyMetricsCard";
-import AnnualSummaryCard from "./AnnualSummaryCard";
 import LoadingMessage from "../common/LoadingMessage";
 import { isBlocked, blockUser, unblockUser } from "../../../../backend/userBlockService";
 import AchievementCard from "../achievements/AchievementCard";
@@ -87,7 +86,6 @@ function ProfileHeader(props) {
         isFollowing,
         isBlockedByMe,
         setShowMetrics,
-        setShowSummary,
         handleFollowToggle,
         handleBlockToggle,
         handleEditProfile,
@@ -212,13 +210,6 @@ function ProfileHeader(props) {
                                 {isPremiumTrainer ? "Dejar de ser premium" : "Hacerme Entrenador premium"}
                             </button>
                         )}
-                        <button
-                            className={styles["summary-button"]}
-                            onClick={() => setShowSummary(true)}
-                        >
-                            Resumen Interacciones
-                        </button>
-
                     </>
                 )}
                 {showOtherActions && (
@@ -276,7 +267,6 @@ const Profile = () => {
     const [showPopupBlocked, setShowPopupBlocked] = useState(false);
     const [achievements, setAchievements] = useState([]);
     const [showMetrics, setShowMetrics] = useState(false);
-    const [showSummary, setShowSummary] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
     const [loadingFollow, setLoadingFollow] = useState(false);
@@ -494,7 +484,6 @@ const Profile = () => {
                     isFollowing={isFollowing}
                     isBlockedByMe={isBlockedByMe}
                     setShowMetrics={setShowMetrics}
-                    setShowSummary={setShowSummary}
                     handleFollowToggle={handleFollowToggle}
                     handleBlockToggle={handleBlockToggle}
                     handleEditProfile={handleEditProfile}
@@ -565,11 +554,6 @@ const Profile = () => {
                     onClose={() => setShowMetrics(false)}
                 />
             )}
-            {showSummary && (
-                <AnnualSummaryCard
-                    onClose={() => setShowSummary(false)}
-                />
-            )}
         </div>
     );
 };
@@ -585,7 +569,6 @@ ProfileHeader.propTypes = {
     isFollowing: PropTypes.bool.isRequired,
     isBlockedByMe: PropTypes.bool.isRequired,
     setShowMetrics: PropTypes.func.isRequired,
-    setShowSummary: PropTypes.func.isRequired,
     handleFollowToggle: PropTypes.func.isRequired,
     handleBlockToggle: PropTypes.func.isRequired,
     handleEditProfile: PropTypes.func.isRequired,
