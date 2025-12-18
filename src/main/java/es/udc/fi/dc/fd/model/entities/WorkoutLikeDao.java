@@ -21,4 +21,6 @@ public interface WorkoutLikeDao extends JpaRepository<WorkoutLike, Long> {
 
 
     Optional<WorkoutLike> findByUserIdAndWorkoutId(Long userId, Long workoutId);
+
+    List<WorkoutLike> findByWorkoutUserId(Long userId);
 }

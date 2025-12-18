@@ -19,4 +19,6 @@ public interface RoutineLikeDao extends JpaRepository<RoutineLike, Long> {
     void deleteByUserIdAndRoutineId(Long userId, Long routineId);
 
     void deleteByRoutineId(Long routineId);
+
+    List<RoutineLike> findByRoutineTrainerId(Long trainerId);
 }

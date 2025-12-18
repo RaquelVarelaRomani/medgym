@@ -72,7 +72,18 @@ public class WorkoutServiceImpl implements WorkoutService {
             exerciseMaxWeightService.addOrUpdateMaxWeight(workout.getUser().getId(), workoutExercise.getRoutineExercise().getExercise().getId(), workoutExercise.getWeight());
         }
 
-        checkRankingSurpass(workout);
+        // Remove streak notifications since user has trained today
+        removeStreakNotificationsForUser(workout.getUser().getId());
+        checkRankingSurpass(workout); 
+    }
+
+    private void removeStreakNotificationsForUser(Long userId) {
+        List<Notification> notifications = notificationService.getNotificationsByUser(userId);
+        for (Notification notification : notifications) {
+            if (notification.getType() == Notification.NotificationType.STREAK_REMINDER) {
+                notificationService.deleteNotification(notification.getId());
+            }
+        }
     }
 
     @Override

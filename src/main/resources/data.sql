@@ -153,26 +153,6 @@ VALUES (3, 1),
        (2, 1),
        (2, 3);
 
-INSERT INTO notifications (message, type, id_to_redirect, user_id, is_read, date)
-VALUES
-    -- Notificación por nueva rutina publicada (NEW_ROUTINE = 0)
-    ('Nueva rutina: Rutina fuerza inicial', 0, 1, 2, FALSE, '2025-10-15 08:00:00'),
-    ('Nueva rutina: Rutina cardio avanzado', 0, 2, 3, FALSE, '2025-10-15 08:05:00'),
-
-    -- Notificación por follow (FOLLOW = 1)
-    ('Miguel Fernández ha comenzado a seguirte', 1, NULL, 1, FALSE, '2025-10-15 09:00:00'),
-    ('Laura Martínez ha comenzado a seguirte', 1, NULL, 1, TRUE, '2025-10-14 17:45:00'),
-    ('Miguel Fernández ha comenzado a seguirte', 1, NULL, 4, FALSE, '2025-10-13 19:20:00'),
-
-    -- Notificación por like en rutina (LIKE = 2)
-    ('Laura ha dado like a tu rutina Rutina fuerza inicial', 2, 1, 1, FALSE, '2025-10-16 09:00:00'),
-    ('Miguel ha dado like a tu rutina Rutina cardio avanzado', 2, 2, 1, FALSE, '2025-10-16 09:10:00'),
-    ('Ana ha dado like a tu rutina Rutina cuerpo completo', 2, 3, 4, TRUE, '2025-10-16 09:15:00'),
-
-    -- Notificación de racha
-    ('Llevas una racha de 3 días. ¡No la pierdas!', 5, 2, 2, FALSE, '2025-10-16 09:15:00');
-
-
 
 INSERT INTO routine_likes (routine_id, user_id)
 VALUES (1, 2),

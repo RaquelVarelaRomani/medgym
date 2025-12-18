@@ -20,4 +20,7 @@ public interface RoutineDao extends JpaRepository<Routine, Long> {
     List<Routine> findByEquipment(@Param("equipment") Exercise.Equipment equipment);
 
     List<Routine> findByTrainerId(Long trainerId);
+
+    @Query("SELECT r FROM Routine r WHERE r.trainer.id = :trainerId ORDER BY r.creationDate DESC")
+    List<Routine> findByTrainerIdOrderByCreationDateDesc(@Param("trainerId") Long trainerId);
 }
