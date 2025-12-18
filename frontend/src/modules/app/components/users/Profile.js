@@ -212,7 +212,6 @@ function ProfileHeader(props) {
                         )}
                     </>
                 )}
-
                 {showOtherActions && (
                     <>
                         <button
@@ -558,7 +557,6 @@ const Profile = () => {
         </div>
     );
 };
-
 /* PropTypes */
 
 ProfileHeader.propTypes = {
