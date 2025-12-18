@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .requestMatchers(antMatcher(HttpMethod.PUT, "/api/routines/*")).hasAnyRole(ADMIN, TRAINER)
                 .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/routines/*")).hasAnyRole(ADMIN, TRAINER)
                 .requestMatchers(antMatcher("/api/admin/**")).hasRole(ADMIN)
+                .requestMatchers(antMatcher(HttpMethod.GET, "/api/wrapped/**")).authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
