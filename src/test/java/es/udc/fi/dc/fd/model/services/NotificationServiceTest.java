@@ -2,10 +2,13 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.Routine.VisibilityType;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.User.StatusType;
+
+import static es.udc.fi.dc.fd.model.entities.Exercise.Equipment;
+import static es.udc.fi.dc.fd.model.entities.Exercise.MuscleGroup;
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,12 @@ class NotificationServiceTest {
     private UserDao userDao;
     @Autowired
     private WorkoutService workoutService;
+    @Autowired
+    private WorkoutExerciseDao workoutExerciseDao;
+    @Autowired
+    private RoutineExerciseDao routineExerciseDao;
+    @Autowired
+    private ExerciseDao exerciseDao;
 
     @Test
     void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
@@ -195,5 +204,4 @@ class NotificationServiceTest {
 
         assertTrue(notificationService.getNotificationsByUser(u.getId()).isEmpty());
     }
-
 }

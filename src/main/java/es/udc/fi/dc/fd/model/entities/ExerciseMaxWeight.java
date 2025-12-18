@@ -3,7 +3,7 @@ package es.udc.fi.dc.fd.model.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "exercise_max_weights")
+@Table(name = "exercise_max_weights", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "exercise_id"}))
 public class ExerciseMaxWeight {
 
     private Long id;
