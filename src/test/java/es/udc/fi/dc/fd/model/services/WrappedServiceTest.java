@@ -58,6 +58,23 @@ class WrappedServiceTest {
     private RoutineExercise routineExerciseWeight;
     private RoutineExercise routineExerciseTime;
 
+    static Stream<Arguments> exactWeightComparisonTestCases() {
+        return Stream.of(
+                Arguments.of(4L, "Gato pequeño"),
+                Arguments.of(30L, "Perro grande"),
+                Arguments.of(70L, "Persona"),
+                Arguments.of(200L, "Motocicleta"),
+                Arguments.of(500L, "Caballo"),
+                Arguments.of(1200L, "Coche pequeño"),
+                Arguments.of(2000L, "SUV"),
+                Arguments.of(4500L, "Elefante"),
+                Arguments.of(10000L, "Autobús escolar"),
+                Arguments.of(20000L, "Camión de bomberos"),
+                Arguments.of(40000L, "Avión pequeño"),
+                Arguments.of(150000L, "Ballena azul"),
+                Arguments.of(412000L, "Boeing 747"));
+    }
+
     @BeforeEach
     void setUp() {
         testUser = new User("Test", "User", "test@example.com", "600000001",
@@ -69,11 +86,11 @@ class WrappedServiceTest {
         testRoutine = routineDao.save(testRoutine);
 
         weightExercise = new Exercise("Squats", "Leg exercise", Exercise.MuscleGroup.LEG,
-                Exercise.Equipment.NONE, new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED, testUser);
+                Exercise.Equipment.NONE, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, testUser);
         weightExercise = exerciseDao.save(weightExercise);
 
         timeExercise = new Exercise("Plank", "Core exercise", Exercise.MuscleGroup.CORE,
-                Exercise.Equipment.MAT, new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED, testUser);
+                Exercise.Equipment.MAT, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, testUser);
         timeExercise = exerciseDao.save(timeExercise);
 
         routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, 1);
@@ -236,24 +253,6 @@ class WrappedServiceTest {
         }
     }
 
-    static Stream<Arguments> exactWeightComparisonTestCases() {
-        return Stream.of(
-            Arguments.of(4L, "Gato pequeño"),
-            Arguments.of(30L, "Perro grande"),
-            Arguments.of(70L, "Persona"),
-            Arguments.of(200L, "Motocicleta"),
-            Arguments.of(500L, "Caballo"),
-            Arguments.of(1200L, "Coche pequeño"),
-            Arguments.of(2000L, "SUV"),
-            Arguments.of(4500L, "Elefante"),
-            Arguments.of(10000L, "Autobús escolar"),
-            Arguments.of(20000L, "Camión de bomberos"),
-            Arguments.of(40000L, "Avión pequeño"),
-            Arguments.of(150000L, "Ballena azul"),
-            Arguments.of(412000L, "Boeing 747")
-        );
-    }
-
     @Test
     void testReference_LargeDog_Fractional() throws InstanceNotFoundException {
         createWorkoutWithWeight(40L);
@@ -347,6 +346,58 @@ class WrappedServiceTest {
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getComparisonPhrase().contains("Coche"), "1300kg should use Car reference");
     }
+
+    @Test
+    void testGetLongestStreak_NoWorkouts() throws InstanceNotFoundException {
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(0, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_SingleWorkout() throws InstanceNotFoundException {
+        LocalDateTime jan2025 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        Workout workout = new Workout(jan2025, jan2025.plusHours(1), testRoutine, testUser);
+        workoutDao.save(workout);
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(1, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_ConsecutiveDays() throws InstanceNotFoundException {
+        LocalDateTime day1 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        LocalDateTime day2 = LocalDateTime.of(2025, 1, 16, 10, 0);
+        LocalDateTime day3 = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+        workoutDao.save(new Workout(day1, day1.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day2, day2.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day3, day3.plusHours(1), testRoutine, testUser));
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(3, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_NonConsecutiveDays() throws InstanceNotFoundException {
+        LocalDateTime day1 = LocalDateTime.of(2025, 1, 10, 10, 0);
+        LocalDateTime day2 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        LocalDateTime day3 = LocalDateTime.of(2025, 1, 20, 10, 0);
+
+        workoutDao.save(new Workout(day1, day1.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day2, day2.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day3, day3.plusHours(1), testRoutine, testUser));
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(1, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_UserNotFound() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            wrappedService.getLongestStreak(999L, 2025);
+        });
+    }
+    
     @Test
     void testGetTopExercisesByUser() {
         Long userId = 2L;

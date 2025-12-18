@@ -157,4 +157,39 @@ public class WrappedServiceImpl implements WrappedService {
             return name + "es";
         }
     }
+
+    @Override
+    public Integer getLongestStreak(Long userId, int year) throws InstanceNotFoundException {
+        userDao.findById(userId).orElseThrow(() -> new InstanceNotFoundException(USER_INSTANCE, userId));
+
+        LocalDateTime startOfYear = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        LocalDateTime endOfYear = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+
+        List<Workout> workouts = workoutDao.findByUserIdAndStartTimeBetweenAndEndTimeNotNull(userId, startOfYear,
+                endOfYear);
+
+        if (workouts.isEmpty()) {
+            return 0;
+        }
+
+        List<java.time.LocalDate> workoutDates = workouts.stream()
+                .map(w -> w.getStartTime().toLocalDate())
+                .distinct()
+                .sorted()
+                .toList();
+
+        int longestStreak = 1;
+        int currentStreak = 1;
+
+        for (int i = 1; i < workoutDates.size(); i++) {
+            if (workoutDates.get(i).minusDays(1).equals(workoutDates.get(i - 1))) {
+                currentStreak++;
+                longestStreak = Math.max(longestStreak, currentStreak);
+            } else {
+                currentStreak = 1;
+            }
+        }
+
+        return longestStreak;
+    }
 }
