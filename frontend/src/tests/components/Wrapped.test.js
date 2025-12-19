@@ -292,6 +292,85 @@ describe("Wrapped Component", () => {
         });
     });
 
+    test("handles null routine response", async () => {
+        tryLoginFromServiceToken.mockImplementation((resolve) => {
+            resolve({ user: mockUser });
+        });
+
+        getWeightComparison.mockImplementation((year, resolve) => resolve(mockWeightData));
+        getLongestStreak.mockImplementation((year, resolve) => resolve(mockStreakData));
+        getAnnualSummary.mockImplementation((resolve) => resolve(mockSocialData));
+        getTopExercises.mockImplementation((resolve) => resolve(mockExercises));
+        getFavoriteMuscleGroup.mockImplementation((resolve) => resolve(mockMuscleGroup));
+        getFavoriteRoutine.mockImplementation((resolve) => resolve(null));
+
+        render(
+            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
+                <Routes>
+                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
+        });
+
+        //slide 5
+        const rightArrow = screen.getByText("›");
+        for (let i = 0; i < 4; i++) {
+            fireEvent.click(rightArrow);
+        }
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu rutina más seguida")).toBeInTheDocument();
+            expect(screen.getByText("Sin rutina favorita")).toBeInTheDocument();
+        });
+    });
+
+    test("handles routine without creator name", async () => {
+        const routineWithoutCreator = {
+            name: "Rutina Personal",
+            count: 15,
+            creatorName: null
+        };
+
+        tryLoginFromServiceToken.mockImplementation((resolve) => {
+            resolve({ user: mockUser });
+        });
+
+        getWeightComparison.mockImplementation((year, resolve) => resolve(mockWeightData));
+        getLongestStreak.mockImplementation((year, resolve) => resolve(mockStreakData));
+        getAnnualSummary.mockImplementation((resolve) => resolve(mockSocialData));
+        getTopExercises.mockImplementation((resolve) => resolve(mockExercises));
+        getFavoriteMuscleGroup.mockImplementation((resolve) => resolve(mockMuscleGroup));
+        getFavoriteRoutine.mockImplementation((resolve) => resolve(routineWithoutCreator));
+
+        render(
+            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
+                <Routes>
+                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
+        });
+
+        //slide 5
+        const rightArrow = screen.getByText("›");
+        for (let i = 0; i < 4; i++) {
+            fireEvent.click(rightArrow);
+        }
+
+        await waitFor(() => {
+            expect(screen.getByText("Rutina Personal")).toBeInTheDocument();
+            expect(screen.getByText("Completada 15 veces")).toBeInTheDocument();
+            expect(screen.queryByText(/por/)).not.toBeInTheDocument();
+        });
+    });
+
     test("displays longest streak on slide 6", async () => {
         setupAuthAndData();
 
@@ -348,6 +427,103 @@ describe("Wrapped Component", () => {
         });
     });
 
+    test("handles zero values correctly", async () => {
+        const zeroData = {
+            likesGiven: 0,
+            likesReceived: 0,
+            commentsGiven: 0,
+            commentsReceived: 0
+        };
+
+        tryLoginFromServiceToken.mockImplementation((resolve) => {
+            resolve({ user: mockUser });
+        });
+
+        getWeightComparison.mockImplementation((year, resolve) =>
+            resolve({ totalWeightKg: 0, comparisonPhrase: "nada aún" })
+        );
+        getLongestStreak.mockImplementation((year, resolve) => resolve(0));
+        getAnnualSummary.mockImplementation((resolve) => resolve(zeroData));
+        getTopExercises.mockImplementation((resolve) => resolve([]));
+        getFavoriteMuscleGroup.mockImplementation((resolve) => resolve({ muscleGroup: "General" }));
+        getFavoriteRoutine.mockImplementation((resolve) => resolve(null));
+
+        render(
+            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
+                <Routes>
+                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
+        });
+
+        //slide 2
+        const rightArrow = screen.getByText("›");
+        fireEvent.click(rightArrow);
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu impacto social")).toBeInTheDocument();
+            // Use getAllByText to verify there are 4 zeros on this slide
+            const zeros = screen.getAllByText("0").filter(el =>
+                el.className.includes("statNumber")
+            );
+            expect(zeros).toHaveLength(4);
+        });
+
+        //slide 6
+        for (let i = 0; i < 4; i++) {
+            fireEvent.click(rightArrow);
+        }
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu mejor racha")).toBeInTheDocument();
+            const streakZero = screen.getAllByText("0").find(el =>
+                el.className.includes("streakNumber")
+            );
+            expect(streakZero).toBeInTheDocument();
+        });
+
+        //slide 7
+        fireEvent.click(rightArrow);
+
+        await waitFor(() => {
+            expect(screen.getByText("Peso total levantado")).toBeInTheDocument();
+            expect(screen.getByText("0 kg")).toBeInTheDocument();
+            expect(screen.getByText("nada aún")).toBeInTheDocument();
+        });
+    });
+
+    test("navigates to last slide and shows outro content", async () => {
+        setupAuthAndData();
+
+        render(
+            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
+                <Routes>
+                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
+        });
+
+        //slide 8
+        const rightArrow = screen.getByText("›");
+        for (let i = 0; i < 7; i++) {
+            fireEvent.click(rightArrow);
+        }
+
+        await waitFor(() => {
+            expect(screen.getByText("¡Increíble trabajo!")).toBeInTheDocument();
+            expect(screen.getByText("2025 fue un año lleno de logros.")).toBeInTheDocument();
+            expect(screen.getByText("¿Listo para superar tus límites en 2026?")).toBeInTheDocument();
+        });
+    });
+
     test("navigation with left arrow works correctly", async () => {
         setupAuthAndData();
 
@@ -401,6 +577,34 @@ describe("Wrapped Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("Tus ejercicios favoritos")).toBeInTheDocument();
+        });
+    });
+
+    test("keyboard navigation with arrow keys works", async () => {
+        setupAuthAndData();
+
+        render(
+            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
+                <Routes>
+                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
+        });
+
+        fireEvent.keyDown(window, { key: "ArrowRight" });
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu impacto social")).toBeInTheDocument();
+        });
+
+        fireEvent.keyDown(window, { key: "ArrowLeft" });
+
+        await waitFor(() => {
+            expect(screen.getByText("Tu año en")).toBeInTheDocument();
         });
     });
 
