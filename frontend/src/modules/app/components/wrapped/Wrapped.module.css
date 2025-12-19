@@ -430,7 +430,8 @@
 
 /* slide 4 */
 .muscleHero {
-    margin-top: 2rem;
+    margin: 2rem auto 0;
+    max-width: 500px;
     padding: 3rem 2rem;
     background: linear-gradient(
             135deg,
@@ -467,20 +468,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     text-shadow: 0 0 40px var(--neon-orange-glow);
-}
-
-.musclePercentage {
-    font-size: 6rem;
-    font-weight: 900;
-    color: var(--text-primary);
-    margin: 1rem 0;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.muscleSubtext {
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* slide 5 */

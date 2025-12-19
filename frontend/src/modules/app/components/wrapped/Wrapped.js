@@ -2,42 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import { getWeightComparison, getLongestStreak, getTopExercises, getFavoriteRoutine, getFavoriteMuscleGroup, getAnnualSummary } from "../../../../backend/wrappedService";
+import { getMuscleGroupsText } from "../../util/enumConversor";
 import styles from "./Wrapped.module.css";
 import LoadingMessage from "../common/LoadingMessage";
-
-//MOCK DATA: CHANGE LATER
-const MOCK_WRAPPED_DATA = {
-    year: 2025,
-    social: {
-        likesGiven: 156,
-        likesReceived: 234,
-        commentsGiven: 89,
-        commentsReceived: 167,
-    },
-    topExercises: [
-        { name: "Sentadillas", count: 45, muscleGroup: "Piernas" },
-        { name: "Press de banca", count: 38, muscleGroup: "Pecho" },
-        { name: "Peso muerto", count: 32, muscleGroup: "Espalda" },
-    ],
-    favoriteRoutine: {
-        name: "Rutina de Fuerza Total",
-        completionCount: 24,
-        creatorName: "Carlos Entrenador",
-    },
-    dominantMuscleGroup: {
-        name: "Piernas",
-        percentage: 35,
-    },
-    longestStreak: {
-        days: 21,
-        startDate: "2025-03-01",
-        endDate: "2025-03-21",
-    },
-    totalWeight: {
-        kg: 125000,
-        comparison: "3 elefantes africanos",
-    },
-};
 
 const Wrapped = () => {
     const { id } = useParams();
@@ -69,11 +36,18 @@ const Wrapped = () => {
     }, [id, navigate]);
 
     const loadWrappedData = () => {
+        const combinedData = {
+            year: targetYear,
+            social: { likesGiven: 0, likesReceived: 0, commentsGiven: 0, commentsReceived: 0 },
+            topExercises: [],
+            favoriteRoutine: { name: "Sin rutina favorita", completionCount: 0, creatorName: null },
+            dominantMuscleGroup: { name: "General" },
+            longestStreak: { days: 0 },
+            totalWeight: { kg: 0, comparison: "nada" },
+        };
 
-        //TO BE CHANGED -> USING MIXED MOCK DATA AND BACKEND DATA THAT IS READY
-        const combinedData = { ...MOCK_WRAPPED_DATA };
         let loadedCount = 0;
-        const totalAPIs = 3;
+        const totalAPIs = 5;
 
         const checkAllLoaded = () => {
             loadedCount++;
@@ -88,7 +62,7 @@ const Wrapped = () => {
             (weightData) => {
                 combinedData.totalWeight = {
                     kg: weightData.totalWeightKg || 0,
-                    comparison: weightData.comparisonPhrase,
+                    comparison: weightData.comparisonPhrase || "nada",
                 };
                 checkAllLoaded();
             },
@@ -124,6 +98,53 @@ const Wrapped = () => {
             },
             (err) => {
                 console.error("Error loading annual summary:", err);
+                checkAllLoaded();
+            }
+        );
+
+        getTopExercises(
+            (exercises) => {
+                if (Array.isArray(exercises) && exercises.length > 0) {
+                    combinedData.topExercises = exercises.slice(0, 3).map((exercise) => ({
+                        name: exercise.name,
+                        count: exercise.count || 0,
+                        muscleGroup: exercise.muscleGroup || "General"
+                    }));
+                }
+                checkAllLoaded();
+            },
+            (err) => {
+                console.error("Error loading top exercises:", err);
+                checkAllLoaded();
+            }
+        );
+
+        getFavoriteMuscleGroup(
+            (muscleGroupData) => {
+                combinedData.dominantMuscleGroup = {
+                    name: muscleGroupData.muscleGroup || "General"
+                };
+                checkAllLoaded();
+            },
+            (err) => {
+                console.error("Error loading favorite muscle group:", err);
+                checkAllLoaded();
+            }
+        );
+
+        getFavoriteRoutine(
+            (routine) => {
+                if (routine && routine.name) {
+                    combinedData.favoriteRoutine = {
+                        name: routine.name,
+                        completionCount: routine.count || 0,
+                        creatorName: routine.creatorName || routine.creator?.username || null
+                    };
+                }
+                checkAllLoaded();
+            },
+            (err) => {
+                console.error("Error loading favorite routine:", err);
                 checkAllLoaded();
             }
         );
@@ -284,13 +305,7 @@ const Wrapped = () => {
                             </h2>
                             <div className={styles.muscleHero}>
                                 <div className={styles.muscleName}>
-                                    {wrappedData.dominantMuscleGroup.name}
-                                </div>
-                                <div className={styles.musclePercentage}>
-                                    {wrappedData.dominantMuscleGroup.percentage}%
-                                </div>
-                                <div className={styles.muscleSubtext}>
-                                    de tus entrenamientos
+                                    {getMuscleGroupsText(wrappedData.dominantMuscleGroup.name)}
                                 </div>
                             </div>
                         </div>
