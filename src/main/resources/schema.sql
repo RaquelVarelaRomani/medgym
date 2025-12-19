@@ -1,3 +1,4 @@
+
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS exercise_max_weights;
 DROP TABLE IF EXISTS achievement_progresses;
@@ -120,7 +121,6 @@ CREATE TABLE workout_exercises
     duration_seconds    SMALLINT,
     workout_id          BIGINT NOT NULL,
     routine_exercise_id BIGINT NOT NULL,
-
     CONSTRAINT pk_workout_exercise PRIMARY KEY (id),
     CONSTRAINT fk_workout_exercise_workout FOREIGN KEY (workout_id)
         REFERENCES workouts (id)

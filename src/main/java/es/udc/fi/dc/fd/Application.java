@@ -16,7 +16,18 @@ import es.udc.fi.dc.fd.model.entities.Workout;
 import es.udc.fi.dc.fd.model.entities.WorkoutDao;
 import es.udc.fi.dc.fd.model.entities.WorkoutExercise;
 import es.udc.fi.dc.fd.model.services.WorkoutExerciseService;
+import es.udc.fi.dc.fd.model.entities.WorkoutLike;
+import es.udc.fi.dc.fd.model.entities.WorkoutLikeDao;
+import es.udc.fi.dc.fd.model.entities.RoutineLike;
+import es.udc.fi.dc.fd.model.entities.RoutineLikeDao;
+import es.udc.fi.dc.fd.model.entities.UserFollow;
+import es.udc.fi.dc.fd.model.entities.UserFollowDao;
+import es.udc.fi.dc.fd.model.services.NotificationService;
+import es.udc.fi.dc.fd.model.services.WorkoutService;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.RoutineDao;
 import java.util.List;
+import java.time.LocalTime;
 
 @SpringBootApplication
 public class Application {
@@ -63,6 +74,7 @@ public class Application {
             }
         };
     }
+
     @Bean
     public CommandLineRunner calculateTotalVolumeRunner(WorkoutDao workoutDao, WorkoutExerciseService workoutExerciseService) {
         return args -> {
@@ -83,4 +95,103 @@ public class Application {
         };
     }
 
+    @Bean
+    public CommandLineRunner recalculateLikesReceivedRunner(
+            UserDao userDao,
+            WorkoutLikeDao workoutLikeDao,
+            RoutineLikeDao routineLikeDao,
+            NotificationService notificationService) {
+        return args -> {
+            for (User user : userDao.findAll()) {
+                try {
+                    List<WorkoutLike> workoutLikesReceived = workoutLikeDao.findByWorkoutUserId(user.getId());
+                    for (WorkoutLike workoutLike : workoutLikesReceived) {
+                        notificationService.createWorkoutLikeNotification(
+                                workoutLike.getUser().getId(),
+                                workoutLike.getWorkout().getId());
+                    }
+
+                    List<RoutineLike> routineLikesReceived = routineLikeDao.findByRoutineTrainerId(user.getId());
+                    for (RoutineLike routineLike : routineLikesReceived) {
+                        notificationService.createRoutineLikeNotification(
+                                routineLike.getUser().getId(),
+                                routineLike.getRoutine().getId());
+                    }
+                } catch (InstanceNotFoundException e) {
+                    //
+                }
+            }
+        };
+    }
+
+    @Bean
+    public CommandLineRunner recalculateFollowsReceivedRunner(
+            UserDao userDao,
+            UserFollowDao userFollowDao,
+            NotificationService notificationService) {
+        return args -> {
+            for (User user : userDao.findAll()) {
+                try {
+                    List<UserFollow> followsReceived = userFollowDao.findByFollowUser(user);
+                    for (UserFollow userFollow : followsReceived) {
+                        notificationService.createFollowNotification(
+                                userFollow.getUser().getId(),
+                                userFollow.getFollowUser().getId());
+                    }
+                } catch (InstanceNotFoundException e) {
+                    //
+                }
+            }
+        };
+    }
+
+    @Bean
+    public CommandLineRunner recalculateStreakRemindersRunner(
+            UserDao userDao,
+            WorkoutService workoutService,
+            NotificationService notificationService) {
+        return args -> {
+            // Check if current time is after the scheduled cron time (9 AM)
+            LocalTime currentTime = LocalTime.now();
+            LocalTime scheduledTime = LocalTime.of(9, 0);
+
+            if (currentTime.isAfter(scheduledTime)) {
+                for (User user : userDao.findAll()) {
+                    try {
+                        int currentStreak = workoutService.calculateCurrentStreak(user.getId());
+                        if (currentStreak > 1) {
+                            notificationService.createStreakRemindNotification(user.getId(), currentStreak);
+                        }
+                    } catch (InstanceNotFoundException e) {
+                        //
+                    }
+                }
+            }
+        };
+    }
+
+    @Bean
+    public CommandLineRunner recalculateNewRoutineNotificationsRunner(
+            UserDao userDao,
+            UserFollowDao userFollowDao,
+            RoutineDao routineDao,
+            NotificationService notificationService) {
+        return args -> {
+            for (User user : userDao.findAll()) {
+                try {
+                    List<UserFollow> userFollows = userFollowDao.findByUser(user);
+
+                    for (UserFollow userFollow : userFollows) {
+                        List<Routine> routines = routineDao.findByTrainerIdOrderByCreationDateDesc(userFollow.getFollowUser().getId());
+                        if (!routines.isEmpty()) {
+                            Routine latestRoutine = routines.get(0);
+                            notificationService.createNewRoutineNotification(latestRoutine.getId());
+                        }
+                    }
+                } catch (InstanceNotFoundException e) {
+                    //
+                }
+            }
+        };
+    }
 }

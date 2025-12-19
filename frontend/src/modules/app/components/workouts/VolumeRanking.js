@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
 import * as workoutService from "../../../../backend/workoutService";
 import LoadingMessage from "../common/LoadingMessage";
@@ -8,6 +8,7 @@ import styles from "./VolumeRanking.module.css";
 
 const VolumeRankingPage = () => {
     const navigate = useNavigate();
+    const { routineId } = useParams();
     const [currentUser, setCurrentUser] = useState(null);
     const [completedRoutines, setCompletedRoutines] = useState([]);
     const [selectedRoutine, setSelectedRoutine] = useState(null);
@@ -25,6 +26,15 @@ const VolumeRankingPage = () => {
             () => navigate("/users/login")
         );
     }, [navigate]);
+
+    useEffect(() => {
+        if (routineId && completedRoutines.length > 0 && !selectedRoutine) {
+            const routine = completedRoutines.find(r => r.id === Number.parseInt(routineId));
+            if (routine) {
+                handleRoutineClick(routine);
+            }
+        }
+    }, [routineId, completedRoutines, selectedRoutine]);
 
     const loadCompletedRoutines = (userId) => {
         setLoading(true);
@@ -82,6 +92,7 @@ const VolumeRankingPage = () => {
     };
 
     const handleBack = () => {
+        navigate('/workouts/rankings');
         setSelectedRoutine(null);
         setRanking([]);
         setError(null);

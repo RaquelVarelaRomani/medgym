@@ -32,8 +32,11 @@ class ExerciseMaxWeightServiceTest {
     @Autowired
     private UserFollowDao userFollowDao;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     private User createUser(String email) {
-        User u = new User(email, "pass", "n", "l", email, User.RoleType.CLIENT, User.StatusType.ACTIVE);
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User u = new User(email, "surname", email, uniquePhone, "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(u);
     }
 

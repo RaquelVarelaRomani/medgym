@@ -9,11 +9,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 50, nullable = false)
     private String name;
+    @Column(length = 50, nullable = false)
     private String surname;
+    @Column(unique = true, length = 100, nullable = false)
     private String email;
+    @Column(unique = true, length = 20, nullable = false)
     private String phoneNumber;
+    @Column(length = 255, nullable = false)
     private String password;
+    @Lob
     private byte[] profilePicture;
     private RoleType role;
     private StatusType status;

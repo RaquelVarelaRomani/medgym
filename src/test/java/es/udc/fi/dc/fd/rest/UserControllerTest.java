@@ -48,10 +48,13 @@ class UserControllerTest {
     @Autowired
     private UserController userController;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     private AuthenticatedUserDto createAuthenticatedUser(String email, RoleType roleType)
             throws IncorrectLoginException, BlockedUserException {
 
-        User user = new User("user", "1", email, "+34 000 000 000", "password", RoleType.CLIENT, User.StatusType.ACTIVE);
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User user = new User("user", "1", email, uniquePhone, "password", RoleType.CLIENT, User.StatusType.ACTIVE);
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(roleType);
