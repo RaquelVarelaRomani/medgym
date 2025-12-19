@@ -50,10 +50,10 @@ public class WrappedServiceImpl implements WrappedService {
         counts.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue(Comparator.reverseOrder()))
                 .limit(5)
-                .forEach(entry -> {
+                .forEach(entry ->
                     exerciseDao.findById(entry.getKey())
                             .ifPresent(exercise -> result.put(exercise, entry.getValue()));
-                });
+                );
         return result;
     }
 
