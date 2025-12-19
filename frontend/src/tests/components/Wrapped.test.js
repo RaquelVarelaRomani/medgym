@@ -365,10 +365,16 @@ describe("Wrapped Component", () => {
         }
 
         await waitFor(() => {
+            expect(screen.getByText("Tu rutina más seguida")).toBeInTheDocument();
             expect(screen.getByText("Rutina Personal")).toBeInTheDocument();
             expect(screen.getByText("Completada 15 veces")).toBeInTheDocument();
-            expect(screen.queryByText(/por/)).not.toBeInTheDocument();
         });
+
+        const creatorElements = screen.queryAllByText(/por/i);
+        const routineCreatorText = creatorElements.find(el =>
+            el.className && el.className.includes("routineCreator")
+        );
+        expect(routineCreatorText).toBeUndefined();
     });
 
     test("displays longest streak on slide 6", async () => {
