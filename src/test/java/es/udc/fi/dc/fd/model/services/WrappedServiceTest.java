@@ -1,18 +1,21 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.rest.dtos.WeightComparisonDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -393,5 +396,31 @@ class WrappedServiceTest {
         assertThrows(InstanceNotFoundException.class, () -> {
             wrappedService.getLongestStreak(999L, 2025);
         });
+    }
+    
+    @Test
+    void testGetTopExercisesByUser() {
+        Long userId = 2L;
+        List<Exercise> topExercises = wrappedService.getTopExercisesByUser(userId);
+
+        assertEquals(5, topExercises.size());
+
+        boolean contieneSentadillas = topExercises.stream()
+                .anyMatch(e -> e.getName().equals("Sentadillas"));
+        assertTrue(contieneSentadillas);
+    }
+
+    @Test
+    void testGetFavouriteMuscleGroup() {
+        Long userId = 2L;
+        String favMuscleGroup = wrappedService.getFavouriteMuscleGroup(userId);
+        assertEquals("CHEST", favMuscleGroup);
+    }
+
+    @Test
+    void testGetFavouriteRoutine() {
+        Long userId = 2L;
+        Routine favRoutine = wrappedService.getFavouriteRoutine(userId);
+        assertEquals("Rutina fuerza inicial", favRoutine.getName());
     }
 }
