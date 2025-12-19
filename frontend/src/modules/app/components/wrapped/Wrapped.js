@@ -12,9 +12,10 @@ const Wrapped = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [wrappedData, setWrappedData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [me, setMe] = useState(null);
+    const [, setMe] = useState(null);
 
     const totalSlides = 8;
+    const slideIds = ['intro', 'social', 'exercises', 'muscle', 'routine', 'streak', 'weight', 'outro'];
     const targetYear = 2025;
 
     useEffect(() => {
@@ -134,7 +135,7 @@ const Wrapped = () => {
 
         getFavoriteRoutine(
             (routine) => {
-                if (routine && routine.name) {
+                if (routine?.name) {
                     combinedData.favoriteRoutine = {
                         name: routine.name,
                         completionCount: routine.count || 0,
@@ -192,9 +193,9 @@ const Wrapped = () => {
             </button>
 
             <div className={styles.progressBar}>
-                {[...Array(totalSlides)].map((_, index) => (
+                {slideIds.map((slideId, index) => (
                     <div
-                        key={`slide-${index}`}
+                        key={slideId}
                         className={`${styles.progressDot} ${
                             index === currentSlide ? styles.active : ""
                         } ${index < currentSlide ? styles.completed : ""}`}
@@ -280,7 +281,7 @@ const Wrapped = () => {
                             {wrappedData.topExercises && wrappedData.topExercises.length > 0 ? (
                                 <div className={styles.exerciseList}>
                                     {wrappedData.topExercises.map((exercise, index) => (
-                                        <div key={`exercise-${index}`} className={styles.exerciseItem}>
+                                        <div key={exercise.id} className={styles.exerciseItem}>
                                             <div className={styles.exerciseRank}>
                                                 {index + 1}
                                             </div>
