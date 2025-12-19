@@ -242,4 +242,102 @@ class WrappedControllerTest {
         mockMvc.perform(get("/api/wrapped/longest-streak"))
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    void testGetTopExercises_WithWorkouts() throws Exception {
+        User user = userDao.findById(testUser.getUserDto().getId()).orElseThrow();
+        LocalDateTime jan2025 = LocalDateTime.of(2025, 1, 15, 10, 0);
+
+        Workout workout = new Workout(jan2025, jan2025.plusHours(1), testRoutine, user);
+        workout = workoutDao.save(workout);
+
+        WorkoutExercise we = new WorkoutExercise((short) 10, (short) 50, null, workout, routineExerciseWeight);
+        workoutExerciseDao.save(we);
+
+        mockMvc.perform(get("/api/wrapped/topexercises")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void testGetTopExercises_NoWorkouts() throws Exception {
+        mockMvc.perform(get("/api/wrapped/topexercises")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void testGetTopExercises_RequiresAuthentication() throws Exception {
+        mockMvc.perform(get("/api/wrapped/topexercises"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetMuscleGroup_WithWorkouts() throws Exception {
+        User user = userDao.findById(testUser.getUserDto().getId()).orElseThrow();
+        LocalDateTime jan2025 = LocalDateTime.of(2025, 1, 15, 10, 0);
+
+        Workout workout = new Workout(jan2025, jan2025.plusHours(1), testRoutine, user);
+        workout = workoutDao.save(workout);
+
+        WorkoutExercise we = new WorkoutExercise((short) 10, (short) 50, null, workout, routineExerciseWeight);
+        workoutExerciseDao.save(we);
+
+        mockMvc.perform(get("/api/wrapped/musclegroup")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.muscleGroup").exists());
+    }
+
+    @Test
+    void testGetMuscleGroup_NoWorkouts() throws Exception {
+        mockMvc.perform(get("/api/wrapped/musclegroup")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetMuscleGroup_RequiresAuthentication() throws Exception {
+        mockMvc.perform(get("/api/wrapped/musclegroup"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testGetRoutine_WithWorkouts() throws Exception {
+        User user = userDao.findById(testUser.getUserDto().getId()).orElseThrow();
+        LocalDateTime jan2025 = LocalDateTime.of(2025, 1, 15, 10, 0);
+
+        Workout workout = new Workout(jan2025, jan2025.plusHours(1), testRoutine, user);
+        workout = workoutDao.save(workout);
+
+        WorkoutExercise we = new WorkoutExercise((short) 10, (short) 50, null, workout, routineExerciseWeight);
+        workoutExerciseDao.save(we);
+
+        mockMvc.perform(get("/api/wrapped/routine")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Routine"))
+                .andExpect(jsonPath("$.count").exists());
+    }
+
+    @Test
+    void testGetRoutine_NoWorkouts() throws Exception {
+        mockMvc.perform(get("/api/wrapped/routine")
+                        .header("Authorization", "Bearer " + testUser.getServiceToken())
+                        .header("X-User-Id", testUser.getUserDto().getId()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetRoutine_RequiresAuthentication() throws Exception {
+        mockMvc.perform(get("/api/wrapped/routine"))
+                .andExpect(status().isForbidden());
+    }
 }

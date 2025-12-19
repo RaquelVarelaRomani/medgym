@@ -1,6 +1,6 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-public abstract class WorkoutWithUserDto extends WorkoutDto{
+public abstract class WorkoutWithUserDto extends WorkoutDto {
     private String userName;
     private String userSurname;
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class WrappedServiceImpl implements WrappedService {
     }
 
     @Override
-    public List<Exercise> getTopExercisesByUser(Long userId) {
+    public LinkedHashMap<Exercise, Long> getTopExercisesByUser(Long userId) {
         List<Long> workoutsId = workoutDao.findAllByUserId(userId).stream().map(Workout::getId).toList();
         List<WorkoutExercise> workoutExercises = workoutExerciseDao.findByWorkoutIdIn(workoutsId);
         Map<Long, Long> counts = workoutExercises.stream()
@@ -44,12 +45,16 @@ public class WrappedServiceImpl implements WrappedService {
                         we -> we.getRoutineExercise().getExercise().getId(),
                         Collectors.counting()
                 ));
-        return counts.entrySet().stream()
+
+        LinkedHashMap<Exercise, Long> result = new LinkedHashMap<>();
+        counts.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue(Comparator.reverseOrder()))
                 .limit(5)
-                .map(entry -> exerciseDao.findById(entry.getKey()).orElse(null))
-                .filter(Objects::nonNull)
-                .toList();
+                .forEach(entry -> {
+                    exerciseDao.findById(entry.getKey())
+                            .ifPresent(exercise -> result.put(exercise, entry.getValue()));
+                });
+        return result;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class WrappedServiceImpl implements WrappedService {
     }
 
     @Override
-    public Routine getFavouriteRoutine(Long userId) {
+    public Map.Entry<Routine, Long> getFavouriteRoutine(Long userId) {
         List<Workout> workouts = workoutDao.findAllByUserId(userId);
 
         Map<Routine, Long> counts = workouts.stream()
@@ -81,7 +86,6 @@ public class WrappedServiceImpl implements WrappedService {
 
         return counts.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
                 .orElse(null);
     }
 
