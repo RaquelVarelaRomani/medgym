@@ -181,4 +181,159 @@ describe("wrappedService", () => {
             expect(onSuccess).not.toHaveBeenCalled();
         });
     });
+
+    describe("getTopExercises", () => {
+        test("successful API call with exercise list", () => {
+            const mockData = [
+                { id: 1, name: "Sentadillas", count: 45, muscleGroup: "Piernas" },
+                { id: 2, name: "Press de banca", count: 38, muscleGroup: "Pecho" },
+                { id: 3, name: "Peso muerto", count: 32, muscleGroup: "Espalda" }
+            ];
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockData);
+            });
+
+            getTopExercises(onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockData);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("successful API call with empty exercise list", () => {
+            const mockData = [];
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockData);
+            });
+
+            getTopExercises(onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockData);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("error handling with onErrors callback", () => {
+            const mockError = { globalError: "Error fetching top exercises" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(mockError);
+            });
+
+            getTopExercises(onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(mockError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("getFavoriteMuscleGroup", () => {
+        test("successful API call with muscle group data", () => {
+            const mockData = { muscleGroup: "Piernas" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockData);
+            });
+
+            getFavoriteMuscleGroup(onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockData);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("error handling with onErrors callback", () => {
+            const mockError = { globalError: "Error fetching favorite muscle group" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(mockError);
+            });
+
+            getFavoriteMuscleGroup(onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(mockError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+
+        describe("getFavoriteRoutine", () => {
+            test("successful API call with routine data", () => {
+                const mockData = {
+                    id: 1,
+                    name: "Rutina de Fuerza Total",
+                    count: 24,
+                    creatorName: "Carlos Entrenador"
+                };
+                const onSuccess = jest.fn();
+                const onErrors = jest.fn();
+
+                mockAppFetch.mockImplementation((url, config, success, errors) => {
+                    success(mockData);
+                });
+
+                getFavoriteRoutine(onSuccess, onErrors);
+
+                expect(onSuccess).toHaveBeenCalledWith(mockData);
+                expect(onErrors).not.toHaveBeenCalled();
+            });
+
+            test("successful API call with no favorite routine", () => {
+                const mockData = null;
+                const onSuccess = jest.fn();
+                const onErrors = jest.fn();
+
+                mockAppFetch.mockImplementation((url, config, success, errors) => {
+                    success(mockData);
+                });
+
+                getFavoriteRoutine(onSuccess, onErrors);
+
+                expect(onSuccess).toHaveBeenCalledWith(mockData);
+                expect(onErrors).not.toHaveBeenCalled();
+            });
+        });
+
+        test("successful API call with routine without creator name", () => {
+            const mockData = {
+                id: 2,
+                name: "Rutina Personal",
+                count: 15,
+                creatorName: null
+            };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                success(mockData);
+            });
+
+            getFavoriteRoutine(onSuccess, onErrors);
+
+            expect(onSuccess).toHaveBeenCalledWith(mockData);
+            expect(onErrors).not.toHaveBeenCalled();
+        });
+
+        test("error handling with onErrors callback", () => {
+            const mockError = { globalError: "Error fetching favorite routine" };
+            const onSuccess = jest.fn();
+            const onErrors = jest.fn();
+
+            mockAppFetch.mockImplementation((url, config, success, errors) => {
+                errors(mockError);
+            });
+
+            getFavoriteRoutine(onSuccess, onErrors);
+
+            expect(onErrors).toHaveBeenCalledWith(mockError);
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+    });
 });

@@ -277,23 +277,29 @@ const Wrapped = () => {
                             <h2 className={styles.slideTitle}>
                                 Tus ejercicios favoritos
                             </h2>
-                            <div className={styles.exerciseList}>
-                                {wrappedData.topExercises.map((exercise, index) => (
-                                    <div key={`slide-${index}`} className={styles.exerciseItem}>
-                                        <div className={styles.exerciseRank}>
-                                            {index + 1}
-                                        </div>
-                                        <div className={styles.exerciseInfo}>
-                                            <div className={styles.exerciseName}>
-                                                {exercise.name}
+                            {wrappedData.topExercises && wrappedData.topExercises.length > 0 ? (
+                                <div className={styles.exerciseList}>
+                                    {wrappedData.topExercises.map((exercise, index) => (
+                                        <div key={`exercise-${index}`} className={styles.exerciseItem}>
+                                            <div className={styles.exerciseRank}>
+                                                {index + 1}
                                             </div>
-                                            <div className={styles.exerciseCount}>
-                                                {exercise.count} veces
+                                            <div className={styles.exerciseInfo}>
+                                                <div className={styles.exerciseName}>
+                                                    {exercise.name}
+                                                </div>
+                                                <div className={styles.exerciseCount}>
+                                                    {exercise.count} veces
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className={styles.outroText}>
+                                    Aún no has registrado ejercicios este año
+                                </p>
+                            )}
                         </div>
                     </div>
 
