@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { tryLoginFromServiceToken } from "../../../../backend/userService";
-import { getWeightComparison, getLongestStreak } from "../../../../backend/wrappedService";
+import { getWeightComparison, getLongestStreak, getTopExercises, getFavoriteRoutine, getFavoriteMuscleGroup, getAnnualSummary } from "../../../../backend/wrappedService";
 import styles from "./Wrapped.module.css";
 import LoadingMessage from "../common/LoadingMessage";
 
@@ -73,7 +73,7 @@ const Wrapped = () => {
         //TO BE CHANGED -> USING MIXED MOCK DATA AND BACKEND DATA THAT IS READY
         const combinedData = { ...MOCK_WRAPPED_DATA };
         let loadedCount = 0;
-        const totalAPIs = 2;
+        const totalAPIs = 3;
 
         const checkAllLoaded = () => {
             loadedCount++;
@@ -102,15 +102,28 @@ const Wrapped = () => {
             targetYear,
             (streakDays) => {
                 combinedData.longestStreak = {
-                    days: streakDays || 0,
-                    // Keep mock dates if you need them, or remove them since they're not displayed
-                    startDate: "2025-03-01",
-                    endDate: "2025-03-21",
+                    days: streakDays || 0
                 };
                 checkAllLoaded();
             },
             (err) => {
                 console.error("Error loading longest streak:", err);
+                checkAllLoaded();
+            }
+        );
+
+        getAnnualSummary(
+            (summaryData) => {
+                combinedData.social = {
+                    likesGiven: summaryData.likesGiven || 0,
+                    likesReceived: summaryData.likesReceived || 0,
+                    commentsGiven: summaryData.commentsGiven || 0,
+                    commentsReceived: summaryData.commentsReceived || 0,
+                };
+                checkAllLoaded();
+            },
+            (err) => {
+                console.error("Error loading annual summary:", err);
                 checkAllLoaded();
             }
         );
