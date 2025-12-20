@@ -52,7 +52,7 @@ public class WrappedServiceImpl implements WrappedService {
                 .limit(5)
                 .forEach(entry ->
                     exerciseDao.findById(entry.getKey())
-                            .ifPresent(exercise -> result.put(exercise, entry.getValue()));
+                            .ifPresent(exercise -> result.put(exercise, entry.getValue()))
                 );
         return result;
     }
