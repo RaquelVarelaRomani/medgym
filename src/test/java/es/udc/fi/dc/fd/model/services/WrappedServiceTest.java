@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
@@ -401,13 +402,14 @@ class WrappedServiceTest {
     @Test
     void testGetTopExercisesByUser() {
         Long userId = 2L;
-        List<Exercise> topExercises = wrappedService.getTopExercisesByUser(userId);
+        LinkedHashMap<Exercise, Long> topExercises = wrappedService.getTopExercisesByUser(userId);
 
         assertEquals(5, topExercises.size());
 
-        boolean contieneSentadillas = topExercises.stream()
+        boolean contieneSentadillas = topExercises.keySet().stream()
                 .anyMatch(e -> e.getName().equals("Sentadillas"));
         assertTrue(contieneSentadillas);
+        topExercises.values().forEach(count -> assertTrue(count > 0));
     }
 
     @Test
@@ -420,7 +422,8 @@ class WrappedServiceTest {
     @Test
     void testGetFavouriteRoutine() {
         Long userId = 2L;
-        Routine favRoutine = wrappedService.getFavouriteRoutine(userId);
-        assertEquals("Rutina fuerza inicial", favRoutine.getName());
+        Map.Entry<Routine, Long> result = wrappedService.getFavouriteRoutine(userId);
+        assertEquals("Rutina fuerza inicial", result.getKey().getName());
+        assertTrue(result.getValue() > 0);
     }
 }
