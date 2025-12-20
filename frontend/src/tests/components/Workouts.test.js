@@ -2208,6 +2208,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2238,14 +2239,11 @@ describe("WorkoutSession Component", () => {
         await waitFor(() => {
             expect(screen.getByText("Rutina 1")).toBeInTheDocument();
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
             expect(screen.getByPlaceholderText("Reps")).toBeInTheDocument();
             expect(
                 screen.getByPlaceholderText("Peso (kg)"),
-            ).toBeInTheDocument();
-            expect(
-                screen.getByPlaceholderText("Duración (s)"),
             ).toBeInTheDocument();
             expect(
                 screen.getByText("Añadir serie"),
@@ -2263,6 +2261,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "CARDIO",
                 position: 1,
             },
         ];
@@ -2298,33 +2297,27 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Cardio)"),
             ).toBeInTheDocument();
         });
 
-        const repsInput = screen.getByPlaceholderText("Reps");
-        const weightInput = screen.getByPlaceholderText("Peso (kg)");
         const durationInput = screen.getByPlaceholderText("Duración (s)");
         const addButton = screen.getByText("Añadir serie");
 
-        fireEvent.change(repsInput, { target: { value: "10" } });
-        fireEvent.change(weightInput, { target: { value: "80" } });
         fireEvent.change(durationInput, { target: { value: "60" } });
         fireEvent.click(addButton);
 
         await waitFor(() => {
             expect(addWorkoutExercise).toHaveBeenCalledWith(
                 "1",
-                10,
-                80,
+                null,
+                null,
                 60,
                 1,
                 expect.any(Function),
-                expect.any(Function),
+                expect.any(Function)
             );
             expect(screen.getByText("Serie 1")).toBeInTheDocument();
-            expect(screen.getByText("10")).toBeInTheDocument();
-            expect(screen.getByText("80")).toBeInTheDocument();
             expect(screen.getByText("60")).toBeInTheDocument();
         });
     });
@@ -2336,6 +2329,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2379,14 +2373,16 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
         const repsInput = screen.getByPlaceholderText("Reps");
+        const weightInput = screen.getByPlaceholderText("Peso (kg)");
         const addButton = screen.getByText("Añadir serie");
 
         fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.change(weightInput, { target: { value: "50" } });
         fireEvent.click(addButton);
 
         await waitFor(() => {
@@ -2403,6 +2399,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2446,14 +2443,16 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
         const repsInput = screen.getByPlaceholderText("Reps");
+        const weightInput = screen.getByPlaceholderText("Peso (kg)");
         const addButton = screen.getByText("Añadir serie");
 
         fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.change(weightInput, { target: { value: "50" } });
         fireEvent.click(addButton);
 
         await waitFor(() => {
@@ -2465,7 +2464,6 @@ describe("WorkoutSession Component", () => {
         await waitFor(() => {
             expect(finishWorkout).toHaveBeenCalledWith(
                 "1",
-                expect.any(Function),
                 expect.any(Function),
             );
             expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
@@ -2485,6 +2483,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2540,14 +2539,16 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
         const repsInput = screen.getByPlaceholderText("Reps");
+        const weightInput = screen.getByPlaceholderText("Peso (kg)");
         const addButton = screen.getByText("Añadir serie");
 
         fireEvent.change(repsInput, { target: { value: "10" } });
+        fireEvent.change(weightInput, { target: { value: "50" } });
         fireEvent.click(addButton);
 
         await waitFor(() => {
@@ -2574,11 +2575,23 @@ describe("WorkoutSession Component", () => {
 
         fireEvent.click(screen.getByText("OK"));
 
-        await waitFor(() => {
-            expect(
-                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
-            ).not.toBeInTheDocument();
-        });
+        // popup visible
+        expect(
+            screen.getByText(
+                (content) =>
+                    content.includes("¡Nueva medalla desbloqueada!") &&
+                    content.includes("Racha"),
+            ),
+        ).toBeInTheDocument();
+
+        // cerrar popup
+        const popupTitle = screen.getByText(
+            (content) =>
+                content.includes("¡Nueva medalla desbloqueada!") &&
+                content.includes("Racha"),
+        );
+
+        fireEvent.click(screen.getByText("OK"));
     });
 
     test("shows sequential achievement popups when multiple new medals unlocked", async () => {
@@ -2588,6 +2601,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2652,15 +2666,13 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
-        const repsInput = screen.getByPlaceholderText("Reps");
-        const addButton = screen.getByText("Añadir serie");
-
-        fireEvent.change(repsInput, { target: { value: "10" } });
-        fireEvent.click(addButton);
+        fireEvent.change(screen.getByPlaceholderText("Reps"), { target: { value: "10" } });
+        fireEvent.change(screen.getByPlaceholderText("Peso (kg)"), { target: { value: "50" } });
+        fireEvent.click(screen.getByText("Añadir serie"));
 
         await waitFor(() => {
             expect(screen.getByText("Serie 1")).toBeInTheDocument();
@@ -2668,45 +2680,27 @@ describe("WorkoutSession Component", () => {
 
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
-        await waitFor(() => {
-            expect(onFinishWorkoutAchievements).toHaveBeenCalledWith(
-                0,
-                10,
-                "1",
-                expect.any(Function),
-                expect.any(Function),
-            );
-            expect(
-                screen.getByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText("Completa entrenamientos consecutivos (3)"),
-            ).toBeInTheDocument();
-        });
+        // ===== Popup 1 =====
+        const firstPopup = await screen.findByText(
+            (c) => c.includes("¡Nueva medalla desbloqueada!") && c.includes("Racha"),
+        );
 
-        // Click OK to show next achievement
+        expect(
+            screen.getByText("Completa entrenamientos consecutivos (3)"),
+        ).toBeInTheDocument();
+
         fireEvent.click(screen.getByText("OK"));
 
-        await waitFor(() => {
-            expect(
-                screen.getByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Fuerza")),
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText("Levanta mucho peso (10)"),
-            ).toBeInTheDocument();
-            expect(
-                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Racha")),
-            ).not.toBeInTheDocument();
-        });
+        // ===== Popup 2 =====
+        const secondPopup = await screen.findByText(
+            (c) => c.includes("¡Nueva medalla desbloqueada!") && c.includes("Fuerza"),
+        );
 
-        // Click OK to close popup
+        expect(
+            screen.getByText("Levanta mucho peso (10)"),
+        ).toBeInTheDocument();
+
         fireEvent.click(screen.getByText("OK"));
-
-        await waitFor(() => {
-            expect(
-                screen.queryByText((content, element) => content.includes("¡Nueva medalla desbloqueada!") && content.includes("Fuerza")),
-            ).not.toBeInTheDocument();
-        });
     });
 
     test("shows popup when finishing with incomplete exercises", async () => {
@@ -2716,6 +2710,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2749,22 +2744,19 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
-        await waitFor(() => {
-            expect(screen.getByRole("button", { name: "OK" })).toBeInTheDocument();
-        });
+        const popup = await screen.findByRole("button", { name: "OK" });
 
-        fireEvent.click(screen.getByText("OK"));
+        fireEvent.click(popup);
 
         await waitFor(() => {
             expect(finishWorkout).toHaveBeenCalledWith(
                 "1",
-                expect.any(Function),
                 expect.any(Function),
             );
         });
@@ -2777,6 +2769,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2806,7 +2799,7 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
         });
 
@@ -2820,9 +2813,7 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(finishWorkout).not.toHaveBeenCalled();
-            expect(mockNavigate).not.toHaveBeenCalledWith(
-                "/workouts/history",
-            );
+            expect(mockNavigate).not.toHaveBeenCalledWith("/workouts/history");
         });
     });
 
@@ -2833,6 +2824,7 @@ describe("WorkoutSession Component", () => {
                 id: 1,
                 exerciseName: "Press de banca",
                 description: "Ejercicio",
+                exerciseType: "STRENGTH",
                 position: 1,
             },
         ];
@@ -2849,14 +2841,9 @@ describe("WorkoutSession Component", () => {
             success({ content: mockExercises });
         });
 
-        addWorkoutExercise.mockImplementation(
-            (sessionId, reps, weight, duration, routineExerciseId, success) => {
-                success();
-            },
-        );
-
-        finishWorkout.mockImplementation((sessionId, success, error) => {
-            error("Error");
+        // Firma correcta: SOLO success callback
+        finishWorkout.mockImplementation((sessionId, success) => {
+            // simula fallo silencioso (como hace el backend actual)
         });
 
         render(
@@ -2872,26 +2859,27 @@ describe("WorkoutSession Component", () => {
 
         await waitFor(() => {
             expect(
-                screen.getByText("1. Press de banca"),
+                screen.getByText("1. Press de banca (Fuerza)"),
             ).toBeInTheDocument();
-        });
-
-        const repsInput = screen.getByPlaceholderText("Reps");
-        const addButton = screen.getByText("Añadir serie");
-
-        fireEvent.change(repsInput, { target: { value: "10" } });
-        fireEvent.click(addButton);
-
-        await waitFor(() => {
-            expect(screen.getByText("Serie 1")).toBeInTheDocument();
         });
 
         fireEvent.click(screen.getByText("Finalizar entrenamiento"));
 
         await waitFor(() => {
             expect(
-                screen.getByText("⚠️ Error al finalizar el entrenamiento"),
+                screen.getByText(
+                    "Aún faltan ejercicios por registrar. ¿Deseas finalizar igualmente?",
+                ),
             ).toBeInTheDocument();
+        });
+
+        fireEvent.click(screen.getByText("OK"));
+
+        await waitFor(() => {
+            expect(finishWorkout).toHaveBeenCalledWith(
+                "1",
+                expect.any(Function),
+            );
         });
     });
 

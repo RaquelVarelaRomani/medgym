@@ -65,7 +65,7 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio Premium", trainer);
         Routine routine = createRoutine("Rutina Premium", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
 
         assertEquals(1, page.getContent().size());
@@ -122,10 +122,10 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
 
         assertThrows(DuplicateInstanceException.class,
-                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 2));
+                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.CARDIO, 2));
     }
 
     @Test
@@ -134,7 +134,7 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId());
 
         Page<RoutineExercise> page = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
@@ -147,7 +147,7 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseService.removeExerciseFromRoutine(trainer.getId(), routine.getId(), exercise.getId());
 
         assertThrows(InstanceNotFoundException.class,
@@ -160,9 +160,9 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio", trainer);
         Routine routine = createRoutine("Rutina", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.CARDIO, 1);
 
-        RoutineExercise updated = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), 3);
+        RoutineExercise updated = routineExerciseService.updateExerciseInRoutine(trainer.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 3);
         assertEquals(Integer.valueOf(3), updated.getPosition());
     }
 
@@ -175,9 +175,9 @@ class RoutineExerciseServiceTest {
         Exercise ex2 = createExercise("E2", trainer);
         Exercise ex3 = createExercise("E3", trainer);
 
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex1.getId(), 1);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex2.getId(), 2);
-        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex3.getId(), 3);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex1.getId(), RoutineExercise.ExerciseType.STRENGTH, 1);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex2.getId(), RoutineExercise.ExerciseType.CARDIO, 2);
+        routineExerciseService.addExerciseToRoutine(trainer.getId(), routine.getId(), ex3.getId(), RoutineExercise.ExerciseType.CARDIO, 3);
 
         Page<RoutineExercise> page1 = routineExerciseService.getExercisesForRoutines(routine.getId(), PageRequest.of(0, 2));
         assertEquals(2, page1.getContent().size());
@@ -200,7 +200,7 @@ class RoutineExerciseServiceTest {
 
         User finalOther = other;
         assertThrows(PermissionException.class,
-                () -> routineExerciseService.addExerciseToRoutine(finalOther.getId(), routine.getId(), exercise.getId(), 1));
+                () -> routineExerciseService.addExerciseToRoutine(finalOther.getId(), routine.getId(), exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1));
     }
 
     @Test
@@ -209,6 +209,12 @@ class RoutineExerciseServiceTest {
         Exercise exercise = createExercise("Ejercicio", trainer);
 
         assertThrows(InstanceNotFoundException.class,
-                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), 999L, exercise.getId(), 1));
+                () -> routineExerciseService.addExerciseToRoutine(trainer.getId(), 999L, exercise.getId(), RoutineExercise.ExerciseType.STRENGTH, 1));
+    }
+
+    @Test
+    void testFindAllExerciseTypes() {
+        var exerciseTypes = routineExerciseService.findAllExerciseTypes();
+        assertEquals(RoutineExercise.ExerciseType.values().length, exerciseTypes.size());
     }
 }

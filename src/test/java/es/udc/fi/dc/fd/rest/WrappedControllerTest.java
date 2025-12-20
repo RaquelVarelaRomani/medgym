@@ -81,7 +81,7 @@ class WrappedControllerTest {
                 user);
         weightExercise = exerciseDao.save(weightExercise);
 
-        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, 1);
+        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseWeight = routineExerciseDao.save(routineExerciseWeight);
     }
 

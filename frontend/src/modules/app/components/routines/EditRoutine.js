@@ -7,6 +7,7 @@ import * as routineExerciseService from "../../../../backend/routineExerciseServ
 import Popup from "../common/popup/Popup";
 import LoadingMessage from "../common/LoadingMessage";
 import PropTypes from "prop-types";
+import {getExerciseTypeText} from "../../util/enumConversor";
 
 function getRoutineFromResponse(data) {
     return data.content ? data.content[0] : data;
@@ -18,6 +19,7 @@ function mapRoutineExercises(page) {
         .map((re) => ({
             id: re.exerciseId,
             nombre: re.exerciseName || `Ejercicio #${re.exerciseId}`,
+            exerciseType: re.exerciseType ?? "",
             position: re.position ?? null,
         }))
         .sort((a, b) => (a.position ?? Infinity) - (b.position ?? Infinity));
@@ -47,11 +49,12 @@ function deleteRoutineExerciseAsync(routineId, exerciseId) {
     );
 }
 
-function updateRoutineExerciseAsync(routineId, exerciseId, position) {
+function updateRoutineExerciseAsync(routineId, exerciseId, exerciseType, position) {
     return new Promise((resolve, reject) =>
         routineExerciseService.updateRoutineExercise(
             routineId,
             exerciseId,
+            exerciseType,
             position,
             resolve,
             reject,
@@ -59,11 +62,12 @@ function updateRoutineExerciseAsync(routineId, exerciseId, position) {
     );
 }
 
-function createRoutineExerciseAsync(routineId, exerciseId, position) {
+function createRoutineExerciseAsync(routineId, exerciseId, exerciseType, position) {
     return new Promise((resolve, reject) =>
         routineExerciseService.createRoutineExercise(
             routineId,
             exerciseId,
+            exerciseType,
             position,
             resolve,
             reject,
@@ -116,6 +120,7 @@ export default function EditRoutine() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [popupMessage, setPopupMessage] = useState(null);
+    const [exerciseTypes, setExerciseTypes] = useState([]);
 
     const inputContainerRefs = useRef([]);
 
@@ -192,6 +197,13 @@ export default function EditRoutine() {
         };
     }, [showExerciseSearch]);
 
+    useEffect(() => {
+        routineExerciseService.getExerciseTypes(
+            setExerciseTypes,
+            console.error
+        );
+    }, []);
+
     const filteredExercises = availableExercises.filter(
         (ex) =>
             ex.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -233,7 +245,7 @@ export default function EditRoutine() {
         setShowExerciseSearch(null);
         setExercises((prev) => [
             ...prev,
-            { id: null, nombre: "", position: prev.length + 1 },
+            { id: null, nombre: "", exerciseType: "", position: prev.length + 1 }
         ]);
     };
 
@@ -285,7 +297,10 @@ export default function EditRoutine() {
         );
         const updated = exercises.filter((e) => {
             const orig = originalExercises.find((oe) => oe.id === e.id);
-            return orig && e.position !== orig.position;
+            return orig && (
+                e.position !== orig.position ||
+                e.exerciseType !== orig.exerciseType
+            );
         });
 
         const anyChange =
@@ -315,7 +330,7 @@ export default function EditRoutine() {
         // actualizados
         for (const ex of updated) {
             try {
-                await updateRoutineExerciseAsync(id, ex.id, ex.position);
+                await updateRoutineExerciseAsync(id, ex.id, ex.exerciseType, ex.position);
                 successMsg += `Ejercicio ${ex.nombre} actualizado correctamente.\n`;
             } catch (err) {
                 errorMsg += `Error al actualizar ${ex.nombre}: ${err.message}\n`;
@@ -325,7 +340,7 @@ export default function EditRoutine() {
         // añadidos
         for (const ex of added) {
             try {
-                await createRoutineExerciseAsync(id, ex.id, ex.position);
+                await createRoutineExerciseAsync(id, ex.id, ex.exerciseType, ex.position);
                 successMsg += `Ejercicio ${ex.nombre} agregado correctamente.\n`;
             } catch (err) {
                 errorMsg += `Error al agregar ${ex.nombre}: ${err.message}\n`;
@@ -384,6 +399,7 @@ export default function EditRoutine() {
                     selectExercise={selectExercise}
                     removeExercise={removeExercise}
                     moveExercise={moveExercise}
+                    exerciseTypes={exerciseTypes}
                 />
 
                 <button
@@ -502,6 +518,7 @@ function ExerciseList({
                           selectExercise,
                           removeExercise,
                           moveExercise,
+                          exerciseTypes,
                       }) {
     return exercises.map((exercise, index) => (
         <ExerciseItem
@@ -519,6 +536,7 @@ function ExerciseList({
             removeExercise={removeExercise}
             moveExercise={moveExercise}
             total={exercises.length}
+            exerciseTypes={exerciseTypes}
         />
     ));
 }
@@ -537,6 +555,7 @@ function ExerciseItem({
                           removeExercise,
                           moveExercise,
                           total,
+                          exerciseTypes,
                       }) {
     const isOriginal = originalExercises.some(
         (oe) => oe.id === exercise.id,
@@ -588,6 +607,21 @@ function ExerciseItem({
                         setShowExerciseSearch(index);
                     }}
                 />
+                <select
+                    value={exercise.exerciseType}
+                    disabled={isOriginal}
+                    onChange={(e) =>
+                        changeExerciseField(index, "exerciseType", e.target.value)
+                    }
+                    className={styles["exercise-type-select"]}
+                >
+                    <option value="">Tipo de ejercicio</option>
+                    {exerciseTypes.map((t, i) => (
+                        <option key={`${t.name}-${i}`} value={t.name}>
+                            {getExerciseTypeText(t.name)}
+                        </option>
+                    ))}
+                </select>
 
                 {showExerciseSearch === index && (
                     <div className={styles["ejercicio-dropdown"]}>
@@ -647,7 +681,8 @@ ExerciseList.propTypes = {
             id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
             nombre: PropTypes.string.isRequired,
             position: PropTypes.number,
-        }),
+            exerciseType: PropTypes.string,
+        })
     ).isRequired,
     originalExercises: PropTypes.array.isRequired,
     filteredExercises: PropTypes.array.isRequired,
@@ -659,6 +694,7 @@ ExerciseList.propTypes = {
     selectExercise: PropTypes.func.isRequired,
     removeExercise: PropTypes.func.isRequired,
     moveExercise: PropTypes.func.isRequired,
+    exerciseTypes: PropTypes.array.isRequired,
 };
 
 ExerciseItem.propTypes = {
@@ -667,6 +703,7 @@ ExerciseItem.propTypes = {
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         nombre: PropTypes.string.isRequired,
         position: PropTypes.number,
+        exerciseType: PropTypes.string,
     }).isRequired,
     originalExercises: PropTypes.array.isRequired,
     filteredExercises: PropTypes.array.isRequired,
@@ -679,4 +716,9 @@ ExerciseItem.propTypes = {
     removeExercise: PropTypes.func.isRequired,
     moveExercise: PropTypes.func.isRequired,
     total: PropTypes.number.isRequired,
+    exerciseTypes: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+        })
+    ).isRequired,
 };

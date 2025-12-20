@@ -94,10 +94,10 @@ class WrappedServiceTest {
                 Exercise.Equipment.MAT, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, testUser);
         timeExercise = exerciseDao.save(timeExercise);
 
-        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, 1);
+        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseWeight = routineExerciseDao.save(routineExerciseWeight);
 
-        routineExerciseTime = new RoutineExercise(testRoutine, timeExercise, 2);
+        routineExerciseTime = new RoutineExercise(testRoutine, timeExercise, RoutineExercise.ExerciseType.STRENGTH, 2);
         routineExerciseTime = routineExerciseDao.save(routineExerciseTime);
     }
 
