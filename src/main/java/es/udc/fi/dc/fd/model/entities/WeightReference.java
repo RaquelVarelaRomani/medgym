@@ -14,7 +14,7 @@ public enum WeightReference {
     FIRE_TRUCK("camión de bomberos", 20_000L),
     SMALL_AIRPLANE("avión pequeño", 40_000L),
     BLUE_WHALE("ballena azul", 150_000L),
-    BOEING_747("boeing 747", 412_000L);
+    BOEING_747("Boeing 747", 412_000L);
 
     private final String name;
     private final Long weightKg;
