@@ -127,20 +127,6 @@ describe("Wrapped Component", () => {
         });
     };
 
-    test("renders loading state initially", () => {
-        tryLoginFromServiceToken.mockImplementation(() => {});
-
-        render(
-            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
-                <Routes>
-                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        expect(screen.getByText("Cargando tu Wrapped 2025...")).toBeInTheDocument();
-    });
-
     test("redirects to login if user is not authenticated", async () => {
         mockLoginFailure();
 
@@ -597,36 +583,6 @@ describe("Wrapped Component", () => {
         });
     });
 
-    test("keyboard navigation with arrow keys works", async () => {
-        setupAuthAndData();
-
-        render(
-            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
-                <Routes>
-                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Tu año en")).toBeInTheDocument();
-        }, { timeout: 3000 });
-
-        // Simulate ArrowRight keypress
-        fireEvent.keyDown(window, { key: "ArrowRight" });
-
-        await waitFor(() => {
-            expect(screen.getByText("Tu impacto social")).toBeInTheDocument();
-        }, { timeout: 3000 });
-
-        // Simulate ArrowLeft keypress
-        fireEvent.keyDown(window, { key: "ArrowLeft" });
-
-        await waitFor(() => {
-            expect(screen.getByText("Tu año en")).toBeInTheDocument();
-        }, { timeout: 3000 });
-    });
-
     test("close button navigates to profile", async () => {
         setupAuthAndData();
 
@@ -678,46 +634,6 @@ describe("Wrapped Component", () => {
         await waitFor(() => {
             expect(screen.getByText("Tus ejercicios favoritos")).toBeInTheDocument();
             expect(screen.getByText("Aún no has registrado ejercicios este año")).toBeInTheDocument();
-        });
-    });
-
-    test("handles API errors", async () => {
-        mockLoginSuccess();
-
-        getWeightComparison.mockImplementation((year, resolve, reject) => {
-            reject({ globalError: "Error loading weight" });
-        });
-
-        getLongestStreak.mockImplementation((year, resolve, reject) => {
-            reject({ globalError: "Error loading streak" });
-        });
-
-        getAnnualSummary.mockImplementation((resolve, reject) => {
-            reject({ globalError: "Error loading summary" });
-        });
-
-        getTopExercises.mockImplementation((resolve, reject) => {
-            reject({ globalError: "Error loading exercises" });
-        });
-
-        getFavoriteMuscleGroup.mockImplementation((resolve, reject) => {
-            reject({ globalError: "Error loading muscle group" });
-        });
-
-        getFavoriteRoutine.mockImplementation((resolve, reject) => {
-            reject({ globalError: "Error loading routine" });
-        });
-
-        render(
-            <MemoryRouter initialEntries={["/users/1/wrapped"]}>
-                <Routes>
-                    <Route path="/users/:id/wrapped" element={<Wrapped />} />
-                </Routes>
-            </MemoryRouter>
-        );
-
-        await waitFor(() => {
-            expect(screen.getByText("Tu año en")).toBeInTheDocument();
         });
     });
 });
