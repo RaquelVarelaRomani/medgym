@@ -114,16 +114,26 @@ VALUES
     ('2025-10-15 19:30:00', '2025-10-15 20:15:00', 1, 2),
     ('2025-10-17 19:30:00', '2025-10-17 20:15:00', 3, 2),
     ('2025-10-20 19:00:00', '2025-10-20 19:50:00', 1, 2),
-    -- 1. Entrenamiento de Laura ayer (Racha 1)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), ' 00:02:00'), 3, 2),
+    (
+        TIMESTAMPADD(MINUTE, 1, CAST(DATEADD('DAY', -1, CURRENT_DATE) AS TIMESTAMP)),
+        TIMESTAMPADD(MINUTE, 2, CAST(DATEADD('DAY', -1, CURRENT_DATE) AS TIMESTAMP)),
+        3,
+        2
+    ),
+    (
+        TIMESTAMPADD(MINUTE, 1, CAST(DATEADD('DAY', -2, CURRENT_DATE) AS TIMESTAMP)),
+        TIMESTAMPADD(MINUTE, 2, CAST(DATEADD('DAY', -2, CURRENT_DATE) AS TIMESTAMP)),
+        1,
+        2
+    ),
+    (
+        TIMESTAMPADD(MINUTE, 1, CAST(CURRENT_DATE AS TIMESTAMP)),
+        NULL,
+        1,
+        2
+    );
 
-    -- 2. Entrenamiento de Laura anteayer (Racha 2)
-    (CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:01:00'), CONCAT(DATE_SUB(CURDATE(), INTERVAL 2 DAY), ' 00:02:00'), 1, 2),
-
-    -- 3. Entrenamiento de Laura Hoy (Racha 3)
-    (CONCAT(CURDATE(), ' 00:01:00'), NULL, 1, 2);
-
-INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+    INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
 VALUES
 -- workout 1
 (NULL, NULL, 45, 1, 3),   -- CARDIO
