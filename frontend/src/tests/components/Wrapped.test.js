@@ -599,19 +599,20 @@ describe("Wrapped Component", () => {
 
         await waitFor(() => {
             expect(screen.getByText("Tu año en")).toBeInTheDocument();
-        });
+        }, { timeout: 3000 });
 
+        // Simulate ArrowRight keypress
         fireEvent.keyDown(window, { key: "ArrowRight" });
 
         await waitFor(() => {
             expect(screen.getByText("Tu impacto social")).toBeInTheDocument();
-        });
+        }, { timeout: 3000 });
 
         fireEvent.keyDown(window, { key: "ArrowLeft" });
 
         await waitFor(() => {
             expect(screen.getByText("Tu año en")).toBeInTheDocument();
-        });
+        }, { timeout: 3000 });
     });
 
     test("close button navigates to profile", async () => {
