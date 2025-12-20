@@ -2,7 +2,7 @@ package es.udc.fi.dc.fd.rest.dtos;
 
 import java.util.List;
 
-public class WorkoutForHistoryDto extends WorkoutWithUserDto{
+public class WorkoutForHistoryDto extends WorkoutWithUserDto {
     private List<WorkoutCommentDto> comments;
     private List<WorkoutLikeDto> likes;
 
