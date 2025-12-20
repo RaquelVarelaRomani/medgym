@@ -21,6 +21,10 @@ beforeEach(() => {
     jest.clearAllMocks();
 });
 
+afterEach(() => {
+    jest.clearAllTimers();
+});
+
 jest.mock("react-router-dom", () => ({
     ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockNavigate,
@@ -53,19 +57,13 @@ describe("Wrapped Component", () => {
 
     const mockLoginSuccess = (user = mockUser) => {
         tryLoginFromServiceToken.mockImplementation((onSuccess) => {
-            setTimeout(() => onSuccess({ user }), 0);
-        });
-    };
-
-    const mockLoginNoUser = () => {
-        tryLoginFromServiceToken.mockImplementation((onSuccess) => {
-            setTimeout(() => onSuccess(), 0);
+            onSuccess({ user });
         });
     };
 
     const mockLoginFailure = () => {
         tryLoginFromServiceToken.mockImplementation((_, reauthCallback) => {
-            setTimeout(() => reauthCallback?.(), 0);
+            reauthCallback();
         });
     };
 
