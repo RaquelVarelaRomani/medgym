@@ -12,7 +12,7 @@ const Wrapped = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [wrappedData, setWrappedData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [, setMe] = useState(null);
+    const [_me, setMe] = useState(null);
 
     const totalSlides = 8;
     const slideIds = ['intro', 'social', 'exercises', 'muscle', 'routine', 'streak', 'weight', 'outro'];
