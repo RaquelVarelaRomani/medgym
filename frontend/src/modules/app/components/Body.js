@@ -27,6 +27,11 @@ import WorkoutSession from "./workouts/WorkoutSession"
 import WorkoutFeed from "./workouts/WorkoutFeed";
 import VolumeRanking from "./workouts/VolumeRanking";
 
+
+function WrappedPlaceholder() {
+        return <div>Wrapped (pendiente)</div>;
+    }
+
 const Body = () => {
     return (
         <Routes>
@@ -57,6 +62,7 @@ const Body = () => {
                     <Route path="workouts/session/:sessionId" element={<Layout><WorkoutSession /></Layout>} />
                     <Route path="workouts/feed" element={<Layout><WorkoutFeed /></Layout>} />
                     <Route path="workouts/rankings/:routineId?" element={<Layout><VolumeRanking /></Layout>} />
+                    <Route path="wrapped/:year" element={<WrappedPlaceholder />} />
                     <Route path="*" element={<Navigate to="/routines" replace />} />
                 </Route>
             </Route>

@@ -44,6 +44,9 @@ const NotificationPopup = ({ notifications = [], onClose, onNotificationRead }) 
                     case "ACHIEVEMENT":
                         navigate(`/users/profile/${notification.idToRedirect}`);
                         break;
+                    case "WRAPPED_REMINDER":
+                        navigate(`/wrapped/${notification.idToRedirect}`);
+                        break;
                 }
                 onClose();
             },
