@@ -202,6 +202,12 @@ function ProfileHeader(props) {
                         >
                             Métricas corporales
                         </button>
+                        <button
+                            className={styles["wrapped-button"]}
+                            onClick={() => navigate(`/users/${profile.id}/wrapped`)}
+                        >
+                            Wrapped 2025
+                        </button>
                         {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}

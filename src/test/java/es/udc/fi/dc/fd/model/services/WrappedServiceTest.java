@@ -61,19 +61,20 @@ class WrappedServiceTest {
 
     static Stream<Arguments> exactWeightComparisonTestCases() {
         return Stream.of(
-                Arguments.of(4L, "Gato pequeño"),
-                Arguments.of(30L, "Perro grande"),
-                Arguments.of(70L, "Persona"),
-                Arguments.of(200L, "Motocicleta"),
-                Arguments.of(500L, "Caballo"),
-                Arguments.of(1200L, "Coche pequeño"),
+                Arguments.of(4L, "gato pequeño"),
+                Arguments.of(30L, "perro grande"),
+                Arguments.of(70L, "persona"),
+                Arguments.of(200L, "motocicleta"),
+                Arguments.of(500L, "caballo"),
+                Arguments.of(1200L, "coche pequeño"),
                 Arguments.of(2000L, "SUV"),
-                Arguments.of(4500L, "Elefante"),
-                Arguments.of(10000L, "Autobús escolar"),
-                Arguments.of(20000L, "Camión de bomberos"),
-                Arguments.of(40000L, "Avión pequeño"),
-                Arguments.of(150000L, "Ballena azul"),
-                Arguments.of(412000L, "Boeing 747"));
+                Arguments.of(4500L, "elefante"),
+                Arguments.of(10000L, "autobús escolar"),
+                Arguments.of(20000L, "camión de bomberos"),
+                Arguments.of(40000L, "avión pequeño"),
+                Arguments.of(150000L, "ballena azul"),
+                Arguments.of(412000L, "Boeing 747")
+            );
     }
 
     @BeforeEach
@@ -189,8 +190,8 @@ class WrappedServiceTest {
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
 
         assertEquals(50L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Perro grande") ||
-                result.getComparisonPhrase().contains("Gato"));
+        assertTrue(result.getComparisonPhrase().contains("perro grande") ||
+                result.getComparisonPhrase().contains("gato"));
     }
 
     @Test
@@ -205,7 +206,7 @@ class WrappedServiceTest {
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
 
         assertEquals(6000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Elefante"));
+        assertTrue(result.getComparisonPhrase().contains("elefante"));
     }
 
     @Test
@@ -259,7 +260,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(40L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 40L && result.getTotalWeightKg() <= 50L);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
     }
 
     @Test
@@ -267,7 +268,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(100L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 100L && result.getTotalWeightKg() <= 110L);
-        assertTrue(result.getComparisonPhrase().contains("Persona"));
+        assertTrue(result.getComparisonPhrase().contains("persona"));
     }
 
     @Test
@@ -275,7 +276,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(650L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 650L && result.getTotalWeightKg() <= 660L);
-        assertTrue(result.getComparisonPhrase().contains("Caballo"));
+        assertTrue(result.getComparisonPhrase().contains("caballo"));
     }
 
     @Test
@@ -283,7 +284,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(1800L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 1800L && result.getTotalWeightKg() <= 1810L);
-        assertTrue(result.getComparisonPhrase().contains("Coche"));
+        assertTrue(result.getComparisonPhrase().contains("coche"));
     }
 
     @Test
@@ -291,7 +292,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(6000L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 6000L && result.getTotalWeightKg() <= 6010L);
-        assertTrue(result.getComparisonPhrase().contains("Elefante"));
+        assertTrue(result.getComparisonPhrase().contains("elefante"));
     }
 
     @Test
@@ -299,7 +300,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(200000L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 200000L && result.getTotalWeightKg() <= 200010L);
-        assertTrue(result.getComparisonPhrase().contains("Ballena"));
+        assertTrue(result.getComparisonPhrase().contains("ballena"));
     }
 
     @Test
@@ -314,29 +315,29 @@ class WrappedServiceTest {
     void testReference_BoundaryTransition_CatToDog() throws InstanceNotFoundException {
         createWorkoutWithWeight(29L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Gato"));
+        assertTrue(result.getComparisonPhrase().contains("gato"));
 
         createWorkoutWithWeight(31L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
     }
 
     @Test
     void testReference_BoundaryTransition_DogToPerson() throws InstanceNotFoundException {
         createWorkoutWithWeight(69L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
 
         createWorkoutWithWeight(71L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Persona"));
+        assertTrue(result.getComparisonPhrase().contains("persona"));
     }
 
     @Test
     void testReference_BoundaryTransition_HorseToCar() throws InstanceNotFoundException {
         createWorkoutWithWeight(1100L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Caballo"), "1100kg should use Horse reference");
+        assertTrue(result.getComparisonPhrase().contains("caballo"), "1100kg should use Horse reference");
 
         User user2 = new User("Test2", "User2", "test2@example.com", "600000009",
                 passwordEncoder.encode("password"), User.RoleType.CLIENT, User.StatusType.ACTIVE);
@@ -345,7 +346,7 @@ class WrappedServiceTest {
         testUser = user2;
         createWorkoutWithWeight(1300L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Coche"), "1300kg should use Car reference");
+        assertTrue(result.getComparisonPhrase().contains("coche"), "1300kg should use Car reference");
     }
 
     @Test
