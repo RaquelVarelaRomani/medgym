@@ -60,7 +60,7 @@ class WrappedServiceTest {
     private RoutineExercise routineExerciseTime;
 
     static Stream<Arguments> exactWeightComparisonTestCases() {
-        Stream<Arguments> argumentsStream = Stream.of(
+        return Stream<Arguments> argumentsStream = Stream.of(
                 Arguments.of(4L, "gato pequeño"),
                 Arguments.of(30L, "perro grande"),
                 Arguments.of(70L, "persona"),
@@ -74,7 +74,6 @@ class WrappedServiceTest {
                 Arguments.of(40000L, "avión pequeño"),
                 Arguments.of(150000L, "ballena azul"),
                 Arguments.of(412000L, "Boeing 747"));
-        return argumentsStream;
     }
 
     @BeforeEach
