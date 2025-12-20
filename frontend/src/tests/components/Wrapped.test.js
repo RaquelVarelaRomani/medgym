@@ -46,6 +46,24 @@ describe("Wrapped Component", () => {
         surname: "Doe"
     };
 
+    const mockLoginSuccess = (user = mockUser) => {
+        tryLoginFromServiceToken.mockImplementation((onSuccess) => {
+            setTimeout(() => onSuccess({ user }), 0);
+        });
+    };
+
+    const mockLoginNoUser = () => {
+        tryLoginFromServiceToken.mockImplementation((onSuccess) => {
+            setTimeout(() => onSuccess(), 0);
+        });
+    };
+
+    const mockLoginFailure = () => {
+        tryLoginFromServiceToken.mockImplementation((_, reauthCallback) => {
+            setTimeout(() => reauthCallback?.(), 0);
+        });
+    };
+
     const mockWeightData = {
         totalWeightKg: 125000,
         comparisonPhrase: "3 elefantes africanos"
@@ -77,9 +95,7 @@ describe("Wrapped Component", () => {
     };
 
     const setupAuthAndData = () => {
-        tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve) => {
             resolve(mockWeightData);
@@ -107,7 +123,7 @@ describe("Wrapped Component", () => {
     };
 
     test("renders loading state initially", () => {
-        tryLoginFromServiceToken.mockImplementation(() => {}); // No callback → loading state
+        tryLoginFromServiceToken.mockImplementation(() => {});
 
         render(
             <MemoryRouter initialEntries={["/users/1/wrapped"]}>
@@ -121,9 +137,7 @@ describe("Wrapped Component", () => {
     });
 
     test("redirects to login if user is not authenticated", async () => {
-        tryLoginFromServiceToken.mockImplementation((resolve, reject) => {
-            reject();
-        });
+        mockLoginFailure();
 
         render(
             <MemoryRouter initialEntries={["/users/1/wrapped"]}>
@@ -141,9 +155,7 @@ describe("Wrapped Component", () => {
     test("redirects if user accesses another user's wrapped", async () => {
         const differentUser = { ...mockUser, id: 2 };
 
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: differentUser });
-        });
+        mockLoginSuccess(differentUser);
 
         render(
             <MemoryRouter initialEntries={["/users/1/wrapped"]}>
@@ -293,9 +305,7 @@ describe("Wrapped Component", () => {
     });
 
     test("handles null routine response", async () => {
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve) => resolve(mockWeightData));
         getLongestStreak.mockImplementation((year, resolve) => resolve(mockStreakData));
@@ -335,9 +345,7 @@ describe("Wrapped Component", () => {
             creatorName: null
         };
 
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve) => resolve(mockWeightData));
         getLongestStreak.mockImplementation((year, resolve) => resolve(mockStreakData));
@@ -441,9 +449,7 @@ describe("Wrapped Component", () => {
             commentsReceived: 0
         };
 
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve) =>
             resolve({ totalWeightKg: 0, comparisonPhrase: "nada aún" })
@@ -608,6 +614,7 @@ describe("Wrapped Component", () => {
             expect(screen.getByText("Tu impacto social")).toBeInTheDocument();
         }, { timeout: 3000 });
 
+        // Simulate ArrowLeft keypress
         fireEvent.keyDown(window, { key: "ArrowLeft" });
 
         await waitFor(() => {
@@ -637,9 +644,7 @@ describe("Wrapped Component", () => {
     });
 
     test("handles empty exercises", async () => {
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve) => resolve(mockWeightData));
         getLongestStreak.mockImplementation((year, resolve) => resolve(mockStreakData));
@@ -672,9 +677,7 @@ describe("Wrapped Component", () => {
     });
 
     test("handles API errors", async () => {
-        tryLoginFromServiceToken.mockImplementation((resolve) => {
-            resolve({ user: mockUser });
-        });
+        mockLoginSuccess();
 
         getWeightComparison.mockImplementation((year, resolve, reject) => {
             reject({ globalError: "Error loading weight" });
