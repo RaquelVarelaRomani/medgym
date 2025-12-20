@@ -1,18 +1,22 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.model.entities.*;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
 import es.udc.fi.dc.fd.rest.dtos.WeightComparisonDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
@@ -55,6 +59,24 @@ class WrappedServiceTest {
     private RoutineExercise routineExerciseWeight;
     private RoutineExercise routineExerciseTime;
 
+    static Stream<Arguments> exactWeightComparisonTestCases() {
+        return Stream.of(
+                Arguments.of(4L, "gato pequeño"),
+                Arguments.of(30L, "perro grande"),
+                Arguments.of(70L, "persona"),
+                Arguments.of(200L, "motocicleta"),
+                Arguments.of(500L, "caballo"),
+                Arguments.of(1200L, "coche pequeño"),
+                Arguments.of(2000L, "SUV"),
+                Arguments.of(4500L, "elefante"),
+                Arguments.of(10000L, "autobús escolar"),
+                Arguments.of(20000L, "camión de bomberos"),
+                Arguments.of(40000L, "avión pequeño"),
+                Arguments.of(150000L, "ballena azul"),
+                Arguments.of(412000L, "Boeing 747")
+            );
+    }
+
     @BeforeEach
     void setUp() {
         testUser = new User("Test", "User", "test@example.com", "600000001",
@@ -66,17 +88,17 @@ class WrappedServiceTest {
         testRoutine = routineDao.save(testRoutine);
 
         weightExercise = new Exercise("Squats", "Leg exercise", Exercise.MuscleGroup.LEG,
-                Exercise.Equipment.NONE, new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED, testUser);
+                Exercise.Equipment.NONE, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, testUser);
         weightExercise = exerciseDao.save(weightExercise);
 
         timeExercise = new Exercise("Plank", "Core exercise", Exercise.MuscleGroup.CORE,
-                Exercise.Equipment.MAT, new byte[] { 1, 2, 3 }, Exercise.ExerciseStatus.APPROVED, testUser);
+                Exercise.Equipment.MAT, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, testUser);
         timeExercise = exerciseDao.save(timeExercise);
 
-        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, 1);
+        routineExerciseWeight = new RoutineExercise(testRoutine, weightExercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseWeight = routineExerciseDao.save(routineExerciseWeight);
 
-        routineExerciseTime = new RoutineExercise(testRoutine, timeExercise, 2);
+        routineExerciseTime = new RoutineExercise(testRoutine, timeExercise, RoutineExercise.ExerciseType.STRENGTH, 2);
         routineExerciseTime = routineExerciseDao.save(routineExerciseTime);
     }
 
@@ -168,8 +190,8 @@ class WrappedServiceTest {
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
 
         assertEquals(50L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Perro grande") ||
-                result.getComparisonPhrase().contains("Gato"));
+        assertTrue(result.getComparisonPhrase().contains("perro grande") ||
+                result.getComparisonPhrase().contains("gato"));
     }
 
     @Test
@@ -184,7 +206,7 @@ class WrappedServiceTest {
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
 
         assertEquals(6000L, result.getTotalWeightKg());
-        assertTrue(result.getComparisonPhrase().contains("Elefante"));
+        assertTrue(result.getComparisonPhrase().contains("elefante"));
     }
 
     @Test
@@ -233,30 +255,12 @@ class WrappedServiceTest {
         }
     }
 
-    static Stream<Arguments> exactWeightComparisonTestCases() {
-        return Stream.of(
-            Arguments.of(4L, "Gato pequeño"),
-            Arguments.of(30L, "Perro grande"),
-            Arguments.of(70L, "Persona"),
-            Arguments.of(200L, "Motocicleta"),
-            Arguments.of(500L, "Caballo"),
-            Arguments.of(1200L, "Coche pequeño"),
-            Arguments.of(2000L, "SUV"),
-            Arguments.of(4500L, "Elefante"),
-            Arguments.of(10000L, "Autobús escolar"),
-            Arguments.of(20000L, "Camión de bomberos"),
-            Arguments.of(40000L, "Avión pequeño"),
-            Arguments.of(150000L, "Ballena azul"),
-            Arguments.of(412000L, "Boeing 747")
-        );
-    }
-
     @Test
     void testReference_LargeDog_Fractional() throws InstanceNotFoundException {
         createWorkoutWithWeight(40L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 40L && result.getTotalWeightKg() <= 50L);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
     }
 
     @Test
@@ -264,7 +268,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(100L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 100L && result.getTotalWeightKg() <= 110L);
-        assertTrue(result.getComparisonPhrase().contains("Persona"));
+        assertTrue(result.getComparisonPhrase().contains("persona"));
     }
 
     @Test
@@ -272,7 +276,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(650L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 650L && result.getTotalWeightKg() <= 660L);
-        assertTrue(result.getComparisonPhrase().contains("Caballo"));
+        assertTrue(result.getComparisonPhrase().contains("caballo"));
     }
 
     @Test
@@ -280,7 +284,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(1800L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 1800L && result.getTotalWeightKg() <= 1810L);
-        assertTrue(result.getComparisonPhrase().contains("Coche"));
+        assertTrue(result.getComparisonPhrase().contains("coche"));
     }
 
     @Test
@@ -288,7 +292,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(6000L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 6000L && result.getTotalWeightKg() <= 6010L);
-        assertTrue(result.getComparisonPhrase().contains("Elefante"));
+        assertTrue(result.getComparisonPhrase().contains("elefante"));
     }
 
     @Test
@@ -296,7 +300,7 @@ class WrappedServiceTest {
         createWorkoutWithWeight(200000L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
         assertTrue(result.getTotalWeightKg() >= 200000L && result.getTotalWeightKg() <= 200010L);
-        assertTrue(result.getComparisonPhrase().contains("Ballena"));
+        assertTrue(result.getComparisonPhrase().contains("ballena"));
     }
 
     @Test
@@ -311,29 +315,29 @@ class WrappedServiceTest {
     void testReference_BoundaryTransition_CatToDog() throws InstanceNotFoundException {
         createWorkoutWithWeight(29L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Gato"));
+        assertTrue(result.getComparisonPhrase().contains("gato"));
 
         createWorkoutWithWeight(31L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
     }
 
     @Test
     void testReference_BoundaryTransition_DogToPerson() throws InstanceNotFoundException {
         createWorkoutWithWeight(69L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Perro"));
+        assertTrue(result.getComparisonPhrase().contains("perro"));
 
         createWorkoutWithWeight(71L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Persona"));
+        assertTrue(result.getComparisonPhrase().contains("persona"));
     }
 
     @Test
     void testReference_BoundaryTransition_HorseToCar() throws InstanceNotFoundException {
         createWorkoutWithWeight(1100L);
         WeightComparisonDto result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Caballo"), "1100kg should use Horse reference");
+        assertTrue(result.getComparisonPhrase().contains("caballo"), "1100kg should use Horse reference");
 
         User user2 = new User("Test2", "User2", "test2@example.com", "600000009",
                 passwordEncoder.encode("password"), User.RoleType.CLIENT, User.StatusType.ACTIVE);
@@ -342,6 +346,85 @@ class WrappedServiceTest {
         testUser = user2;
         createWorkoutWithWeight(1300L);
         result = wrappedService.getWeightComparison(testUser.getId(), 2025);
-        assertTrue(result.getComparisonPhrase().contains("Coche"), "1300kg should use Car reference");
+        assertTrue(result.getComparisonPhrase().contains("coche"), "1300kg should use Car reference");
+    }
+
+    @Test
+    void testGetLongestStreak_NoWorkouts() throws InstanceNotFoundException {
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(0, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_SingleWorkout() throws InstanceNotFoundException {
+        LocalDateTime jan2025 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        Workout workout = new Workout(jan2025, jan2025.plusHours(1), testRoutine, testUser);
+        workoutDao.save(workout);
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(1, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_ConsecutiveDays() throws InstanceNotFoundException {
+        LocalDateTime day1 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        LocalDateTime day2 = LocalDateTime.of(2025, 1, 16, 10, 0);
+        LocalDateTime day3 = LocalDateTime.of(2025, 1, 17, 10, 0);
+
+        workoutDao.save(new Workout(day1, day1.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day2, day2.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day3, day3.plusHours(1), testRoutine, testUser));
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(3, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_NonConsecutiveDays() throws InstanceNotFoundException {
+        LocalDateTime day1 = LocalDateTime.of(2025, 1, 10, 10, 0);
+        LocalDateTime day2 = LocalDateTime.of(2025, 1, 15, 10, 0);
+        LocalDateTime day3 = LocalDateTime.of(2025, 1, 20, 10, 0);
+
+        workoutDao.save(new Workout(day1, day1.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day2, day2.plusHours(1), testRoutine, testUser));
+        workoutDao.save(new Workout(day3, day3.plusHours(1), testRoutine, testUser));
+
+        Integer streak = wrappedService.getLongestStreak(testUser.getId(), 2025);
+        assertEquals(1, streak);
+    }
+
+    @Test
+    void testGetLongestStreak_UserNotFound() {
+        assertThrows(InstanceNotFoundException.class, () -> {
+            wrappedService.getLongestStreak(999L, 2025);
+        });
+    }
+    
+    @Test
+    void testGetTopExercisesByUser() {
+        Long userId = 2L;
+        LinkedHashMap<Exercise, Long> topExercises = wrappedService.getTopExercisesByUser(userId);
+
+        assertEquals(5, topExercises.size());
+
+        boolean contieneSentadillas = topExercises.keySet().stream()
+                .anyMatch(e -> e.getName().equals("Sentadillas"));
+        assertTrue(contieneSentadillas);
+        topExercises.values().forEach(count -> assertTrue(count > 0));
+    }
+
+    @Test
+    void testGetFavouriteMuscleGroup() {
+        Long userId = 2L;
+        String favMuscleGroup = wrappedService.getFavouriteMuscleGroup(userId);
+        assertEquals("CHEST", favMuscleGroup);
+    }
+
+    @Test
+    void testGetFavouriteRoutine() {
+        Long userId = 2L;
+        Map.Entry<Routine, Long> result = wrappedService.getFavouriteRoutine(userId);
+        assertEquals("Rutina fuerza inicial", result.getKey().getName());
+        assertTrue(result.getValue() > 0);
     }
 }

@@ -143,4 +143,16 @@ class ExerciseMaxWeightServiceTest {
         List<ExerciseMaxWeight> ranking = exerciseMaxWeightService.getMaxWeightRanking(u.getId(), e.getId());
         assertTrue(ranking.isEmpty());
     }
+
+    @Test
+    void addOrUpdateDoesNothingWhenNullWeight() throws Exception {
+        User u = createUser("null@w");
+        Exercise e = createExercise("nullWeight");
+
+        exerciseMaxWeightService.addOrUpdateMaxWeight(u.getId(), e.getId(), null);
+
+        assertNull(
+                exerciseMaxWeightDao.findByUserIdAndExerciseId(u.getId(), e.getId())
+        );
+    }
 }

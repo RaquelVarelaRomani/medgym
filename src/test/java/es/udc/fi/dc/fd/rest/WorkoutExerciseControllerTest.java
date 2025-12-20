@@ -88,7 +88,7 @@ class WorkoutExerciseControllerTest {
         exerciseDao.save(exercise);
 
         // Asociar ejercicio a la rutina
-        routineExercise = new RoutineExercise(routine, exercise, 1);
+        routineExercise = new RoutineExercise(routine, exercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseDao.save(routineExercise);
 
         // Crear un workout

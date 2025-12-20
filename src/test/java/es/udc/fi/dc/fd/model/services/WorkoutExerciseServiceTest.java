@@ -74,7 +74,7 @@ class WorkoutExerciseServiceTest {
         exercise = exerciseDao.save(exercise);
 
         // Asignar ejercicio a la rutina
-        routineExercise = new RoutineExercise(routine, exercise, 1);
+        routineExercise = new RoutineExercise(routine, exercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExercise = routineExerciseDao.save(routineExercise);
 
         // Crear un workout para el cliente basado en esa rutina

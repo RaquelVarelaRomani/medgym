@@ -9,7 +9,6 @@ import es.udc.fi.dc.fd.model.entities.UserDao;
 import es.udc.fi.dc.fd.model.services.ExerciseMaxWeightService;
 import es.udc.fi.dc.fd.model.services.exceptions.BlockedUserException;
 import es.udc.fi.dc.fd.model.services.exceptions.IncorrectLoginException;
-import es.udc.fi.dc.fd.rest.controllers.ExerciseMaxWeightController;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
 import es.udc.fi.dc.fd.rest.dtos.LoginParamsDto;
@@ -51,9 +50,6 @@ class ExerciseMaxWeightControllerTest {
 
     @Autowired
     private ExerciseMaxWeightService exerciseMaxWeightService;
-
-    @Autowired
-    private ExerciseMaxWeightController controller;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;

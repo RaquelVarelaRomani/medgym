@@ -12,6 +12,7 @@ import HeartLike from "../common/HeartLike";
 import {likeWorkout, unlikeWorkout} from "../../../../backend/workoutLikeService";
 import AchievementPopup from "../common/popup/AchievementPopup";
 import {commentWorkout} from "../../../../backend/workoutCommentService";
+import {getExerciseTypeText} from "../../util/enumConversor";
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -395,6 +396,7 @@ const ExerciseItem = ({ exercise, index, expanded, toggleExercise, loggedSets })
             >
                 <h3>
                     {index + 1}. {exercise.exerciseName}
+                    {exercise.exerciseType && ` (${getExerciseTypeText(exercise.exerciseType)})`}
                     {hasData && <span className={styles["completed-tick"]}>✓</span>}
                 </h3>
 
@@ -485,6 +487,7 @@ ExerciseList.propTypes = {
         PropTypes.shape({
             id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
             exerciseName: PropTypes.string.isRequired,
+            exerciseType: PropTypes.string,
             position: PropTypes.number
         })
     ).isRequired,
@@ -496,7 +499,8 @@ ExerciseList.propTypes = {
 ExerciseItem.propTypes = {
     exercise: PropTypes.shape({
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-        exerciseName: PropTypes.string.isRequired
+        exerciseName: PropTypes.string.isRequired,
+        exerciseType: PropTypes.string,
     }).isRequired,
     index: PropTypes.number.isRequired,
     expanded: PropTypes.bool,

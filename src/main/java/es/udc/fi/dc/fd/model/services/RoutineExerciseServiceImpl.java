@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,7 +32,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+    public RoutineExercise addExerciseToRoutine(Long userId, Long routineId, Long exerciseId, RoutineExercise.ExerciseType exerciseType, Integer position)
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         User user = permissionChecker.checkUser(userId);
 
@@ -68,7 +69,7 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         // Note: Position duplicates are allowed in the database, so we don't validate them here
         // The application can handle position conflicts as needed
 
-        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, position);
+        RoutineExercise routineExercise = new RoutineExercise(routine, exercise, exerciseType, position);
         return routineExerciseDao.save(routineExercise);
     }
 
@@ -80,10 +81,11 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
     }
 
     @Override
-    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, Integer position)
+    public RoutineExercise updateExerciseInRoutine(Long userId, Long routineId, Long exerciseId, RoutineExercise.ExerciseType exerciseType, Integer position)
             throws InstanceNotFoundException, PermissionException, DuplicateInstanceException {
         RoutineExercise routineExercise = this.getRoutineExercise(userId, routineId, exerciseId);
         routineExercise.setPosition(position);
+        routineExercise.setExerciseType(exerciseType);
 
         return routineExerciseDao.save(routineExercise);
     }
@@ -109,4 +111,8 @@ public class RoutineExerciseServiceImpl implements RoutineExerciseService {
         return routineExerciseDao.findByRoutineId(routineId, pageable);
     }
 
+    @Override
+    public List<RoutineExercise.ExerciseType> findAllExerciseTypes() {
+        return List.of(RoutineExercise.ExerciseType.values());
+    }
 }

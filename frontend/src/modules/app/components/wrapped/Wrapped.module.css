@@ -1,0 +1,651 @@
+/* main container */
+.wrappedContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-primary);
+    z-index: 9999;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* buttons and navigation */
+.closeButton {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    background: rgba(26, 26, 36, 0.8);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 300;
+    backdrop-filter: blur(10px);
+}
+
+.closeButton:hover {
+    background: rgba(26, 26, 36, 0.95);
+    border-color: var(--neon-orange);
+    color: var(--neon-orange);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
+}
+
+.navArrowLeft,
+.navArrowRight {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(26, 26, 36, 0.8);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    font-weight: 300;
+}
+
+.navArrowLeft {
+    left: 2rem;
+}
+
+.navArrowRight {
+    right: 2rem;
+}
+
+.navArrowLeft:hover,
+.navArrowRight:hover {
+    background: rgba(26, 26, 36, 0.95);
+    border-color: var(--neon-orange);
+    color: var(--neon-orange);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.4);
+}
+
+.clickArea {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    cursor: pointer;
+    z-index: 1;
+}
+
+/* bar */
+.progressBar {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10001;
+    padding: 0.75rem 1.5rem;
+    background: rgba(26, 26, 36, 0.6);
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+}
+
+.progressDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.progressDot:hover {
+    border-color: var(--neon-orange);
+    transform: scale(1.2);
+}
+
+.progressDot.active {
+    background: var(--neon-orange);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 15px var(--neon-orange-glow);
+    transform: scale(1.3);
+}
+
+.progressDot.completed {
+    background: var(--neon-orange-dark);
+    border-color: var(--neon-orange-dark);
+}
+
+/* slides containers */
+.slidesWrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.slidesContainer {
+    display: flex;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide {
+    min-width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.slideContent {
+    max-width: 800px;
+    width: 100%;
+    padding-top: 1rem;
+    text-align: center;
+    animation: slideIn 0.6s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* slide 1 */
+.mainTitle {
+    font-size: 3rem;
+    font-weight: 300;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    letter-spacing: 0.1em;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 20px rgba(255, 107, 53, 0.4));
+    }
+    to {
+        filter: drop-shadow(0 0 40px rgba(255, 107, 53, 0.6));
+    }
+}
+
+.year {
+    font-size: 6rem;
+    font-weight: 900;
+    color: var(--neon-orange);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 40px var(--neon-orange-glow);
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin-top: 2rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+}
+
+.slideTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
+    animation: logoEntrance 1s ease-out;
+}
+
+@keyframes logoEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.wrappedLogo {
+    height: 120px;
+    width: auto;
+    filter: brightness(0) saturate(100%)
+    invert(56%) sepia(89%) saturate(2067%)
+    hue-rotate(346deg) brightness(101%) contrast(101%)
+    drop-shadow(0 0 10px var(--neon-orange-glow));
+    transition: all 0.3s ease;
+}
+
+.wrappedBrandName {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    background: linear-gradient(
+            135deg,
+            var(--neon-orange) 0%,
+            var(--neon-orange-bright) 50%,
+            var(--accent-yellow) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.3);
+    }
+}
+
+/* slide 2 */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: -1rem;
+}
+
+.statCard {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.statCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            var(--neon-orange),
+            transparent
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-8px);
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.5),
+            0 0 40px rgba(255, 107, 53, 0.2);
+}
+
+.statCard:hover::before {
+    opacity: 1;
+}
+
+.statNumber {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--neon-orange);
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 30px var(--neon-orange-glow);
+}
+
+.statLabel {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* slide 3 */
+.exerciseList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.exerciseItem {
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.exerciseItem::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--neon-orange);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.exerciseItem:hover {
+    transform: translateX(10px);
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.2);
+}
+
+.exerciseItem:hover::before {
+    transform: scaleY(1);
+}
+
+.exerciseRank {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+}
+
+.exerciseInfo {
+    flex: 1;
+    text-align: left;
+}
+
+.exerciseName {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.exerciseCount {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* slide 4 */
+.muscleHero {
+    margin: 2rem auto 0;
+    max-width: 500px;
+    padding: 3rem 2rem;
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.1) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 2px solid var(--neon-orange);
+    border-radius: 24px;
+    box-shadow:
+            0 0 60px rgba(255, 107, 53, 0.3),
+            inset 0 0 60px rgba(255, 107, 53, 0.05);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow:
+                0 0 60px rgba(255, 107, 53, 0.3),
+                inset 0 0 60px rgba(255, 107, 53, 0.05);
+    }
+    50% {
+        box-shadow:
+                0 0 80px rgba(255, 107, 53, 0.5),
+                inset 0 0 80px rgba(255, 107, 53, 0.1);
+    }
+}
+
+.muscleName {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--neon-orange);
+    margin-bottom: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 40px var(--neon-orange-glow);
+}
+
+/* slide 5 */
+.routineCard {
+    margin-top: 4rem;
+    padding: 6rem;
+    background: linear-gradient(
+            135deg,
+            var(--bg-card) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s ease;
+}
+
+.routineCard:hover {
+    transform: scale(1.03);
+    border-color: var(--neon-orange);
+    box-shadow:
+            0 12px 50px rgba(0, 0, 0, 0.5),
+            0 0 60px rgba(255, 107, 53, 0.3);
+}
+
+.routineName {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.2;
+}
+
+.routineCount {
+    font-size: 2rem;
+    color: var(--neon-orange);
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.routineCreator {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-style: italic;
+}
+
+/* slide 6 */
+.streakHero {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.streakEmoji {
+    font-size: 8rem;
+    filter: drop-shadow(0 0 30px rgba(255, 107, 53, 0.6));
+}
+
+.streakEmojiAnimate {
+    animation: boltEntrance 1s ease-out;
+}
+
+@keyframes boltEntrance {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.streakNumber {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--neon-orange);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 50px var(--neon-orange-glow);
+    line-height: 1;
+}
+
+.streakLabel {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* slide 7 */
+.weightHero {
+    margin-top: 2rem;
+    padding: 4rem;
+    background: linear-gradient(
+            135deg,
+            rgba(255, 107, 53, 0.05) 0%,
+            rgba(26, 26, 36, 0.8) 100%
+    );
+    border: 2px solid var(--neon-orange);
+    border-radius: 24px;
+    box-shadow: 0 0 60px rgba(255, 107, 53, 0.2);
+}
+
+.weightNumber {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--neon-orange);
+    margin-bottom: 1.5rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    text-shadow: 0 0 40px var(--neon-orange-glow);
+}
+
+.weightComparison {
+    font-size: 1.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.weightComparisonValue {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.2;
+}
+
+/* slide 8 */
+.outroTitle {
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-bright));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2rem;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.outroText {
+    font-size: 1.8rem;
+    color: var(--text-secondary);
+    margin: 1.5rem 0;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
+}
+
+.outroButton {
+    margin-top: 2rem;
+    padding: 1.25rem 2rem;
+    font-size: 1.3rem;
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-orange-dark));
+    color: white;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 700;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+}
+
+.outroButton:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow:
+            0 12px 40px rgba(255, 107, 53, 0.6),
+            0 0 60px rgba(255, 107, 53, 0.4);
+}
+
+.outroButton:active {
+    transform: translateY(-2px) scale(1.02);
+}
