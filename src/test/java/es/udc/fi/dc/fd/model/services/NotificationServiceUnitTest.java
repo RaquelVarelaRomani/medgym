@@ -82,7 +82,7 @@ class NotificationServiceUnitTest {
         List<User> users = List.of(user);
 
         when(userDao.findAll()).thenReturn(users);
-        when(notificationDao.existsByUser_IdAndTypeAndIdToRedirectAndTargetDate(eq(1L), eq(Notification.NotificationType.WRAPPED_REMINDER), eq(2025L), eq(date))).thenReturn(false).thenReturn(true);
+        when(notificationDao.existsByUser_IdAndTypeAndIdToRedirectAndTargetDate(1L, Notification.NotificationType.WRAPPED_REMINDER, 2025L, date)).thenReturn(false).thenReturn(true);
 
         notificationService.createDailyWrappedReminders();
         notificationService.createDailyWrappedReminders();
