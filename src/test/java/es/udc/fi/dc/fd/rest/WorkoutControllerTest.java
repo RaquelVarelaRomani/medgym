@@ -97,7 +97,7 @@ class WorkoutControllerTest {
                 Exercise.Equipment.NONE, new byte[]{1, 2, 3}, Exercise.ExerciseStatus.APPROVED, trainer);
         exerciseDao.save(exercise);
 
-        routineExercise = new RoutineExercise(routine, exercise, 1);
+        routineExercise = new RoutineExercise(routine, exercise, RoutineExercise.ExerciseType.STRENGTH, 1);
         routineExerciseDao.save(routineExercise);
 
     }

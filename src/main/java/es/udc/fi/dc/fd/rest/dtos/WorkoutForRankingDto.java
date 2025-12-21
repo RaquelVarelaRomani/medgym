@@ -1,6 +1,6 @@
 package es.udc.fi.dc.fd.rest.dtos;
 
-public class WorkoutForRankingDto extends WorkoutWithUserDto{
+public class WorkoutForRankingDto extends WorkoutWithUserDto {
 
     private byte[] userProfilePicture;
     private Integer totalVolume;

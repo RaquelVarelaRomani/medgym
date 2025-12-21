@@ -65,7 +65,7 @@ public class WorkoutConversor {
         return workoutForHistoryDto;
     }
 
-    public static WorkoutForRankingDto toWorkoutForRankingDto(Workout workout){
+    public static WorkoutForRankingDto toWorkoutForRankingDto(Workout workout) {
         WorkoutForRankingDto workoutForRankingDto = new WorkoutForRankingDto();
 
         workoutForRankingDto.setId((workout.getId()));
@@ -96,13 +96,13 @@ public class WorkoutConversor {
 
     public static List<WorkoutForRankingDto> toWorkoutForRankingDtos(List<Workout> workouts) {
         return workouts.stream()
-            .collect(Collectors.groupingBy(w -> w.getUser().getId()))
-            .values().stream()
-            .map(group -> group.stream().max(Comparator.comparing(Workout::getTotalVolume)).orElse(null))
-            .filter(Objects::nonNull)
-            .map(WorkoutConversor::toWorkoutForRankingDto)
-            .sorted(Comparator.comparing(WorkoutForRankingDto::getTotalVolume).reversed())
-            .toList();
+                .collect(Collectors.groupingBy(w -> w.getUser().getId()))
+                .values().stream()
+                .map(group -> group.stream().max(Comparator.comparing(Workout::getTotalVolume)).orElse(null))
+                .filter(Objects::nonNull)
+                .map(WorkoutConversor::toWorkoutForRankingDto)
+                .sorted(Comparator.comparing(WorkoutForRankingDto::getTotalVolume).reversed())
+                .toList();
     }
 
 }

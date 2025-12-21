@@ -2,16 +2,20 @@ package es.udc.fi.dc.fd.model.services;
 
 import es.udc.fi.dc.fd.model.common.exceptions.DuplicateInstanceException;
 import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.Notification;
-import es.udc.fi.dc.fd.model.entities.Routine;
-import es.udc.fi.dc.fd.model.entities.User;
-import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.*;
+import es.udc.fi.dc.fd.model.entities.User.RoleType;
+import es.udc.fi.dc.fd.model.entities.User.StatusType;
+
 import es.udc.fi.dc.fd.model.services.exceptions.PermissionException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import org.springframework.boot.test.mock.mockito.MockBean;
+import java.time.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
@@ -23,19 +27,36 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class NotificationServiceTest {
 
-    @Autowired
-    private NotificationService notificationService;
+        @Autowired
+        private NotificationService notificationService;
 
-    @Autowired
-    private RoutineService routineService;
+        @Autowired
+        private RoutineService routineService;
 
-    @Autowired
-    private UserFollowService userFollowService;
+        @Autowired
+        private UserFollowService userFollowService;
 
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private WorkoutService workoutService;
+        @Autowired
+        private UserDao userDao;
+
+        @Autowired
+        private WorkoutService workoutService;
+
+        @Autowired
+        private WorkoutExerciseDao workoutExerciseDao;
+
+        @Autowired
+        private RoutineExerciseDao routineExerciseDao;
+
+        @Autowired
+        private ExerciseDao exerciseDao;
+
+        @SuppressWarnings("removal")
+        @MockBean
+        private Clock clock;
+
+        @Autowired
+        private NotificationDao notificationDao;
 
     @Test
     void testCreateNewRoutineNotification() throws InstanceNotFoundException, DuplicateInstanceException, PermissionException {
@@ -181,19 +202,89 @@ class NotificationServiceTest {
         assertEquals(w.getId(), list.get(0).getIdToRedirect());
     }
 
-    @Test
-    void testDeleteNotificationsByIdToRedirect() throws Exception {
-        User u = userDao.save(new User("uX", "uX", "uX@test.com", "600000015", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
-        User t = userDao.save(new User("tX", "tX", "tX@test.com", "600000016", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
-        t.setTrainerPremium(true);
+        @Test
+        void testDeleteNotificationsByIdToRedirect() throws Exception {
+                User u = userDao.save(new User("uX", "uX", "uX@test.com", "600000015", "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE));
+                User t = userDao.save(new User("tX", "tX", "tX@test.com", "600000016", "pass", User.RoleType.TRAINER, User.StatusType.ACTIVE));
+                t.setTrainerPremium(true);
 
-        userFollowService.followUser(u.getId(), t.getId());
-        Routine r = routineService.createRoutine("R3", "d", t,
-                Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
+                userFollowService.followUser(u.getId(), t.getId());
+                Routine r = routineService.createRoutine("R3", "d", t,
+                        Routine.VisibilityType.PUBLIC, Routine.DifficultyType.BEGINNER);
 
-        notificationService.deleteNotificationsByIdToRedirect(r.getId());
+                notificationService.deleteNotificationsByIdToRedirect(r.getId());
 
-        assertTrue(notificationService.getNotificationsByUser(u.getId()).isEmpty());
-    }
+                assertTrue(notificationService.getNotificationsByUser(u.getId()).isEmpty());
+        }
+
+        @Test
+        void testCreateDailyWrappedReminders_beforeDec22_doesNothing() {
+        // 21/12/2025
+        LocalDate day = LocalDate.of(2025, 12, 21);
+        setClock(day);
+
+        long before = notificationDao.count();
+
+        notificationService.createDailyWrappedReminders();
+
+        long after = notificationDao.count();
+
+        assertEquals(before, after, "Antes del 22 de diciembre no debería crearse ninguna notificación Wrapped");
+        }
+
+        @Test
+        void testCreateDailyWrappedReminders_onDec22_createsWrappedForAllUsers() {
+        // 22/12/2025
+        LocalDate day = LocalDate.of(2025, 12, 22);
+        setClock(day);
+
+        // Creamos 2 usuarios de test (no dependemos de data.sql)
+        User u1 = userDao.save(new User("wrap1", "wrap1", "wrap1@test.com",
+                "699000001", "pass", RoleType.CLIENT, StatusType.ACTIVE));
+        User u2 = userDao.save(new User("wrap2", "wrap2", "wrap2@test.com",
+                "699000002", "pass", RoleType.CLIENT, StatusType.ACTIVE));
+
+        notificationService.createDailyWrappedReminders();
+
+        assertTrue(hasWrappedFor(u1.getId(), day, 2025L));
+        assertTrue(hasWrappedFor(u2.getId(), day, 2025L));
+        }
+
+        @Test
+        void testCreateDailyWrappedReminders_idempotent_sameDay_noDuplicates() {
+        LocalDate day = LocalDate.of(2025, 12, 22);
+        setClock(day);
+
+        User u = userDao.save(new User("wrap3", "wrap3", "wrap3@test.com",
+                "699000003", "pass", RoleType.CLIENT, StatusType.ACTIVE));
+
+        notificationService.createDailyWrappedReminders();
+        notificationService.createDailyWrappedReminders(); // misma fecha, no debe duplicar
+
+        long count = notificationDao.findByUserIdOrderByDateDesc(u.getId()).stream()
+                .filter(n -> n.getType() == Notification.NotificationType.WRAPPED_REMINDER)
+                .filter(n -> day.equals(n.getTargetDate()))
+                .filter(n -> Long.valueOf(2025L).equals(n.getIdToRedirect()))
+                .count();
+
+        assertEquals(1, count, "No debe haber duplicados de Wrapped el mismo día para el mismo usuario");
+        }
+
+        private void setClock(LocalDate date) {
+                ZoneId zone = ZoneId.of("Europe/Madrid");
+                Instant instant = date.atStartOfDay(zone).toInstant();
+                when(clock.getZone()).thenReturn(zone);
+                when(clock.instant()).thenReturn(instant);
+        }
+
+        private boolean hasWrappedFor(Long userId, LocalDate day, Long year) {
+        return notificationDao.findByUserIdOrderByDateDesc(userId).stream()
+                .anyMatch(n ->
+                        n.getType() == Notification.NotificationType.WRAPPED_REMINDER
+                                && day.equals(n.getTargetDate())
+                                && year.equals(n.getIdToRedirect())
+                );
+        }
+
 
 }

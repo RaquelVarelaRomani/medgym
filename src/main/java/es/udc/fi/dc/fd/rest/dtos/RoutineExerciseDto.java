@@ -6,6 +6,7 @@ public class RoutineExerciseDto {
     private Long exerciseId;
     private String exerciseName;
     private String exerciseDescription;
+    private String exerciseType;
     private String muscleGroup;
     private String equipment;
     private byte[] image;
@@ -59,6 +60,13 @@ public class RoutineExerciseDto {
         this.exerciseDescription = exerciseDescription;
     }
 
+    public String getExerciseType() {
+        return exerciseType;
+    }
+
+    public void setExerciseType(String exerciseType) {
+        this.exerciseType = exerciseType;
+    }
 
     public String getMuscleGroup() {
         return muscleGroup;

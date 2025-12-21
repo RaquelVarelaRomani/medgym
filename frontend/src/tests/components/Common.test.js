@@ -635,6 +635,76 @@ describe("Common Components", () => {
       expect(mockNavigate).toHaveBeenCalledWith("/users/profile/1");
     });
 
+    test("navigates to routine on RANKING_SURPASS_WORKOUT notification click", () => {
+      const mockOnNotificationRead = jest.fn();
+      const notifications = [
+        {
+          id: 1,
+          message: "Test ranking surpass notification",
+          date: "2023-01-01T00:00:00",
+          type: "RANKING_SURPASS_WORKOUT",
+          isRead: false,
+          idToRedirect: 2,
+        },
+      ];
+
+      markNotificationAsRead.mockImplementation((id, success) => success());
+
+      render(
+        <MemoryRouter>
+          <NotificationPopup
+            notifications={notifications}
+            onClose={() => {}}
+            onNotificationRead={mockOnNotificationRead}
+          />
+        </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Test ranking surpass notification"));
+
+      expect(markNotificationAsRead).toHaveBeenCalledWith(
+        1,
+        expect.any(Function),
+        expect.any(Function),
+      );
+      expect(mockNavigate).toHaveBeenCalledWith("/workouts/rankings/2");
+    });
+
+    test("navigates to exercise on RANKING_SURPASS_EXERCISE notification click", () => {
+      const mockOnNotificationRead = jest.fn();
+      const notifications = [
+        {
+          id: 1,
+          message: "Test exercise ranking surpass notification",
+          date: "2023-01-01T00:00:00",
+          type: "RANKING_SURPASS_EXERCISE",
+          isRead: false,
+          idToRedirect: 3,
+        },
+      ];
+
+      markNotificationAsRead.mockImplementation((id, success) => success());
+
+      render(
+        <MemoryRouter>
+          <NotificationPopup
+            notifications={notifications}
+            onClose={() => {}}
+            onNotificationRead={mockOnNotificationRead}
+          />
+        </MemoryRouter>,
+      );
+
+      fireEvent.click(screen.getByText("Test exercise ranking surpass notification"));
+
+      expect(markNotificationAsRead).toHaveBeenCalledWith(
+        1,
+        expect.any(Function),
+        expect.any(Function),
+      );
+      expect(mockNavigate).toHaveBeenCalledWith("/exercises/3");
+    });
+
     test("handles invalid date", () => {
       const notifications = [
         {

@@ -32,8 +32,11 @@ class ExerciseMaxWeightServiceTest {
     @Autowired
     private UserFollowDao userFollowDao;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     private User createUser(String email) {
-        User u = new User(email, "pass", "n", "l", email, User.RoleType.CLIENT, User.StatusType.ACTIVE);
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User u = new User(email, "surname", email, uniquePhone, "pass", User.RoleType.CLIENT, User.StatusType.ACTIVE);
         return userDao.save(u);
     }
 
@@ -139,5 +142,17 @@ class ExerciseMaxWeightServiceTest {
 
         List<ExerciseMaxWeight> ranking = exerciseMaxWeightService.getMaxWeightRanking(u.getId(), e.getId());
         assertTrue(ranking.isEmpty());
+    }
+
+    @Test
+    void addOrUpdateDoesNothingWhenNullWeight() throws Exception {
+        User u = createUser("null@w");
+        Exercise e = createExercise("nullWeight");
+
+        exerciseMaxWeightService.addOrUpdateMaxWeight(u.getId(), e.getId(), null);
+
+        assertNull(
+                exerciseMaxWeightDao.findByUserIdAndExerciseId(u.getId(), e.getId())
+        );
     }
 }

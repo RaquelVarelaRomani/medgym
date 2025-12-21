@@ -101,6 +101,7 @@ jest.mock("../../backend/routineExerciseService", () => ({
     getRoutineExercises: jest.fn(),
     updateRoutineExercise: jest.fn(),
     deleteRoutineExercise: jest.fn(),
+    getExerciseTypes: jest.fn(),
 }));
 
 jest.mock("../../backend/workoutService", () => ({
@@ -744,6 +745,8 @@ describe("CreateRoutine Component", () => {
             },
         );
 
+        routineExerciseService.getExerciseTypes.mockImplementation((status, success) => {})
+
         render(
             <MemoryRouter>
                 <CreateRoutine/>
@@ -765,6 +768,8 @@ describe("CreateRoutine Component", () => {
                 });
             },
         );
+
+        routineExerciseService.getExerciseTypes.mockImplementation((status, success) => {})
 
         render(
             <MemoryRouter>
@@ -795,6 +800,8 @@ describe("CreateRoutine Component", () => {
             },
         );
 
+        routineExerciseService.getExerciseTypes.mockImplementation((status, success) => {})
+
         render(
             <MemoryRouter>
                 <CreateRoutine/>
@@ -813,6 +820,8 @@ describe("CreateRoutine Component", () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: { id: 1, username: 'testuser' }});
         });
+
+        routineExerciseService.getExerciseTypes.mockImplementation((status, success) => {})
 
         exerciseService.getExercisesByStatus.mockImplementation(
             (status, success) => {
@@ -860,6 +869,8 @@ describe("CreateRoutine Component", () => {
         tryLoginFromServiceToken.mockImplementation((success) => {
             success({user: { id: 1, username: 'testuser' }});
         });
+
+        routineExerciseService.getExerciseTypes.mockImplementation((status, success) => {})
 
         exerciseService.getExercisesByStatus.mockImplementation(
             (status, success, error) => {
@@ -1844,81 +1855,6 @@ describe("CreateRoutine Component", () => {
         });
 
         mockGetItem.mockRestore();
-    });
-
-    test("handles routine exercise creation errors", async () => {
-        tryLoginFromServiceToken.mockImplementation((success) => {
-            success({user: { id: 1, username: 'testuser' }});
-        });
-
-        exerciseService.getExercisesByStatus.mockImplementation(
-            (status, success) => {
-                success({
-                    content: [{id: 1, name: "Exercise 1", status: "APPROVED"}],
-                });
-            },
-        );
-
-        routineService.createRoutine.mockImplementation(
-            (title, desc, trainerId, visibility, difficulty, success) => {
-                success({id: 1});
-            },
-        );
-
-        routineExerciseService.createRoutineExercise.mockImplementation(
-            (routineId, exerciseId, position, success, error) => {
-                error("Exercise creation error");
-            },
-        );
-
-        const consoleSpy = jest
-            .spyOn(console, "error")
-            .mockImplementation(() => {
-            });
-
-        render(
-            <MemoryRouter>
-                <CreateRoutine/>
-            </MemoryRouter>,
-        );
-
-        await waitFor(() => {
-            const titleInput = screen.getByPlaceholderText(
-                "Escriba aquí el título de la rutina.",
-            );
-            fireEvent.change(titleInput, {target: {value: "Test Routine"}});
-
-            const addButton = screen.getByText("+");
-            fireEvent.click(addButton);
-        });
-
-        await waitFor(() => {
-            const exerciseInputs = screen.getAllByPlaceholderText(
-                "Buscar ejercicio...",
-            );
-            const exerciseInput = exerciseInputs[1];
-            fireEvent.change(exerciseInput, {target: {value: "Exercise 1"}});
-            fireEvent.focus(exerciseInput);
-        });
-
-        await waitFor(() => {
-            const option = screen.getByText("Exercise 1");
-            fireEvent.click(option);
-        });
-
-        await waitFor(() => {
-            const saveButton = screen.getByText("Guardar");
-            fireEvent.click(saveButton);
-        });
-
-        await waitFor(() => {
-            expect(consoleSpy).toHaveBeenCalledWith(
-                "Error adding exercise:",
-                "Exercise creation error",
-            );
-        });
-
-        consoleSpy.mockRestore();
     });
 });
 

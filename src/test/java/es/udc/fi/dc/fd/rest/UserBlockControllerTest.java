@@ -3,7 +3,6 @@ package es.udc.fi.dc.fd.rest;
 import es.udc.fi.dc.fd.model.entities.User;
 import es.udc.fi.dc.fd.model.entities.User.RoleType;
 import es.udc.fi.dc.fd.model.entities.UserDao;
-import es.udc.fi.dc.fd.model.entities.UserBlockDao;
 import es.udc.fi.dc.fd.model.services.UserBlockService;
 import es.udc.fi.dc.fd.rest.controllers.UserController;
 import es.udc.fi.dc.fd.rest.dtos.AuthenticatedUserDto;
@@ -40,9 +39,6 @@ class UserBlockControllerTest {
     private UserDao userDao;
 
     @Autowired
-    private UserBlockDao userBlockDao;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
@@ -51,11 +47,14 @@ class UserBlockControllerTest {
     @Autowired
     private UserBlockService userBlockService;
 
+    private static final java.util.concurrent.atomic.AtomicLong phoneCounter = new java.util.concurrent.atomic.AtomicLong();
+
     /** Crea usuario real, lo guarda y devuelve su token */
     private AuthenticatedUserDto createAuthenticatedUser(String email)
             throws Exception {
 
-        User user = new User("Test", "User", email, "+34 000 000 000",
+        String uniquePhone = String.format("%09d", phoneCounter.incrementAndGet());
+        User user = new User("Test", "User", email, uniquePhone,
                 PASSWORD, RoleType.CLIENT, User.StatusType.ACTIVE);
         user.setPassword(passwordEncoder.encode(PASSWORD));
         userDao.save(user);

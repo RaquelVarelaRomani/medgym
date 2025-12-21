@@ -8,7 +8,7 @@
 	<!-- ********************************************** -->
 	<groupId>es.udc.fi.dc.fd</groupId>
 	<artifactId>medgym</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>4.0</version>
 	<packaging>jar</packaging>
 
 	<name>FD Spring MVC MedGym App</name>
@@ -182,7 +182,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<scope>test</scope>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 

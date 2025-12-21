@@ -12,6 +12,7 @@ export const getDifficultyText = (difficulty) => {
 };
 
 export const getMuscleGroupsText = (muscle) => {
+    if (muscle == "null") return "Ninguno";
     switch (muscle) {
         case "LEG": return "Piernas";
         case "CHEST": return "Pectoral";
@@ -37,5 +38,13 @@ export const getEquipmentText = (equipment) => {
         case "PULLEY": return "Polea";
         case "PULL_UP_BAR": return "Barra de dominadas";
         default: return equipment;
+    }
+};
+
+export const getExerciseTypeText = (exerciseType) => {
+    switch (exerciseType) {
+        case "STRENGTH": return "Fuerza";
+        case "CARDIO": return "Cardio";
+        default: return exerciseType;
     }
 };

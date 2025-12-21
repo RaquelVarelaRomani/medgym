@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", uniqueConstraints = @UniqueConstraint(name = "wrapped_daily", columnNames = {"user_id", "target_date", "type", "id_to_redirect"}))
 public class Notification {
 
     private Long id;
@@ -15,17 +15,23 @@ public class Notification {
     private User user;
     private boolean isRead;
     private LocalDateTime date;
+    private java.time.LocalDate targetDate;
 
     public Notification() {
     }
 
-    public Notification(String message, NotificationType type, Long idToRedirect, User user, boolean isRead, LocalDateTime date) {
+    public Notification(String message, NotificationType type, Long idToRedirect, User user, boolean isRead, LocalDateTime date, java.time.LocalDate targetDate) {
         this.message = message;
         this.type = type;
         this.idToRedirect = idToRedirect;
         this.user = user;
         this.isRead = isRead;
         this.date = date;
+        this.targetDate = targetDate;
+    }
+
+    public Notification(String message, NotificationType type, Long idToRedirect, User user, boolean isRead, LocalDateTime date) {
+        this(message, type, idToRedirect, user, isRead, date, null);
     }
 
     @Id
@@ -46,6 +52,7 @@ public class Notification {
         this.message = message;
     }
 
+    @Column(name = "id_to_redirect")
     public Long getIdToRedirect() {
         return idToRedirect;
     }
@@ -89,6 +96,15 @@ public class Notification {
         this.date = date;
     }
 
+    @Column(name = "target_date")
+    public java.time.LocalDate getTargetDate() {
+        return targetDate;
+    }
+
+    public void setTargetDate(java.time.LocalDate targetDate) {
+        this.targetDate = targetDate;
+    }
+
     public enum NotificationType {
         NEW_ROUTINE,
         FOLLOW,
@@ -96,7 +112,10 @@ public class Notification {
         WORKOUT_LIKE,
         WORKOUT_COMMENT,
         STREAK_REMINDER,
-        ACHIEVEMENT
+        ACHIEVEMENT,
+        RANKING_SURPASS_WORKOUT,
+        RANKING_SURPASS_EXERCISE,
+        WRAPPED_REMINDER
     }
 
 }
