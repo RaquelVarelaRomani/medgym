@@ -125,7 +125,7 @@ VALUES
     INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
 VALUES
 -- workout 3
-(10, 40, NULL, 1, 5),    -- STRENGTH
+(NULL, NULL, 60, 1, 5),    -- STRENGTH
 (20, 25, NULL, 1, 6),    -- STRENGTH
 (9, 50, NULL, 1, 2),     -- STRENGTH
 
@@ -168,15 +168,15 @@ VALUES
 
 -- workout 21 (Rutina fuerza inicial)
 (NULL, NULL, 40, 16, 1), -- CARDIO
-(12, 0, NULL, 16, 2),    -- STRENGTH
+(12, 50, NULL, 16, 2),    -- STRENGTH
 (NULL, NULL, 50, 16, 3), -- CARDIO
 (10, 45, NULL, 16, 4),   -- STRENGTH
 
 -- workout 20 (Rutina cuerpo completo)
 (NULL, NULL, 35, 15, 9), -- CARDIO
-(12, 0, NULL, 15, 10),   -- STRENGTH
-(10, 0, NULL, 15, 11),   -- STRENGTH
-(5, 0, NULL, 15, 12);    -- STRENGTH
+(12, 50, NULL, 15, 10),   -- STRENGTH
+(NULL, NULL, 60, 15, 11),   -- STRENGTH
+(5, 50, NULL, 15, 12);    -- STRENGTH
 
 
 INSERT INTO user_follows (client_id, follow_user_id)
@@ -210,7 +210,7 @@ INSERT INTO workout_comments (text, date, workout_id, user_id)
 VALUES ('Buena sesión, ritmo suave pero constante.', '2025-02-01 19:42:00', 1, 4),
        ('Postura controlada y estable durante todo el entrenamiento.', '2025-02-01 19:45:00', 1, 2),
 
-       ('Trabajo sólido, especialmente en la fase final.', '2025-01-28 18:03:00', 3, 3),
+       ('Trabajo sólido, especialmente en la fase final.', '2025-01-28 18:03:00', 3, 2),
 
        ('Respiración muy bien acompañada del movimiento.', '2025-02-04 07:55:00', 4, 5),
        ('Mejora visible respecto a la semana pasada.', '2025-02-04 08:00:00', 4, 1),
