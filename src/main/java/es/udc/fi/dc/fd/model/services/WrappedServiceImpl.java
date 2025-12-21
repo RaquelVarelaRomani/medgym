@@ -1,23 +1,26 @@
 package es.udc.fi.dc.fd.model.services;
 
-import es.udc.fi.dc.fd.model.entities.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
-import es.udc.fi.dc.fd.model.entities.*;
-import es.udc.fi.dc.fd.rest.dtos.WeightComparisonDto;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import es.udc.fi.dc.fd.model.common.exceptions.InstanceNotFoundException;
+import es.udc.fi.dc.fd.model.entities.Exercise;
+import es.udc.fi.dc.fd.model.entities.ExerciseDao;
+import es.udc.fi.dc.fd.model.entities.Routine;
+import es.udc.fi.dc.fd.model.entities.UserDao;
+import es.udc.fi.dc.fd.model.entities.WeightReference;
+import es.udc.fi.dc.fd.model.entities.Workout;
+import es.udc.fi.dc.fd.model.entities.WorkoutDao;
+import es.udc.fi.dc.fd.model.entities.WorkoutExercise;
+import es.udc.fi.dc.fd.model.entities.WorkoutExerciseDao;
+import es.udc.fi.dc.fd.rest.dtos.WeightComparisonDto;
 
 @Service
 @Transactional
