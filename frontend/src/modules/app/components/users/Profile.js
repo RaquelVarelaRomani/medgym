@@ -202,12 +202,20 @@ function ProfileHeader(props) {
                         >
                             Métricas corporales
                         </button>
-                        <button
-                            className={styles["wrapped-button"]}
-                            onClick={() => navigate(`/users/${profile.id}/wrapped`)}
-                        >
-                            Wrapped 2025
-                        </button>
+                        {(() => {
+                            const now = new Date();
+                            const currentMonth = now.getMonth();
+                            const currentDay = now.getDate();
+                            const showWrapped = (currentMonth === 11 && currentDay >= 22) || (currentMonth === 0 && currentDay <= 31);
+                            return showWrapped ? (
+                                <button
+                                    className={styles["wrapped-button"]}
+                                    onClick={() => navigate(`/users/${profile.id}/wrapped`)}
+                                >
+                                    Wrapped 2025
+                                </button>
+                            ) : null;
+                        })()}
                         {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}
