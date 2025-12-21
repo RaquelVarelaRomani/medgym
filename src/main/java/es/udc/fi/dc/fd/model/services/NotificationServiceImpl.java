@@ -201,7 +201,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void createDailyWrappedReminders() {
 
         java.time.LocalDate today = java.time.LocalDate.now(clock);
-        java.time.LocalDate start = java.time.LocalDate.of(today.getYear(), 12, 18);
+        java.time.LocalDate start = java.time.LocalDate.of(today.getYear(), 12, 22);
 
         if (today.isBefore(start)) {
             return;
