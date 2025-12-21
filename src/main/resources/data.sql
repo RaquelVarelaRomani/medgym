@@ -55,27 +55,27 @@ VALUES ('Sentadillas', 'Ejercicio para trabajar las piernas y glúteos.', 'LEG',
 -- Insertar relación rutina-ejercicios
 -- Rutina 1: fuerza inicial
 INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
-VALUES (1, 1, 'CARDIO', 1),
-       (1, 2, 'STRENGTH', 2),
-       (1, 7, 'CARDIO', 3),
-       (1, 8, 'STRENGTH', 4);
+VALUES (1, 1, 'CARDIO', 1),   -- Sentadillas (como Cardio)
+       (1, 2, 'STRENGTH', 2), -- Flexiones
+       (1, 7, 'STRENGTH', 3), -- Peso muerto
+       (1, 8, 'STRENGTH', 4); -- Press banca
 
 -- Rutina 2: cardio avanzado
 INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
-VALUES (2, 3, 'CARDIO', 1),
-       (2, 6, 'STRENGTH', 2),
-       (2, 10, 'STRENGTH', 3);
+VALUES (2, 3, 'CARDIO', 1),   -- Burpees
+       (2, 6, 'CARDIO', 2),   -- Saltos de comba
+       (2, 10, 'CARDIO', 3);  -- Mountain climbers
 
 -- Rutina 3: cuerpo completo
 INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
-VALUES (3, 1, 'CARDIO', 1),
-       (3, 2, 'CARDIO', 2),
-       (3, 5, 'STRENGTH', 3),
-       (3, 9, 'CARDIO', 4);
+VALUES (3, 1, 'CARDIO', 1),   -- Sentadillas (como Cardio)
+       (3, 2, 'STRENGTH', 2), -- Flexiones
+       (3, 5, 'STRENGTH', 3), -- Zancadas
+       (3, 9, 'STRENGTH', 4); -- Dominadas
 
 -- Rutina 4: yoga relajación
 INSERT INTO routine_exercises (routine_id, exercise_id, exercise_type, position)
-VALUES (4, 4, 'STRENGTH', 1);
+VALUES (4, 4, 'CARDIO', 1);   -- Plancha abdominal
 
 INSERT INTO workouts (start_time, end_time, routine_id, user_id)
 VALUES
@@ -120,63 +120,54 @@ VALUES
         NULL,
         1,
         2
-    );
+    ),
+    ('2025-11-04 08:00:00', '2025-11-04 08:45:00', 2, 2),
+    ('2025-11-12 18:30:00', '2025-11-12 19:15:00', 2, 2),
+    ('2025-11-20 19:00:00', '2025-11-20 20:00:00', 1, 2),
+    ('2025-12-15 10:00:00', '2025-12-15 11:00:00', 1, 3);
 
-    INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
+INSERT INTO workout_exercises (reps, weight, duration_seconds, workout_id, routine_exercise_id)
 VALUES
--- workout 3
-(NULL, NULL, 60, 1, 5),    -- STRENGTH
-(20, 25, NULL, 1, 6),    -- STRENGTH
-(9, 50, NULL, 1, 2),     -- STRENGTH
-
--- workout 4
-(6, 80, NULL, 2, 7),     -- STRENGTH
-(NULL, NULL, 42, 2, 8),  -- CARDIO
-(NULL, NULL, 50, 2, 9),  -- CARDIO
-
--- workout 5
-(8, 75, NULL, 3, 10),    -- STRENGTH
-(NULL, NULL, 33, 3, 1),  -- CARDIO
-
--- Datos de Laura en octubre
--- workout 14
-(NULL, NULL, 40, 9, 3), -- CARDIO
-(10, 55, NULL, 9, 4),   -- STRENGTH
-(8, 65, NULL, 9, 2),    -- STRENGTH
-
--- workout 15
-(5, 28, NULL, 10, 4),    -- STRENGTH
-(NULL, NULL, 25, 10, 1), -- CARDIO
-
--- workout 16
-(NULL, NULL, 42, 11, 3), -- CARDIO
-(10, 48, NULL, 11, 4),   -- STRENGTH
-(8, 60, NULL, 11, 2),    -- STRENGTH
-
--- workout 17
-(NULL, NULL, 40, 12, 3), -- CARDIO
-(10, 55, NULL, 12, 4),   -- STRENGTH
-(8, 65, NULL, 12, 2),    -- STRENGTH
-
--- workout 18
-(5, 32, NULL, 13, 4),    -- STRENGTH
-(NULL, NULL, 28, 13, 1), -- CARDIO
-
--- workout 19
-(NULL, NULL, 42, 14, 3), -- CARDIO
-(10, 48, NULL, 14, 4),   -- STRENGTH
-
--- workout 21 (Rutina fuerza inicial)
-(NULL, NULL, 40, 16, 1), -- CARDIO
-(12, 50, NULL, 16, 2),    -- STRENGTH
-(NULL, NULL, 50, 16, 3), -- CARDIO
-(10, 45, NULL, 16, 4),   -- STRENGTH
-
--- workout 20 (Rutina cuerpo completo)
-(NULL, NULL, 35, 15, 9), -- CARDIO
-(12, 50, NULL, 15, 10),   -- STRENGTH
-(NULL, NULL, 60, 15, 11),   -- STRENGTH
-(5, 50, NULL, 15, 12);    -- STRENGTH
+-- Workout 1 (Laura, Rutina 1)
+(NULL, NULL, 60, 1, 1), (12, 0, NULL, 1, 2), (8, 40, NULL, 1, 3), (10, 30, NULL, 1, 4),
+-- Workout 2 (Laura, Rutina 1)
+(NULL, NULL, 70, 2, 1), (15, 0, NULL, 2, 2), (8, 45, NULL, 2, 3), (10, 35, NULL, 2, 4),
+-- Workout 3 (Miguel, Rutina 2)
+(NULL, NULL, 45, 3, 5), (NULL, NULL, 60, 3, 6), (NULL, NULL, 30, 3, 7),
+-- Workout 4 (Miguel, Rutina 2)
+(NULL, NULL, 50, 4, 5), (NULL, NULL, 90, 4, 6), (NULL, NULL, 40, 4, 7),
+-- Workout 6 (Antiguo prueba, Rutina 1)
+(NULL, NULL, 50, 6, 1), (10, 0, NULL, 6, 2), (5, 30, NULL, 6, 3),
+-- Workout 7 (Miguel 16-Oct, Rutina 2)
+(NULL, NULL, 60, 7, 5), (NULL, NULL, 120, 7, 6), (NULL, NULL, 60, 7, 7),
+-- Workout 8 (Laura 16-Oct, Rutina 4)
+(NULL, NULL, 180, 8, 12),
+-- Workout 9 (Laura 05-Oct, Rutina 1)
+(NULL, NULL, 80, 9, 1), (12, 5, NULL, 9, 2), (8, 50, NULL, 9, 3), (10, 40, NULL, 9, 4),
+-- Workout 10 (Laura 08-Oct, Rutina 3)
+(NULL, NULL, 90, 10, 8), (10, 0, NULL, 10, 9), (12, 10, NULL, 10, 10), (5, 0, NULL, 10, 11),
+-- Workout 11 (Laura 12-Oct, Rutina 1)
+(NULL, NULL, 85, 11, 1), (12, 5, NULL, 11, 2), (8, 55, NULL, 11, 3), (10, 45, NULL, 11, 4),
+-- Workout 12 (Laura 15-Oct, Rutina 1)
+(NULL, NULL, 90, 12, 1), (15, 5, NULL, 12, 2), (8, 60, NULL, 12, 3), (10, 45, NULL, 12, 4),
+-- Workout 13 (Laura 17-Oct, Rutina 3)
+(NULL, NULL, 100, 13, 8), (12, 0, NULL, 13, 9), (12, 15, NULL, 13, 10), (6, 0, NULL, 13, 11),
+-- Workout 14 (Laura 20-Oct, Rutina 1)
+(NULL, NULL, 95, 14, 1), (15, 10, NULL, 14, 2), (8, 65, NULL, 14, 3), (10, 50, NULL, 14, 4),
+-- Workout 15 (Laura Ayer, Rutina 3)
+(NULL, NULL, 110, 15, 8), (12, 0, NULL, 15, 9), (12, 20, NULL, 15, 10), (8, 0, NULL, 15, 11),
+-- Workout 16 (Laura Antes de Ayer, Rutina 1)
+(NULL, NULL, 100, 16, 1), (15, 10, NULL, 16, 2), (8, 70, NULL, 16, 3), (10, 55, NULL, 16, 4),
+-- Workout 17 (Laura Hoy - En progreso/Iniciada, Rutina 1)
+(NULL, NULL, 30, 17, 1),
+-- Workout 18 (Laura 04-Nov, Rutina 2)
+(NULL, NULL, 60, 18, 5), (NULL, NULL, 120, 18, 6), (NULL, NULL, 60, 18, 7),
+-- Workout 19 (Laura 12-Nov, Rutina 2)
+(NULL, NULL, 65, 19, 5), (NULL, NULL, 130, 19, 6), (NULL, NULL, 65, 19, 7),
+-- Workout 20 (Laura 20-Nov, Rutina 1)
+(NULL, NULL, 120, 20, 1), (15, 15, NULL, 20, 2), (10, 75, NULL, 20, 3), (10, 60, NULL, 20, 4),
+-- Workout 21 (Miguel 15-Diciembre, Rutina fuerza)
+(NULL, NULL, 60, 21, 1), (12, 0, NULL, 21, 2), (8, 50, NULL, 21, 3), (10, 40, NULL, 21, 4);
 
 
 INSERT INTO user_follows (client_id, follow_user_id)
