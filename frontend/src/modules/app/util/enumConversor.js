@@ -12,6 +12,7 @@ export const getDifficultyText = (difficulty) => {
 };
 
 export const getMuscleGroupsText = (muscle) => {
+    if (muscle == "null") return "Ninguno";
     switch (muscle) {
         case "LEG": return "Piernas";
         case "CHEST": return "Pectoral";
