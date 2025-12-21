@@ -10,7 +10,7 @@ metadata:
   labels:
     app: medgym
     provider: jkube
-    version: 3.0-SNAPSHOT
+    version: 4.0
     group: es.udc.fi.dc.fd
   name: medgym
 spec:
@@ -31,7 +31,7 @@ spec:
       labels:
         app: medgym
         provider: jkube
-        version: 3.0-SNAPSHOT
+        version: 4.0
         group: es.udc.fi.dc.fd
     spec:
       containers:
