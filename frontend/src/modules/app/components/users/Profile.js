@@ -73,6 +73,13 @@ const getFollowText = (loadingFollow, isFollowing) => {
     return "Seguir";
 };
 
+const isWrappedAvailable = () => {
+    const now = new Date();
+    const wrappedStartDate = new Date(2025, 11, 22);
+
+    return now >= wrappedStartDate;
+};
+
 /* Presentational components */
 
 function ProfileHeader(props) {
@@ -107,6 +114,8 @@ function ProfileHeader(props) {
     const canBecomePremium =
         showSelfActions &&
         me.role === "TRAINER";
+
+    const showWrapped = isWrappedAvailable();
 
     return (
         <div className={styles["profile-header"]}>
@@ -202,12 +211,14 @@ function ProfileHeader(props) {
                         >
                             Métricas corporales
                         </button>
-                        <button
-                            className={styles["wrapped-button"]}
-                            onClick={() => navigate(`/users/${profile.id}/wrapped`)}
-                        >
-                            Wrapped 2025
-                        </button>
+                        {showWrapped && (
+                            <button
+                                className={styles["wrapped-button"]}
+                                onClick={() => navigate(`/users/${profile.id}/wrapped`)}
+                            >
+                                Wrapped 2025
+                            </button>
+                        )}
                         {canBecomePremium && (
                             <button
                                 className={styles["premium-button"]}
