@@ -1,8 +1,33 @@
-# Spring-Boot React Project.
+# MedGym 🏋️
 
-_Example project to start building your own web application_
+MedGym is a full-stack web application focused on fitness and workout management, developed as part of the Computer Engineering degree at the University of A Coruña (UDC).
 
-## Starting 🚀
+The project combines modern web development technologies, software engineering practices, automated testing and continuous integration and deployment.
+
+## 🎓 Academic Context
+
+- **University:** University of A Coruña (UDC)
+- **Degree:** Computer Engineering
+- **Specialization:** Software Engineering
+- **Course:** Development Tools (Ferramentas de Desenvolvemento)
+- **Academic year:** 2025/2026
+- **Project type:** Collaborative university project
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Backend | Java 17, Spring Boot |
+| Frontend | React, JavaScript |
+| Build Tools | Maven, Yarn |
+| Version Control | Git, GitLab |
+| CI/CD | Jenkins |
+| Containerization | Docker |
+| Deployment | Kubernetes |
+
+## 🚀 Getting Started
+
+Follow the instructions below to configure and run the application in your local development environment.
 
 These instructions will allow you to get a copy of the project running on your local machine for development and testing purposes.
 
@@ -96,13 +121,16 @@ Steps to follow:
 - [Maven](https://maven.apache.org/) & [yarn](https://yarnpkg.com/) - Project Management
 - [Kubernetes](https://kubernetes.io/) & [Docker](https://www.docker.com/) - Deployment
 
-## Authors ✒️
+## 🙏 Acknowledgements
 
-- **Jorge Gabín**
-- **Alfonso Landín**
-- **Javier Parapar**
+This project is based on the Spring Boot and React
+template provided by the University of A Coruña (UDC).
 
----
+Original template authors:
+
+- Jorge Gabín
+- Alfonso Landín
+- Javier Parapar
 -
 
 IRLab ©2021
